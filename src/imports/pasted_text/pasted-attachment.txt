@@ -1,0 +1,155 @@
+# Prompt Per Fitur — TalentaABK / InklusiBisa
+
+Semua prompt di bawah pakai brand guideline yang sama (lihat blok "DESIGN SYSTEM" — tinggal copy-paste sekali di awal chat AI tool kamu, baru lanjut prompt per fitur satu-satu). Bisa dipakai berurutan di Figma AI / v0 / Lovable / Galileo AI.
+
+---
+
+## DESIGN SYSTEM (paste ini duluan, sekali saja)
+
+```
+Design system for "TalentaABK" app — reference this for every screen I 
+ask you to design next:
+- Users: special-needs teachers (Guru SLB, 25-50) and parents of children 
+  with special needs (30-50). Design for mature, non-tech-native users — 
+  calm, trustworthy, professional. NOT a youth/startup aesthetic.
+- Typography: Plus Jakarta Sans SemiBold/Bold for headings, IBM Plex Sans 
+  Regular/Medium for body/UI. Body text minimum 16px, line-height 1.5x. 
+  No thin/light weights, no all-caps paragraphs.
+- Colors: muted deep teal #0B5A63 (primary), muted warm amber #D98E1E 
+  (secondary), charcoal #212529 text, off-white #FAF9F7 background 
+  (not pure white). WCAG 2.1 AA contrast (4.5:1 min).
+- Touch targets minimum 48x48px. Card-based layouts, not dense tables. 
+  Icons always paired with text labels. One primary CTA per screen, in 
+  amber. Color-coded info always paired with icon/pattern (colorblind-safe).
+Confirm you've got this, then I'll ask for individual screens one at a time.
+```
+
+---
+
+## 1. Login & Role Selection
+
+```
+Using the TalentaABK design system: design a login screen with Google 
+sign-in as the primary action, and a role selection step after login 
+where the user picks "Guru" (Teacher) or "Orang Tua" (Parent) — two large 
+clearly-labeled cards with simple icons, not a dropdown. Keep copy short 
+and warm, e.g. "Selamat datang, siapa Anda hari ini?"
+```
+
+## 2. Dashboard Guru (Teacher)
+
+```
+Using the TalentaABK design system: design the teacher's home dashboard, 
+shown right after login. Show: number of students assigned, count of 
+pending/unfinished observations, the student with the best recent 
+progress, latest competition recommendations, and the next scheduled 
+observation. Prioritize a fast morning-glance scan — teacher opens this 
+between classes with limited time.
+```
+
+## 3. Student Management + Student Profile
+
+```
+Using the TalentaABK design system: design (a) a student list screen 
+with search and a card per student (photo, name, disability type badge), 
+and (b) the student profile screen it opens into — showing identity 
+(name, age, class, photo), ABK profile (disability type, support level, 
+communication/motor/sensory ability, dominant learning style, attention 
+span, initial interests, therapy history — all admin-entered, read-only 
+except a teacher notes section which is editable).
+```
+
+## 4. Adaptive Observation (fitur utama)
+
+```
+Using the TalentaABK design system: design the "Adaptive Observation" 
+flow. Teacher taps "Mulai Observasi" and the app shows a checklist of 
+indicators that has already been filtered by AI to match the student's 
+specific disability profile (e.g. for a visually-impaired student: 
+auditory focus, sound recognition — not visual-task indicators). Show 
+a clean checklist UI with large touch targets, e.g. "Fokus terhadap 
+tugas", "Menyukai aktivitas visual", "Koordinasi motorik baik".
+```
+
+## 5. AI Talent Mapping (hasil)
+
+```
+Using the TalentaABK design system: design the AI Talent Mapping results 
+screen. Show a ranked list of talent domains with star ratings (e.g. 
+Seni Visual ★★★★★, Desain ★★★★☆, Musik ★★★☆☆), plus a short plain-language 
+explanation of why the AI reached this result. Avoid technical/ML jargon 
+in the copy — this is read by both teachers and parents.
+```
+
+## 6. AI Learning Recommendation
+
+```
+Using the TalentaABK design system: design a screen showing AI-generated 
+teaching-strategy recommendations tied to the student's talent mapping 
+result — e.g. "Gunakan media visual", "Demonstrasi langsung", "Aktivitas 
+Project Based Learning", "Hindari instruksi verbal panjang". Present as 
+a clear do/avoid checklist, scannable in a few seconds.
+```
+
+## 7. Individual Development Plan (IDP) + Progress Monitoring
+
+```
+Using the TalentaABK design system: design (a) a simple form/screen where 
+the teacher sets a semester development target for a student (target 
+area, e.g. "Seni Visual", plus indicators like "Ketelitian", "Kreativitas", 
+"Percaya diri"), and (b) a progress monitoring screen showing a semester-
+over-semester comparison as a simple bar or line chart (e.g. Semester 1: 
+70 → Semester 2: 85), designed to be legible at a glance for a 
+40-something viewer, not a dense analytics dashboard.
+```
+
+## 8. Competition Recommendation
+
+```
+Using the TalentaABK design system: design a screen listing AI-matched 
+competitions/events for the student (e.g. FLS2N — Seni Lukis, O2SN — 
+Boccia, LKS — Desain Grafis), each card showing the competition name, 
+category, and a short reason for the match. Include a clear registration 
+CTA per card.
+```
+
+## 9. Parent Report Generator (teacher side)
+
+```
+Using the TalentaABK design system: design a screen where the teacher 
+taps "Generate Report" and the AI produces a short plain-language summary 
+for parents, e.g. "Rafi menunjukkan perkembangan positif pada kemampuan 
+seni visual. Direkomendasikan untuk mengikuti kegiatan menggambar secara 
+rutin." Show an editable preview before sending, plus a send/share action.
+```
+
+## 10. Parent Dashboard
+
+```
+Using the TalentaABK design system: design the parent's home dashboard. 
+Show a warm greeting (e.g. "Halo Bu Ani 👋"), the child's main talent 
+domain with an icon, semester progress percentage, and the current 
+development target being worked on (e.g. "Persiapan FLS2N"). Keep it to 
+essential information only — parents should understand their child's 
+status in under 10 seconds.
+```
+
+## 11. Parent — Talent Mapping Result & Progress
+
+```
+Using the TalentaABK design system: design (a) a simplified view of the 
+child's talent mapping result for parents (main potential, supporting 
+potential, plain-language explanation — no jargon), and (b) a progress 
+chart across domains (Komunikasi, Motorik, Seni, Sosial) viewable by 
+semester.
+```
+
+## 12. Parent — Teacher Recommendations
+
+```
+Using the TalentaABK design system: design a screen showing the teacher's 
+recommendations for the parent: which area needs support, simple 
+at-home suggestions (e.g. "Memberikan kesempatan anak menggambar di 
+rumah"), and any competition currently being prepared for (e.g. "Mengikuti 
+lomba FLS2N"). No data-entry required from the parent on this screen.
+```
