@@ -1,3 +1,30 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* Sembunyikan scrollbar di seluruh aplikasi agar padding kanan dan kiri seimbang/simetris */
+*,
+*::before,
+*::after {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE dan Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Edge, Opera */
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+/* Utility class no-scrollbar */
+.no-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}

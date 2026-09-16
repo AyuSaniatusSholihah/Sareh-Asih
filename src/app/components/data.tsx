@@ -85,11 +85,11 @@ export const OBS_KATEGORI: ObsKategori[] = [
 ];
 
 export const OBS_KAT_META: Record<ObsKategori,{icon:string;color:string;bg:string;desc:string}> = {
-  "Interaksi Sosial":   {icon:"🤝", color:"#B45309", bg:"#FEF3C7", desc:"Cara anak berhubungan dengan teman dan guru"},
-  "Komunikasi":         {icon:"💬", color:"#0369A1", bg:"#E0F2FE", desc:"Menyampaikan dan memahami pesan"},
-  "Motorik & Sensorik": {icon:"✋", color:"#6D28D9", bg:"#EDE9FE", desc:"Gerak tubuh dan respons indra"},
-  "Fokus & Kognitif":   {icon:"🧠", color:"#15803D", bg:"#F0FDF4", desc:"Perhatian, ingatan, dan pemahaman"},
-  "Minat & Bakat":      {icon:"✨", color:"#BE185D", bg:"#FCE7F3", desc:"Kegiatan yang menarik minat anak"},
+  "Interaksi Sosial":   {icon:"🤝", color:"#059669", bg:"#ECFDF5", desc:"Cara anak berhubungan dengan teman dan guru"},
+  "Komunikasi":         {icon:"💬", color:"#0284C7", bg:"#F0F9FF", desc:"Menyampaikan dan memahami pesan"},
+  "Motorik & Sensorik": {icon:"✋", color:"#8BB098", bg:"#EBF3ED", desc:"Gerak tubuh dan respons indra"},
+  "Fokus & Kognitif":   {icon:"🧠", color:"#7C3AED", bg:"#F5F3FF", desc:"Perhatian, ingatan, dan pemahaman"},
+  "Minat & Bakat":      {icon:"✨", color:"#F59E0B", bg:"#FFFBEB", desc:"Kegiatan yang menarik minat anak"},
 };
 
 export interface ObsItem { id:number; text:string; tag:string; kategori:ObsKategori }
@@ -183,15 +183,15 @@ export interface AsesmenItem { id:number; text:string; kategori:AsesmenKategori;
 
 /** Skala penilaian — sengaja hanya 4 tingkat agar cepat diisi guru. */
 export const SKALA = [
-  {v:0, l:"Belum",         d:"Belum muncul sama sekali",            color:"#B91C1C", bg:"#FEF2F2"},
-  {v:1, l:"Dibantu",       d:"Bisa dengan bantuan penuh guru",      color:"#B45309", bg:"#FEF3C7"},
-  {v:2, l:"Sebagian",      d:"Bisa sebagian, sesekali diingatkan",  color:"#0369A1", bg:"#E0F2FE"},
-  {v:3, l:"Mandiri",       d:"Bisa sendiri secara konsisten",       color:"#15803D", bg:"#F0FDF4"},
+  {v:0, l:"Belum",         d:"Belum muncul sama sekali",            color:"#D27D6B", bg:"#F8EBE8"},
+  {v:1, l:"Dibantu",       d:"Bisa dengan bantuan penuh guru",      color:"#8BB098", bg:"#EBF3ED"},
+  {v:2, l:"Sebagian",      d:"Bisa sebagian, sesekali diingatkan",  color:"#5B7A68", bg:"#E8EFEA"},
+  {v:3, l:"Mandiri",       d:"Bisa sendiri secara konsisten",       color:"#2E3E35", bg:"#D4E8DA"},
 ];
 
 export const ASESMEN_META: Record<AsesmenKategori,{icon:string;color:string;bg:string;desc:string}> = {
-  "Kemandirian":     {icon:"🧍", color:"#0369A1", bg:"#E0F2FE", desc:"Kemampuan mengurus diri dan menyelesaikan tugas sendiri"},
-  "Akademik & Bakat":{icon:"📚", color:"#6D28D9", bg:"#EDE9FE", desc:"Kemampuan dasar akademik dan potensi bakat yang menonjol"},
+  "Kemandirian":     {icon:"🧍", color:"#5B7A68", bg:"#E8EFEA", desc:"Kemampuan mengurus diri dan menyelesaikan tugas sendiri"},
+  "Akademik & Bakat":{icon:"📚", color:"#D27D6B", bg:"#F8EBE8", desc:"Kemampuan dasar akademik dan potensi bakat yang menonjol"},
 };
 
 export const ASESMEN: AsesmenItem[] = [

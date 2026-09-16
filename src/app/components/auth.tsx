@@ -1,9 +1,17 @@
 import { useState, useEffect, useRef } from "react";
-import {   ChevronRight, Info, Key, XCircle, CheckCircle, ArrowLeft, Hash, ShieldCheck, Users, Sparkles, UserPlus, School, Plus, Upload, FileText, Building2, Phone, Briefcase, AlertCircle, Eye, Trash2, Database, Download, Trophy, Target, TrendingUp, Calendar, Video, Clock, Map, Star, User, PlayCircle, Award, Target as TargetIcon, MoveRight, CheckSquare } from "lucide-react";
+import {
+  ChevronRight, Info, Key, XCircle, CheckCircle, ArrowLeft,
+  Hash, ShieldCheck, Users, Sparkles, UserPlus, School, Plus, Upload,
+  FileText, Building2, Phone, Briefcase, AlertCircle, Eye, Trash2, Database,
+  Search, MapPin, Download, Trophy, Target, TrendingUp, Calendar, Video,
+  Clock, Map, Star, User, PlayCircle, Award, Target as TargetIcon,
+  MoveRight, CheckSquare,
+} from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM,
   Field,
 } from "./ui-kit";
+import { cariSLB, DATABASE_SLB_INDONESIA, type SLBSekolah } from "./data-slb";
 import { ABK_OPTIONS, type Role } from "./data";
 import { motion, AnimatePresence } from "motion/react";
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
@@ -748,9 +756,9 @@ export function AkunGuruModal({profile,onNext}:{profile:GuruProfile;onNext:(p:{n
         ) : (
           <div className="space-y-2">
             {([["Nama Lengkap",nama],["Email",email]] as [string,string][]).map(([l,v])=>(
-              <div key={l} style={{background:BG,border:`1px solid ${BDR}`}} className="rounded-xl px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide" style={{color:MUTED,fontFamily:IPS}}>{l}</p>
-                <p className="text-sm mt-0.5 font-medium" style={{color:TEXT,fontFamily:IPS}}>{v||"—"}</p>
+              <div key={l} style={{background:CARD,border:`1.5px solid rgba(91,122,104,0.35)`,borderRadius:16,boxShadow:"0 2px 8px rgba(91,122,104,0.06)"}} className="px-4 py-3">
+                <p style={{fontSize:11,fontWeight:800,color:DEEP,fontFamily:PJS,textTransform:"uppercase",letterSpacing:"0.05em"}}>{l}</p>
+                <p style={{fontSize:14,fontWeight:700,color:TEXT,fontFamily:PJS,marginTop:3}}>{v||"—"}</p>
               </div>
             ))}
           </div>
@@ -795,131 +803,1253 @@ export function AkunGuruModal({profile,onNext}:{profile:GuruProfile;onNext:(p:{n
       </div>
 
       <button onClick={()=>valid && onNext({nama:nama.trim(),email:email.trim(),jabatan:jabatan.trim(),noHp:noHp.trim()})} disabled={!valid}
-        style={{width:"100%",background:valid?A:"#D1D5DB",color:"#fff",fontFamily:IPS,minHeight:50,marginTop:16}}
-        className="rounded-2xl text-sm font-bold">
-        Lanjut →
+        style={{
+          width:"100%",
+          background:valid ? A : "#D1D5DB",
+          color:"#fff",
+          fontFamily:PJS,
+          fontWeight:700,
+          fontSize:15,
+          minHeight:52,
+          borderRadius:16,
+          marginTop:18,
+          border:"none",
+          cursor:valid ? "pointer" : "not-allowed",
+          boxShadow:valid ? "0 6px 20px rgba(210,125,107,0.42)" : "none",
+        }}
+        className="active:scale-[0.98] transition-all">
+        Lanjut ke Profil Sekolah →
       </button>
     </ModalShell>
   );
 }
 
-// ─── GURU: POP-UP 2 — Profil sekolah & pengajaran ─────────────────────
-export function ProfilSekolahModal({profile,onBack,onNext}:{profile:GuruProfile;onBack:()=>void;onNext:(p:{sekolah:string;kelas:string[];abk:string[];kelasAbkMap:Record<string,string>})=>void}) {
-  const [sekolah,setSekolah]       = useState(profile.sekolah);
-  const [kelasAbkMap,setKelasAbkMap] = useState<Record<string,string>>(profile.kelasAbkMap ?? {});
-  const [kelasInput,setKelasInput] = useState("");
-  const [abkInput,setAbkInput]     = useState<string[]>([]);
-  const [lainnyaInput,setLainnyaInput] = useState("");
+// ─── KOMPONEN AUTOCOMPLETE DATABASE SLB SE-INDONESIA ────────────────
+function SLBSearchInput({
+  value,
+  onChange,
+  required,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  required?: boolean;
+}) {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [activeTab, setActiveTab] = useState<"semua" | "jabar" | "jakarta" | "jateng" | "jatim" | "luarjawa">("semua");
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const addClass = () => {
-    const k = kelasInput.trim();
-    let selectedAbks = abkInput.filter(x => x !== "Lainnya");
-    if (abkInput.includes("Lainnya") && lainnyaInput.trim()) {
-      selectedAbks.push(lainnyaInput.trim());
-    }
-    if (!k || selectedAbks.length === 0) return;
-    setKelasAbkMap(m => ({...m, [k]: selectedAbks.join(" · ")}));
-    setKelasInput(""); setAbkInput([]); setLainnyaInput("");
+  // Deteksi sekolah terpilih di database
+  const selectedMatch = DATABASE_SLB_INDONESIA.find(
+    s => s.nama.toLowerCase() === value.trim().toLowerCase()
+  );
+
+  // Filter berdasarkan teks dan tab region jika dipilih
+  const getFilteredList = () => {
+    let list = cariSLB(value, 15);
+    if (activeTab === "jabar") list = list.filter(s => s.provinsi.includes("Jawa Barat"));
+    else if (activeTab === "jakarta") list = list.filter(s => s.provinsi.includes("Jakarta"));
+    else if (activeTab === "jateng") list = list.filter(s => s.provinsi.includes("Jawa Tengah") || s.provinsi.includes("Yogyakarta"));
+    else if (activeTab === "jatim") list = list.filter(s => s.provinsi.includes("Jawa Timur"));
+    else if (activeTab === "luarjawa") list = list.filter(s => !s.provinsi.includes("Jawa") && !s.provinsi.includes("Jakarta") && !s.provinsi.includes("Yogyakarta"));
+    return list.slice(0, 8);
   };
-  const removeClass = (k:string) => setKelasAbkMap(m => { const n={...m}; delete n[k]; return n; });
 
-  const entries = Object.entries(kelasAbkMap);
-  const valid   = sekolah.trim() !== "" && entries.length > 0;
+  const results = getFilteredList();
+
+  // Tutup dropdown saat klik di luar
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <ModalShell step={2} total={3} title="Profil Mengajar" desc="Buat kelompok kelas — setiap kelas terhubung ke jenis ABK yang diajar.">
-      <div className="space-y-4">
-        <Field label="Nama Sekolah" placeholder="SLB Negeri 1 Bandung" value={sekolah} onChange={setSekolah} required/>
+    <div ref={containerRef} className="relative">
+      <div className="flex items-center justify-between mb-1.5">
+        <label className="text-xs font-semibold block" style={{ color: TEXT, fontFamily: IPS }}>
+          <School size={12} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
+          Nama Sekolah (SLB) {required && <span style={{ color: A }}>*</span>}
+        </label>
+        <span
+          className="text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"
+          style={{ background: "#E4F0E9", color: "#166534", fontFamily: IPS, border: "1px solid #BBF7D0" }}>
+          <span>🇮🇩</span> Database SLB Nasional
+        </span>
+      </div>
 
-        {/* Classroom-style kelas + ABK */}
-        <div>
-          <p style={{fontSize:13,fontWeight:600,color:TEXT,fontFamily:IPS,marginBottom:6}}>
-            Kelompok Kelas/Ekskul/Mapel <span style={{color:A}}>*</span>
-            {entries.length>0 && <span style={{fontWeight:400,color:MUTED,marginLeft:6}}>· {entries.length} kelas</span>}
+      <div className="relative">
+        <input
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setShowDropdown(true);
+          }}
+          onFocus={() => {
+            setIsFocused(true);
+            setShowDropdown(true);
+          }}
+          onBlur={() => setIsFocused(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              setShowDropdown(false);
+            }
+          }}
+          placeholder="Ketik nama SLB, kota, atau provinsi..."
+          style={{
+            width: "100%",
+            border: `1.5px solid ${isFocused ? T : BDR}`,
+            borderRadius: 12,
+            padding: "10px 34px 10px 36px",
+            fontSize: 13,
+            color: TEXT,
+            fontFamily: IPS,
+            background: CARD,
+            outline: "none",
+            minHeight: 44,
+            transition: "all 0.18s",
+          }}
+        />
+        <Search
+          size={16}
+          style={{
+            position: "absolute",
+            left: 12,
+            top: "50%",
+            transform: "translateY(-50%)",
+            color: isFocused ? T : MUTED,
+            pointerEvents: "none",
+          }}
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={() => {
+              onChange("");
+              setShowDropdown(true);
+            }}
+            style={{
+              position: "absolute",
+              right: 10,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 4,
+              display: "flex",
+              alignItems: "center",
+              color: MUTED,
+            }}>
+            <XCircle size={15} />
+          </button>
+        )}
+      </div>
+
+      {/* Info status sekolah terdaftar di database */}
+      {selectedMatch && !showDropdown && (
+        <div
+          className="mt-1.5 px-3 py-1.5 rounded-xl flex items-center gap-2"
+          style={{ background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
+          <CheckCircle size={13} style={{ color: "#16A34A", flexShrink: 0 }} />
+          <p className="text-[11px] font-medium" style={{ color: "#166534", fontFamily: IPS }}>
+            Terdaftar di Database: <strong>{selectedMatch.kota}, {selectedMatch.provinsi}</strong> ({selectedMatch.status})
+            {selectedMatch.npsn && ` · NPSN ${selectedMatch.npsn}`}
           </p>
-          {/* Row 1: nama kelas */}
-          <div style={{display:"flex",gap:6,marginBottom:6}}>
-            <input
-              value={kelasInput}
-              onChange={e=>setKelasInput(e.target.value)}
-              onKeyDown={e=>{ if(e.key==="Enter"){ e.preventDefault(); addClass(); } }}
-              placeholder="Nama kelas · contoh: VII A"
-              style={{flex:1,border:`1.5px solid ${BDR}`,borderRadius:12,padding:"9px 12px",fontSize:13,color:TEXT,fontFamily:IPS,background:CARD,outline:"none",minHeight:42}}
-            />
+        </div>
+      )}
+
+      {/* Info status sekolah input manual / kustom */}
+      {value.trim() && !selectedMatch && !showDropdown && (
+        <div
+          className="mt-1.5 px-3 py-1.5 rounded-xl flex items-center justify-between"
+          style={{ background: "#FEF3C7", border: "1px solid #FDE68A" }}>
+          <div className="flex items-center gap-2 min-w-0">
+            <Building2 size={13} style={{ color: "#D97706", flexShrink: 0 }} />
+            <p className="text-[11px] font-medium text-amber-900 truncate" style={{ fontFamily: IPS }}>
+              Sekolah Kustom: <strong>{value.trim()}</strong> (Input Manual)
+            </p>
           </div>
-          {/* Row 2: jenis ABK pilihan (chips) + tombol tambah */}
-          <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-              {[...ABK_OPTIONS, "Lainnya"].map(o=>(
-                <button
-                  key={o}
-                  onClick={()=>setAbkInput(prev => prev.includes(o) ? prev.filter(x => x !== o) : [...prev, o])}
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 flex-shrink-0"
+            style={{ fontFamily: IPS }}>
+            ✓ Tersimpan
+          </span>
+        </div>
+      )}
+
+      {/* Dropdown Hasil Pencarian Database SLB */}
+      {showDropdown && (
+        <div
+          className="absolute z-50 left-0 right-0 mt-1.5 rounded-2xl shadow-xl overflow-hidden no-scrollbar"
+          style={{
+            background: CARD,
+            border: `1.5px solid ${T}`,
+            maxHeight: 270,
+            overflowY: "auto",
+            boxShadow: "0 12px 28px -4px rgba(46,62,53,0.3)",
+          }}>
+          {/* Header dropdown */}
+          <div className="p-2 border-b flex items-center justify-between" style={{ borderColor: BDR, background: BG }}>
+            <p className="text-[11px] font-bold" style={{ color: DEEP, fontFamily: IPS }}>
+              {value.trim() ? `Pencarian SLB (${results.length})` : "Pilih dari Database SLB"}
+            </p>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: SEC, color: DEEP }}>
+              {DATABASE_SLB_INDONESIA.length} SLB Terdaftar
+            </span>
+          </div>
+
+          {/* OPSI INPUT LANGSUNG (Selalu muncul di paling atas jika user mengetik) */}
+          {value.trim().length > 0 && !selectedMatch && (
+            <div
+              style={{ background: "#FEF3C7", borderBottom: "1.5px solid #FCD34D", padding: "8px 12px" }}
+              className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <div
                   style={{
-                    background: abkInput.includes(o) ? SEC : BG,
-                    border: `1.5px solid ${abkInput.includes(o) ? T : BDR}`,
-                    color: abkInput.includes(o) ? DEEP : MUTED,
-                    padding: "6px 12px", borderRadius: 16, fontSize: 12, fontWeight: 600, fontFamily: IPS,
-                    cursor: "pointer", transition: "all 0.2s"
+                    width: 28,
+                    height: 28,
+                    borderRadius: 8,
+                    background: "#F59E0B",
+                    color: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent:"center",
+                    flexShrink: 0,
                   }}>
-                  {o}
+                  <Plus size={15} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-amber-950 truncate" style={{ fontFamily: IPS }}>
+                    Inputkan Langsung: "{value.trim()}"
+                  </p>
+                  <p className="text-[10px] text-amber-800 leading-none mt-0.5" style={{ fontFamily: IPS }}>
+                    Tidak ada di database? Langsung gunakan nama ini
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setShowDropdown(false);
+                }}
+                style={{
+                  background: "#D97706",
+                  color: "#fff",
+                  fontFamily: IPS,
+                  border: "none",
+                }}
+                className="px-3 py-1.5 rounded-xl text-xs font-bold flex-shrink-0 cursor-pointer shadow-sm hover:opacity-95 active:scale-95 transition-all">
+                Gunakan Ini ✓
+              </button>
+            </div>
+          )}
+
+          {/* Quick filter tabs */}
+          <div className="flex gap-1 p-1.5 border-b overflow-x-auto no-scrollbar" style={{ borderColor: BDR, background: "#FAFBFB" }}>
+            {[
+              { id: "semua", label: "Semua" },
+              { id: "jabar", label: "Jawa Barat" },
+              { id: "jakarta", label: "Jakarta" },
+              { id: "jateng", label: "Jateng & DIY" },
+              { id: "jatim", label: "Jawa Timur" },
+              { id: "luarjawa", label: "Luar Jawa" },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setActiveTab(tab.id as any);
+                }}
+                className={`text-[10px] px-2 py-1 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+                  activeTab === tab.id ? "text-white" : "text-gray-600 hover:bg-gray-100"
+                }`}
+                style={{ background: activeTab === tab.id ? T : "transparent", fontFamily: IPS }}>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Daftar SLB dari database */}
+          {results.length > 0 ? (
+            <div className="divide-y" style={{ borderColor: BDR }}>
+              {results.map((slb, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    onChange(slb.nama);
+                    setShowDropdown(false);
+                  }}
+                  className="w-full text-left p-2.5 hover:bg-emerald-50/70 active:bg-emerald-100/70 transition-colors flex items-start gap-2.5">
+                  <div
+                    className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                    style={{ background: SEC, color: DEEP }}>
+                    <School size={14} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <p className="text-xs font-bold leading-tight" style={{ color: TEXT, fontFamily: IPS }}>
+                        {slb.nama}
+                      </p>
+                      <span
+                        className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
+                          slb.status === "Negeri" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                        }`}>
+                        {slb.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5 text-[10px]" style={{ color: MUTED, fontFamily: IPS }}>
+                      <span className="flex items-center gap-0.5">
+                        <MapPin size={10} /> {slb.kota}, {slb.provinsi}
+                      </span>
+                      {slb.npsn && <span>• NPSN: {slb.npsn}</span>}
+                    </div>
+                  </div>
+                  <ChevronRight size={13} style={{ color: MUTED, flexShrink: 0, marginTop: 6 }} />
                 </button>
               ))}
             </div>
-            {abkInput.includes("Lainnya") && (
-              <input
-                autoFocus
-                placeholder="Tulis jenis ABK spesifik..."
-                value={lainnyaInput}
-                onChange={e => setLainnyaInput(e.target.value)}
-                onKeyDown={e => { if (e.key==="Enter") { e.preventDefault(); addClass(); } }}
-                style={{width:"100%",border:`1.5px solid ${BDR}`,borderRadius:12,padding:"9px 12px",fontSize:13,color:TEXT,fontFamily:IPS,background:CARD,outline:"none"}}
-              />
-            )}
-            <button
-              onClick={addClass}
-              disabled={!kelasInput.trim() || abkInput.length === 0 || (abkInput.length === 1 && abkInput[0] === "Lainnya" && !lainnyaInput.trim())}
-              style={{width:"100%",height:42,borderRadius:12,background:(!kelasInput.trim() || abkInput.length === 0 || (abkInput.length === 1 && abkInput[0] === "Lainnya" && !lainnyaInput.trim()))?"#D1D5DB":T,border:"none",cursor:(!kelasInput.trim() || abkInput.length === 0 || (abkInput.length === 1 && abkInput[0] === "Lainnya" && !lainnyaInput.trim()))?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:"bold",fontFamily:IPS,fontSize:14,marginTop:4}}>
-              <Plus size={16} style={{marginRight:6}}/> Tambah Kelas
-            </button>
-          </div>
-          <p style={{fontSize:11,color:MUTED,fontFamily:IPS,marginTop:8}}>
-            Isi nama kelas + tekan jenis ABK, lalu tekan <strong>Tambah Kelas</strong>
-          </p>
-
-          {/* Classroom cards */}
-          {entries.length > 0 && (
-            <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:16}}>
-              <p style={{fontSize:13,fontWeight:600,color:TEXT,fontFamily:IPS}}>
-                Kelas terdaftar di {sekolah || "SLB Anda"}
+          ) : (
+            <div className="p-4 text-center" style={{ background: "#FFFBEB" }}>
+              <div
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 12,
+                  background: "#FEF3C7",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 10px",
+                  color: "#D97706",
+                }}>
+                <Building2 size={20} />
+              </div>
+              <p className="text-xs font-bold text-gray-900" style={{ fontFamily: IPS }}>
+                "{value.trim()}" Belum Ada di Database
               </p>
-              {entries.map(([k,a])=>(
-                <div key={k} style={{display:"flex",alignItems:"center",gap:10,background:SEC,border:`1px solid ${T}`,borderRadius:14,padding:"8px 12px"}}>
-                  <div style={{width:32,height:32,background:T,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                    <School size={15} style={{color:"#fff"}}/>
-                  </div>
-                  <div style={{flex:1,minWidth:0}}>
-                    <p style={{fontSize:13,fontWeight:700,color:DEEP,fontFamily:IPS,lineHeight:1}}>{k}</p>
-                    <p style={{fontSize:11,color:MUTED,marginTop:2}}>{a}</p>
-                  </div>
-                  <button onClick={()=>removeClass(k)} style={{background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",padding:0}}>
-                    <XCircle size={16} style={{color:MUTED}}/>
-                  </button>
-                </div>
-              ))}
+              <p className="text-[11px] text-gray-600 mt-1 mb-3" style={{ fontFamily: IPS, lineHeight: 1.4 }}>
+                Sekolah tidak terdaftar? Tetap bisa didaftarkan langsung!
+              </p>
+              {value.trim() && (
+                <button
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setShowDropdown(false);
+                  }}
+                  style={{ background: T, color: "#fff", fontFamily: IPS, border: "none" }}
+                  className="w-full py-2 px-3 rounded-xl text-xs font-bold shadow flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all">
+                  <CheckCircle size={14} /> Gunakan "{value.trim()}" Langsung
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Opsi custom input di footer jika ada hasil database */}
+          {value.trim() && results.length > 0 && !selectedMatch && (
+            <div className="p-2 border-t text-center" style={{ borderColor: BDR, background: BG }}>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setShowDropdown(false);
+                }}
+                className="text-[11px] font-semibold flex items-center justify-center gap-1 w-full py-1 hover:underline cursor-pointer"
+                style={{ color: T, fontFamily: IPS }}>
+                ✓ Tetap gunakan nama kustom ini: "{value.trim()}"
+              </button>
             </div>
           )}
         </div>
+      )}
+    </div>
+  );
+}
+
+// ─── GURU: POP-UP 2 — Profil sekolah & pengajaran ─────────────────────
+export function ProfilSekolahModal({
+  profile,
+  onBack,
+  onNext,
+}: {
+  profile: GuruProfile;
+  onBack: () => void;
+  onNext: (p: { sekolah: string; kelas: string[]; abk: string[]; kelasAbkMap: Record<string, string> }) => void;
+}) {
+  const [sekolah, setSekolah] = useState(profile.sekolah);
+  const [kelasAbkMap, setKelasAbkMap] = useState<Record<string, string>>(profile.kelasAbkMap ?? {});
+
+  // Tab mode pembuatan kelas
+  const [activeTab, setActiveTab] = useState<"reguler" | "vokasional" | "mandiri">("reguler");
+
+  // 1. State Reguler (SDLB / SMPLB / SMALB)
+  const [jenjang, setJenjang] = useState<"SDLB" | "SMPLB" | "SMALB">("SMPLB");
+  const [tingkat, setTingkat] = useState<string>("7");
+  // Multi-select kekhususan (bisa pilih lebih dari 1: A, B, C, dst.)
+  const [selectedKekhususan, setSelectedKekhususan] = useState<string[]>(["B"]);
+  // Detail untuk Disabilitas Ganda
+  const [detailGanda, setDetailGanda] = useState<string>("");
+  // Input manual jenis kelas jika tidak ada di preset (misal: Inklusi, ADHD, Slow Learner)
+  const [useCustomJenis, setUseCustomJenis] = useState<boolean>(false);
+  const [customJenisInput, setCustomJenisInput] = useState<string>("");
+  const [rombelParalel, setRombelParalel] = useState<string>("");
+
+  // 2. State Vokasional (SMPLB & SMALB)
+  const [vokasiJenjang, setVokasiJenjang] = useState<"SMPLB" | "SMALB">("SMALB");
+  const [vokasiItem, setVokasiItem] = useState<string>("Tata Boga");
+
+  // 3. State Mandiri
+  const [mandiriNama, setMandiriNama] = useState<string>("");
+  const [mandiriAbk, setMandiriAbk] = useState<string>("Autism Spectrum Disorder");
+  const [mandiriLainnya, setMandiriLainnya] = useState<string>("");
+
+  // Konfigurasi Jenjang
+  const JENJANG_MAP = {
+    SDLB: { label: "SDLB", sub: "Kelas 1–6", defaultTingkat: "1", tingkats: ["1", "2", "3", "4", "5", "6"] },
+    SMPLB: { label: "SMPLB", sub: "Kelas 7–9", defaultTingkat: "7", tingkats: ["7", "8", "9"] },
+    SMALB: { label: "SMALB", sub: "Kelas 10–12", defaultTingkat: "10", tingkats: ["10", "11", "12"] },
+  };
+
+  // Konfigurasi Jenis Kekhususan / Layanan
+  const KEKHUSUSAN_LIST = [
+    { kode: "A", nama: "Kelas Tunanetra (A)", ringkas: "Tunanetra", abk: "Tunanetra", desc: "Hambatan penglihatan" },
+    { kode: "B", nama: "Kelas Tunarungu (B)", ringkas: "Tunarungu", abk: "Tunarungu", desc: "Hambatan pendengaran/wicara" },
+    { kode: "C", nama: "Kelas Tunagrahita (C)", ringkas: "Tunagrahita", abk: "Tunagrahita Ringan", desc: "Hambatan intelektual (ringan–sedang)" },
+    { kode: "D", nama: "Kelas Tunadaksa (D)", ringkas: "Tunadaksa", abk: "Tunadaksa", desc: "Hambatan fisik/motorik" },
+    { kode: "Autis", nama: "Kelas Spektrum Autis", ringkas: "Autis", abk: "Autism Spectrum Disorder", desc: "Penanganan & kurikulum adaptif" },
+    { kode: "Ganda", nama: "Kelas Disabilitas Ganda", ringkas: "Disabilitas Ganda", abk: "Disabilitas Ganda", desc: "Memiliki lebih dari satu ragam disabilitas" },
+  ];
+
+  // Presets kombinasi disabilitas ganda
+  const PRESET_GANDA = [
+    "Tunanetra + Tunarungu (Deafblind)",
+    "Tunarungu + Tunagrahita",
+    "Tunadaksa + Tunagrahita (Cerebral Palsy)",
+    "Autis + Tunagrahita",
+    "Tunanetra + Tunadaksa",
+  ];
+
+  // Konfigurasi Kelas Keterampilan / Vokasional
+  const VOKASIONAL_LIST = [
+    { id: "Tata Busana", nama: "Kelas Tata Busana / Menjahit", ringkas: "Tata Busana", icon: "✂️", abk: "Keterampilan Vokasional" },
+    { id: "Tata Boga", nama: "Kelas Keterampilan Tata Boga", ringkas: "Tata Boga", icon: "🍳", abk: "Keterampilan Vokasional" },
+    { id: "IT Komputer", nama: "Kelas Keterampilan IT / Komputer Dasar", ringkas: "IT & Komputer", icon: "💻", abk: "Keterampilan Vokasional" },
+    { id: "Kriya", nama: "Kelas Kesenian & Kriya (Perkusi, Batik, Kerajinan)", ringkas: "Kesenian & Kriya", icon: "🎨", abk: "Keterampilan Vokasional" },
+  ];
+
+  // Toggle multi-select kekhususan
+  const toggleKekhususan = (kode: string) => {
+    setSelectedKekhususan(prev => {
+      if (prev.includes(kode)) {
+        if (prev.length === 1 && !useCustomJenis) return prev; // pertahankan minimal 1 jika tidak ada jenis manual
+        return prev.filter(k => k !== kode);
+      } else {
+        return [...prev, kode];
+      }
+    });
+  };
+
+  // Switch jenjang & sinkronkan tingkat kelas
+  const handleJenjangChange = (j: "SDLB" | "SMPLB" | "SMALB") => {
+    setJenjang(j);
+    setTingkat(JENJANG_MAP[j].defaultTingkat);
+  };
+
+  // Helper format nama kelas reguler
+  const getPreviewReguler = () => {
+    const selectedObjs = KEKHUSUSAN_LIST.filter(k => selectedKekhususan.includes(k.kode));
+    const parts: string[] = [];
+
+    // Jika ada kekhususan terpilih
+    if (selectedObjs.length > 0) {
+      const regularCodes = selectedObjs.filter(k => k.kode !== "Ganda").map(k => k.kode);
+      if (regularCodes.length > 0) {
+        parts.push(regularCodes.join(", "));
+      }
+      if (selectedKekhususan.includes("Ganda")) {
+        const gandaLabel = detailGanda.trim() ? `Ganda: ${detailGanda.trim()}` : "Ganda";
+        parts.push(gandaLabel);
+      }
+    }
+
+    // Jika ada jenis manual kustom
+    if (useCustomJenis && customJenisInput.trim()) {
+      parts.push(customJenisInput.trim());
+    }
+
+    const labelBagian = parts.length > 0 ? parts.join(" · ") : "Umum";
+    const paralel = rombelParalel.trim() ? ` ${rombelParalel.trim()}` : "";
+    return `Kelas ${tingkat}${paralel} (${labelBagian}) - ${jenjang}`;
+  };
+
+  // Helper format nama kelas vokasional
+  const getPreviewVokasi = () => {
+    const vObj = VOKASIONAL_LIST.find(v => v.id === vokasiItem || v.ringkas === vokasiItem) || VOKASIONAL_LIST[1];
+    return `${vObj.nama} - ${vokasiJenjang}`;
+  };
+
+  // Handler tambah kelas reguler
+  const addReguler = () => {
+    const selectedObjs = KEKHUSUSAN_LIST.filter(k => selectedKekhususan.includes(k.kode));
+    const abkItems: string[] = [];
+
+    selectedObjs.forEach(k => {
+      if (k.kode === "Ganda") {
+        abkItems.push(detailGanda.trim() ? `Disabilitas Ganda (${detailGanda.trim()})` : "Disabilitas Ganda");
+      } else {
+        abkItems.push(k.abk);
+      }
+    });
+
+    if (useCustomJenis && customJenisInput.trim()) {
+      abkItems.push(customJenisInput.trim());
+    }
+
+    const finalAbk = abkItems.join(" · ") || "Kebutuhan Khusus";
+    const namaKelas = getPreviewReguler();
+    setKelasAbkMap(prev => ({ ...prev, [namaKelas]: finalAbk }));
+    setRombelParalel("");
+  };
+
+  // Handler tambah kelas vokasional
+  const addVokasi = () => {
+    const vObj = VOKASIONAL_LIST.find(v => v.id === vokasiItem || v.ringkas === vokasiItem) || VOKASIONAL_LIST[1];
+    const namaKelas = getPreviewVokasi();
+    setKelasAbkMap(prev => ({ ...prev, [namaKelas]: vObj.abk }));
+  };
+
+  // Handler tambah kelas mandiri
+  const addMandiri = () => {
+    const nama = mandiriNama.trim();
+    if (!nama) return;
+    const finalAbk = mandiriAbk === "Lainnya" ? (mandiriLainnya.trim() || "Kebutuhan Khusus") : mandiriAbk;
+    setKelasAbkMap(prev => ({ ...prev, [nama]: finalAbk }));
+    setMandiriNama("");
+    setMandiriLainnya("");
+  };
+
+  const removeClass = (k: string) =>
+    setKelasAbkMap(m => {
+      const n = { ...m };
+      delete n[k];
+      return n;
+    });
+
+  const entries = Object.entries(kelasAbkMap);
+  const valid = sekolah.trim() !== "" && entries.length > 0;
+
+  return (
+    <ModalShell
+      step={2}
+      total={3}
+      title="Profil Sekolah & Kelas"
+      desc="Pilih sekolah dan buat kelompok kelas SLB sesuai jenjang & layanan.">
+      <div className="space-y-4">
+        {/* Input Sekolah dengan Database Nasional */}
+        <SLBSearchInput value={sekolah} onChange={setSekolah} required />
+
+        {/* ─── PENGATUR KELAS SLB ─── */}
+        <div style={{ background: BG, border: `1.5px solid ${BDR}`, borderRadius: 20, padding: 14 }}>
+          <div className="flex items-center justify-between mb-2.5">
+            <p style={{ fontSize: 13, fontWeight: 700, color: TEXT, fontFamily: PJS }}>
+              Kelompok Kelas / Rombel <span style={{ color: A }}>*</span>
+            </p>
+            {entries.length > 0 && (
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: "#166534",
+                  background: "#DCFCE7",
+                  padding: "2px 8px",
+                  borderRadius: 12,
+                  fontFamily: IPS,
+                }}>
+                ✓ {entries.length} Kelas Siap
+              </span>
+            )}
+          </div>
+
+          {/* 3 Tab Mode Pilihan */}
+          <div className="grid grid-cols-3 gap-1 p-1 rounded-xl mb-3" style={{ background: CARD, border: `1px solid ${BDR}` }}>
+            {[
+              { id: "reguler", label: "🏫 Reguler SLB" },
+              { id: "vokasional", label: "✂️ Vokasional" },
+              { id: "mandiri", label: "✍️ Mandiri" },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id as any)}
+                style={{
+                  padding: "7px 4px",
+                  borderRadius: 9,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  fontFamily: IPS,
+                  border: "none",
+                  cursor: "pointer",
+                  background: activeTab === tab.id ? T : "transparent",
+                  color: activeTab === tab.id ? "#fff" : MUTED,
+                  transition: "all 0.15s",
+                }}>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* TAB 1: REGULER SLB (SDLB, SMPLB, SMALB + KEKHUSUSAN A-D, AUTIS, GANDA & KUSTOM) */}
+          {activeTab === "reguler" && (
+            <div className="space-y-3">
+              {/* Pilihan Jenjang */}
+              <div>
+                <label className="text-[11px] font-bold block mb-1" style={{ color: MUTED, fontFamily: IPS }}>
+                  1. PILIH JENJANG SEKOLAH:
+                </label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {(["SDLB", "SMPLB", "SMALB"] as const).map(j => (
+                    <button
+                      key={j}
+                      type="button"
+                      onClick={() => handleJenjangChange(j)}
+                      style={{
+                        padding: "8px 6px",
+                        borderRadius: 12,
+                        textAlign: "center",
+                        cursor: "pointer",
+                        background: jenjang === j ? SEC : CARD,
+                        border: `1.5px solid ${jenjang === j ? T : BDR}`,
+                        color: jenjang === j ? DEEP : TEXT,
+                        transition: "all 0.15s",
+                      }}>
+                      <p className="text-xs font-bold leading-none" style={{ fontFamily: PJS }}>{JENJANG_MAP[j].label}</p>
+                      <p className="text-[10px] mt-1" style={{ color: MUTED, fontFamily: IPS }}>{JENJANG_MAP[j].sub}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pilihan Tingkat Kelas */}
+              <div>
+                <label className="text-[11px] font-bold block mb-1" style={{ color: MUTED, fontFamily: IPS }}>
+                  2. TINGKAT KELAS:
+                </label>
+                <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                  {JENJANG_MAP[jenjang].tingkats.map(t => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setTingkat(t)}
+                      style={{
+                        padding: "7px 14px",
+                        borderRadius: 12,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        fontFamily: IPS,
+                        cursor: "pointer",
+                        background: tingkat === t ? T : CARD,
+                        color: tingkat === t ? "#fff" : TEXT,
+                        border: `1px solid ${tingkat === t ? T : BDR}`,
+                        flexShrink: 0,
+                        transition: "all 0.15s",
+                      }}>
+                      Kelas {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pilihan Kekhususan / Layanan (BISA PILIH LEBIH DARI 1) */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-bold block" style={{ color: MUTED, fontFamily: IPS }}>
+                    3. JENIS KEKHUSUSAN / LAYANAN:
+                  </label>
+                  <span
+                    className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                    style={{ background: "#DCFCE7", color: "#166534", fontFamily: IPS }}>
+                    ✓ Bisa pilih lebih dari 1 (misal A, B, C)
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  {KEKHUSUSAN_LIST.map(k => {
+                    const isSelected = selectedKekhususan.includes(k.kode);
+                    return (
+                      <button
+                        key={k.kode}
+                        type="button"
+                        onClick={() => toggleKekhususan(k.kode)}
+                        className="w-full text-left p-2.5 rounded-xl flex items-center justify-between transition-all cursor-pointer"
+                        style={{
+                          background: isSelected ? SEC : CARD,
+                          border: `1.5px solid ${isSelected ? T : BDR}`,
+                        }}>
+                        <div className="min-w-0 flex-1 pr-2">
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              style={{
+                                width: 22,
+                                height: 22,
+                                borderRadius: 6,
+                                background: isSelected ? T : "#E2E8F0",
+                                color: isSelected ? "#fff" : "#475569",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: 10,
+                                fontWeight: 800,
+                              }}>
+                              {k.kode === "Autis" ? "★" : k.kode === "Ganda" ? "∞" : k.kode}
+                            </span>
+                            <p
+                              className="text-xs font-bold leading-tight"
+                              style={{ color: isSelected ? DEEP : TEXT, fontFamily: IPS }}>
+                              {k.nama}
+                            </p>
+                          </div>
+                          <p className="text-[10px] mt-0.5 ml-7" style={{ color: MUTED, fontFamily: IPS }}>
+                            {k.desc}
+                          </p>
+                        </div>
+                        {/* Checkbox Icon */}
+                        <div
+                          style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: 6,
+                            border: `2px solid ${isSelected ? T : "#CBD5E1"}`,
+                            background: isSelected ? T : "#fff",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                            color: "#fff",
+                            fontSize: 12,
+                            fontWeight: "bold",
+                            transition: "all 0.15s",
+                          }}>
+                          {isSelected && "✓"}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Sub-panel Disabilitas Ganda: Input Ragam Disabilitas Spesifik */}
+              {selectedKekhususan.includes("Ganda") && (
+                <div
+                  className="p-3 rounded-xl space-y-2 border"
+                  style={{ background: "#FAF5FF", borderColor: "#E9D5FF" }}>
+                  <div className="flex items-center gap-1.5">
+                    <span style={{ fontSize: 15 }}>🧩</span>
+                    <p className="text-xs font-bold" style={{ color: "#6B21A8", fontFamily: IPS }}>
+                      Ragam Disabilitas Ganda pada Kelas/Siswa:
+                    </p>
+                  </div>
+                  <p className="text-[10px]" style={{ color: "#7E22CE", fontFamily: IPS }}>
+                    Pilih kombinasi umum di bawah atau ketikkan sendiri ragam disabilitas yang dialami siswa:
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {PRESET_GANDA.map(preset => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setDetailGanda(preset)}
+                        className={`text-[10px] px-2 py-1 rounded-lg font-semibold cursor-pointer transition-all ${
+                          detailGanda === preset
+                            ? "bg-purple-700 text-white shadow-sm"
+                            : "bg-white text-purple-800 border border-purple-200 hover:bg-purple-100"
+                        }`}
+                        style={{ fontFamily: IPS }}>
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    value={detailGanda}
+                    onChange={e => setDetailGanda(e.target.value)}
+                    placeholder="Atau ketik kombinasi disabilitas (misal: Tunarungu + Tunadaksa)..."
+                    style={{
+                      width: "100%",
+                      border: "1.5px solid #D8B4FE",
+                      borderRadius: 10,
+                      padding: "7px 10px",
+                      fontSize: 11,
+                      color: TEXT,
+                      fontFamily: IPS,
+                      background: "#fff",
+                      outline: "none",
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* OPSI INPUT MANUAL JENIS KELAS PADA JENJANG TERSEBUT */}
+              <div
+                className="p-2.5 rounded-xl border transition-all"
+                style={{
+                  background: useCustomJenis ? "#FEF9C3" : CARD,
+                  borderColor: useCustomJenis ? "#FACC15" : BDR,
+                }}>
+                <button
+                  type="button"
+                  onClick={() => setUseCustomJenis(!useCustomJenis)}
+                  className="w-full flex items-center justify-between text-left cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <Plus size={14} style={{ color: useCustomJenis ? "#854D0E" : MUTED }} />
+                    <span
+                      className="text-xs font-bold"
+                      style={{ color: useCustomJenis ? "#854D0E" : TEXT, fontFamily: IPS }}>
+                      Input Manual Jenis Kelas Lainnya
+                    </span>
+                  </div>
+                  <span
+                    className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                    style={{
+                      background: useCustomJenis ? "#FDE047" : BG,
+                      color: useCustomJenis ? "#713F12" : MUTED,
+                    }}>
+                    {useCustomJenis ? "Aktif ✓" : "+ Tambah Manual"}
+                  </span>
+                </button>
+
+                {useCustomJenis && (
+                  <div className="mt-2 pt-2 border-t border-amber-200/70 space-y-1.5">
+                    <p className="text-[10px]" style={{ color: "#713F12", fontFamily: IPS }}>
+                      Ketik jenis kelas kustom untuk <strong>{jenjang} Kelas {tingkat}</strong> (contoh: Inklusi, Hambatan Wicara, Slow Learner, ADHD, dsb):
+                    </p>
+                    <input
+                      value={customJenisInput}
+                      onChange={e => setCustomJenisInput(e.target.value)}
+                      placeholder="Tulis jenis kelas manual..."
+                      style={{
+                        width: "100%",
+                        border: "1.5px solid #FCD34D",
+                        borderRadius: 10,
+                        padding: "7px 10px",
+                        fontSize: 12,
+                        color: TEXT,
+                        fontFamily: IPS,
+                        background: "#fff",
+                        outline: "none",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Rombel paralel opsional */}
+              <div className="flex items-center gap-2">
+                <input
+                  value={rombelParalel}
+                  onChange={e => setRombelParalel(e.target.value)}
+                  placeholder="Kode rombel paralel opsional (contoh: 1, 2, A, B)..."
+                  style={{
+                    flex: 1,
+                    border: `1.5px solid ${BDR}`,
+                    borderRadius: 10,
+                    padding: "8px 10px",
+                    fontSize: 12,
+                    color: TEXT,
+                    fontFamily: IPS,
+                    background: CARD,
+                    outline: "none",
+                  }}
+                />
+              </div>
+
+              {/* Preview & Tombol Tambah */}
+              <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 14, padding: "10px 12px" }}>
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#166534", fontFamily: IPS }}>
+                  Preview Rombel yang Dibuat:
+                </p>
+                <p className="text-sm font-extrabold mt-0.5" style={{ color: DEEP, fontFamily: PJS }}>
+                  {getPreviewReguler()}
+                </p>
+                <button
+                  type="button"
+                  onClick={addReguler}
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderRadius: 11,
+                    background: T,
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontFamily: IPS,
+                    fontSize: 13,
+                    marginTop: 8,
+                  }}>
+                  <Plus size={16} style={{ marginRight: 6 }} /> Tambahkan Kelas Ini
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: VOKASIONAL / KETERAMPILAN (SMPLB & SMALB) */}
+          {activeTab === "vokasional" && (
+            <div className="space-y-3">
+              <div className="p-2.5 rounded-xl flex items-start gap-2" style={{ background: "#FEF3C7", border: "1px solid #FCD34D" }}>
+                <span style={{ fontSize: 16 }}>✂️</span>
+                <p className="text-[11px] leading-relaxed" style={{ color: "#92400E", fontFamily: IPS }}>
+                  <strong>Kelas Keterampilan Vokasional:</strong> Khusus jenjang menengah (SMPLB & SMALB) untuk pembekalan kemandirian siswa.
+                </p>
+              </div>
+
+              {/* Pilih Jenjang Vokasional */}
+              <div>
+                <label className="text-[11px] font-bold block mb-1" style={{ color: MUTED, fontFamily: IPS }}>
+                  JENJANG VOKASIONAL:
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {(["SMPLB", "SMALB"] as const).map(vj => (
+                    <button
+                      key={vj}
+                      type="button"
+                      onClick={() => setVokasiJenjang(vj)}
+                      style={{
+                        padding: "8px",
+                        borderRadius: 12,
+                        cursor: "pointer",
+                        background: vokasiJenjang === vj ? SEC : CARD,
+                        border: `1.5px solid ${vokasiJenjang === vj ? T : BDR}`,
+                        color: vokasiJenjang === vj ? DEEP : TEXT,
+                        fontWeight: 700,
+                        fontSize: 12,
+                        fontFamily: IPS,
+                        transition: "all 0.15s",
+                      }}>
+                      {vj} ({vj === "SMPLB" ? "Tingkat SMP" : "Tingkat SMA"})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pilihan Bidang Vokasional */}
+              <div>
+                <label className="text-[11px] font-bold block mb-1" style={{ color: MUTED, fontFamily: IPS }}>
+                  BIDANG KETERAMPILAN / PELATIHAN:
+                </label>
+                <div className="space-y-1.5">
+                  {VOKASIONAL_LIST.map(v => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => setVokasiItem(v.id)}
+                      className="w-full text-left p-2.5 rounded-xl flex items-center justify-between transition-all"
+                      style={{
+                        background: vokasiItem === v.id ? SEC : CARD,
+                        border: `1.5px solid ${vokasiItem === v.id ? T : BDR}`,
+                        cursor: "pointer",
+                      }}>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span style={{ fontSize: 18 }}>{v.icon}</span>
+                        <div>
+                          <p className="text-xs font-bold leading-tight" style={{ color: vokasiItem === v.id ? DEEP : TEXT, fontFamily: IPS }}>
+                            {v.nama}
+                          </p>
+                          <p className="text-[10px]" style={{ color: MUTED, fontFamily: IPS }}>
+                            Kategori: Vokasional Mandiri
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          width: 16,
+                          height: 16,
+                          borderRadius: "50%",
+                          border: `2px solid ${vokasiItem === v.id ? T : BDR}`,
+                          background: vokasiItem === v.id ? T : "transparent",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}>
+                        {vokasiItem === v.id && <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff" }} />}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Preview & Tambah Vokasi */}
+              <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 14, padding: "10px 12px" }}>
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#166534", fontFamily: IPS }}>
+                  Preview Kelas Vokasional:
+                </p>
+                <p className="text-sm font-extrabold mt-0.5" style={{ color: DEEP, fontFamily: PJS }}>
+                  {getPreviewVokasi()}
+                </p>
+                <button
+                  type="button"
+                  onClick={addVokasi}
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderRadius: 11,
+                    background: T,
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontFamily: IPS,
+                    fontSize: 13,
+                    marginTop: 8,
+                  }}>
+                  <Plus size={16} style={{ marginRight: 6 }} /> Tambahkan Kelas Vokasional
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: INPUT MANDIRI / KUSTOM (Jika tidak ada di daftar) */}
+          {activeTab === "mandiri" && (
+            <div className="space-y-3">
+              <div className="p-2.5 rounded-xl flex items-start gap-2" style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
+                <span style={{ fontSize: 16 }}>✍️</span>
+                <p className="text-[11px] leading-relaxed" style={{ color: "#1E40AF", fontFamily: IPS }}>
+                  <strong>Input Mandiri:</strong> Gunakan opsi ini jika sekolah memiliki format nama kelas, ekskul, atau kelompok terapi khusus.
+                </p>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold block mb-1" style={{ color: TEXT, fontFamily: IPS }}>
+                  Nama Kelas Kustom <span style={{ color: A }}>*</span>
+                </label>
+                <input
+                  value={mandiriNama}
+                  onChange={e => setMandiriNama(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addMandiri(); } }}
+                  placeholder="Contoh: Kelas Transisi, Ekskul Musik, Inklusi 4B..."
+                  style={{
+                    width: "100%",
+                    border: `1.5px solid ${BDR}`,
+                    borderRadius: 12,
+                    padding: "9px 12px",
+                    fontSize: 13,
+                    color: TEXT,
+                    fontFamily: IPS,
+                    background: CARD,
+                    outline: "none",
+                    minHeight: 42,
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold block mb-1.5" style={{ color: TEXT, fontFamily: IPS }}>
+                  Jenis Kebutuhan Khusus / ABK:
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[...ABK_OPTIONS, "Vokasional", "Lainnya"].map(abk => (
+                    <button
+                      key={abk}
+                      type="button"
+                      onClick={() => setMandiriAbk(abk)}
+                      style={{
+                        background: mandiriAbk === abk ? SEC : CARD,
+                        border: `1.5px solid ${mandiriAbk === abk ? T : BDR}`,
+                        color: mandiriAbk === abk ? DEEP : MUTED,
+                        padding: "6px 10px",
+                        borderRadius: 14,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        fontFamily: IPS,
+                        cursor: "pointer",
+                        transition: "all 0.15s",
+                      }}>
+                      {abk}
+                    </button>
+                  ))}
+                </div>
+                {mandiriAbk === "Lainnya" && (
+                  <input
+                    autoFocus
+                    placeholder="Tulis jenis kebutuhan khusus spesifik..."
+                    value={mandiriLainnya}
+                    onChange={e => setMandiriLainnya(e.target.value)}
+                    style={{
+                      width: "100%",
+                      border: `1.5px solid ${BDR}`,
+                      borderRadius: 12,
+                      padding: "8px 12px",
+                      fontSize: 12,
+                      color: TEXT,
+                      fontFamily: IPS,
+                      background: CARD,
+                      outline: "none",
+                      marginTop: 8,
+                    }}
+                  />
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={addMandiri}
+                disabled={!mandiriNama.trim()}
+                style={{
+                  width: "100%",
+                  height: 40,
+                  borderRadius: 11,
+                  background: mandiriNama.trim() ? T : "#CBD5E1",
+                  border: "none",
+                  cursor: mandiriNama.trim() ? "pointer" : "default",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontFamily: IPS,
+                  fontSize: 13,
+                  marginTop: 6,
+                }}>
+                <Plus size={16} style={{ marginRight: 6 }} /> Tambahkan Kelas Mandiri
+              </button>
+            </div>
+          )}
+
+          {/* DAFTAR KELAS YANG SUDAH DITAMBAHKAN */}
+          <div className="mt-4 pt-3 border-t" style={{ borderColor: BDR }}>
+            <p className="text-xs font-bold mb-2 flex items-center justify-between" style={{ color: TEXT, fontFamily: PJS }}>
+              <span>Daftar Kelas di {sekolah || "Sekolah Anda"}</span>
+              <span className="text-[11px] font-normal" style={{ color: MUTED }}>
+                {entries.length} kelas aktif
+              </span>
+            </p>
+
+            {entries.length === 0 ? (
+              <div
+                className="p-3 text-center rounded-xl border border-dashed"
+                style={{ borderColor: BDR, background: CARD }}>
+                <p className="text-xs font-semibold" style={{ color: MUTED, fontFamily: IPS }}>
+                  Belum ada kelas yang ditambahkan.
+                </p>
+                <p className="text-[11px] mt-0.5" style={{ color: MUTED, fontFamily: IPS }}>
+                  Pilih tab di atas (Reguler, Vokasional, atau Mandiri) lalu tekan tombol <strong>Tambah</strong>.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-1.5 max-h-48 overflow-y-auto no-scrollbar pr-0.5">
+                {entries.map(([k, a]) => (
+                  <div
+                    key={k}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      background: CARD,
+                      border: `1px solid ${BDR}`,
+                      borderRadius: 14,
+                      padding: "8px 12px",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                    }}>
+                    <div
+                      style={{
+                        width: 30,
+                        height: 30,
+                        background: SEC,
+                        color: DEEP,
+                        borderRadius: 9,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}>
+                      <School size={15} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold leading-tight truncate" style={{ color: TEXT, fontFamily: IPS }}>
+                        {k}
+                      </p>
+                      <p className="text-[10px] truncate mt-0.5" style={{ color: MUTED, fontFamily: IPS }}>
+                        Kekhususan: <span style={{ color: DEEP, fontWeight: 600 }}>{a}</span>
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeClass(k)}
+                      title="Hapus kelas"
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        padding: 2,
+                      }}>
+                      <XCircle size={16} style={{ color: "#EF4444" }} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="flex gap-2 mt-5">
-        <button onClick={onBack} style={{flex:1,border:`1.5px solid ${T}`,color:T,fontFamily:IPS,minHeight:50,background:CARD}} className="rounded-2xl text-sm font-semibold">
-          Kembali
+      {/* Footer Navigasi */}
+      <div className="flex gap-3 mt-5">
+        <button
+          type="button"
+          onClick={onBack}
+          style={{
+            flex: 1,
+            border: `2px solid ${DEEP}`,
+            color: DEEP,
+            fontFamily: PJS,
+            fontWeight: 700,
+            fontSize: 14,
+            minHeight: 52,
+            background: CARD,
+            borderRadius: 16,
+          }}
+          className="active:scale-[0.98] transition-all cursor-pointer">
+          ← Kembali
         </button>
         <button
-          onClick={()=>{ if(!valid) return; const kelas=Object.keys(kelasAbkMap); const abk=[...new Set(Object.values(kelasAbkMap))]; onNext({sekolah:sekolah.trim(),kelas,abk,kelasAbkMap}); }}
+          type="button"
+          onClick={() => {
+            if (!valid) return;
+            const kelas = Object.keys(kelasAbkMap);
+            const abk = [...new Set(Object.values(kelasAbkMap))];
+            onNext({ sekolah: sekolah.trim(), kelas, abk, kelasAbkMap });
+          }}
           disabled={!valid}
-          style={{flex:2,background:valid?A:"#D1D5DB",color:"#fff",fontFamily:IPS,minHeight:50}} className="rounded-2xl text-sm font-bold">
-          Lanjut →
+          style={{
+            flex: 2,
+            background: valid ? A : "#D1D5DB",
+            color: "#fff",
+            fontFamily: PJS,
+            fontWeight: 700,
+            fontSize: 15,
+            minHeight: 52,
+            borderRadius: 16,
+            border: "none",
+            boxShadow: valid ? "0 6px 20px rgba(210,125,107,0.42)" : "none",
+          }}
+          className="active:scale-[0.98] transition-all cursor-pointer">
+          Lanjut ke Tambah Siswa →
         </button>
       </div>
     </ModalShell>
@@ -957,44 +2087,80 @@ export function TambahSiswaPromptModal({
       <div className="flex flex-col gap-3 mb-4">
         {/* Opsi 1: Pilih dari Database Sekolah (SRS-F-003 jalur 1) */}
         <button onClick={()=>setMode("db-sekolah")}
-          style={{width:"100%",background:CARD,border:`2px solid ${T}`,borderRadius:18,padding:"14px 16px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:12}}
-          className="active:scale-[0.98] transition-transform">
-          <div style={{width:44,height:44,borderRadius:14,background:SEC,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-            <Database size={20} style={{color:DEEP}}/>
+          style={{
+            width:"100%",
+            background:CARD,
+            border:`2px solid ${DEEP}`,
+            borderRadius:18,
+            padding:"15px 18px",
+            cursor:"pointer",
+            textAlign:"left",
+            display:"flex",
+            alignItems:"center",
+            gap:14,
+            boxShadow:"0 4px 14px rgba(91,122,104,0.14)"
+          }}
+          className="active:scale-[0.98] transition-all">
+          <div style={{width:46,height:46,borderRadius:14,background:SEC,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <Database size={22} style={{color:DEEP}}/>
           </div>
           <div style={{flex:1,minWidth:0}}>
             <p style={{fontFamily:PJS,fontWeight:700,fontSize:14,color:TEXT,marginBottom:2}}>Pilih dari Database Sekolah</p>
             <p style={{fontSize:12,color:MUTED,lineHeight:1.4}}>Import kelas & siswa yang sudah ada di sistem</p>
           </div>
-          <ChevronRight size={16} style={{color:MUTED,flexShrink:0}}/>
+          <ChevronRight size={18} style={{color:DEEP,flexShrink:0}}/>
         </button>
 
         {/* Opsi 2: Upload CSV/Excel (SRS-F-003 jalur 2) */}
         <button onClick={()=>setMode("upload")}
-          style={{width:"100%",background:CARD,border:`1.5px solid ${BDR}`,borderRadius:18,padding:"14px 16px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:12}}
-          className="active:scale-[0.98] transition-transform">
-          <div style={{width:44,height:44,borderRadius:14,background:"#EDE6F5",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-            <Upload size={20} style={{color:"#7C3AED"}}/>
+          style={{
+            width:"100%",
+            background:CARD,
+            border:`2px solid ${T}`,
+            borderRadius:18,
+            padding:"15px 18px",
+            cursor:"pointer",
+            textAlign:"left",
+            display:"flex",
+            alignItems:"center",
+            gap:14,
+            boxShadow:"0 4px 14px rgba(139,176,152,0.14)"
+          }}
+          className="active:scale-[0.98] transition-all">
+          <div style={{width:46,height:46,borderRadius:14,background:"#E8F2EC",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <Upload size={22} style={{color:DEEP}}/>
           </div>
           <div style={{flex:1,minWidth:0}}>
             <p style={{fontFamily:PJS,fontWeight:700,fontSize:14,color:TEXT,marginBottom:2}}>Upload Daftar Siswa</p>
             <p style={{fontSize:12,color:MUTED,lineHeight:1.4}}>CSV atau Excel · kolom: Nama, Jenis Hambatan, TTL</p>
           </div>
-          <ChevronRight size={16} style={{color:MUTED,flexShrink:0}}/>
+          <ChevronRight size={18} style={{color:T,flexShrink:0}}/>
         </button>
 
-        {/* Opsi 3: Manual */}
+        {/* Opsi 3: Manual (Solid Terracotta Primary) */}
         <button onClick={onOpenForm}
-          style={{width:"100%",background:A,borderRadius:18,padding:"14px 16px",cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:12,border:"none"}}
-          className="active:scale-[0.98] transition-transform">
-          <div style={{width:44,height:44,borderRadius:14,background:"rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-            <UserPlus size={20} style={{color:"#fff"}}/>
+          style={{
+            width:"100%",
+            background:A,
+            borderRadius:18,
+            padding:"15px 18px",
+            cursor:"pointer",
+            textAlign:"left",
+            display:"flex",
+            alignItems:"center",
+            gap:14,
+            border:"none",
+            boxShadow:"0 8px 24px rgba(210,125,107,0.42)"
+          }}
+          className="active:scale-[0.98] transition-all">
+          <div style={{width:46,height:46,borderRadius:14,background:"rgba(255,255,255,0.22)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <UserPlus size={22} style={{color:"#fff"}}/>
           </div>
           <div style={{flex:1,minWidth:0}}>
-            <p style={{fontFamily:PJS,fontWeight:700,fontSize:14,color:"#fff",marginBottom:2}}>Tambah Siswa (Manual)</p>
-            <p style={{fontSize:12,color:"rgba(255,255,255,0.8)",lineHeight:1.4}}>Isi form satu per satu</p>
+            <p style={{fontFamily:PJS,fontWeight:800,fontSize:15,color:"#fff",marginBottom:2}}>Tambah Siswa (Manual)</p>
+            <p style={{fontSize:12,color:"rgba(255,255,255,0.85)",lineHeight:1.4}}>Isi form satu per satu</p>
           </div>
-          <ChevronRight size={16} style={{color:"rgba(255,255,255,0.7)",flexShrink:0}}/>
+          <ChevronRight size={18} style={{color:"#fff",flexShrink:0}}/>
         </button>
       </div>
 
