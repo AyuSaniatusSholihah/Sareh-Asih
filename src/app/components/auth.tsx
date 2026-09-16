@@ -10,6 +10,8 @@ import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Line
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import heroImage from "@/imports/image-23.png";
 import heroStep1 from "@/imports/hero-step1.png";
+import guruIcon from "@/imports/guru-icon.png";
+import ortuIcon from "@/imports/ortu-icon.png";
 
 // ─── Google mark ──────────────────────────────────────────────────────
 function GoogleMark({size=18}:{size?:number}) {
@@ -541,7 +543,7 @@ export function RoleSelectScreen({onPick,onBack}:{onPick:(r:Role)=>void;onBack:(
   const ROLES = [
     {
       r: "guru" as Role,
-      emoji: "👩‍🏫",
+      icon: guruIcon,
       title: "Guru Pendamping",
       tagline: "Kelola siswa & pantau perkembangan ABK",
       accent: T,
@@ -550,7 +552,7 @@ export function RoleSelectScreen({onPick,onBack}:{onPick:(r:Role)=>void;onBack:(
     },
     {
       r: "ortu" as Role,
-      emoji: "👨‍👩‍👧",
+      icon: ortuIcon,
       title: "Orang Tua",
       tagline: "Ikuti perkembangan & terima laporan anak",
       accent: A,
@@ -584,8 +586,8 @@ export function RoleSelectScreen({onPick,onBack}:{onPick:(r:Role)=>void;onBack:(
             }}
             className="transition-all active:scale-[0.98]">
             <div style={{background:x.accent, padding:"18px 20px", display:"flex", alignItems:"center", gap:14}}>
-              <div style={{fontSize:38, width:54, height:54, background:"rgba(255,255,255,0.22)", borderRadius:14, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0}}>
-                {x.emoji}
+              <div style={{width:54, height:54, background:"rgba(255,255,255,0.22)", borderRadius:14, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0}}>
+                <img src={x.icon} alt={x.title} className="w-9 h-9 object-contain" />
               </div>
               <div className="flex-1">
                 <div style={{fontFamily:PJS, fontWeight:800, fontSize:18, color:"#fff"}}>{x.title}</div>
@@ -628,8 +630,8 @@ export function GoogleLoginScreen({role,onBack,onSuccess}:{role:Role;onBack:()=>
 
       <div className="px-5 pt-4 pb-8 flex flex-col items-center text-center">
         {/* Avatar */}
-        <div style={{width:76,height:76,background:SEC,borderRadius:26,fontSize:36}} className="flex items-center justify-center mb-4">
-          {isGuru?"👩‍🏫":"👨‍👩‍👧"}
+        <div style={{width:76,height:76,background:SEC,borderRadius:26}} className="flex items-center justify-center mb-4">
+          <img src={isGuru ? guruIcon : ortuIcon} alt={isGuru ? "Guru" : "Orang Tua"} className="w-12 h-12 object-contain" />
         </div>
 
         {/* Badge peran */}

@@ -28,6 +28,8 @@ import {
   AkunGuruModal, ProfilSekolahModal, TambahSiswaPromptModal, type GuruProfile,
 } from "./components/auth";
 import { AddStudentSheet } from "./components/add-student";
+import guruIcon from "@/imports/guru-icon.png";
+import ortuIcon from "@/imports/ortu-icon.png";
 import { ObservationScreen } from "./components/observation";
 import { VoiceTextarea } from "./components/voice-input";
 import { KodeAksesCard, KodeAksesScreen, ExportPanel, StudentPicker } from "./components/kode-manager";
@@ -1982,8 +1984,9 @@ export default function App() {
         {!!role && (
           <div className="flex items-center gap-1 p-1 rounded-2xl" style={{background:"rgba(255,255,255,0.85)",border:`1px solid rgba(91,122,104,0.12)`}}>
             {(["guru","ortu"] as Role[]).map(r=>(
-              <button key={r} onClick={()=>demoSwitch(r)} style={{background:role===r?T:"transparent",color:role===r?"#fff":MUTED,fontFamily:IPS,minHeight:38}} className="px-4 rounded-xl text-xs font-bold transition-all">
-                {r==="guru"?"👩‍🏫 Guru":"👨‍👩‍👧 Orang Tua"}
+              <button key={r} onClick={()=>demoSwitch(r)} style={{background:role===r?T:"transparent",color:role===r?"#fff":MUTED,fontFamily:IPS,minHeight:38}} className="px-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                <img src={r==="guru"?guruIcon:ortuIcon} alt="" className="w-4 h-4 object-contain flex-shrink-0" />
+                {r==="guru"?"Guru":"Orang Tua"}
               </button>
             ))}
             <button onClick={logout} style={{minWidth:36,minHeight:38,color:MUTED}} className="flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors" title="Keluar">
