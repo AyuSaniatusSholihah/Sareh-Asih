@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  ChevronRight, Info, Key, XCircle, CheckCircle, ArrowLeft,
-  Hash, ShieldCheck, Users, Sparkles, UserPlus, School, Plus, Upload,
-  FileText, Building2, Phone, Briefcase, AlertCircle, Eye, Trash2, Database,
-} from "lucide-react";
+import {   ChevronRight, Info, Key, XCircle, CheckCircle, ArrowLeft, Hash, ShieldCheck, Users, Sparkles, UserPlus, School, Plus, Upload, FileText, Building2, Phone, Briefcase, AlertCircle, Eye, Trash2, Database, Download, Trophy, Target, TrendingUp, Calendar, Video, Clock, Map, Star, User, PlayCircle, Award, Target as TargetIcon, MoveRight, CheckSquare } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM,
   Field,
 } from "./ui-kit";
 import { ABK_OPTIONS, type Role } from "./data";
 import { motion, AnimatePresence } from "motion/react";
+import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import heroImage from "@/imports/image-23.png";
+import heroStep1 from "@/imports/hero-step1.png";
+import guruIcon from "@/imports/guru-icon.png";
+import ortuIcon from "@/imports/ortu-icon.png";
 
 // ─── Google mark ──────────────────────────────────────────────────────
 function GoogleMark({size=18}:{size?:number}) {
@@ -145,6 +145,7 @@ const SplashLogo = () => (
   </svg>
 );
 
+
 export function LandingScreen({onNext}:{onNext:()=>void}) {
   const [step, setStep] = useState(0);
 
@@ -152,7 +153,7 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
     if (step === 0) {
       const timer = setTimeout(() => {
         setStep(1);
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [step]);
@@ -164,39 +165,8 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
 
   const skip = () => onNext();
 
-  const ONBOARDING_DATA = [
-    { }, // 0: Splash
-    {
-      img: heroImage,
-      title: "sareh asih",
-      desc: "Temani setiap potensi, tumbuhkan prestasi. ♡"
-    },
-    {
-      emoji: "🌱",
-      title: "Kenali Potensi",
-      desc: "Bantu guru mengenali karakter, kekuatan, minat, serta kebutuhan belajar setiap anak melalui pengamatan AI adaptif."
-    },
-    {
-      emoji: "🪴",
-      title: "Arahkan Pembelajaran",
-      desc: "Hasil pengamatan diolah menjadi peta potensi yang memudahkan penentuan strategi pembelajaran personal."
-    },
-    {
-      emoji: "📄",
-      title: "Pantau Perkembangan",
-      desc: "Catat dan bagikan perkembangan belajar, perilaku, komunikasi, dan capaian anak secara berkelanjutan."
-    },
-    {
-      emoji: "🤝",
-      title: "Selalu Terhubung",
-      desc: "Guru dan orang tua saling terhubung lebih dekat untuk mendampingi anak mencapai potensi terbaiknya."
-    }
-  ];
-
-  const current = ONBOARDING_DATA[step];
-
   return (
-    <div className="flex-1 flex flex-col overflow-hidden relative" style={{fontFamily:IPS, backgroundColor: step === 0 ? "#FAF8F5" : "#FAF8F5"}}>
+    <div className="flex-1 flex flex-col overflow-hidden relative" style={{fontFamily:IPS, backgroundColor: step === 0 ? "#E8F0E9" : "#F1F5F2"}}>
       <AnimatePresence mode="wait">
         {step === 0 ? (
           <motion.div
@@ -205,25 +175,47 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
             transition={{ duration: 0.6 }}
-            className="absolute inset-0 flex flex-col items-center z-50"
-            style={{ backgroundColor: "#E8F0E9", paddingTop: "38%" }}
+            className="absolute inset-0 flex flex-col items-center justify-center z-50"
+            style={{ backgroundColor: "#E8F0E9" }}
           >
-            {/* Logo + teks */}
+            {/* Dekorasi Kiri Atas */}
+            <div style={{ position:"absolute", top: 0, left: 0 }}>
+              <svg width="120" height="150" viewBox="0 0 120 150" fill="none">
+                <path d="M-20 40 Q40 0 80 60 Q120 120 0 150" fill="#D4E8DA" opacity="0.6"/>
+                <path d="M-30 60 Q30 20 60 80 Q90 140 -20 160" fill="#E8637A" opacity="0.1"/>
+                <circle cx="20" cy="90" r="15" fill="#D27D6B" opacity="0.8"/>
+                <path d="M0 20 Q40 50 20 100" fill="#8BB098" opacity="0.9"/>
+              </svg>
+            </div>
+            
+            {/* Logo Tengah */}
             <motion.div
               animate={{ scale: [1, 1.05, 1], rotate: [0, 2, -2, 0] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-              className="mb-4"
+              className="mb-6 flex flex-col items-center mt-[-40px]"
             >
               <SplashLogo />
             </motion.div>
-            <h1 style={{fontFamily:PJS, fontSize:36, fontWeight:800, letterSpacing:"-0.5px", color:TEXT, lineHeight: 1}}>
-              sareh <span style={{color:"#72967F"}}>asih</span>
+            <h1 style={{fontFamily:PJS, fontSize:36, fontWeight:800, letterSpacing:"-0.5px", color:TEXT, lineHeight: 1.2, textAlign: "center"}}>
+              Sareh <span style={{color:"#72967F"}}>Asih</span>
             </h1>
+            <p style={{fontFamily:IPS, fontSize:13, color:MUTED, textAlign:"center", maxWidth: "260px", marginTop: "16px", lineHeight: 1.5}}>
+              Jembatan digital guru SLB dan orang tua dalam mengenali & mengembangkan potensi anak berkebutuhan khusus.
+            </p>
 
+            {/* Spinner */}
+            <div style={{marginTop: "40px"}}>
+               <motion.div 
+                 animate={{ rotate: 360 }} 
+                 transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                 style={{ width: 28, height: 28, border: "3px solid #8BB098", borderTopColor: "transparent", borderRadius: "50%" }}
+               />
+            </div>
 
-            {/* Elemen 1 – Tanaman dekoratif pojok kiri bawah */}
-            <div style={{ position:"absolute", bottom: 60, left: -22, pointerEvents:"none", zIndex: 2 }}>
-              <svg width="137" height="273" viewBox="0 0 137 273" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Dekorasi Daun Bawah */}
+            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, width: "100%", pointerEvents: "none", zIndex: 1 }}>
+              <svg width="100%" height="auto" viewBox="0 0 393 346" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", width: "100%" }}>
+                <path d="M133.5 206.5C70.3652 249.905 -43.3735 223.731 -9.30923 287.784C-8.40301 289.488 -7.8811 291.493 -7.98623 293.42L-11.4248 356.456C-11.7372 362.184 -7.17647 367.001 -1.43958 367.001H384C389.523 367.001 394 362.559 394 357.036V190.255C394 186.247 390.796 182.922 386.787 182.922C385.725 182.922 384.683 182.708 383.712 182.277C353.987 169.111 248.097 143.053 133.5 206.5Z" fill="#D27D6B" fillOpacity="0.5"/>
                 <path d="M32.1326 208.758C31.9646 213.168 27.1053 224.237 9.14134 233.75C8.53025 234.074 7.93348 234.459 7.39999 234.899C-12.3609 251.194 -18.0102 265.436 -18.3526 270.575" stroke="#E7BDA8" strokeWidth="3" strokeLinecap="round"/>
                 <path d="M42.8568 170.439C38.1932 179.2 33.5223 198.392 31.7651 209.394C37.1872 209.179 49.2985 208.46 54.3675 207.301C60.7038 205.851 80.9932 198.131 87.4123 192.56C93.8313 186.988 96.9086 184.745 111.275 157.864C113.024 152.95 115.184 132.35 110.962 125.109C110.252 124.245 103.082 122.5 78.4177 133.067C51.4035 149.506 46.7671 163.094 42.8568 170.439Z" fill="#E7BDA8" stroke="#E6BEA8"/>
                 <path d="M69.7906 85.8494C64.4235 87.9581 54.8506 94.7207 49.7253 98.9533C51.9475 100.953 57.0081 105.312 59.4721 106.753C62.5521 108.555 73.6547 112.949 78.4283 112.942C83.2019 112.936 85.3178 113.124 101.808 106.675C104.477 105.157 113.628 96.7954 114.883 91.9317C114.951 91.2717 112.83 87.7221 98.8568 82.9079C81.5919 79.8071 74.2907 84.0812 69.7906 85.8494Z" fill="#B7C2B2" stroke="#B7C2B2"/>
@@ -234,14 +226,69 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
                 <path d="M16.7042 140.746C13.1361 145.276 8.28704 155.947 5.99976 162.188C8.92748 162.792 15.4966 164 18.3511 164C21.9192 164 33.7216 162.188 37.8387 159.772C41.9558 157.356 43.8772 156.45 54.8561 142.558C56.3932 139.901 60.0711 128.063 58.6987 123.231C58.4243 122.627 54.8012 120.634 40.309 123.533C23.8406 129.573 19.6961 136.948 16.7042 140.746Z" fill="#E7BDA8" stroke="#E6BEA8"/>
               </svg>
             </div>
-
-            {/* Elemen 2 – Gelombang coral di bawah */}
-            <div style={{ position:"absolute", bottom: 0, left: 0, right: 0, pointerEvents:"none", zIndex: 1 }}>
-              <svg width="100%" viewBox="0 0 393 181" preserveAspectRatio="xMidYMax meet" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M133.5 40.8454C70.3652 84.2505 -43.3735 58.0765 -9.30923 122.129C-8.40301 123.833 -7.8811 125.839 -7.98623 127.766L-11.4248 190.801C-11.7372 196.53 -7.17647 201.346 -1.43958 201.346H384C389.523 201.346 394 196.905 394 191.382V24.6007C394 20.5922 390.796 17.2675 386.787 17.2675C385.725 17.2675 384.683 17.0532 383.712 16.6228C353.987 3.45608 248.097 -22.6012 133.5 40.8454Z" fill="#D27D6B" fillOpacity="0.5"/>
-              </svg>
-            </div>
           </motion.div>
+        ) : step === 1 ? (
+          <motion.div
+            key="hero"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0"
+            style={{ overflow:"hidden" }}
+          >
+            {/* Background Image - Full Screen */}
+            <img
+              src={heroStep1}
+              alt="Guru dan anak belajar bersama"
+              style={{
+                position:"absolute", inset:0, width:"100%", height:"100%",
+                objectFit:"cover", objectPosition:"center top", zIndex:0
+              }}
+            />
+
+            {/* Gradient Overlay - hijau gelap di bawah, transparan di atas */}
+            <div style={{
+              position:"absolute", inset:0, zIndex:1,
+              background: "linear-gradient(to top, #D4E8DA 0%, rgba(46,85,55,0.3) 50%, rgba(35,64,41,0.2) 75%, rgba(23,43,28,0.15) 87.5%, rgba(0,0,0,0.1) 100%)"
+            }}/>
+
+            {/* Konten Teks - di bagian bawah */}
+            <div style={{
+              position:"absolute", bottom:120, left:28, right:28, zIndex:2
+            }}>
+              <p style={{
+                fontFamily: PJS, fontSize:20, fontWeight:600,
+                color:"#2E3E35", lineHeight:1.5,
+                textAlign:"left",
+                textShadow:"0 1px 2px rgba(255,255,255,0.3)"
+              }}>
+                Bersama teknologi yang inklusif, kita kurangi kesenjangan dan wujudkan pendidikan berkualitas untuk setiap anak.
+              </p>
+            </div>
+
+            {/* Tombol Mulai - floating di bawah */}
+            <div style={{
+              position:"absolute", bottom:24, left:28, right:28, zIndex:3,
+              display:"flex", justifyContent:"center"
+            }}>
+              <button
+                onClick={goNext}
+                className="active:scale-95 transition-transform"
+                style={{
+                  width:"100%", maxWidth:342, background:"#FFFFFF", color:"#2E5537",
+                  fontFamily:PJS, fontWeight:700, fontSize:16,
+                  border:"none", borderRadius:20, padding:"16px 24px",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  gap:10, cursor:"pointer",
+                  boxShadow:"0 10px 25px rgba(0,0,0,0.2)"
+                }}
+              >
+                <span>Mulai</span>
+                <MoveRight size={18} strokeWidth={2.5}/>
+              </button>
+            </div>
+</motion.div>
         ) : (
           <motion.div
             key={`step-${step}`}
@@ -249,101 +296,241 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 flex flex-col"
-            style={{ backgroundColor: "#FAF8F5" }}
+            className="absolute inset-0 flex flex-col bg-[#F1F5F2]"
           >
-            {step === 1 ? (
-              /* ── Hero fullscreen (step 1) ─────────────────────── */
-              <div style={{ position:"relative", width:"100%", height:"100%", display:"flex", flexDirection:"column", justifyContent:"flex-end" }}>
-                {/* Background image – Unsplash */}
-                <img
-                  src="https://images.unsplash.com/photo-1484820540004-14229fe36ca4?w=800&q=80"
-                  alt="Ibu dan anak belajar bersama"
-                  style={{
-                    position:"absolute", inset:0, width:"100%", height:"100%",
-                    objectFit:"cover", objectPosition:"top center", zIndex:1
-                  }}
-                />
-                {/* Gradient overlay – bawah putih */}
-                <div style={{
-                  position:"absolute", inset:0,
-                  background:"linear-gradient(to top, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 28%, rgba(255,255,255,0) 55%)",
-                  zIndex:2
-                }}/>
-
-                {/* Content bawah */}
-                <div style={{ position:"relative", zIndex:3, padding:"0 24px 40px", display:"flex", flexDirection:"column", alignItems:"center" }}>
-                  <p style={{
-                    fontFamily:PJS, fontSize:24, fontWeight:800,
-                    color:TEXT, lineHeight:1.35, marginBottom:24,
-                    textAlign:"center",
-                  }}>
-                    Temani setiap potensi,<br/>tumbuhkan prestasi. ♡
-                  </p>
-                  <button
-                    onClick={goNext}
-                    className="active:scale-95 transition-transform"
-                    style={{
-                      width:"100%", background:A, color:"#fff",
-                      fontFamily:PJS, fontWeight:700, fontSize:16,
-                      border:"none", borderRadius:16, padding:"16px 24px",
-                      display:"flex", alignItems:"center", justifyContent:"center",
-                      gap:8, cursor:"pointer",
-                      boxShadow:"0 4px 16px rgba(210,125,107,0.35)"
-                    }}
-                  >
-                    <span>Mulai</span>
-                    <ChevronRight size={18} strokeWidth={2.5}/>
-                  </button>
-                </div>
+            {/* HEADER */}
+            <div className="flex justify-between items-center px-6 pt-12 pb-4 z-10">
+              <div style={{ width: 50 }} />
+              <div style={{background:"#D27D6B", color:"#FFF", borderRadius:20, padding:"4px 14px", fontSize:12, fontWeight:700, fontFamily:PJS}}>
+                {step > 1 ? `0${step-1} / 04` : ""}
               </div>
-            ) : (
-              /* ── Onboarding steps 2–5 ─────────────────────────── */
-              <>
+              <button onClick={skip} className="active:opacity-75 transition-opacity" style={{fontSize:14, fontWeight:600, color:"#6B8070", fontFamily:IPS, border:"none", background:"transparent", cursor:"pointer"}}>
+                Lewati
+              </button>
+            </div>
 
-                {/* Content */}
-                <div className="flex-1 flex flex-col items-center justify-center px-8 text-center pb-12">
-                  <div className="w-36 h-36 mb-10 rounded-full flex items-center justify-center text-6xl shadow-sm" style={{backgroundColor: "#E8F0E9", border: "4px solid #fff"}}>
-                    {current.emoji}
-                  </div>
-                  <h2 style={{fontFamily:PJS, fontSize:28, fontWeight:800, color:TEXT, marginBottom:14}}>
-                    {current.title}
+            <div className="flex-1 overflow-y-auto px-6 pb-24 z-10 no-scrollbar">
+              {step === 2 && (
+                <>
+                  <h2 style={{fontFamily:PJS, fontSize:28, fontWeight:800, color:"#2E3E35", marginBottom:12, lineHeight:1.2}}>
+                    Kenali Setiap Anak<br/>dengan Lebih Mendalam
                   </h2>
-                  <p style={{fontSize:15, color:"#5B7A68", lineHeight:1.6}}>
-                    {current.desc}
+                  <p style={{fontSize:15, color:"#5B7A68", lineHeight:1.6, marginBottom:24}}>
+                    Observasi dan asesmen adaptif untuk memahami kebutuhan, minat, dan potensi unik anak.
                   </p>
-                </div>
-
-                {/* Footer (Dots + Next) */}
-                <div className="p-8 pb-12 flex flex-col items-center">
-                  <div className="flex gap-2.5 mb-10">
-                    {[1, 2, 3, 4, 5].map(i => (
-                      <div
-                        key={i}
-                        style={{
-                          width: step === i ? 28 : 8,
-                          height: 8,
-                          borderRadius: 4,
-                          backgroundColor: step === i ? A : "#D4E8DA",
-                          transition: "width 0.3s ease, background-color 0.3s ease"
-                        }}
-                      />
-                    ))}
+                  
+                  {/* Card Radar Chart */}
+                  <div style={{background:"#FFF", borderRadius:20, padding:"20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.04)"}}>
+                    <h3 style={{fontFamily:PJS, fontSize:16, fontWeight:700, color:"#2E3E35", marginBottom:10}}>Hasil Asesmen</h3>
+                    <div style={{height: 200, width: "100%", marginBottom: 16}}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={[
+                          { subject: 'Kognitif', A: 80, fullMark: 100 },
+                          { subject: 'Sosial', A: 65, fullMark: 100 },
+                          { subject: 'Motorik', A: 50, fullMark: 100 },
+                          { subject: 'Emosi', A: 70, fullMark: 100 },
+                          { subject: 'Bahasa', A: 45, fullMark: 100 },
+                        ]}>
+                          <PolarGrid stroke="#E5E7EB" />
+                          <PolarAngleAxis dataKey="subject" tick={{fill:"#6B8070", fontSize:12, fontFamily:IPS}} />
+                          <Radar name="Anak" dataKey="A" stroke="#8BB098" strokeWidth={2} fill="#8BB098" fillOpacity={0.4} />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="space-y-3">
+                      {[
+                        {icon: <User size={18} color="#8BB098"/>, label: "Kemandirian"},
+                        {icon: <Star size={18} color="#D4A843"/>, label: "Minat Bakat"},
+                        {icon: <Users size={18} color="#8BB098"/>, label: "Kemampuan Sosial"},
+                        {icon: <PlayCircle size={18} color="#8BB098"/>, label: "Kemampuan Motorik"},
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center pb-2.5" style={{borderBottom: idx < 3 ? "1px solid #F3F4F6" : "none"}}>
+                          <div className="flex items-center gap-3">
+                            <div style={{background:"#F1F5F2", padding:6, borderRadius:8}}>{item.icon}</div>
+                            <span style={{fontSize:15, fontWeight:500, color:"#374151"}}>{item.label}</span>
+                          </div>
+                          <ChevronRight size={16} color="#9CA3AF"/>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                </>
+              )}
 
-                  <button
-                    onClick={goNext}
+              {step === 3 && (
+                <>
+                  <h2 style={{fontFamily:PJS, fontSize:28, fontWeight:800, color:"#2E3E35", marginBottom:12, lineHeight:1.2}}>
+                    Kembangkan Potensi<br/>Secara Terarah
+                  </h2>
+                  <p style={{fontSize:15, color:"#5B7A68", lineHeight:1.6, marginBottom:24}}>
+                    Rekomendasi strategi belajar dan penyusunan Individual Development Plan (IDP) yang terarah.
+                  </p>
+                  
+                  {/* Card Strategi */}
+                  <div style={{background:"#FFF", borderRadius:20, padding:"20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.04)"}}>
+                    <h3 style={{fontFamily:PJS, fontSize:16, fontWeight:700, color:"#2E3E35", marginBottom:16}}>Rekomendasi Pembelajaran</h3>
+                    
+                    <div className="space-y-4">
+                      {[
+                        {icon: <TargetIcon size={22} color="#FFF"/>, bg:"#D27D6B", title: "Strategi Belajar", desc: "Metode visual & kinestetik"},
+                        {icon: <Video size={22} color="#FFF"/>, bg:"#D27D6B", title: "Media Belajar", desc: "Video interaktif & alat bantu"},
+                        {icon: <Calendar size={22} color="#FFF"/>, bg:"#D27D6B", title: "Jadwal Rutin", desc: "3x seminggu, 30 menit"},
+                        {icon: <User size={22} color="#FFF"/>, bg:"#D27D6B", title: "IDP (Individual Development Plan)", desc: "Lihat rencana lengkap", isLink: true},
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-4 pb-3" style={{borderBottom: idx < 3 ? "1px solid #F3F4F6" : "none"}}>
+                          <div style={{width: 46, height: 46, borderRadius: 12, backgroundColor: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
+                            {item.icon}
+                          </div>
+                          <div className="flex-1">
+                            <h4 style={{fontSize:15, fontWeight:600, color:"#2E3E35", fontFamily:PJS}}>{item.title}</h4>
+                            <p style={{fontSize:13, color:"#6B8070"}}>{item.desc}</p>
+                          </div>
+                          {item.isLink && <ChevronRight size={18} color="#9CA3AF"/>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {step === 4 && (
+                <>
+                  <h2 style={{fontFamily:PJS, fontSize:28, fontWeight:800, color:"#2E3E35", marginBottom:12, lineHeight:1.2}}>
+                    Raih Prestasi,<br/>Jelajahi Lebih Banyak Peluang
+                  </h2>
+                  <p style={{fontSize:15, color:"#5B7A68", lineHeight:1.6, marginBottom:24}}>
+                    Rekomendasi lomba resmi serta direktori pelatihan dan terapi sesuai minat anak.
+                  </p>
+                  
+                  {/* Card Lomba */}
+                  <div style={{background:"#FFF", borderRadius:20, padding:"20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.04)"}}>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 style={{fontFamily:PJS, fontSize:16, fontWeight:700, color:"#2E3E35", display:"flex", alignItems:"center", gap:8}}>
+                        <Trophy size={20} color="#D4A843"/> Lomba & Kompetisi
+                      </h3>
+                      <span style={{fontSize: 13, color:"#8BB098", fontWeight: 600}}>Lihat Semua</span>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      {[
+                        {icon: "🏆", bg:"#FEF9EC", title: "Olimpiade Sains Nasional (OSN)", tag: "Sains", tagColor: "#3B82F6", tagBg: "#EFF6FF"},
+                        {icon: "🎭", bg:"#FEF2F2", title: "Festival dan Lomba Seni Siswa Nasional (FLS2N)", tag: "Seni", tagColor: "#E8637A", tagBg: "#FDF2F8"},
+                        {icon: "💻", bg:"#EFF6FF", title: "Lomba Kompetensi Siswa (LKS)", tag: "Vokasional", tagColor: "#1D4ED8", tagBg: "#EFF6FF"},
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-3 pb-3" style={{borderBottom: idx < 2 ? "1px solid #F3F4F6" : "none"}}>
+                          <div style={{width: 46, height: 46, borderRadius: 12, backgroundColor: item.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0}}>
+                            {item.icon}
+                          </div>
+                          <div className="flex-1">
+                            <h4 style={{fontSize:14, fontWeight:600, color:"#2E3E35", fontFamily:PJS, lineHeight:1.3, marginBottom:4}}>{item.title}</h4>
+                            <span style={{fontSize:11, fontWeight:600, color:item.tagColor, backgroundColor:item.tagBg, padding:"2px 8px", borderRadius:4}}>{item.tag}</span>
+                          </div>
+                          <ChevronRight size={18} color="#9CA3AF"/>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {step === 5 && (
+                <>
+                  <h2 style={{fontFamily:PJS, fontSize:28, fontWeight:800, color:"#2E3E35", marginBottom:12, lineHeight:1.2}}>
+                    Pantau Perkembangan<br/>Lebih Mudah
+                  </h2>
+                  <p style={{fontSize:15, color:"#5B7A68", lineHeight:1.6, marginBottom:24}}>
+                    Akses laporan perkembangan otomatis maupun manual untuk memantau kemajuan anak secara real-time.
+                  </p>
+                  
+                  {/* Card Laporan */}
+                  <div style={{background:"#FFF", borderRadius:20, padding:"20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.04)"}}>
+                    <h3 style={{fontFamily:PJS, fontSize:16, fontWeight:700, color:"#2E3E35", display:"flex", alignItems:"center", gap:8, marginBottom:16}}>
+                      <CheckSquare size={20} color="#8BB098"/> Laporan Perkembangan
+                    </h3>
+                    
+                    <div style={{background:"#F9FAFB", padding:"16px", borderRadius:12, marginBottom:16}}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <TrendingUp size={18} color="#8BB098"/>
+                        <span style={{fontSize:14, fontWeight:600, color:"#4B5563"}}>Kemampuan Motorik</span>
+                      </div>
+                      <div style={{height: 120, width: "100%", marginLeft: -20}}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={[
+                            { name: '1', val: 30 }, { name: '2', val: 40 },
+                            { name: '3', val: 35 }, { name: '4', val: 50 },
+                            { name: '5', val: 45 }, { name: '6', val: 60 },
+                            { name: '7', val: 75 }
+                          ]}>
+                            <Line type="monotone" dataKey="val" stroke="#8BB098" strokeWidth={3} dot={{r: 4, fill: "#8BB098", strokeWidth: 2, stroke: "#FFF"}} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="mt-4 flex items-center gap-1.5">
+                        <span style={{fontSize:13, fontWeight:700, color:"#10B981"}}>↑</span>
+                        <span style={{fontSize:13, color:"#4B5563", fontWeight: 500}}>Meningkat 12% dari periode sebelumnya</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between" style={{background:"#FEF2F2", padding:"12px 16px", borderRadius:12}}>
+                       <div className="flex items-center gap-3">
+                          <div style={{width: 38, height: 38, borderRadius: 10, backgroundColor: "#FCA5A5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
+                            <Calendar size={20} color="#FFF"/>
+                          </div>
+                          <div>
+                             <h4 style={{fontSize:14, fontWeight:600, color:"#2E3E35", fontFamily:PJS}}>Laporan Mingguan</h4>
+                             <p style={{fontSize:12, color:"#6B8070"}}>12 Agustus 2026</p>
+                          </div>
+                       </div>
+                       <Download size={20} color="#6B8070"/>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* FOOTER NAV */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 z-20 flex justify-between items-center pointer-events-none" style={{background:"transparent"}}>
+              <div style={{ width: 56 }} />
+              <div className="flex gap-2 items-center justify-center pointer-events-auto">
+                {[2, 3, 4, 5].map(i => (
+                  <div
+                    key={i}
                     style={{
-                      width:"100%", background:A, color:"#FFF", fontFamily:PJS, fontWeight:700, fontSize:16, minHeight:58, borderRadius:20, display:"flex", alignItems:"center", justifyContent: "center", boxShadow:"0 10px 25px rgba(210,125,107,0.35)"
+                      width: step === i ? 24 : 8,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: step === i ? "#8BB098" : "#D4E8DA",
+                      transition: "width 0.3s ease, background-color 0.3s ease"
                     }}
-                    className="active:scale-95 transition-transform flex justify-center gap-2"
-                  >
-                    {step === 5 ? "Mulai Petualangan" : "Lanjut"}
-                    <ChevronRight size={20} strokeWidth={2.5} />
-                  </button>
-                </div>
-              </>
-            )}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={goNext}
+                className="active:scale-95 transition-transform flex justify-center items-center pointer-events-auto"
+                style={{
+                  width:56, height:56, background:"#D27D6B", color:"#FFF", borderRadius:"50%", 
+                  boxShadow:"0 8px 16px rgba(210,125,107,0.4)"
+                }}
+              >
+                <MoveRight size={24} strokeWidth={2.5} />
+              </button>
+            </div>
+            
+            {/* Background Ornamen Daun untuk Halaman 2-5 */}
+            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, width: "100%", pointerEvents: "none", zIndex: 0, opacity: 0.8 }}>
+              <svg width="100%" height="auto" viewBox="0 0 393 346" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", width: "100%" }}>
+                <path d="M133.5 206.5C70.3652 249.905 -43.3735 223.731 -9.30923 287.784C-8.40301 289.488 -7.8811 291.493 -7.98623 293.42L-11.4248 356.456C-11.7372 362.184 -7.17647 367.001 -1.43958 367.001H384C389.523 367.001 394 362.559 394 357.036V190.255C394 186.247 390.796 182.922 386.787 182.922C385.725 182.922 384.683 182.708 383.712 182.277C353.987 169.111 248.097 143.053 133.5 206.5Z" fill="#D27D6B" fillOpacity="0.5"/>
+                <path d="M32.1326 208.758C31.9646 213.168 27.1053 224.237 9.14134 233.75C8.53025 234.074 7.93348 234.459 7.39999 234.899C-12.3609 251.194 -18.0102 265.436 -18.3526 270.575" stroke="#E7BDA8" strokeWidth="3" strokeLinecap="round"/>
+                <path d="M42.8568 170.439C38.1932 179.2 33.5223 198.392 31.7651 209.394C37.1872 209.179 49.2985 208.46 54.3675 207.301C60.7038 205.851 80.9932 198.131 87.4123 192.56C93.8313 186.988 96.9086 184.745 111.275 157.864C113.024 152.95 115.184 132.35 110.962 125.109C110.252 124.245 103.082 122.5 78.4177 133.067C51.4035 149.506 46.7671 163.094 42.8568 170.439Z" fill="#E7BDA8" stroke="#E6BEA8"/>
+                <path d="M69.7906 85.8494C64.4235 87.9581 54.8506 94.7207 49.7253 98.9533C51.9475 100.953 57.0081 105.312 59.4721 106.753C62.5521 108.555 73.6547 112.949 78.4283 112.942C83.2019 112.936 85.3178 113.124 101.808 106.675C104.477 105.157 113.628 96.7954 114.883 91.9317C114.951 91.2717 112.83 87.7221 98.8568 82.9079C81.5919 79.8071 74.2907 84.0812 69.7906 85.8494Z" fill="#B7C2B2" stroke="#B7C2B2"/>
+                <path d="M42.2832 77.5062C43.0491 83.2216 41.7923 94.8746 40.5847 101.411C37.7571 100.441 31.4877 98.1374 29.0305 96.6846C25.9591 94.8685 16.7219 87.3019 14.4075 83.1268C12.0932 78.9518 10.9004 77.1941 8.52008 59.6483C8.54956 56.5784 11.4087 44.5163 15.0493 41.0555C15.5929 40.6753 19.7261 40.8036 30.7253 50.675C41.8272 64.2558 41.641 72.714 42.2832 77.5062Z" fill="#B7C2B2" stroke="#B7C2B2"/>
+                <path d="M79.29 72.3772C74.3481 75.3487 63.1534 78.8203 56.6745 80.3062C56.4427 77.3258 56.0687 70.6571 56.4269 67.8251C56.8747 64.2852 60.1535 52.8035 63.0671 49.0222C65.9807 45.2408 67.1206 43.4484 82.2804 34.2996C85.1098 33.1082 97.316 30.945 101.937 32.9129C102.502 33.261 104.025 37.1056 99.3299 51.1194C91.271 66.6996 83.4337 69.8858 79.29 72.3772Z" fill="#B7C2B2" stroke="#B7C2B2"/>
+                <path d="M57.2595 79.4744C47.5138 115.003 38.6248 89.9982 19.3496 116.017C3.92941 136.832 -0.879248 151.053 -1.35605 155.561" stroke="#B7C2B2" strokeWidth="3" strokeLinecap="round"/>
+                <path d="M8.55377 159.756C7.5141 163.754 3.38691 172.418 -5.0138 176.666C-5.95918 177.145 -6.87957 177.687 -7.66241 178.401C-18.48 188.263 -23.7143 199.831 -25 204.524" stroke="#E7BDA8" strokeWidth="3" strokeLinecap="round"/>
+                <path d="M16.7042 140.746C13.1361 145.276 8.28704 155.947 5.99976 162.188C8.92748 162.792 15.4966 164 18.3511 164C21.9192 164 33.7216 162.188 37.8387 159.772C41.9558 157.356 43.8772 156.45 54.8561 142.558C56.3932 139.901 60.0711 128.063 58.6987 123.231C58.4243 122.627 54.8012 120.634 40.309 123.533C23.8406 129.573 19.6961 136.948 16.7042 140.746Z" fill="#E7BDA8" stroke="#E6BEA8"/>
+              </svg>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -356,7 +543,7 @@ export function RoleSelectScreen({onPick,onBack}:{onPick:(r:Role)=>void;onBack:(
   const ROLES = [
     {
       r: "guru" as Role,
-      emoji: "👩‍🏫",
+      icon: guruIcon,
       title: "Guru Pendamping",
       tagline: "Kelola siswa & pantau perkembangan ABK",
       accent: T,
@@ -365,7 +552,7 @@ export function RoleSelectScreen({onPick,onBack}:{onPick:(r:Role)=>void;onBack:(
     },
     {
       r: "ortu" as Role,
-      emoji: "👨‍👩‍👧",
+      icon: ortuIcon,
       title: "Orang Tua",
       tagline: "Ikuti perkembangan & terima laporan anak",
       accent: A,
@@ -399,8 +586,8 @@ export function RoleSelectScreen({onPick,onBack}:{onPick:(r:Role)=>void;onBack:(
             }}
             className="transition-all active:scale-[0.98]">
             <div style={{background:x.accent, padding:"18px 20px", display:"flex", alignItems:"center", gap:14}}>
-              <div style={{fontSize:38, width:54, height:54, background:"rgba(255,255,255,0.22)", borderRadius:14, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0}}>
-                {x.emoji}
+              <div style={{width:54, height:54, background:"rgba(255,255,255,0.22)", borderRadius:14, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0}}>
+                <img src={x.icon} alt={x.title} className="w-9 h-9 object-contain" />
               </div>
               <div className="flex-1">
                 <div style={{fontFamily:PJS, fontWeight:800, fontSize:18, color:"#fff"}}>{x.title}</div>
@@ -443,8 +630,8 @@ export function GoogleLoginScreen({role,onBack,onSuccess}:{role:Role;onBack:()=>
 
       <div className="px-5 pt-4 pb-8 flex flex-col items-center text-center">
         {/* Avatar */}
-        <div style={{width:76,height:76,background:SEC,borderRadius:26,fontSize:36}} className="flex items-center justify-center mb-4">
-          {isGuru?"👩‍🏫":"👨‍👩‍👧"}
+        <div style={{width:76,height:76,background:SEC,borderRadius:26}} className="flex items-center justify-center mb-4">
+          <img src={isGuru ? guruIcon : ortuIcon} alt={isGuru ? "Guru" : "Orang Tua"} className="w-12 h-12 object-contain" />
         </div>
 
         {/* Badge peran */}
