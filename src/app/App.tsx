@@ -498,231 +498,184 @@ function DashboardGuru({go,onStartObs,guru,onAddStudent}:{
   const students = useStudents();
   const {openSearch, openSettings} = useUI();
   const pendingObs = students.filter(s=>!s.hasObs);
-  const done = students.filter(s=>s.hasObs);
-  const totalLomba = done.reduce((a,s)=>a+s.comps.length, 0);
-  const studentsWithKode = students.filter(s=>s.kodeOrtu);
-  const kodePercent = students.length ? Math.round(studentsWithKode.length/students.length*100) : 0;
   const firstName = guru.nama.split(" ")[0];
 
   const quickActions = [
-    {icon:<UserPlus size={20}/>, label:"Tambah\nSiswa",   bg:"#E4F0E9", color:DEEP,      onClick:onAddStudent},
-    {icon:<ClipboardList size={20}/>, label:"Pengamatan\nSiswa", bg:"#E3EDF8", color:"#3A7BD5", onClick:()=>go("students")},
-    {icon:<Trophy size={20}/>, label:"Agenda",             bg:"#EDE6F5", color:"#8E44AD", onClick:()=>go("competition")},
-    {icon:<FileText size={20}/>, label:"Laporan",         bg:"#FEF3E2", color:"#D68910", onClick:()=>go("report")},
+    {icon:<Users size={20}/>,    label:"Kelas Saya",  sub:"Lihat perkembangan siswa",     bg:"#E4F2EC", color:DEEP,      onClick:()=>go("students")},
+    {icon:<Star size={20}/>,     label:"Bakat Anak",  sub:"Lihat potensi dan minat anak", bg:"#F1EBF7", color:"#7C3AED", onClick:()=>go("talent-map")},
+    {icon:<Calendar size={20}/>, label:"Agenda",      sub:"Jadwal kegiatan kelas",         bg:"#E6F0F5", color:"#1D4ED8", onClick:()=>go("competition")},
+    {icon:<FileText size={20}/>, label:"Laporan",     sub:"Unduh laporan perkembangan",   bg:"#FBF3E6", color:"#B45309", onClick:()=>go("report")},
   ];
 
-  const activities = [
-    {icon:<CheckCircle size={14}/>, color:T,        bg:"#E4F0E9", text:"Pengamatan Rafi Pratama selesai",             time:"Kemarin, 14:30"},
-    {icon:<Trophy size={14}/>,      color:"#8E44AD", bg:"#EDE6F5", text:"Rekomendasi lomba baru untuk Nisa Aulia",   time:"Kemarin, 09:15"},
-    {icon:<Users size={14}/>,       color:"#3A7BD5", bg:"#E3EDF8", text:"Orang tua Arga Saputra baru login",         time:"2 hari yang lalu, 16:45"},
-  ];
-
-  const circumference = 2 * Math.PI * 20;
+  // Group students by kelas
+  const kelasList = Object.entries(
+    students.reduce((acc, s) => {
+      (acc[s.kelas] ||= []).push(s);
+      return acc;
+    }, {} as Record<string, typeof students>)
+  );
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS, background:BG}}>
+    <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS, background:"#F7F9F8"}}>
 
       {/* ── Header ── */}
-      <div style={{background:CARD, position:"relative"}}>
-        {/* Top row: greeting left, icons right — same line */}
-        <div style={{display:"flex", alignItems:"flex-start", justifyContent:"space-between", padding:"14px 16px 10px"}}>
+      <div style={{background:CARD, paddingTop:12}}>
+        <div style={{display:"flex", alignItems:"flex-start", justifyContent:"space-between", padding:"8px 20px 10px"}}>
           <div>
-            <p style={{fontSize:12, color:MUTED}}>Selamat pagi,</p>
-            <h1 style={{fontFamily:PJS, fontSize:22, fontWeight:800, color:TEXT, lineHeight:1.15}}>
+            <p style={{fontSize:13, color:MUTED, fontWeight:500}}>Selamat pagi,</p>
+            <h1 style={{fontFamily:PJS, fontSize:24, fontWeight:800, color:TEXT, lineHeight:1.15, display:"flex", alignItems:"center", gap:6}}>
               {firstName} <span>👋</span>
             </h1>
-            <p style={{fontSize:11, color:MUTED, marginTop:3}}>🌿 Semangat menginspirasi hari ini!</p>
           </div>
-          <div style={{display:"flex", gap:4, flexShrink:0}}>
+          <div style={{display:"flex", alignItems:"center", gap:6, flexShrink:0, marginTop:4}}>
             <button onClick={openSearch}
-              style={{width:32,height:32,background:BG,borderRadius:10,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <Search size={15} style={{color:MUTED}}/>
+              style={{width:38,height:38,background:"rgba(139,176,152,0.12)",borderRadius:12,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <Search size={16} style={{color:TEXT}}/>
             </button>
-            <button style={{width:32,height:32,background:BG,borderRadius:10,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
-              <Bell size={15} style={{color:MUTED}}/>
-              <span style={{position:"absolute",top:4,right:4,width:14,height:14,background:A,borderRadius:"50%",fontSize:7,fontWeight:700,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}}>2</span>
+            <button style={{width:38,height:38,background:"rgba(139,176,152,0.12)",borderRadius:12,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
+              <Bell size={16} style={{color:TEXT}}/>
+              {pendingObs.length > 0 && (
+                <span style={{position:"absolute",top:8,right:9,width:7,height:7,background:"#F97316",borderRadius:"50%",border:"2px solid #fff"}}/>
+              )}
             </button>
             <button onClick={openSettings}
-              style={{width:32,height:32,background:BG,borderRadius:10,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <Settings size={15} style={{color:MUTED}}/>
+              style={{width:38,height:38,background:"rgba(139,176,152,0.12)",borderRadius:12,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <Settings size={16} style={{color:TEXT}}/>
             </button>
           </div>
         </div>
-
-        {/* ── Pengamatan Banner — illustration overlaps top-right ── */}
-        <div style={{margin:"0 16px 14px", background:"#F2EDE5", borderRadius:18, padding:"14px 16px", position:"relative", overflow:"visible"}}>
-          {/* Illustration — centered vertically in banner */}
-          <div style={{position:"absolute", right:6, top:"50%", transform:"translateY(-50%)", pointerEvents:"none"}}>
-            <TeacherIllustration/>
-          </div>
-          <div style={{display:"flex", alignItems:"center", gap:10, paddingRight:72}}>
-            <div style={{width:38,height:38,background:"rgba(255,255,255,0.7)",borderRadius:11,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <ClipboardList size={18} style={{color:DEEP}}/>
-            </div>
-            <p style={{fontSize:12,color:TEXT,lineHeight:1.5}}>
-              Hari ini ada{" "}
-              <span style={{fontWeight:800,fontSize:14,color:A}}>{pendingObs.length}</span>{" "}
-              <strong>pengamatan</strong><br/>yang perlu diselesaikan
-            </p>
-          </div>
-          <button onClick={()=>go("students")}
-            style={{marginTop:10,background:DEEP,color:"#fff",border:"none",borderRadius:10,padding:"7px 14px",fontFamily:IPS,fontSize:12,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
-            Lihat Jadwal <ChevronRight size={12}/>
-          </button>
-        </div>
+        <p style={{fontSize:12, color:MUTED, padding:"0 20px 14px"}}>Pantau perkembangan siswa dengan mudah.</p>
       </div>
 
-      <div style={{padding:"16px 16px 88px",display:"flex",flexDirection:"column",gap:16}}>
+      <div style={{padding:"14px 16px 90px", display:"flex", flexDirection:"column", gap:16}}>
 
-        {/* ── Stats Card ── */}
-        <div style={{background:CARD,borderRadius:20,overflow:"hidden",border:`1px solid ${BDR}`}}>
-          <div className="flex">
-            {/* Left: Siswa Aktif */}
-            <div style={{flex:"0 0 40%",background:SEC,padding:"18px 12px",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10}}>
-              <div style={{width:46,height:46,background:"rgba(91,122,104,0.15)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <Users size={22} style={{color:DEEP}}/>
+        {/* ── Alert Banner ── */}
+        {pendingObs.length > 0 && (
+          <div style={{background:"#FCEBEB",border:"1px solid #F5D6D6",borderRadius:22,padding:"14px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,boxShadow:"0 2px 8px rgba(185,56,56,0.08)"}}>
+            <div style={{display:"flex",alignItems:"flex-start",gap:10,flex:1,minWidth:0}}>
+              <div style={{width:40,height:40,borderRadius:14,background:"#F2C2C2",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <Bell size={16} style={{color:"#B93838"}}/>
               </div>
-              <div style={{textAlign:"center"}}>
-                <p style={{fontFamily:PJS,fontSize:34,fontWeight:800,color:TEXT,lineHeight:1}}>{students.length}</p>
-                <p style={{fontSize:12,fontWeight:700,color:TEXT,marginTop:3}}>Siswa Aktif</p>
-                <p style={{fontSize:11,color:MUTED,marginTop:2}}>{guru.kelas.length} kelas diampu</p>
+              <div style={{minWidth:0}}>
+                <p style={{fontSize:14,fontWeight:700,color:"#B93838",fontFamily:PJS}}>{pendingObs.length} pengamatan perlu diperiksa</p>
+                <p style={{fontSize:11,color:"#8A5555",marginTop:2,lineHeight:1.4}}>Jangan lupa untuk melihat detailnya</p>
               </div>
             </div>
-            {/* Right: 3 metric rows */}
-            <div style={{flex:1,display:"flex",flexDirection:"column"}}>
-              {[
-                {icon:<ClipboardList size={15}/>, iconBg:"#FEF0E0", iconColor:"#D68910", value:pendingObs.length, label:"Pengamatan Pending",  onClick:()=>go("students")},
-                {icon:<CheckCircle size={15}/>,   iconBg:"#E4F0E9", iconColor:T,          value:done.length,       label:"Sudah Didampingi", onClick:()=>go("talent-map")},
-                {icon:<Trophy size={15}/>,         iconBg:"#EDE6F5", iconColor:"#8E44AD", value:totalLomba,        label:"Rekomendasi Lomba", sub:"Baru tersedia", onClick:()=>go("competition")},
-              ].map((item,i)=>(
-                <button key={i} onClick={item.onClick}
-                  style={{
-                    display:"flex",alignItems:"center",gap:10,
-                    padding:"12px 12px",
-                    borderBottom: i < 2 ? `1px solid ${BDR}` : "none",
-                    background:"transparent",border:"none",
-                    cursor:"pointer",textAlign:"left",width:"100%",
-                  }}>
-                  <div style={{width:32,height:32,background:item.iconBg,borderRadius:10,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",color:item.iconColor}}>
-                    {item.icon}
-                  </div>
-                  <div style={{flex:1,minWidth:0}}>
-                    <p style={{fontFamily:PJS,fontSize:18,fontWeight:800,color:TEXT,lineHeight:1}}>{item.value}</p>
-                    <p style={{fontSize:11,color:MUTED,lineHeight:1.3,marginTop:1}}>{item.label}{item.sub && <><br/><span style={{fontSize:10}}>{item.sub}</span></>}</p>
-                  </div>
-                  <ChevronRight size={14} style={{color:MUTED,flexShrink:0}}/>
-                </button>
-              ))}
-            </div>
+            <button onClick={()=>go("students")}
+              style={{background:"#D96B54",color:"#fff",border:"none",borderRadius:12,padding:"9px 12px",fontFamily:IPS,fontSize:12,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
+              Lihat Sekarang <ChevronRight size={12}/>
+            </button>
           </div>
-        </div>
+        )}
 
         {/* ── Aksi Cepat ── */}
         <div>
-          <p style={{fontFamily:PJS,fontSize:15,fontWeight:700,color:TEXT,marginBottom:12}}>Aksi Cepat</p>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+          <p style={{fontFamily:PJS,fontSize:16,fontWeight:700,color:TEXT,marginBottom:10}}>Aksi Cepat</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             {quickActions.map((a,i)=>(
               <button key={i} onClick={a.onClick}
-                style={{display:"flex",flexDirection:"column",alignItems:"center",gap:7,background:"transparent",border:"none",cursor:"pointer",padding:0}}>
-                <div style={{width:58,height:58,background:a.bg,borderRadius:18,display:"flex",alignItems:"center",justifyContent:"center",color:a.color}}>
-                  {a.icon}
+                style={{background:a.bg,border:"none",borderRadius:22,padding:"14px",cursor:"pointer",textAlign:"left",display:"flex",flexDirection:"column",justifyContent:"space-between",minHeight:112}}
+                className="active:scale-[0.97] transition-transform">
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+                  <div style={{width:40,height:40,borderRadius:14,background:"rgba(255,255,255,0.82)",display:"flex",alignItems:"center",justifyContent:"center",color:a.color,boxShadow:"0 1px 4px rgba(0,0,0,0.07)"}}>
+                    {a.icon}
+                  </div>
+                  <ChevronRight size={13} style={{color:MUTED,marginTop:3}}/>
                 </div>
-                <p style={{fontSize:11,fontWeight:600,color:TEXT,textAlign:"center",lineHeight:1.3,whiteSpace:"pre-line"}}>{a.label}</p>
+                <div>
+                  <p style={{fontFamily:PJS,fontWeight:700,fontSize:14,color:TEXT,marginBottom:2}}>{a.label}</p>
+                  <p style={{fontSize:11,color:MUTED,lineHeight:1.35}}>{a.sub}</p>
+                </div>
               </button>
             ))}
           </div>
         </div>
 
-        {/* ── Kode Akses Orang Tua ── */}
-        {students.length > 0 && (
-          <div style={{background:CARD,borderRadius:20,padding:"14px 14px 10px",border:`1px solid ${BDR}`}}>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-              <div style={{flex:1,minWidth:0,marginRight:10}}>
-                <p style={{fontFamily:PJS,fontSize:13,fontWeight:700,color:TEXT}}>Kode Akses Orang Tua</p>
-                <p style={{fontSize:11,color:MUTED,marginTop:2,lineHeight:1.3}}>
-                  {studentsWithKode.length === students.length
-                    ? "Semua siswa sudah memiliki kode akses"
-                    : `${studentsWithKode.length} dari ${students.length} siswa memiliki kode`}
-                </p>
-              </div>
-              {/* Circular progress + label — horizontal */}
-              <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
-                <svg width="46" height="46" viewBox="0 0 46 46">
-                  <circle cx="23" cy="23" r="18" fill="none" stroke={BDR} strokeWidth="3.5"/>
-                  <circle cx="23" cy="23" r="18" fill="none" stroke={T} strokeWidth="3.5"
-                    strokeDasharray={`${2*Math.PI*18*kodePercent/100} ${2*Math.PI*18}`}
-                    strokeLinecap="round" transform="rotate(-90 23 23)"/>
-                  <text x="23" y="23" textAnchor="middle" dominantBaseline="middle"
-                    fill={DEEP} fontSize="9" fontWeight="700" fontFamily="IBM Plex Sans">{kodePercent}%</text>
-                </svg>
-                <div>
-                  <p style={{fontSize:13,fontWeight:700,color:TEXT,lineHeight:1}}>{studentsWithKode.length}/{students.length}</p>
-                  <p style={{fontSize:10,color:MUTED,marginTop:2}}>Selesai</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Student chips */}
-            <div style={{display:"flex",gap:6}}>
-              {students.slice(0,3).map(s=>(
-                <div key={s.id} style={{flex:1,display:"flex",alignItems:"center",gap:6,padding:"7px 8px",background:BG,borderRadius:12,border:`1px solid ${BDR}`,minWidth:0}}>
-                  <span style={{fontSize:18,flexShrink:0}}>{s.emoji}</span>
-                  <div style={{minWidth:0}}>
-                    <p style={{fontSize:11,fontWeight:700,color:TEXT,fontFamily:PJS,lineHeight:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{s.name.split(" ")[0]} {s.name.split(" ")[1]||""}</p>
-                    <p style={{fontSize:9,color:MUTED,fontFamily:DMM,marginTop:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{s.kodeOrtu ?? "—"}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {students.length > 3 && (
-              <button onClick={()=>go("kode-akses")}
-                style={{marginTop:8,width:"100%",fontSize:11,fontWeight:600,color:MUTED,background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:3,padding:"4px 0"}}>
-                <Users size={11}/>+{students.length - 3} siswa lainnya
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* ── Empty state ── */}
-        {students.length === 0 && (
-          <div style={{background:CARD,border:`1.5px dashed ${BDR}`,borderRadius:20,padding:24,textAlign:"center"}}>
-            <div style={{width:56,height:56,background:SEC,borderRadius:18,margin:"0 auto 12px",display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <Users size={26} style={{color:T}}/>
-            </div>
-            <p style={{fontWeight:700,fontSize:14,fontFamily:PJS,color:TEXT,marginBottom:6}}>Belum ada siswa</p>
-            <p style={{fontSize:12,color:MUTED,lineHeight:1.6,marginBottom:16}}>Tambahkan siswa Anda untuk mulai pengamatan dan pemetaan bakat.</p>
-            <PBtn full label="Tambah Siswa" icon={<UserPlus size={15}/>} onClick={onAddStudent}/>
-          </div>
-        )}
-
-        {/* ── Aktivitas Terbaru ── */}
+        {/* ── Perkembangan Siswa ── */}
         <div>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-            <p style={{fontFamily:PJS,fontSize:15,fontWeight:700,color:TEXT}}>Aktivitas Terbaru</p>
+            <p style={{fontFamily:PJS,fontSize:16,fontWeight:700,color:TEXT}}>Perkembangan Siswa</p>
             <button onClick={()=>go("students")} style={{fontSize:12,fontWeight:600,color:T,background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:3}}>
-              Lihat Semua <ChevronRight size={12}/>
+              Lihat semua <ChevronRight size={12}/>
             </button>
           </div>
-          <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            {activities.map((a,i)=>(
-              <div key={i} style={{background:CARD,border:`1px solid ${BDR}`,borderRadius:16,padding:"11px 14px",display:"flex",alignItems:"center",gap:12}}>
-                <div style={{width:32,height:32,background:a.bg,borderRadius:10,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",color:a.color}}>
-                  {a.icon}
-                </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <p style={{fontSize:13,fontWeight:600,color:TEXT}}>{a.text}</p>
-                  <p style={{fontSize:11,color:MUTED,marginTop:2}}>{a.time}</p>
-                </div>
+
+          {students.length === 0 ? (
+            <div style={{background:CARD,border:`1.5px dashed ${BDR}`,borderRadius:22,padding:24,textAlign:"center"}}>
+              <div style={{width:52,height:52,background:SEC,borderRadius:16,margin:"0 auto 12px",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <Users size={24} style={{color:T}}/>
               </div>
-            ))}
-          </div>
+              <p style={{fontWeight:700,fontSize:14,fontFamily:PJS,color:TEXT,marginBottom:6}}>Belum ada siswa</p>
+              <p style={{fontSize:12,color:MUTED,lineHeight:1.6,marginBottom:16}}>Tambahkan siswa untuk mulai pengamatan dan pemetaan bakat.</p>
+              <PBtn full label="Tambah Siswa" icon={<UserPlus size={15}/>} onClick={onAddStudent}/>
+            </div>
+          ) : (
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {kelasList.map(([kelas, siswaList])=>{
+                const sudahDiamati = siswaList.filter(s=>s.hasObs).length;
+                const allDone = sudahDiamati === siswaList.length;
+                return (
+                  <div key={kelas} style={{background:CARD,border:`1px solid ${BDR}`,borderRadius:22,padding:14,boxShadow:"0 1px 6px rgba(91,122,104,0.06)"}}>
+                    {/* Kelas header */}
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+                      <div style={{display:"flex",alignItems:"center",gap:10}}>
+                        <div style={{width:38,height:38,borderRadius:12,background:SEC,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          <Users size={16} style={{color:DEEP}}/>
+                        </div>
+                        <div>
+                          <p style={{fontFamily:PJS,fontWeight:700,fontSize:14,color:TEXT,lineHeight:1}}>{kelas}</p>
+                          <p style={{fontSize:11,color:MUTED,marginTop:2}}>{sudahDiamati} dari {siswaList.length} siswa sudah diamati</p>
+                        </div>
+                      </div>
+                      <span style={{
+                        background: allDone ? "#E4F0E9" : "#FEF3E2",
+                        color: allDone ? "#15803D" : "#B45309",
+                        fontSize:11, fontWeight:700, padding:"4px 10px", borderRadius:20,
+                        border:`1px solid ${allDone?"#BBF7D0":"#FED7AA"}`,
+                        display:"flex", alignItems:"center", gap:3, flexShrink:0,
+                      }}>
+                        {allDone && <CheckCircle size={10}/>}
+                        {sudahDiamati}/{siswaList.length} Siswa
+                      </span>
+                    </div>
+
+                    {/* Student chips */}
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
+                      {siswaList.slice(0,5).map(s=>(
+                        <button key={s.id} onClick={()=>onStartObs(s.id)}
+                          style={{display:"flex",alignItems:"center",gap:6,background:BG,border:`1px solid ${BDR}`,borderRadius:10,padding:"6px 10px",cursor:"pointer"}}>
+                          <span style={{fontSize:18}}>{s.emoji}</span>
+                          <div style={{textAlign:"left"}}>
+                            <p style={{fontSize:12,fontWeight:600,color:TEXT,lineHeight:1}}>{s.name.split(" ")[0]}</p>
+                            {!s.hasObs && <p style={{fontSize:9,color:A,marginTop:1,fontWeight:600}}>Belum diamati</p>}
+                          </div>
+                        </button>
+                      ))}
+                      {siswaList.length > 5 && (
+                        <div style={{display:"flex",alignItems:"center",padding:"6px 10px",background:SEC,borderRadius:10}}>
+                          <p style={{fontSize:11,color:DEEP,fontWeight:600}}>+{siswaList.length-5}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{borderTop:`1px solid ${BDR}`,paddingTop:10,textAlign:"center"}}>
+                      <button onClick={()=>go("students")}
+                        style={{fontSize:12,fontWeight:600,color:T,background:"transparent",border:"none",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:3}}>
+                        Lihat perkembangan kelas <ChevronRight size={11}/>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
       </div>
     </div>
   );
 }
+
 
 // ─── STUDENTS + KELOMPOK BELAJAR ─────────────────────────────────────
 function StudentsScreen({go,onAddStudent,onSelect}:{go:(s:Screen)=>void;onAddStudent:()=>void;onSelect:(id:number)=>void}) {
@@ -1794,6 +1747,8 @@ type GuruSetup = null | "akun" | "sekolah" | "siswa";
 const DEFAULT_GURU: GuruProfile = {
   nama:"Sari Dewi, S.Pd.", email:"sari.dewi@gmail.com",
   sekolah:"SLB Harapan Bangsa",
+  jabatan:"Guru Pendamping Khusus (GPK)",
+  noHp:"081234567890",
   kelas:["VII A","VIII B"],
   abk:["Autism Spectrum Disorder","Tunarungu","Tunadaksa","Tunagrahita Ringan"],
   kelasAbkMap:{
@@ -2039,7 +1994,7 @@ export default function App() {
 
         {/* Phone frame */}
         <div style={{
-          width:390, height:844, background:BG, borderRadius:44,
+          width:393, height:852, background:BG, borderRadius:47,
           display:"flex", flexDirection:"column", overflow:"hidden",
           boxShadow:"0 40px 80px rgba(91,122,104,0.22), 0 0 0 8px #1A1F23, 0 0 0 9.5px #2E3438",
           position:"relative",
@@ -2102,6 +2057,30 @@ export default function App() {
                 sekolah={guru.sekolah} jumlahKelas={guru.kelas.length}
                 onOpenForm={()=>openAddStudent(true)}
                 onSkip={finishGuruSetup}
+                onImportSiswa={(importedSiswa)=>{
+                  // SRS-F-003: simpan siswa hasil import (DB sekolah / upload CSV)
+                  const kelasKeys = guru.kelas.length ? guru.kelas : Object.keys(guru.kelasAbkMap);
+                  const defaultKelas = kelasKeys[0] || "VII A";
+                  importedSiswa.forEach((s, idx) => {
+                    const emoji = ["👦","👧","🧑"][idx % 3];
+                    addStudent({
+                      name: s.nama,
+                      abk:  s.abk || "Belum Ditentukan",
+                      kelas: defaultKelas,
+                      age:   0,
+                      emoji,
+                      talent:"", talentScore:0, stars:0,
+                      teacher: guru.nama,
+                      hasObs:false, comps:[],
+                      kodeOrtu:undefined,
+                      caraBelajar:"",
+                      komunikasi:"", motorik:"",
+                      tingkatDukungan:"",
+                      rentang:"", minat:"", terapi:"",
+                    });
+                  });
+                  finishGuruSetup();
+                }}
               />
             )}
 
