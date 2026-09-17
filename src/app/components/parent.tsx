@@ -15,7 +15,6 @@ import {
   type LaporanKirim,
   type AgendaEvent, type EventKind,
 } from "./data";
-import siswaIcon from "@/imports/siswa-icon.png";
 
 // ─── Modal: masukkan kode akses dari dalam aplikasi ───────────────────
 export function LinkCodeModal({onClose,onLinked,students}:{onClose:()=>void;onLinked:(s:Student)=>void;students:Student[]}) {
@@ -111,9 +110,7 @@ export function ParentDashboard({go,child,namaOrtu,onOpenCode}:{
           <>
             <div style={{background:T}} className="rounded-3xl p-5">
               <div className="flex items-center gap-3 mb-4">
-                <div style={{width:52,height:52,background:"rgba(255,255,255,0.2)",flexShrink:0}} className="rounded-2xl flex items-center justify-center text-2xl">
-                  <img src={siswaIcon} style={{width:32,height:32,objectFit:"contain"}}/>
-                </div>
+                <div style={{width:52,height:52,background:"rgba(255,255,255,0.2)",flexShrink:0}} className="rounded-2xl flex items-center justify-center text-2xl">{child.emoji}</div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-base text-white" style={{fontFamily:PJS}}>{child.name}</p>
                   <p className="text-xs" style={{color:"rgba(255,255,255,0.7)"}}>Kelas {child.kelas} · {child.teacher} · {child.abk}</p>

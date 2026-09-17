@@ -5,7 +5,6 @@ import {
   Field, SelectField,
 } from "./ui-kit";
 import { ABK_OPTIONS, CARA_BELAJAR_OPTIONS, type Student } from "./data";
-import siswaIcon from "@/imports/siswa-icon.png";
 
 type Step = "identitas" | "abk" | "success";
 
@@ -209,7 +208,7 @@ export function AddStudentSheet({
                       {GENDER_OPTIONS.map(g=>(
                         <button key={g.label} type="button" onClick={()=>set("emoji")(g.emoji)}
                           style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"10px 0",borderRadius:14,fontSize:13,fontWeight:600,fontFamily:IPS,cursor:"pointer",transition:"all 0.15s",background:form.emoji===g.emoji?SEC:BG,border:`1.5px solid ${form.emoji===g.emoji?T:BDR}`,color:form.emoji===g.emoji?DEEP:MUTED}}>
-                          <img src={siswaIcon} style={{width:24,height:24,objectFit:"contain"}}/>
+                          <span style={{fontSize:22}}>{g.emoji}</span>
                           {g.label}
                         </button>
                       ))}
