@@ -623,10 +623,19 @@ export function RoleSelectScreen({onPick,onBack}:{onPick:(r:Role)=>void;onBack:(
 export function GoogleLoginScreen({role,onBack,onSuccess}:{role:Role;onBack:()=>void;onSuccess:()=>void}) {
   const [loading,setLoading] = useState(false);
   const [loadingFb,setLoadingFb] = useState(false);
+  const [loadingPhone,setLoadingPhone] = useState(false);
+  const [phone,setPhone] = useState("");
   const isGuru = role==="guru";
 
   const masuk = () => { setLoading(true); setTimeout(onSuccess, 900); };
   const masukFb = () => { setLoadingFb(true); setTimeout(onSuccess, 900); };
+
+  const phoneDigits = phone.replace(/\D/g,"");
+  const phoneOk = phoneDigits.replace(/^0/,"").length >= 9 && phoneDigits.length <= 13;
+  const masukPhone = () => {
+    if (!phoneOk || loadingPhone || loading || loadingFb) return;
+    setLoadingPhone(true); setTimeout(onSuccess, 900);
+  };
 
   return (
     <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS,background:BG}}>
@@ -651,12 +660,57 @@ export function GoogleLoginScreen({role,onBack,onSuccess}:{role:Role;onBack:()=>
         <h1 className="font-bold" style={{fontFamily:PJS,fontSize:22,color:TEXT,marginBottom:6,lineHeight:1.25}}>
           Selamat Datang di<br/>SarehAsih 👋
         </h1>
-        <p className="text-sm leading-relaxed mb-7" style={{color:MUTED}}>
+        <p className="text-sm leading-relaxed mb-6" style={{color:MUTED}}>
           {isGuru?"Masuk untuk mengelola kelas dan pantau perkembangan siswa.":"Masuk untuk mendampingi perkembangan anak Anda."}
         </p>
 
+        {/* ── Masuk dengan Nomor Telepon ── */}
+        <div style={{width:"100%",background:CARD,border:`1.5px solid ${BDR}`,borderRadius:20,padding:16,boxShadow:"0 6px 20px rgba(91,122,104,0.10)",textAlign:"left"}}>
+          <label style={{display:"flex",alignItems:"center",gap:6,fontSize:12,fontWeight:700,color:TEXT,fontFamily:IPS,marginBottom:8}}>
+            <Phone size={14} style={{color:T}}/> Masuk dengan Nomor Telepon
+          </label>
+          <div style={{display:"flex",alignItems:"center",gap:8,border:`1.5px solid ${phoneOk?"#10B981":BDR}`,borderRadius:13,padding:"0 10px",background:BG,minHeight:50,transition:"border-color 0.2s"}}>
+            <span style={{fontSize:15,fontWeight:700,color:TEXT,fontFamily:IPS,borderRight:`1.5px solid ${BDR}`,paddingRight:10,flexShrink:0}}>+62</span>
+            <input value={phone} onChange={e=>setPhone(e.target.value.replace(/[^\d]/g,""))}
+              inputMode="numeric" autoComplete="tel" placeholder="8xx xxxx xxxx"
+              style={{flex:1,minWidth:0,background:"transparent",border:"none",outline:"none",fontSize:15,color:TEXT,fontFamily:DMM,letterSpacing:0.5,minHeight:48}}/>
+            {phone.length>0 && (
+              <button onClick={()=>setPhone("")} style={{background:SEC,border:"none",width:22,height:22,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>
+                <X size={12} style={{color:DEEP}} strokeWidth={2.5}/>
+              </button>
+            )}
+          </div>
+          <p style={{fontSize:11,color:MUTED,marginTop:8,lineHeight:1.45}}>
+            Kode verifikasi memakai WhatsApp/SMS ke nomor ini. Lanjutkan untuk membuat atau menautkan akun {isGuru?"guru":"orang tua"}.
+            {phoneDigits && !phoneOk && (
+              <span style={{color:A,fontWeight:600,display:"block",marginTop:2}}>Nomor belum valid — minimal 9 digit setelah kode negara.</span>
+            )}
+          </p>
+          <button onClick={masukPhone} disabled={!phoneOk||loading||loadingFb||loadingPhone}
+            style={{
+              width:"100%",border:"none",minHeight:50,borderRadius:14,fontFamily:IPS,fontWeight:800,fontSize:14,
+              marginTop:10,
+              background: phoneOk ? `linear-gradient(135deg, ${A} 0%, #C46F5F 100%)` : "#D9D6CE",
+              color: phoneOk ? "#FFFFFF" : MUTED,
+              boxShadow: phoneOk ? "0 6px 16px rgba(210,125,107,0.35)" : "none",
+              cursor: phoneOk ? "pointer" : "not-allowed"
+            }}
+            className="flex items-center justify-center gap-2 transition-opacity">
+            {loadingPhone
+              ? <><span style={{width:16,height:16,border:"2px solid rgba(255,255,255,0.4)",borderTopColor:"#fff",borderRadius:"50%",display:"inline-block",animation:"spin 0.7s linear infinite"}}/>Mengirim kode…</>
+              : <><Phone size={16}/>Masuk dengan Nomor Telepon</>}
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 w-full my-5">
+          <div style={{flex:1,height:1,background:BDR}}/>
+          <span style={{fontSize:12,color:MUTED,fontFamily:IPS}}>atau lanjutkan dengan</span>
+          <div style={{flex:1,height:1,background:BDR}}/>
+        </div>
+
         {/* Tombol Google */}
-        <button onClick={masuk} disabled={loading||loadingFb}
+        <button onClick={masuk} disabled={loading||loadingFb||loadingPhone}
           style={{width:"100%",background:CARD,border:"2px solid #DADCE0",minHeight:54,borderRadius:16,color:TEXT,fontFamily:IPS,fontWeight:700,fontSize:15,marginBottom:12,boxShadow:"0 1px 3px rgba(0,0,0,0.08)"}}
           className="flex items-center justify-center gap-3 transition-opacity hover:opacity-90">
           {loading
@@ -665,7 +719,7 @@ export function GoogleLoginScreen({role,onBack,onSuccess}:{role:Role;onBack:()=>
         </button>
 
         {/* Tombol Facebook */}
-        <button onClick={masukFb} disabled={loading||loadingFb}
+        <button onClick={masukFb} disabled={loading||loadingFb||loadingPhone}
           style={{width:"100%",background:"#1877F2",border:"none",minHeight:54,borderRadius:16,color:"#fff",fontFamily:IPS,fontWeight:700,fontSize:15}}
           className="flex items-center justify-center gap-3 transition-opacity hover:opacity-90">
           {loadingFb
@@ -680,28 +734,6 @@ export function GoogleLoginScreen({role,onBack,onSuccess}:{role:Role;onBack:()=>
         </button>
 
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-
-        {/* Divider */}
-        <div className="flex items-center gap-3 w-full my-5">
-          <div style={{flex:1,height:1,background:BDR}}/>
-          <span style={{fontSize:12,color:MUTED,fontFamily:IPS}}>atau</span>
-          <div style={{flex:1,height:1,background:BDR}}/>
-        </div>
-
-        {/* Akun tersimpan — mock chooser */}
-        <div style={{background:CARD,border:`1px solid ${BDR}`,width:"100%"}} className="rounded-2xl overflow-hidden">
-          <p className="text-xs font-semibold px-4 pt-3 pb-2 text-left" style={{color:MUTED}}>Akun di perangkat ini</p>
-          <button onClick={masuk} className="w-full flex items-center gap-3 px-4 py-3 text-left" style={{borderTop:`1px solid ${BDR}`,minHeight:60}}>
-            <div style={{width:38,height:38,borderRadius:"50%",background:isGuru?T:A,color:"#fff",fontFamily:PJS,fontWeight:700,flexShrink:0}} className="flex items-center justify-center text-sm">
-              {isGuru?"S":"A"}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold" style={{color:TEXT}}>{isGuru?"Sari Dewi":"Ani Rahmawati"}</p>
-              <p className="text-xs truncate" style={{color:MUTED,fontFamily:DMM}}>{isGuru?"sari.dewi@gmail.com":"ani.rahma@gmail.com"}</p>
-            </div>
-            <ChevronRight size={16} style={{color:MUTED,flexShrink:0}}/>
-          </button>
-        </div>
 
         <p className="text-xs leading-relaxed mt-5" style={{color:MUTED}}>
           Dengan melanjutkan, Anda menyetujui{" "}
