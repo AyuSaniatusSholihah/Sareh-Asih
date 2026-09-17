@@ -247,32 +247,46 @@ export function AddStudentSheet({
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-4 flex gap-2 flex-shrink-0" style={{borderTop:`1px solid ${BDR}`}}>
+            <div className="px-5 py-4 flex gap-3 flex-shrink-0" style={{borderTop:`1px solid ${BDR}`}}>
               {step==="identitas" && (
                 <button onClick={onBack || onClose}
-                  style={{flex:1,border:`1.5px solid ${T}`,color:T,fontFamily:IPS,minHeight:48,background:CARD}} className="rounded-2xl text-sm font-semibold">
-                  Kembali
+                  style={{flex:1,border:`2px solid ${DEEP}`,color:DEEP,fontFamily:PJS,fontWeight:700,fontSize:14,minHeight:50,background:CARD,borderRadius:16}}
+                  className="active:scale-[0.98] transition-all cursor-pointer">
+                  ← Kembali
                 </button>
               )}
               {step==="abk" && (
                 <button onClick={()=>setStep("identitas")}
-                  style={{flex:1,border:`1.5px solid ${T}`,color:T,fontFamily:IPS,minHeight:48,background:CARD}} className="rounded-2xl text-sm font-semibold">
-                  Kembali
+                  style={{flex:1,border:`2px solid ${DEEP}`,color:DEEP,fontFamily:PJS,fontWeight:700,fontSize:14,minHeight:50,background:CARD,borderRadius:16}}
+                  className="active:scale-[0.98] transition-all cursor-pointer">
+                  ← Kembali
                 </button>
               )}
               <button
                 onClick={()=>{ if (step==="identitas") { if (canNext) setStep("abk"); } else save(); }}
                 disabled={step==="identitas" && !canNext}
-                style={{flex:2,background:(step==="identitas"&&!canNext)?"#D1D5DB":A,color:"#fff",fontFamily:IPS,minHeight:48}}
-                className="rounded-2xl text-sm font-semibold">
+                style={{
+                  flex:2,
+                  background:(step==="identitas"&&!canNext) ? "#D1D5DB" : A,
+                  color:"#fff",
+                  fontFamily:PJS,
+                  fontWeight:700,
+                  fontSize:15,
+                  minHeight:50,
+                  borderRadius:16,
+                  border:"none",
+                  boxShadow:(step==="identitas"&&!canNext) ? "none" : "0 6px 20px rgba(210,125,107,0.42)",
+                  cursor:(step==="identitas"&&!canNext) ? "not-allowed" : "pointer"
+                }}
+                className="active:scale-[0.98] transition-all">
                 {step==="identitas" ? "Lanjut →" : "Simpan Siswa"}
               </button>
             </div>
             {step==="identitas" && (
               <div className="px-5 pb-4 -mt-2">
                 <button onClick={()=>canNext && save()} disabled={!canNext}
-                  style={{width:"100%",color:canNext?T:"#C4CBC6",fontFamily:IPS,minHeight:38,background:"transparent"}}
-                  className="text-xs font-semibold">
+                  style={{width:"100%",color:canNext?DEEP:"#9CA3AF",fontFamily:PJS,fontWeight:600,minHeight:38,background:"transparent",border:"none",cursor:canNext?"pointer":"default"}}
+                  className="text-xs">
                   Simpan cepat tanpa profil detail
                 </button>
               </div>
@@ -283,7 +297,7 @@ export function AddStudentSheet({
         {step==="success" && (
           <div className="flex flex-col items-center justify-center px-6 py-8 text-center">
             <div style={{width:72,height:72,background:SEC}} className="rounded-3xl flex items-center justify-center mb-4">
-              <CheckCircle size={36} style={{color:T}}/>
+              <CheckCircle size={36} style={{color:DEEP}}/>
             </div>
             <p className="font-bold text-xl mb-1" style={{fontFamily:PJS,color:TEXT}}>Siswa Ditambahkan!</p>
             <p className="text-sm leading-relaxed mb-1" style={{color:MUTED,fontFamily:IPS}}>
@@ -293,11 +307,36 @@ export function AddStudentSheet({
               Kode akses orang tua otomatis dibuat — bisa dilihat di halaman profil siswa.
             </p>
             <button onClick={tambahLagi}
-              style={{width:"100%",border:`1.5px solid ${T}`,color:T,fontFamily:IPS,minHeight:48,background:"transparent"}}
-              className="rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 mb-2">
-              <UserPlus size={15}/>Tambah Siswa Lain
+              style={{
+                width:"100%",
+                border:`2px solid ${DEEP}`,
+                color:DEEP,
+                fontFamily:PJS,
+                fontWeight:700,
+                fontSize:14,
+                minHeight:50,
+                background:CARD,
+                borderRadius:16,
+                cursor:"pointer"
+              }}
+              className="flex items-center justify-center gap-2 mb-3 active:scale-[0.98] transition-all">
+              <UserPlus size={16}/> Tambah Siswa Lain
             </button>
-            <button onClick={onClose} style={{background:A,color:"#fff",fontFamily:IPS,minHeight:48}} className="w-full rounded-2xl text-sm font-semibold">
+            <button onClick={onClose}
+              style={{
+                width:"100%",
+                background:A,
+                color:"#fff",
+                fontFamily:PJS,
+                fontWeight:700,
+                fontSize:15,
+                minHeight:52,
+                borderRadius:16,
+                border:"none",
+                cursor:"pointer",
+                boxShadow:"0 6px 20px rgba(210,125,107,0.42)"
+              }}
+              className="active:scale-[0.98] transition-all">
               {firstTime ? `Selesai${savedCount?` · ${savedCount} siswa`:""} → Masuk Aplikasi` : "Selesai"}
             </button>
           </div>

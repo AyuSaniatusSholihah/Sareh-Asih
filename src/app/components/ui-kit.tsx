@@ -12,7 +12,7 @@ export const CARD = "#FFFFFF";   // Card surface
 export const TEXT = "#2E3E35";   // Dark Charcoal Green — text
 export const MUTED= "#6B8070";   // Muted sage — secondary text
 export const SEC  = "#D4E8DA";   // Light sage tint — secondary bg
-export const BDR  = "rgba(91,122,104,0.18)"; // Soft sage border
+export const BDR  = "rgba(91,122,104,0.35)"; // Prominent sage stroke
 export const DEEP = "#5B7A68";   // Deep Forest — supporting components
 export const TEAL = "#5B7A68";   // Deep sage — complement
 export const PJS  = "'Plus Jakarta Sans', sans-serif";
@@ -37,34 +37,181 @@ export const useUI = () => useContext(UI);
 
 // ─── Atoms ───────────────────────────────────────────────────────────
 export function Chip({ label, color }: { label:string; color:"purple"|"blue"|"orange"|"pink"|"gray" }) {
-  const m={purple:{bg:"#F3EFFF",tx:"#6D28D9"},blue:{bg:"#EFF6FF",tx:"#1D4ED8"},orange:{bg:"#FFF7ED",tx:"#C2410C"},pink:{bg:"#FDF2F8",tx:"#9D174D"},gray:{bg:"#F3F4F6",tx:"#374151"}};
+  const m={
+    purple:{bg:"rgba(91,122,104,0.14)",tx:DEEP,bdr:"rgba(91,122,104,0.3)"},
+    blue:{bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)"},
+    orange:{bg:"rgba(210,125,107,0.14)",tx:A,bdr:"rgba(210,125,107,0.35)"},
+    pink:{bg:"rgba(210,125,107,0.18)",tx:A,bdr:"rgba(210,125,107,0.4)"},
+    gray:{bg:"#EBF3ED",tx:TEXT,bdr:"rgba(91,122,104,0.22)"}
+  };
   const c=m[color]??m.gray;
-  return <span style={{background:c.bg,color:c.tx,fontFamily:IPS}} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold">{label}</span>;
+  return <span style={{background:c.bg,color:c.tx,border:`1px solid ${c.bdr}`,fontFamily:PJS}} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold">{label}</span>;
 }
 
 export type StatusType = "Berjalan"|"Tercapai"|"Tidak Tercapai"|"Direkomendasikan"|"Didaftarkan"|"Selesai"|"Sudah Dibaca"|"Belum Dibaca";
 
 export function SBadge({ s }: { s:StatusType }) {
-  const m:Record<StatusType,{bg:string;tx:string;I:typeof CheckCircle}> = {
-    "Berjalan":        {bg:"#EFF6FF",tx:"#1D4ED8",I:Clock      },
-    "Tercapai":        {bg:"#F0FDF4",tx:"#15803D",I:CheckCircle},
-    "Tidak Tercapai":  {bg:"#FEF2F2",tx:"#B91C1C",I:XCircle    },
-    "Direkomendasikan":{bg:SEC,      tx:T,        I:Sparkles   },
-    "Didaftarkan":     {bg:"#F0FDF4",tx:"#15803D",I:CheckCircle},
-    "Selesai":         {bg:"#F3F4F6",tx:"#374151",I:Trophy     },
-    "Sudah Dibaca":    {bg:"#F0FDF4",tx:"#15803D",I:Eye        },
-    "Belum Dibaca":    {bg:"#FEF9EC",tx:"#92400E",I:Bell       },
+  const m:Record<StatusType,{bg:string;tx:string;bdr:string;I:typeof CheckCircle}> = {
+    "Berjalan":        {bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)",I:Clock},
+    "Tercapai":        {bg:"#D4E8DA",tx:"#2E3E35",bdr:"#8BB098",I:CheckCircle},
+    "Tidak Tercapai":  {bg:"rgba(210,125,107,0.15)",tx:A,bdr:"rgba(210,125,107,0.35)",I:XCircle},
+    "Direkomendasikan":{bg:"rgba(210,125,107,0.15)",tx:A,bdr:"rgba(210,125,107,0.35)",I:Sparkles},
+    "Didaftarkan":     {bg:"#D4E8DA",tx:"#2E3E35",bdr:"#8BB098",I:CheckCircle},
+    "Selesai":         {bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)",I:Trophy},
+    "Sudah Dibaca":    {bg:"#D4E8DA",tx:"#2E3E35",bdr:"#8BB098",I:Eye},
+    "Belum Dibaca":    {bg:"rgba(210,125,107,0.15)",tx:A,bdr:"rgba(210,125,107,0.35)",I:Bell},
   };
-  const {bg,tx,I}=m[s]??{bg:"#F3F4F6",tx:"#374151",I:Circle};
-  return <span style={{background:bg,color:tx,fontFamily:IPS}} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold"><I size={11}/>{s}</span>;
+  const {bg,tx,bdr,I}=m[s]??{bg:SEC,tx:DEEP,bdr:BDR,I:Circle};
+  return <span style={{background:bg,color:tx,border:`1px solid ${bdr}`,fontFamily:PJS}} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold"><I size={11} strokeWidth={2.2}/>{s}</span>;
 }
 
-export function PBtn({label,icon,onClick,full,disabled}:{label:string;icon?:React.ReactNode;onClick?:()=>void;full?:boolean;disabled?:boolean}) {
+export type PrimaryBtnVariant = "solid" | "light" | "outline";
+export type SecondaryBtnVariant = "sage" | "deep" | "light" | "outline";
+
+export function PBtn({
+  label,
+  icon,
+  onClick,
+  full,
+  disabled,
+  variant = "solid",
+  size = "md",
+  className = "",
+  style = {},
+}: {
+  label: React.ReactNode;
+  icon?: React.ReactNode;
+  onClick?: () => void;
+  full?: boolean;
+  disabled?: boolean;
+  variant?: PrimaryBtnVariant;
+  size?: "sm" | "md" | "lg";
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const minH = size === "sm" ? 40 : size === "lg" ? 54 : 48;
+  const fSize = size === "sm" ? 13 : size === "lg" ? 15 : 14;
+  const pad = size === "sm" ? "8px 16px" : size === "lg" ? "14px 24px" : "12px 20px";
+
+  let bg = A;
+  let color = "#FFFFFF";
+  let border = "none";
+  let shadow = "0 6px 20px rgba(210,125,107,0.45)";
+
+  if (disabled) {
+    bg = "#CBD5E1";
+    color = "#94A3B8";
+    shadow = "none";
+  } else if (variant === "light") {
+    bg = "rgba(210,125,107,0.16)";
+    color = A;
+    border = "1.5px solid rgba(210,125,107,0.35)";
+    shadow = "none";
+  } else if (variant === "outline") {
+    bg = "transparent";
+    color = A;
+    border = `2.5px solid ${A}`;
+    shadow = "none";
+  }
+
   return (
-    <button onClick={onClick} disabled={disabled}
-      style={{background:disabled?"#D1D5DB":A,color:"#fff",fontFamily:IPS,minHeight:48}}
-      className={`${full?"w-full":""} inline-flex items-center justify-center gap-2 px-5 rounded-2xl font-semibold text-sm hover:opacity-90 transition-opacity`}>
-      {icon}{label}
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        background: bg,
+        color,
+        border,
+        boxShadow: shadow,
+        fontFamily: PJS,
+        fontWeight: 800,
+        fontSize: fSize,
+        minHeight: minH,
+        padding: pad,
+        borderRadius: 16,
+        cursor: disabled ? "not-allowed" : "pointer",
+        ...style,
+      }}
+      className={`${full ? "w-full" : ""} inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-all ${className}`}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+}
+
+export function SBtn({
+  label,
+  icon,
+  onClick,
+  full,
+  disabled,
+  variant = "sage",
+  size = "md",
+  className = "",
+  style = {},
+}: {
+  label: React.ReactNode;
+  icon?: React.ReactNode;
+  onClick?: () => void;
+  full?: boolean;
+  disabled?: boolean;
+  variant?: SecondaryBtnVariant;
+  size?: "sm" | "md" | "lg";
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const minH = size === "sm" ? 40 : size === "lg" ? 54 : 48;
+  const fSize = size === "sm" ? 13 : size === "lg" ? 15 : 14;
+  const pad = size === "sm" ? "8px 16px" : size === "lg" ? "14px 24px" : "12px 20px";
+
+  let bg = T;
+  let color = "#FFFFFF";
+  let border = "none";
+  let shadow = "0 6px 18px rgba(139,176,152,0.38)";
+
+  if (disabled) {
+    bg = "#D1D5DB";
+    color = "#9CA3AF";
+    shadow = "none";
+  } else if (variant === "deep") {
+    bg = DEEP;
+    color = "#FFFFFF";
+    shadow = "0 6px 18px rgba(91,122,104,0.38)";
+  } else if (variant === "light") {
+    bg = SEC;
+    color = TEXT;
+    border = `1.5px solid rgba(91,122,104,0.22)`;
+    shadow = "0 2px 8px rgba(91,122,104,0.08)";
+  } else if (variant === "outline") {
+    bg = "transparent";
+    color = DEEP;
+    border = `2px solid ${DEEP}`;
+    shadow = "none";
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        background: bg,
+        color,
+        border,
+        boxShadow: shadow,
+        fontFamily: PJS,
+        fontWeight: 700,
+        fontSize: fSize,
+        minHeight: minH,
+        padding: pad,
+        borderRadius: 16,
+        cursor: disabled ? "not-allowed" : "pointer",
+        ...style,
+      }}
+      className={`${full ? "w-full" : ""} inline-flex items-center justify-center gap-2 active:scale-[0.98] transition-all ${className}`}
+    >
+      {icon}
+      <span>{label}</span>
     </button>
   );
 }

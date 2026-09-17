@@ -7,10 +7,13 @@ import {
   LogOut, Lock, FileText, Clock, XCircle,
   CheckSquare, UserPlus, CalendarDays, HeartPulse, Key, Copy, RefreshCw,
   Settings, Volume2, VolumeX, X, HelpCircle, Mic, MicOff, Calendar, Plus,
+  Percent, User, ArrowLeft,
 } from "lucide-react";
-import {
-  RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer,
-} from "recharts";
+
+import classDrawingImg from "@/imports/class_drawing.jpg";
+import classGroupImg from "@/imports/class_group.jpg";
+import classActivityImg from "@/imports/class_activity.jpg";
+
 
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM,
@@ -30,7 +33,6 @@ import {
 import { AddStudentSheet } from "./components/add-student";
 import guruIcon from "@/imports/guru-icon.png";
 import ortuIcon from "@/imports/ortu-icon.png";
-import siswaIcon from "@/imports/siswa-icon.png";
 import { ObservationScreen } from "./components/observation";
 import { VoiceTextarea } from "./components/voice-input";
 import { KodeAksesCard, KodeAksesScreen, ExportPanel, StudentPicker } from "./components/kode-manager";
@@ -78,7 +80,7 @@ function SearchOverlay({onClose}:{onClose:()=>void}) {
           <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:6}}>
             {results.map(s=>(
               <div key={s.id} onClick={onClose} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 4px",borderBottom:`1px solid ${BDR}`,cursor:"pointer"}}>
-                <img src={siswaIcon} style={{width:24,height:24,objectFit:"contain"}}/>
+                <span style={{fontSize:22}}>{s.emoji}</span>
                 <div>
                   <p style={{fontSize:13,fontWeight:600,color:TEXT,fontFamily:PJS}}>{s.name}</p>
                   <p style={{fontSize:11,color:MUTED,fontFamily:IPS}}>{s.kelas} · {s.abk}</p>
@@ -282,8 +284,8 @@ function GlobalHeader({title,sub}:{title:string;sub?:string}) {
 // ─── Bottom nav ───────────────────────────────────────────────────────
 const GURU_NAV = [
   {k:"dashboard",l:"Beranda",I:Home},
-  {k:"students",l:"Siswa",I:Users},
-  {k:"talent-map",l:"Bakat",I:Sparkles},
+  {k:"students",l:"Kelas",I:Users},
+  {k:"talent-map",l:"Bakat",I:Star},
   {k:"competition",l:"Agenda",I:Calendar},
   {k:"report",l:"Laporan",I:FileText},
 ];
@@ -298,14 +300,21 @@ function BotNav({role,screen,go}:{role:Role;screen:Screen;go:(s:Screen)=>void}) 
   const nav = role==="guru" ? GURU_NAV : ORTU_NAV;
   return (
     <div style={{background:CARD,borderTop:`1px solid ${BDR}`,flexShrink:0}}>
-      <div className="flex">
+      <div className="flex px-2 py-1">
         {nav.map(({k,l,I})=>{
           const active=screen===k;
           return (
-            <button key={k} onClick={()=>go(k as Screen)} style={{fontFamily:IPS,minHeight:56}} className="flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors">
-              <I size={21} style={{color:active?T:MUTED}}/>
-              <span style={{fontSize:10,fontWeight:600,color:active?T:MUTED}}>{l}</span>
-              {active&&<div style={{width:4,height:4,borderRadius:"50%",background:T}}/>}
+            <button key={k} onClick={()=>go(k as Screen)} style={{fontFamily:IPS,minHeight:52}} className="flex-1 flex flex-col items-center justify-center gap-0.5 transition-all">
+              <div style={{
+                display:"flex",alignItems:"center",justifyContent:"center",
+                padding: active ? "3px 14px" : "3px 0",
+                borderRadius: 16,
+                background: active ? "rgba(91,122,104,0.16)" : "transparent",
+                transition: "all 0.2s ease"
+              }}>
+                <I size={20} strokeWidth={active ? 2.5 : 1.8} style={{color:active?DEEP:MUTED}}/>
+              </div>
+              <span style={{fontSize:10,fontWeight:active?800:500,color:active?DEEP:MUTED,fontFamily:active?PJS:IPS}}>{l}</span>
             </button>
           );
         })}
@@ -504,10 +513,42 @@ function DashboardGuru({go,onStartObs,guru,onAddStudent}:{
   const firstName = guru.nama.split(" ")[0];
 
   const quickActions = [
-    {icon:<Users size={20}/>,    label:"Kelas Saya",  sub:"Lihat perkembangan siswa",     bg:"#E4F2EC", color:DEEP,      onClick:()=>go("students")},
-    {icon:<Star size={20}/>,     label:"Bakat Anak",  sub:"Lihat potensi dan minat anak", bg:"#F1EBF7", color:"#7C3AED", onClick:()=>go("talent-map")},
-    {icon:<Calendar size={20}/>, label:"Agenda",      sub:"Jadwal kegiatan kelas",         bg:"#E6F0F5", color:"#1D4ED8", onClick:()=>go("competition")},
-    {icon:<FileText size={20}/>, label:"Laporan",     sub:"Unduh laporan perkembangan",   bg:"#FBF3E6", color:"#B45309", onClick:()=>go("report")},
+    {
+      icon: <Percent size={21} strokeWidth={2.6}/>,
+      label: "Kelas Saya",
+      sub: "Lihat perkembangan siswa di kelas.",
+      iconBg: "#D4E8DA", // Light sage matching background
+      iconBorder: "1.5px solid rgba(91,122,104,0.35)",
+      iconColor: "#1B2E24", // High contrast dark charcoal green
+      onClick: () => go("students")
+    },
+    {
+      icon: <Star size={20} strokeWidth={2.4}/>,
+      label: "Bakat Anak",
+      sub: "Lihat potensi & minat bakat anak.",
+      iconBg: "rgba(210,125,107,0.16)",
+      iconBorder: "1.5px solid rgba(210,125,107,0.38)",
+      iconColor: "#A64735",
+      onClick: () => go("talent-map")
+    },
+    {
+      icon: <Calendar size={20} strokeWidth={2.4}/>,
+      label: "Agenda",
+      sub: "Jadwal kegiatan kelas & agenda lomba.",
+      iconBg: "rgba(91,122,104,0.16)",
+      iconBorder: "1.5px solid rgba(91,122,104,0.38)",
+      iconColor: "#1B2E24",
+      onClick: () => go("competition")
+    },
+    {
+      icon: <FileText size={20} strokeWidth={2.4}/>,
+      label: "Laporan",
+      sub: "Unduh laporan kemajuan siswa.",
+      iconBg: "rgba(139,176,152,0.20)",
+      iconBorder: "1.5px solid rgba(91,122,104,0.35)",
+      iconColor: "#1B2E24",
+      onClick: () => go("report")
+    },
   ];
 
   // Group students by kelas
@@ -538,7 +579,7 @@ function DashboardGuru({go,onStartObs,guru,onAddStudent}:{
             <button style={{width:38,height:38,background:"rgba(139,176,152,0.12)",borderRadius:12,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
               <Bell size={16} style={{color:TEXT}}/>
               {pendingObs.length > 0 && (
-                <span style={{position:"absolute",top:8,right:9,width:7,height:7,background:"#F97316",borderRadius:"50%",border:"2px solid #fff"}}/>
+                <span style={{position:"absolute",top:8,right:9,width:7,height:7,background:A,borderRadius:"50%",border:"2px solid #fff"}}/>
               )}
             </button>
             <button onClick={openSettings}
@@ -554,40 +595,89 @@ function DashboardGuru({go,onStartObs,guru,onAddStudent}:{
 
         {/* ── Alert Banner ── */}
         {pendingObs.length > 0 && (
-          <div style={{background:"#FCEBEB",border:"1px solid #F5D6D6",borderRadius:22,padding:"14px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,boxShadow:"0 2px 8px rgba(185,56,56,0.08)"}}>
-            <div style={{display:"flex",alignItems:"flex-start",gap:10,flex:1,minWidth:0}}>
-              <div style={{width:40,height:40,borderRadius:14,background:"#F2C2C2",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                <Bell size={16} style={{color:"#B93838"}}/>
+          <div style={{
+            background: `linear-gradient(135deg, ${A} 0%, #C46F5F 100%)`,
+            borderRadius: 22,
+            padding: "14px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            boxShadow: "0 8px 24px rgba(210,125,107,0.38)",
+            color: "#FFFFFF"
+          }}>
+            <div style={{display:"flex",alignItems:"center",gap:10,flex:1,minWidth:0}}>
+              <div style={{width:42,height:42,borderRadius:14,background:"rgba(255,255,255,0.22)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,backdropFilter:"blur(4px)"}}>
+                <Bell size={20} style={{color:"#FFFFFF"}}/>
               </div>
               <div style={{minWidth:0}}>
-                <p style={{fontSize:14,fontWeight:700,color:"#B93838",fontFamily:PJS}}>{pendingObs.length} pengamatan perlu diperiksa</p>
-                <p style={{fontSize:11,color:"#8A5555",marginTop:2,lineHeight:1.4}}>Jangan lupa untuk melihat detailnya</p>
+                <p style={{fontSize:13.5,fontWeight:800,color:"#FFFFFF",fontFamily:PJS,lineHeight:1.2}}>{pendingObs.length} pengamatan perlu diperiksa</p>
+                <p style={{fontSize:11,color:"rgba(255,255,255,0.88)",marginTop:2,lineHeight:1.3}}>Tap untuk lengkapi pengamatan siswa</p>
               </div>
             </div>
             <button onClick={()=>go("students")}
-              style={{background:"#D96B54",color:"#fff",border:"none",borderRadius:12,padding:"9px 12px",fontFamily:IPS,fontSize:12,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
-              Lihat Sekarang <ChevronRight size={12}/>
+              style={{
+                background: "#FFFFFF",
+                color: A,
+                border: "none",
+                borderRadius: 14,
+                padding: "9px 13px",
+                fontFamily: PJS,
+                fontSize: 12,
+                fontWeight: 800,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 3,
+                flexShrink: 0,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.12)"
+              }}
+              className="active:scale-95 transition-transform">
+              Lihat <ChevronRight size={13} strokeWidth={2.5}/>
             </button>
           </div>
         )}
 
         {/* ── Aksi Cepat ── */}
         <div>
-          <p style={{fontFamily:PJS,fontSize:16,fontWeight:700,color:TEXT,marginBottom:10}}>Aksi Cepat</p>
+          <p style={{fontFamily:PJS,fontSize:16,fontWeight:800,color:TEXT,marginBottom:10}}>Aksi Cepat</p>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             {quickActions.map((a,i)=>(
               <button key={i} onClick={a.onClick}
-                style={{background:a.bg,border:"none",borderRadius:22,padding:"14px",cursor:"pointer",textAlign:"left",display:"flex",flexDirection:"column",justifyContent:"space-between",minHeight:112}}
-                className="active:scale-[0.97] transition-transform">
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
-                  <div style={{width:40,height:40,borderRadius:14,background:"rgba(255,255,255,0.82)",display:"flex",alignItems:"center",justifyContent:"center",color:a.color,boxShadow:"0 1px 4px rgba(0,0,0,0.07)"}}>
+                style={{
+                  background: CARD,
+                  border: `1.5px solid rgba(91,122,104,0.18)`,
+                  borderRadius: 22,
+                  padding: "16px 14px 14px",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  minHeight: 128,
+                  boxShadow: "0 4px 14px rgba(91,122,104,0.06)",
+                }}
+                className="active:scale-[0.97] transition-all hover:shadow-md">
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",width:"100%"}}>
+                  <div style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    background: a.iconBg,
+                    border: a.iconBorder || "none",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: a.iconColor || "#FFFFFF",
+                    flexShrink: 0
+                  }}>
                     {a.icon}
                   </div>
-                  <ChevronRight size={13} style={{color:MUTED,marginTop:3}}/>
+                  <ChevronRight size={18} style={{color:"#2E3E35",marginTop:4}} strokeWidth={2.2}/>
                 </div>
-                <div>
-                  <p style={{fontFamily:PJS,fontWeight:700,fontSize:14,color:TEXT,marginBottom:2}}>{a.label}</p>
-                  <p style={{fontSize:11,color:MUTED,lineHeight:1.35}}>{a.sub}</p>
+                <div style={{marginTop:12}}>
+                  <p style={{fontFamily:PJS,fontWeight:800,fontSize:15.5,color:"#1B2E24",marginBottom:3,lineHeight:1.2}}>{a.label}</p>
+                  <p style={{fontSize:11.5,color:MUTED,lineHeight:1.35,fontWeight:500}}>{a.sub}</p>
                 </div>
               </button>
             ))}
@@ -597,16 +687,16 @@ function DashboardGuru({go,onStartObs,guru,onAddStudent}:{
         {/* ── Perkembangan Siswa ── */}
         <div>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-            <p style={{fontFamily:PJS,fontSize:16,fontWeight:700,color:TEXT}}>Perkembangan Siswa</p>
-            <button onClick={()=>go("students")} style={{fontSize:12,fontWeight:600,color:T,background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:3}}>
-              Lihat semua <ChevronRight size={12}/>
+            <p style={{fontFamily:PJS,fontSize:16,fontWeight:800,color:TEXT}}>Perkembangan Siswa</p>
+            <button onClick={()=>go("students")} style={{fontSize:12,fontWeight:700,color:DEEP,background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:3}}>
+              Lihat semua <ChevronRight size={12} strokeWidth={2.2}/>
             </button>
           </div>
 
           {students.length === 0 ? (
             <div style={{background:CARD,border:`1.5px dashed ${BDR}`,borderRadius:22,padding:24,textAlign:"center"}}>
               <div style={{width:52,height:52,background:SEC,borderRadius:16,margin:"0 auto 12px",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <Users size={24} style={{color:T}}/>
+                <Users size={24} style={{color:DEEP}}/>
               </div>
               <p style={{fontWeight:700,fontSize:14,fontFamily:PJS,color:TEXT,marginBottom:6}}>Belum ada siswa</p>
               <p style={{fontSize:12,color:MUTED,lineHeight:1.6,marginBottom:16}}>Tambahkan siswa untuk mulai pengamatan dan pemetaan bakat.</p>
@@ -618,26 +708,27 @@ function DashboardGuru({go,onStartObs,guru,onAddStudent}:{
                 const sudahDiamati = siswaList.filter(s=>s.hasObs).length;
                 const allDone = sudahDiamati === siswaList.length;
                 return (
-                  <div key={kelas} style={{background:CARD,border:`1px solid ${BDR}`,borderRadius:22,padding:14,boxShadow:"0 1px 6px rgba(91,122,104,0.06)"}}>
+                  <div key={kelas} style={{background:CARD,border:`1px solid ${BDR}`,borderRadius:22,padding:14,boxShadow:"0 2px 10px rgba(91,122,104,0.08)"}}>
                     {/* Kelas header */}
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
                       <div style={{display:"flex",alignItems:"center",gap:10}}>
-                        <div style={{width:38,height:38,borderRadius:12,background:SEC,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                          <Users size={16} style={{color:DEEP}}/>
+                        <div style={{width:38,height:38,borderRadius:12,background:DEEP,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 3px 8px rgba(91,122,104,0.25)"}}>
+                          <Users size={16} style={{color:"#FFFFFF"}}/>
                         </div>
                         <div>
-                          <p style={{fontFamily:PJS,fontWeight:700,fontSize:14,color:TEXT,lineHeight:1}}>{kelas}</p>
+                          <p style={{fontFamily:PJS,fontWeight:800,fontSize:14,color:TEXT,lineHeight:1}}>{kelas}</p>
                           <p style={{fontSize:11,color:MUTED,marginTop:2}}>{sudahDiamati} dari {siswaList.length} siswa sudah diamati</p>
                         </div>
                       </div>
                       <span style={{
-                        background: allDone ? "#E4F0E9" : "#FEF3E2",
-                        color: allDone ? "#15803D" : "#B45309",
-                        fontSize:11, fontWeight:700, padding:"4px 10px", borderRadius:20,
-                        border:`1px solid ${allDone?"#BBF7D0":"#FED7AA"}`,
+                        background: allDone ? "#D4E8DA" : "rgba(210,125,107,0.15)",
+                        color: allDone ? "#2E3E35" : A,
+                        fontSize:11, fontWeight:800, padding:"4px 10px", borderRadius:20,
+                        border:`1px solid ${allDone?"#8BB098":"rgba(210,125,107,0.35)"}`,
                         display:"flex", alignItems:"center", gap:3, flexShrink:0,
+                        fontFamily:PJS
                       }}>
-                        {allDone && <CheckCircle size={10}/>}
+                        {allDone && <CheckCircle size={11}/>}
                         {sudahDiamati}/{siswaList.length} Siswa
                       </span>
                     </div>
@@ -646,25 +737,30 @@ function DashboardGuru({go,onStartObs,guru,onAddStudent}:{
                     <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
                       {siswaList.slice(0,5).map(s=>(
                         <button key={s.id} onClick={()=>onStartObs(s.id)}
-                          style={{display:"flex",alignItems:"center",gap:6,background:BG,border:`1px solid ${BDR}`,borderRadius:10,padding:"6px 10px",cursor:"pointer"}}>
-                          <img src={siswaIcon} style={{width:20,height:20,objectFit:"contain"}}/>
+                          style={{
+                            display:"flex",alignItems:"center",gap:6,
+                            background: !s.hasObs ? "rgba(210,125,107,0.08)" : BG,
+                            border: !s.hasObs ? "1.5px solid rgba(210,125,107,0.38)" : `1px solid ${BDR}`,
+                            borderRadius:12,padding:"6px 10px",cursor:"pointer"
+                          }}>
+                          <span style={{fontSize:18}}>{s.emoji}</span>
                           <div style={{textAlign:"left"}}>
-                            <p style={{fontSize:12,fontWeight:600,color:TEXT,lineHeight:1}}>{s.name.split(" ")[0]}</p>
-                            {!s.hasObs && <p style={{fontSize:9,color:A,marginTop:1,fontWeight:600}}>Belum diamati</p>}
+                            <p style={{fontSize:12,fontWeight:700,color:TEXT,lineHeight:1,fontFamily:PJS}}>{s.name.split(" ")[0]}</p>
+                            {!s.hasObs && <p style={{fontSize:9,color:A,marginTop:2,fontWeight:700}}>Belum diamati</p>}
                           </div>
                         </button>
                       ))}
                       {siswaList.length > 5 && (
-                        <div style={{display:"flex",alignItems:"center",padding:"6px 10px",background:SEC,borderRadius:10}}>
-                          <p style={{fontSize:11,color:DEEP,fontWeight:600}}>+{siswaList.length-5}</p>
+                        <div style={{display:"flex",alignItems:"center",padding:"6px 10px",background:SEC,borderRadius:12}}>
+                          <p style={{fontSize:11,color:DEEP,fontWeight:700}}>+{siswaList.length-5}</p>
                         </div>
                       )}
                     </div>
 
                     <div style={{borderTop:`1px solid ${BDR}`,paddingTop:10,textAlign:"center"}}>
                       <button onClick={()=>go("students")}
-                        style={{fontSize:12,fontWeight:600,color:T,background:"transparent",border:"none",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:3}}>
-                        Lihat perkembangan kelas <ChevronRight size={11}/>
+                        style={{fontSize:12,fontWeight:700,color:DEEP,background:"transparent",border:"none",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:3}}>
+                        Lihat perkembangan kelas <ChevronRight size={11} strokeWidth={2.2}/>
                       </button>
                     </div>
                   </div>
@@ -681,259 +777,611 @@ function DashboardGuru({go,onStartObs,guru,onAddStudent}:{
 
 
 // ─── STUDENTS + KELOMPOK BELAJAR ─────────────────────────────────────
-function StudentsScreen({go,onAddStudent,onSelect}:{go:(s:Screen)=>void;onAddStudent:()=>void;onSelect:(id:number)=>void}) {
+// ─── KELAS SAYA (DAFTAR KELAS & SISWA) ──────────────────────────────
+interface KelasCardData {
+  id: string;
+  nama: string;
+  abk: string;
+  img: string;
+  count?: number;
+}
+
+const DEFAULT_KELAS_CARDS: KelasCardData[] = [
+  { id: "vii",  nama: "Kelas VII",  abk: "Tunalaras", img: classDrawingImg, count: 10 },
+  { id: "vi-a", nama: "Kelas VI A", abk: "Tunarungu", img: classGroupImg,   count: 10 },
+  { id: "ix-a", nama: "IX A",       abk: "Tunadaksa", img: classActivityImg, count: 10 },
+];
+
+function StudentsScreen({go,onAddStudent,onSelect,guru}:{go:(s:Screen)=>void;onAddStudent:()=>void;onSelect:(id:number)=>void;guru?:GuruProfile}) {
   const students = useStudents();
-  const [mainTab,setMainTab] = useState<"siswa"|"kelompok">("siswa");
-  const [kelTab,setKelTab] = useState<"gaya"|"bakat">("gaya");
-  const [expanded,setExpanded] = useState<string|null>(null);
-  const [q,setQ] = useState("");
-  const filtered = students.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())||s.abk.toLowerCase().includes(q.toLowerCase()));
-  const abkColor = (a:string)=>a.includes("Autism")?"purple":a.includes("Tunarungu")?"blue":a.includes("Tunadaksa")?"orange":"pink";
+  const {openSearch, openSettings} = useUI();
+  const [kelasList, setKelasList] = useState<KelasCardData[]>(DEFAULT_KELAS_CARDS);
+  const [selectedClassId, setSelectedClassId] = useState<string|null>(null);
+  const [isAddingKelas, setIsAddingKelas] = useState(false);
+  const [schoolName, setSchoolName] = useState(guru?.sekolah || "SLB N Surakrata");
+  const [newNama, setNewNama] = useState("");
+  const [selectedAbk, setSelectedAbk] = useState("Autism Spectrum Disorder");
+  const [customAbk, setCustomAbk] = useState("");
+  const [q, setQ] = useState("");
 
-  const withObs = students.filter(s=>s.hasObs);
-  const gayaGroups = Object.entries(
-    withObs.reduce((acc,s)=>{
-      const key = s.caraBelajar||"Belum Diketahui";
-      (acc[key] ||= []).push(s);
-      return acc;
-    }, {} as Record<string,Student[]>)
-  ).sort((a,b)=>b[1].length-a[1].length);
+  const selectedClass = kelasList.find(k => k.id === selectedClassId);
 
-  const talentGroups = Object.entries(
-    withObs.filter(s=>s.talentScore>0).reduce((acc,s)=>{
-      (acc[s.talent] ||= []).push(s);
-      return acc;
-    }, {} as Record<string,Student[]>)
-  ).sort((a,b)=>b[1].length-a[1].length);
+  const getAbkBadge = (abk: string) => {
+    if (abk.includes("Laras") || abk.includes("Ganda") || abk.includes("Autis")) {
+      return { bg: "#F3E8FF", color: "#7C3AED", border: "1px solid #E9D5FF" };
+    }
+    if (abk.includes("Rungu") || abk.includes("Wicara")) {
+      return { bg: "#EFF6FF", color: "#2563EB", border: "1px solid #BFDBFE" };
+    }
+    if (abk.includes("Daksa") || abk.includes("Netra")) {
+      return { bg: "#FFF7ED", color: "#EA580C", border: "1px solid #FFEDD5" };
+    }
+    return { bg: "#ECFDF5", color: "#059669", border: "1px solid #A7F3D0" };
+  };
 
-  const noObsStudents = students.filter(s=>!s.hasObs);
-  const toggleExpand = (key:string) => setExpanded(e=>e===key?null:key);
+  const handleSaveKelas = () => {
+    if (!newNama.trim()) return;
+    const abkFinal = selectedAbk === "Lainnya" && customAbk.trim() ? customAbk.trim() : selectedAbk;
+    const imgs = [classDrawingImg, classGroupImg, classActivityImg];
+    const newK: KelasCardData = {
+      id: Date.now().toString(),
+      nama: newNama.trim(),
+      abk: abkFinal,
+      img: imgs[kelasList.length % imgs.length],
+      count: 0
+    };
+    setKelasList(prev => [...prev, newK]);
+    setNewNama("");
+    setCustomAbk("");
+    setIsAddingKelas(false);
+  };
 
-  return (
-    <div className="flex-1 overflow-y-auto relative" style={{fontFamily:IPS}}>
-      <div style={{background:CARD}} className="px-4 pt-2 pb-0">
-        <div className="flex items-center justify-between mb-2 pt-1">
+  // ─── DEDICATED VIEW: TAMBAH KELAS (Exact Match to Mockup) ─────────────
+  if (isAddingKelas) {
+    const abkOptions = [
+      "Autism Spectrum Disorder",
+      "Tunarungu",
+      "Tunadaksa",
+      "Tunagrahita Ringan",
+      "Tunagrahita Sedang",
+      "Tunanetra",
+      "Tunalaras",
+      "Lainnya"
+    ];
+
+    return (
+      <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS, background:"#EEF4F0", minHeight:"100%"}}>
+        {/* Top Header */}
+        <div style={{display:"flex", alignItems:"flex-start", gap:14, padding:"16px 20px 14px", background:"#EEF4F0"}}>
+          <button
+            onClick={() => setIsAddingKelas(false)}
+            style={{background:"none", border:"none", cursor:"pointer", padding:"2px 0 0", display:"flex", alignItems:"center", color:"#1B2E24"}}
+            title="Kembali"
+          >
+            <ArrowLeft size={22} strokeWidth={2.4}/>
+          </button>
           <div>
-            <p className="font-bold text-xl" style={{fontFamily:PJS,color:TEXT}}>Siswa & Kelompok</p>
-            <p className="text-xs" style={{color:MUTED}}>{students.length} siswa · {withObs.length} sudah didampingi</p>
+            <h1 style={{fontFamily:PJS, fontSize:19, fontWeight:800, color:"#1B2E24", margin:0, lineHeight:1.2}}>
+              Tambah Kelas
+            </h1>
+            <p style={{fontFamily:IPS, fontSize:12.5, color:"#6B7280", margin:0, marginTop:3, fontWeight:500}}>
+              Lengkapi informasi kelas yang akan ditambahkan
+            </p>
           </div>
-          <button onClick={onAddStudent} style={{background:A,color:"#fff",fontFamily:IPS,minHeight:42,flexShrink:0}} className="flex items-center gap-1.5 px-3 rounded-xl text-xs font-bold">
-            <UserPlus size={14}/>Tambah
+        </div>
+
+        {/* Main Card */}
+        <div style={{
+          margin: "8px 16px 36px",
+          background: "#FFFFFF",
+          border: "1.5px solid #8BAE9A",
+          borderRadius: 24,
+          padding: "22px 18px 24px",
+          boxShadow: "0 4px 16px rgba(91,122,104,0.06)"
+        }}>
+          {/* Field 1: Nama Sekolah */}
+          <div style={{marginBottom: 16}}>
+            <label style={{display:"block", fontFamily:PJS, fontSize:13.5, fontWeight:800, color:"#1B2E24", marginBottom:8}}>
+              Nama Sekolah
+            </label>
+            <input
+              value={schoolName}
+              onChange={e => setSchoolName(e.target.value)}
+              placeholder="Nama sekolah . contoh: SLB N Surakrata"
+              style={{
+                width: "100%",
+                border: "1.5px solid #E2E8F0",
+                borderRadius: 14,
+                padding: "13px 16px",
+                fontSize: 13.5,
+                fontFamily: IPS,
+                color: "#1B2E24",
+                background: "#FFFFFF",
+                outline: "none",
+                boxSizing: "border-box"
+              }}
+            />
+          </div>
+
+          {/* Field 2: Kelompok Kelas/Ekskul/Mapel * */}
+          <div style={{marginBottom: 16}}>
+            <label style={{display:"block", fontFamily:PJS, fontSize:13.5, fontWeight:800, color:"#1B2E24", marginBottom:8}}>
+              Kelompok Kelas/Ekskul/Mapel <span style={{color:"#EF4444"}}>*</span>
+            </label>
+            <input
+              value={newNama}
+              onChange={e => setNewNama(e.target.value)}
+              placeholder="Nama kelas · contoh: VII A"
+              style={{
+                width: "100%",
+                border: "1.5px solid #E2E8F0",
+                borderRadius: 14,
+                padding: "13px 16px",
+                fontSize: 13.5,
+                fontFamily: IPS,
+                color: "#1B2E24",
+                background: "#FFFFFF",
+                outline: "none",
+                boxSizing: "border-box"
+              }}
+            />
+          </div>
+
+          {/* ABK Options Chips */}
+          <div style={{display:"flex", flexWrap:"wrap", gap:8, marginBottom: 20}}>
+            {abkOptions.map(opt => {
+              const isSelected = selectedAbk === opt;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => setSelectedAbk(opt)}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: 9999,
+                    background: isSelected ? "#5B7A68" : "#EBF3ED",
+                    border: isSelected ? "1.5px solid #5B7A68" : "1.5px solid #BDD5C7",
+                    color: isSelected ? "#FFFFFF" : "#2E4737",
+                    fontFamily: PJS,
+                    fontSize: 12.5,
+                    fontWeight: isSelected ? 800 : 700,
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                    display: "inline-flex",
+                    alignItems: "center"
+                  }}
+                  className="active:scale-95"
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Custom ABK Input if Lainnya is selected */}
+          {selectedAbk === "Lainnya" && (
+            <div style={{marginBottom: 20}}>
+              <label style={{display:"block", fontFamily:PJS, fontSize:12, fontWeight:700, color:"#5B7A68", marginBottom:6}}>
+                Ketik Jenis Kekhususan:
+              </label>
+              <input
+                value={customAbk}
+                onChange={e => setCustomAbk(e.target.value)}
+                placeholder="Contoh: Lamban Belajar / ADHD"
+                style={{
+                  width: "100%",
+                  border: "1.5px solid #5B7A68",
+                  borderRadius: 12,
+                  padding: "11px 14px",
+                  fontSize: 13,
+                  fontFamily: IPS,
+                  color: "#1B2E24",
+                  outline: "none",
+                  boxSizing: "border-box"
+                }}
+              />
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            type="button"
+            disabled={!newNama.trim()}
+            onClick={handleSaveKelas}
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: 14,
+              background: newNama.trim() ? "#5B7A68" : "#CBD5E1",
+              color: "#FFFFFF",
+              border: "none",
+              fontFamily: PJS,
+              fontSize: 14,
+              fontWeight: 800,
+              cursor: newNama.trim() ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+              transition: "all 0.2s ease",
+              boxShadow: newNama.trim() ? "0 4px 14px rgba(91,122,104,0.25)" : "none"
+            }}
+            className={newNama.trim() ? "active:scale-[0.98]" : ""}
+          >
+            <Plus size={16} strokeWidth={2.8} /> Tambah Kelas
+          </button>
+
+          {/* Helper Caption */}
+          <p style={{
+            fontFamily: IPS,
+            fontSize: 11.5,
+            color: "#64748B",
+            marginTop: 14,
+            marginBottom: 0,
+            lineHeight: 1.4
+          }}>
+            Isi nama kelas + tekan jenis ABK, lalu tekan <strong style={{color:"#334155"}}>Tambah Kelas</strong>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // If viewing a specific class detail (students in this class)
+  if (selectedClass) {
+    const classStudents = students.filter(s =>
+      s.kelas.toLowerCase().replace(/\s+/g,'').includes(selectedClass.nama.toLowerCase().replace(/\s+/g,'')) ||
+      selectedClass.nama.toLowerCase().replace(/\s+/g,'').includes(s.kelas.toLowerCase().replace(/\s+/g,''))
+    );
+    const filteredInClass = classStudents.filter(s =>
+      s.name.toLowerCase().includes(q.toLowerCase()) ||
+      s.abk.toLowerCase().includes(q.toLowerCase())
+    );
+
+    return (
+      <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS, background:"#F7F9F8"}}>
+        <TBar
+          title={selectedClass.nama}
+          sub={`${selectedClass.abk} · ${classStudents.length} Siswa`}
+          onBack={() => { setSelectedClassId(null); setQ(""); }}
+          right={
+            <button
+              onClick={onAddStudent}
+              style={{
+                background: A,
+                color: "#fff",
+                fontFamily: PJS,
+                minHeight: 38,
+                borderRadius: 12,
+                padding: "0 12px",
+                fontWeight: 800,
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 3px 10px rgba(210,125,107,0.35)"
+              }}
+              className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"
+            >
+              <UserPlus size={14}/> Tambah Siswa
+            </button>
+          }
+        />
+
+        <div style={{padding:"14px 16px 80px", display:"flex", flexDirection:"column", gap:12}}>
+          {/* Search bar inside class */}
+          <div style={{position:"relative"}}>
+            <Search size={18} style={{position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:"#94A3B8"}}/>
+            <input
+              value={q}
+              onChange={e=>setQ(e.target.value)}
+              placeholder={`Cari siswa di ${selectedClass.nama}...`}
+              style={{
+                width:"100%",
+                border:"1.5px solid rgba(91,122,104,0.20)",
+                borderRadius:16,
+                padding:"11px 14px 11px 40px",
+                fontSize:14,
+                color:TEXT,
+                fontFamily:IPS,
+                background:CARD,
+                outline:"none",
+                minHeight:46
+              }}
+            />
+          </div>
+
+          {classStudents.length === 0 ? (
+            <div style={{background:CARD,border:`1.5px dashed ${BDR}`,borderRadius:22,padding:"32px 20px",textAlign:"center"}}>
+              <div style={{width:52,height:52,background:SEC,borderRadius:16,margin:"0 auto 12px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24}}>
+                🏫
+              </div>
+              <p style={{fontFamily:PJS,fontWeight:800,fontSize:15,color:TEXT,marginBottom:4}}>Belum ada siswa di {selectedClass.nama}</p>
+              <p style={{fontSize:12,color:MUTED,lineHeight:1.5,marginBottom:16}}>Tambahkan siswa pertama ke kelas ini untuk mulai memantau perkembangan dan bakatnya.</p>
+              <button onClick={onAddStudent} style={{background:A,color:"#fff",fontFamily:PJS,fontWeight:800,fontSize:12,padding:"10px 18px",borderRadius:14,border:"none",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}>
+                <UserPlus size={15}/> Tambah Siswa ke {selectedClass.nama}
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {filteredInClass.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => onSelect(s.id)}
+                  style={{
+                    background:CARD,
+                    border:`1.5px solid rgba(91,122,104,0.18)`,
+                    width:"100%",
+                    textAlign:"left",
+                    borderRadius:20,
+                    padding:"12px 14px",
+                    display:"flex",
+                    alignItems:"center",
+                    gap:12,
+                    boxShadow:"0 2px 8px rgba(91,122,104,0.06)",
+                    cursor:"pointer"
+                  }}
+                  className="active:scale-[0.99] transition-transform"
+                >
+                  <div style={{width:46,height:46,background:SEC,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>
+                    {s.emoji}
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <p style={{fontFamily:PJS,fontSize:14.5,fontWeight:800,color:TEXT}}>{s.name}</p>
+                    <p style={{fontSize:11.5,color:MUTED,marginTop:2}}>{s.abk}{s.age ? ` · ${s.age} th` : ""}</p>
+                    <div style={{display:"flex",gap:6,marginTop:4}}>
+                      <span style={{
+                        fontSize:10.5,
+                        fontWeight:700,
+                        padding:"2px 8px",
+                        borderRadius:12,
+                        background: s.hasObs ? "#ECFDF5" : "rgba(210,125,107,0.14)",
+                        color: s.hasObs ? "#059669" : A,
+                        border: `1px solid ${s.hasObs ? "#A7F3D0" : "rgba(210,125,107,0.35)"}`,
+                        display:"flex",
+                        alignItems:"center",
+                        gap:3
+                      }}>
+                        {s.hasObs ? <CheckCircle size={10}/> : null}
+                        {s.hasObs ? "Sudah Diamati" : "Belum Diamati"}
+                      </span>
+                      {s.talent && (
+                        <span style={{fontSize:10.5,fontWeight:700,padding:"2px 8px",borderRadius:12,background:SEC,color:DEEP}}>
+                          {s.talent}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <ChevronRight size={16} style={{color:MUTED,flexShrink:0}} strokeWidth={2.2}/>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <button
+            onClick={() => setSelectedClassId(null)}
+            style={{
+              marginTop: 12,
+              background: "transparent",
+              color: DEEP,
+              border: `1.5px solid ${BDR}`,
+              borderRadius: 14,
+              padding: "10px",
+              fontFamily: PJS,
+              fontWeight: 700,
+              fontSize: 12,
+              cursor: "pointer"
+            }}
+          >
+            ← Kembali ke Semua Kelas
           </button>
         </div>
-        <div className="flex" style={{borderBottom:`1px solid ${BDR}`}}>
-          {[{k:"siswa",l:"Daftar Siswa"},{k:"kelompok",l:"Kelompok Belajar"}].map(t=>(
-            <button key={t.k} onClick={()=>setMainTab(t.k as any)}
-              style={{color:mainTab===t.k?T:MUTED,borderBottom:mainTab===t.k?`2.5px solid ${T}`:"2.5px solid transparent",fontFamily:IPS,minHeight:44,flex:1}}
-              className="text-xs font-bold">{t.l}</button>
-          ))}
+      </div>
+    );
+  }
+
+  // ─── MAIN VIEW: KELAS SAYA SCREEN (Exact Match to Mockup) ─────────────
+  const filteredClasses = kelasList.filter(k =>
+    k.nama.toLowerCase().includes(q.toLowerCase()) ||
+    k.abk.toLowerCase().includes(q.toLowerCase())
+  );
+
+  return (
+    <div className="flex-1 overflow-y-auto relative" style={{fontFamily:IPS, background:"#F7F9F8"}}>
+      {/* ── Header ── */}
+      <div style={{background:CARD, paddingTop:12}}>
+        <div style={{display:"flex", alignItems:"flex-start", justifyContent:"space-between", padding:"8px 20px 10px"}}>
+          <div>
+            <h1 style={{fontFamily:PJS, fontSize:24, fontWeight:800, color:"#1B2E24", lineHeight:1.15}}>
+              Kelas Saya
+            </h1>
+            <p style={{fontSize:13, color:MUTED, marginTop:4, fontWeight:500}}>
+              Kelola Kelas dengan Mudah
+            </p>
+          </div>
+          <div style={{display:"flex", alignItems:"center", gap:6, flexShrink:0, marginTop:4}}>
+            <button onClick={openSearch}
+              style={{width:38,height:38,background:"rgba(139,176,152,0.12)",borderRadius:12,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
+              title="Cari">
+              <Search size={16} style={{color:TEXT}}/>
+            </button>
+            <button onClick={() => {
+              if (students.length > 0) onSelect(students[0].id);
+            }}
+              style={{width:38,height:38,background:"rgba(139,176,152,0.12)",borderRadius:12,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
+              title="Profil Siswa">
+              <User size={16} style={{color:TEXT}}/>
+            </button>
+            <button onClick={openSettings}
+              style={{width:38,height:38,background:"rgba(139,176,152,0.12)",borderRadius:12,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
+              title="Pengaturan">
+              <Settings size={16} style={{color:TEXT}}/>
+            </button>
+          </div>
         </div>
       </div>
 
-      {mainTab==="siswa" && (
-        <div className="px-4 pt-4 pb-6 space-y-3">
-          <div className="relative">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{color:MUTED}}/>
-            <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Cari nama atau jenis ABK..." style={{width:"100%",border:`1.5px solid ${BDR}`,borderRadius:14,padding:"11px 14px 11px 38px",fontSize:15,color:TEXT,fontFamily:IPS,background:CARD,outline:"none",minHeight:48}}/>
-          </div>
+      {/* ── Search Bar ── */}
+      <div style={{padding:"14px 16px 6px"}}>
+        <div style={{position:"relative"}}>
+          <Search size={18} style={{position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:"#94A3B8"}}/>
+          <input
+            value={q}
+            onChange={e=>setQ(e.target.value)}
+            placeholder="Cari nama atau jenis ABK..."
+            style={{
+              width:"100%",
+              border:"1.5px solid rgba(91,122,104,0.20)",
+              borderRadius:18,
+              padding:"12px 14px 12px 42px",
+              fontSize:14,
+              color:TEXT,
+              fontFamily:IPS,
+              background:CARD,
+              outline:"none",
+              minHeight:48,
+              boxShadow:"0 2px 6px rgba(91,122,104,0.04)"
+            }}
+          />
+        </div>
+      </div>
 
-          {filtered.length===0 && (
-            <div style={{background:CARD,border:`1.5px dashed ${BDR}`}} className="rounded-2xl px-4 py-8 text-center">
-              <p className="text-sm font-semibold mb-3" style={{color:MUTED}}>
-                {students.length===0 ? "Belum ada siswa di daftar Anda." : "Tidak ada siswa yang cocok."}
-              </p>
-              {students.length===0 && <PBtn label="Tambah Siswa" icon={<UserPlus size={14}/>} onClick={onAddStudent}/>}
-            </div>
-          )}
+      {/* ── Class Cards List ── */}
+      <div style={{padding:"10px 16px 90px", display:"flex", flexDirection:"column", gap:12}}>
+        {filteredClasses.map(k => {
+          const abkStyle = getAbkBadge(k.abk);
+          const studentCount = students.filter(s =>
+            s.kelas.toLowerCase().replace(/\s+/g,'').includes(k.nama.toLowerCase().replace(/\s+/g,'')) ||
+            k.nama.toLowerCase().replace(/\s+/g,'').includes(s.kelas.toLowerCase().replace(/\s+/g,''))
+          ).length || k.count || 10;
 
-          <div className="space-y-2">
-            {filtered.map(s=>(
-              <button key={s.id} onClick={()=>onSelect(s.id)} style={{background:CARD,border:`1px solid ${BDR}`,width:"100%",textAlign:"left",minHeight:76}} className="rounded-2xl p-4 flex items-center gap-3">
-                <div style={{width:48,height:48,background:SEC,flexShrink:0}} className="rounded-2xl flex items-center justify-center"><img src={siswaIcon} style={{width:28,height:28,objectFit:"contain"}}/></div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>{s.name}</p>
-                  <p className="text-xs" style={{color:MUTED}}>Kelas {s.kelas}{s.age?` · ${s.age}th`:""} · {s.teacher}</p>
-                  <div className="flex gap-1.5 mt-1.5 flex-wrap">
-                    <Chip label={s.abk} color={abkColor(s.abk) as any}/>
-                    {s.hasObs
-                      ? <span className="inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full" style={{background:"#F0FDF4",color:"#15803D"}}><CheckCircle size={10}/>Pengamatan ada</span>
-                      : <span className="inline-flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full" style={{background:"#FEF9EC",color:"#92400E"}}><Clock size={10}/>Belum pengamatan</span>
-                    }
-                  </div>
+          return (
+            <button
+              key={k.id}
+              onClick={() => setSelectedClassId(k.id)}
+              style={{
+                background: CARD,
+                border: `1.5px solid rgba(91,122,104,0.18)`,
+                borderRadius: 22,
+                padding: "14px 16px",
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                width: "100%",
+                textAlign: "left",
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(91,122,104,0.06)",
+              }}
+              className="active:scale-[0.99] transition-all hover:shadow-md"
+            >
+              {/* Left: Illustration Image */}
+              <img
+                src={k.img}
+                alt={k.nama}
+                style={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: 18,
+                  objectFit: "cover",
+                  flexShrink: 0,
+                  border: "1px solid rgba(0,0,0,0.06)"
+                }}
+              />
+
+              {/* Middle: Class Details */}
+              <div style={{flex:1, minWidth:0}}>
+                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:2}}>
+                  <p style={{fontFamily:PJS, fontSize:16.5, fontWeight:800, color:"#1B2E24", lineHeight:1.2}}>
+                    {k.nama}
+                  </p>
+                  <span style={{fontSize:11, fontWeight:700, color:"#5B7A68", fontFamily:PJS}}>
+                    {guru?.sekolah || "SLB N Surakarta"}
+                  </span>
                 </div>
-                <ChevronRight size={15} style={{color:MUTED,flexShrink:0}}/>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
-      {mainTab==="kelompok" && (
-        <div className="px-4 pt-4 pb-6 space-y-3">
-          <div style={{background:SEC,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl px-4 py-3 flex items-start gap-3">
-            <Sparkles size={15} style={{color:T,flexShrink:0,marginTop:1}}/>
-            <div>
-              <p className="text-xs font-bold mb-0.5" style={{color:T,fontFamily:PJS}}>Dikelompokkan otomatis oleh AI</p>
-              <p className="text-xs leading-relaxed" style={{color:T}}>Berdasarkan hasil pengamatan dan pemetaan bakat. Siswa yang belum didampingi tidak masuk kelompok.</p>
-            </div>
-          </div>
+                <div style={{display:"flex", gap:6, alignItems:"center", marginTop:8, flexWrap:"wrap"}}>
+                  {/* ABK badge */}
+                  <span style={{
+                    fontSize:11,
+                    fontWeight:700,
+                    padding:"3.5px 10px",
+                    borderRadius:20,
+                    background: abkStyle.bg,
+                    color: abkStyle.color,
+                    border: abkStyle.border,
+                    fontFamily: PJS
+                  }}>
+                    {k.abk}
+                  </span>
 
-          <div className="flex rounded-2xl overflow-hidden" style={{border:`1px solid ${BDR}`}}>
-            {[{k:"gaya",l:"Per Gaya Belajar"},{k:"bakat",l:"Per Bakat"}].map(t=>(
-              <button key={t.k} onClick={()=>setKelTab(t.k as any)}
-                style={{flex:1,background:kelTab===t.k?T:CARD,color:kelTab===t.k?"#fff":MUTED,fontFamily:IPS,minHeight:38}}
-                className="text-xs font-bold">{t.l}</button>
-            ))}
-          </div>
-
-          {kelTab==="gaya" && (
-            <div className="space-y-2">
-              {gayaGroups.map(([gaya,members])=>{
-                const meta = GAYA_META[gaya];
-                const isOpen = expanded===gaya;
-                return (
-                  <div key={gaya} style={{background:CARD,border:`1px solid ${meta?meta.warna+"33":BDR}`,overflow:"hidden"}} className="rounded-2xl">
-                    <button onClick={()=>toggleExpand(gaya)} className="w-full px-4 py-3 flex items-center gap-3 text-left" style={{minHeight:64}}>
-                      <div style={{width:42,height:42,background:meta?meta.warna+"18":SEC,borderRadius:12,flexShrink:0,fontSize:20,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                        {meta?.icon||"👥"}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>{gaya}</p>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <div className="flex items-center">
-                            {members.slice(0,4).map((s,i)=>(
-                              <img key={s.id} src={siswaIcon} style={{width:18,height:18,marginLeft:i===0?0:-4,objectFit:"contain"}}/>
-                            ))}
-                          </div>
-                          <span className="text-xs" style={{color:MUTED}}>{members.length} siswa</span>
-                        </div>
-                      </div>
-                      <ChevronRight size={15} style={{color:MUTED,flexShrink:0,transform:isOpen?"rotate(90deg)":"rotate(0deg)",transition:"transform 0.2s"}}/>
-                    </button>
-
-                    {isOpen && (
-                      <div style={{borderTop:`1px solid ${meta?meta.warna+"22":BDR}`}}>
-                        <div className="px-4 pt-3 pb-2 flex flex-col gap-2">
-                          {members.map(s=>{
-                            const tc = s.talent ? TALENT_COLOR[s.talent] : null;
-                            return (
-                              <div key={s.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{background:BG}}>
-                                <img src={siswaIcon} style={{width:24,height:24,objectFit:"contain",flexShrink:0}}/>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-semibold" style={{color:TEXT,fontFamily:IPS}}>{s.name}</p>
-                                  <p className="text-xs" style={{color:MUTED}}>Kelas {s.kelas} · {s.abk}</p>
-                                </div>
-                                {tc && s.talentScore>0 && (
-                                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{background:tc.bg,color:tc.text}}>{s.talent}</span>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {meta && (
-                          <div className="px-4 pb-4 space-y-2">
-                            <p className="text-xs font-bold mt-2" style={{color:TEXT,fontFamily:PJS}}>Strategi Pengajaran</p>
-                            <div style={{background:meta.warna+"10",border:`1px solid ${meta.warna}22`}} className="rounded-xl px-3 py-2.5">
-                              <p className="text-xs font-semibold mb-1.5" style={{color:meta.warna}}>✓ Disarankan</p>
-                              {meta.strategi.map((s,i)=>(
-                                <p key={i} className="text-xs leading-relaxed" style={{color:TEXT,paddingLeft:8}}>• {s}</p>
-                              ))}
-                            </div>
-                            <div style={{background:"#FEF2F2",border:`1px solid #FCA5A533`}} className="rounded-xl px-3 py-2.5">
-                              <p className="text-xs font-semibold mb-1.5" style={{color:"#B91C1C"}}>✗ Hindari</p>
-                              {meta.hindari.map((s,i)=>(
-                                <p key={i} className="text-xs leading-relaxed" style={{color:"#7F1D1D",paddingLeft:8}}>• {s}</p>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {kelTab==="bakat" && (
-            <div className="space-y-2">
-              {talentGroups.map(([talent,members])=>{
-                const tc = TALENT_COLOR[talent]||{bg:SEC,text:T};
-                const isOpen = expanded===("b-"+talent);
-                const avgScore = Math.round(members.reduce((a,s)=>a+s.talentScore,0)/members.length);
-                return (
-                  <div key={talent} style={{background:CARD,border:`1px solid ${tc.text}33`,overflow:"hidden"}} className="rounded-2xl">
-                    <button onClick={()=>toggleExpand("b-"+talent)} className="w-full px-4 py-3 flex items-center gap-3 text-left" style={{minHeight:64}}>
-                      <div style={{width:42,height:42,background:tc.bg,borderRadius:12,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                        <span style={{fontSize:20}}>{talent==="Seni Visual"?"🎨":talent==="Musik Perkusi"?"🎵":talent==="Desain Digital"?"💻":"💃"}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>{talent}</p>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <div className="flex items-center">
-                            {members.slice(0,4).map((s,i)=>(
-                              <img key={s.id} src={siswaIcon} style={{width:18,height:18,marginLeft:i===0?0:-4,objectFit:"contain"}}/>
-                            ))}
-                          </div>
-                          <span className="text-xs" style={{color:MUTED}}>{members.length} siswa</span>
-                          <span className="text-xs font-bold px-1.5 py-0.5 rounded-md" style={{background:tc.bg,color:tc.text,fontFamily:DMM}}>avg {avgScore}</span>
-                        </div>
-                      </div>
-                      <ChevronRight size={15} style={{color:MUTED,flexShrink:0,transform:isOpen?"rotate(90deg)":"rotate(0deg)",transition:"transform 0.2s"}}/>
-                    </button>
-
-                    {isOpen && (
-                      <div style={{borderTop:`1px solid ${tc.text}22`}}>
-                        <div className="px-4 pt-3 pb-4 flex flex-col gap-2">
-                          {members.map(s=>(
-                            <div key={s.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{background:BG}}>
-                              <img src={siswaIcon} style={{width:24,height:24,objectFit:"contain",flexShrink:0}}/>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold" style={{color:TEXT,fontFamily:IPS}}>{s.name}</p>
-                                <p className="text-xs" style={{color:MUTED}}>{s.abk} · {s.caraBelajar}</p>
-                              </div>
-                              <div className="flex items-center gap-1 flex-shrink-0">
-                                {Array.from({length:5}).map((_,i)=>(
-                                  <Star key={i} size={11} fill={i<s.stars?A:"none"} style={{color:i<s.stars?A:"#D1D5DB"}}/>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                          <div style={{background:tc.bg,border:`1px solid ${tc.text}22`}} className="rounded-xl px-3 py-2.5 mt-1 flex items-start gap-2">
-                            <Brain size={12} style={{color:tc.text,flexShrink:0,marginTop:1}}/>
-                            <p className="text-xs leading-relaxed" style={{color:tc.text}}>
-                              Kelompok ini dapat diarahkan bersama ke kompetisi yang relevan. Bakat dominan mereka saling mendukung untuk kolaborasi.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {noObsStudents.length>0 && (
-            <div style={{background:CARD,border:`1.5px dashed rgba(107,114,128,0.3)`}} className="rounded-2xl px-4 py-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock size={13} style={{color:MUTED}}/>
-                <p className="text-xs font-bold" style={{color:MUTED,fontFamily:PJS}}>Belum dapat dikelompokkan ({noObsStudents.length} siswa)</p>
+                  {/* Student count badge */}
+                  <span style={{
+                    fontSize:11,
+                    fontWeight:700,
+                    padding:"3.5px 10px",
+                    borderRadius:20,
+                    background: "#ECFDF5",
+                    color: "#059669",
+                    border: "1px solid #A7F3D0",
+                    display:"flex",
+                    alignItems:"center",
+                    gap:3.5,
+                    fontFamily: PJS
+                  }}>
+                    <CheckCircle size={11} strokeWidth={2.5}/> {studentCount} Siswa
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {noObsStudents.map(s=>(
-                  <div key={s.id} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl" style={{background:BG,border:`1px solid ${BDR}`}}>
-                    <img src={siswaIcon} style={{width:16,height:16,objectFit:"contain"}}/>
-                    <span className="text-xs font-semibold" style={{color:MUTED}}>{s.name.split(" ")[0]}</span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs mt-2" style={{color:MUTED}}>Lakukan pengamatan terlebih dahulu agar AI dapat memetakan gaya belajar dan bakatnya.</p>
-            </div>
-          )}
-        </div>
-      )}
+
+              {/* Right: Chevron arrow */}
+              <ChevronRight size={18} style={{color:"#2E3E35", flexShrink:0, marginLeft:2}} strokeWidth={2.2}/>
+            </button>
+          );
+        })}
+
+        {filteredClasses.length === 0 && (
+          <div style={{background:CARD,border:`1.5px dashed ${BDR}`,borderRadius:22,padding:"36px 20px",textAlign:"center"}}>
+            <p style={{fontFamily:PJS,fontWeight:700,fontSize:14,color:TEXT,marginBottom:4}}>Tidak ada kelas yang cocok</p>
+            <p style={{fontSize:12,color:MUTED,marginBottom:14}}>Gunakan kata kunci lain atau tambahkan kelas baru.</p>
+            <button onClick={()=>setIsAddingKelas(true)} style={{background:A,color:"#fff",fontFamily:PJS,fontWeight:800,fontSize:12,padding:"10px 16px",borderRadius:14,border:"none",cursor:"pointer"}}>
+              + Tambah Kelas Baru
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ── Sticky Floating Button "+ Tambah Kelas" ── */}
+      <div style={{
+        position: "sticky",
+        bottom: 20,
+        display: "flex",
+        justifyContent: "flex-end",
+        paddingRight: 16,
+        pointerEvents: "none",
+        marginTop: -70,
+        zIndex: 10
+      }}>
+        <button
+          onClick={() => setIsAddingKelas(true)}
+          style={{
+            background: "#D27D6B",
+            color: "#FFFFFF",
+            fontFamily: PJS,
+            fontWeight: 800,
+            fontSize: 13,
+            padding: "12px 20px",
+            borderRadius: 24,
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            boxShadow: "0 6px 20px rgba(210,125,107,0.40)",
+            pointerEvents: "auto"
+          }}
+          className="active:scale-95 transition-transform"
+        >
+          <Plus size={16} strokeWidth={2.6}/> Tambah Kelas
+        </button>
+      </div>
     </div>
   );
 }
@@ -958,14 +1406,37 @@ function KodeOrtuCard({s,onRegen}:{s:Student;onRegen:(id:number)=>void}) {
       <div style={{background:SEC,border:`1px dashed ${T}`}} className="rounded-xl px-3 py-3 text-center mb-3">
         <p className="font-bold" style={{fontFamily:DMM,fontSize:17,color:DEEP,letterSpacing:"0.1em"}}>{s.kodeOrtu ?? "—"}</p>
       </div>
-      <div className="flex gap-2">
-        <button onClick={salin} style={{flex:1,background:copied?SEC:A,color:copied?DEEP:"#fff",fontFamily:IPS,minHeight:44}}
-          className="rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5">
-          {copied ? <><CheckCircle size={13}/>Tersalin</> : <><Copy size={13}/>Salin Kode</>}
+      <div className="flex gap-2.5">
+        <button onClick={salin} style={{
+            flex:1,
+            background:copied?SEC:A,
+            color:copied?DEEP:"#fff",
+            fontFamily:PJS,
+            fontWeight:700,
+            fontSize:13,
+            minHeight:46,
+            borderRadius:14,
+            border:"none",
+            boxShadow:copied?"none":"0 4px 14px rgba(210,125,107,0.38)",
+            cursor:"pointer"
+          }}
+          className="flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+          {copied ? <><CheckCircle size={14}/>Tersalin</> : <><Copy size={14}/>Salin Kode</>}
         </button>
-        <button onClick={()=>onRegen(s.id)} style={{flex:1,background:CARD,border:`1.5px solid ${T}`,color:T,fontFamily:IPS,minHeight:44}}
-          className="rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5">
-          <RefreshCw size={13}/>Buat Ulang
+        <button onClick={()=>onRegen(s.id)} style={{
+            flex:1,
+            background:CARD,
+            border:`2px solid ${DEEP}`,
+            color:DEEP,
+            fontFamily:PJS,
+            fontWeight:700,
+            fontSize:13,
+            minHeight:46,
+            borderRadius:14,
+            cursor:"pointer"
+          }}
+          className="flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+          <RefreshCw size={14}/>Buat Ulang
         </button>
       </div>
       <p className="text-xs mt-2 leading-relaxed" style={{color:MUTED}}>
@@ -1083,13 +1554,15 @@ function JurnalTab({s,laporan,onKirim}:{s:Student;laporan:LaporanKirim[];onKirim
         <button
           onClick={handleSave}
           style={{
-            display:"flex",alignItems:"center",gap:5,padding:"8px 16px",
-            borderRadius:12,border:"none",cursor:"pointer",
-            background:saved?T:A,color:"#fff",fontFamily:IPS,
-            fontSize:12,fontWeight:700,flexShrink:0,
-            transition:"background 0.3s",
-          }}>
-          {saved ? <><CheckCircle size={13}/>Tersimpan</> : <><Send size={12}/>Simpan Catatan</>}
+            display:"flex",alignItems:"center",gap:6,padding:"9px 18px",
+            borderRadius:14,border:"none",cursor:"pointer",
+            background:saved?DEEP:A,color:"#fff",fontFamily:PJS,
+            fontSize:13,fontWeight:700,flexShrink:0,
+            boxShadow:saved?"0 4px 12px rgba(91,122,104,0.35)":"0 4px 14px rgba(210,125,107,0.42)",
+            transition:"all 0.2s",
+          }}
+          className="active:scale-95 transition-transform">
+          {saved ? <><CheckCircle size={14}/>Tersimpan</> : <><Send size={13}/>Simpan Catatan</>}
         </button>
       </div>
 
@@ -1160,9 +1633,9 @@ function ProfileScreen({onBack,go,studentId,onStartObs,onRegenKode,namaSekolah,l
   return (
     <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
       <TBar title="Profil Siswa" sub={s.name} onBack={onBack}
-        right={<button onClick={()=>onStartObs(s.id)} style={{background:A,color:"#fff",fontFamily:IPS,minHeight:44,minWidth:44}} className="flex items-center gap-1.5 px-3 rounded-xl font-semibold text-xs"><ClipboardList size={13}/>Pengamatan</button>}/>
+        right={<button onClick={()=>onStartObs(s.id)} style={{background:A,color:"#fff",fontFamily:PJS,fontWeight:800,minHeight:42,borderRadius:14,padding:"0 16px",boxShadow:"0 4px 14px rgba(210,125,107,0.42)",border:"none",cursor:"pointer"}} className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"><ClipboardList size={14} strokeWidth={2.2}/>Pengamatan</button>}/>
       <div style={{background:CARD,borderBottom:`1px solid ${BDR}`}} className="px-4 py-3 flex items-center gap-3">
-        <div style={{width:52,height:52,background:SEC,flexShrink:0}} className="rounded-2xl flex items-center justify-center text-2xl">{s.emoji}</div>
+        <div style={{width:52,height:52,background:SEC,border:`1.5px solid rgba(91,122,104,0.25)`,flexShrink:0}} className="rounded-2xl flex items-center justify-center text-2xl">{s.emoji}</div>
         <div className="flex-1">
           <p className="font-bold text-base" style={{fontFamily:PJS,color:TEXT}}>{s.name}</p>
           <p className="text-xs" style={{color:MUTED}}>Kelas {s.kelas}{s.age?` · ${s.age} tahun`:""} · {s.teacher}</p>
@@ -1171,20 +1644,28 @@ function ProfileScreen({onBack,go,studentId,onStartObs,onRegenKode,namaSekolah,l
       </div>
       <div className="flex" style={{background:CARD,borderBottom:`1px solid ${BDR}`}}>
         {[{k:"abk",l:"Profil ABK"},{k:"kode",l:"Kode Ortu"},{k:"jurnal",l:"Jurnal & Catatan"}].map(t=>(
-          <button key={t.k} onClick={()=>setTab(t.k as any)} style={{color:tab===t.k?T:MUTED,borderBottom:tab===t.k?`2.5px solid ${T}`:"2.5px solid transparent",fontFamily:IPS,minHeight:44,flex:1}} className="py-2 text-xs font-bold transition-colors">{t.l}</button>
+          <button key={t.k} onClick={()=>setTab(t.k as any)}
+            style={{
+              color:tab===t.k?DEEP:MUTED,
+              borderBottom:tab===t.k?`3px solid ${DEEP}`:"3px solid transparent",
+              fontFamily:PJS,
+              fontWeight:tab===t.k?800:600,
+              minHeight:44,flex:1
+            }}
+            className="py-2 text-xs transition-colors">{t.l}</button>
         ))}
       </div>
       <div className="px-4 pt-4 pb-6 space-y-2">
         {tab==="abk"&&(
           <>
-            <div style={{background:SEC,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-xl px-3 py-2.5 flex items-center gap-2 mb-3">
-              <Edit3 size={13} style={{color:T,flexShrink:0}}/>
-              <p className="text-xs" style={{color:T}}>Data diinput oleh guru — dapat diperbarui kapan saja.</p>
+            <div style={{background:DEEP,borderRadius:16,padding:"12px 14px",color:"#FFFFFF",boxShadow:"0 4px 14px rgba(91,122,104,0.22)"}} className="flex items-center gap-2 mb-3">
+              <Edit3 size={15} style={{color:"#D4E8DA",flexShrink:0}}/>
+              <p className="text-xs" style={{color:"#FFFFFF"}}>Data diinput oleh guru — dapat diperbarui kapan saja.</p>
             </div>
             {rows.map(([l,v])=>(
-              <div key={l} style={{background:BG,border:`1px solid ${BDR}`}} className="rounded-xl px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-wide" style={{color:MUTED}}>{l}</p>
-                <p className="text-sm mt-0.5 font-medium" style={{color:TEXT,fontFamily:l.includes("Kode")?DMM:IPS}}>{v}</p>
+              <div key={l} style={{background:CARD,border:`1.5px solid rgba(91,122,104,0.35)`,borderRadius:16,boxShadow:"0 2px 8px rgba(91,122,104,0.06)"}} className="px-4 py-3">
+                <p style={{fontSize:11,fontWeight:800,color:DEEP,fontFamily:PJS,textTransform:"uppercase",letterSpacing:"0.05em"}}>{l}</p>
+                <p style={{fontSize:14,fontWeight:700,color:TEXT,fontFamily:l.includes("Kode")?DMM:PJS,marginTop:3}}>{v}</p>
               </div>
             ))}
           </>
@@ -1196,13 +1677,13 @@ function ProfileScreen({onBack,go,studentId,onStartObs,onRegenKode,namaSekolah,l
 
         {/* Unduh laporan pemetaan untuk anak ini saja */}
         <button onClick={()=>exportLaporanPemetaan([s], namaSekolah)}
-          style={{width:"100%",background:CARD,border:`1.5px solid ${T}`,color:T,fontFamily:IPS,minHeight:48}}
-          className="rounded-2xl text-xs font-bold flex items-center justify-center gap-2">
-          <FileText size={14}/>Unduh Laporan Pemetaan {s.name.split(" ")[0]}
+          style={{width:"100%",background:CARD,border:`1.5px solid ${DEEP}`,color:DEEP,fontFamily:PJS,fontWeight:800,minHeight:48,borderRadius:16,cursor:"pointer",boxShadow:"0 2px 8px rgba(91,122,104,0.08)"}}
+          className="text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+          <FileText size={15}/>Unduh Laporan Pemetaan {s.name.split(" ")[0]}
         </button>
         <div className="flex gap-2 pt-2">
-          <button onClick={()=>go("talent-map-detail")} style={{flex:1,background:SEC,color:T,fontFamily:IPS,minHeight:44,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl text-xs font-semibold flex items-center justify-center gap-1"><Sparkles size={13}/>Talent Map</button>
-          <button onClick={()=>go("learning-rec")} style={{flex:1,background:SEC,color:T,fontFamily:IPS,minHeight:44,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl text-xs font-semibold flex items-center justify-center gap-1"><Brain size={13}/>Rekomendasi</button>
+          <button onClick={()=>go("talent-map-detail")} style={{flex:1,background:DEEP,color:"#FFFFFF",fontFamily:PJS,fontWeight:800,minHeight:46,borderRadius:16,border:"none",cursor:"pointer",boxShadow:"0 4px 12px rgba(91,122,104,0.25)"}} className="text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><Sparkles size={14}/>Talent Map</button>
+          <button onClick={()=>go("learning-rec")} style={{flex:1,background:A,color:"#FFFFFF",fontFamily:PJS,fontWeight:800,minHeight:46,borderRadius:16,border:"none",cursor:"pointer",boxShadow:"0 4px 12px rgba(210,125,107,0.35)"}} className="text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><Brain size={14}/>Rekomendasi</button>
         </div>
       </div>
     </div>
@@ -1297,6 +1778,58 @@ function TalentMapScreen({go,onStartObs,onSelect}:{go:(s:Screen)=>void;onStartOb
           </div>
         </div>
 
+        {/* Quick Link to Rekomendasi Lomba */}
+        <div style={{
+          background: `linear-gradient(135deg, ${A} 0%, #C46F5F 100%)`,
+          borderRadius: 20,
+          padding: "14px 16px",
+          color: "#FFFFFF",
+          boxShadow: "0 6px 18px rgba(210,125,107,0.30)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12
+        }}>
+          <div style={{display:"flex", alignItems:"center", gap: 10}}>
+            <div style={{
+              width: 38, height: 38, borderRadius: 12,
+              background: "rgba(255,255,255,0.22)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 18, flexShrink: 0
+            }}>
+              🏆
+            </div>
+            <div>
+              <p style={{fontFamily: PJS, fontSize: 13, fontWeight: 800, color: "#FFFFFF", lineHeight: 1.2}}>
+                Rekomendasi Lomba & Agenda
+              </p>
+              <p style={{fontSize: 10.5, color: "rgba(255,255,255,0.88)", marginTop: 1}}>
+                Lihat ajang lomba FLS2N, O2SN & LKSN sesuai minat siswa
+              </p>
+            </div>
+          </div>
+          <button onClick={()=>go("competition")}
+            style={{
+              background: "#FFFFFF",
+              color: A,
+              fontFamily: PJS,
+              fontWeight: 800,
+              fontSize: 11.5,
+              padding: "8px 12px",
+              borderRadius: 12,
+              border: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 3,
+              flexShrink: 0,
+              boxShadow: "0 4px 10px rgba(0,0,0,0.10)"
+            }}
+            className="active:scale-95 transition-transform">
+            Buka <ChevronRight size={13} strokeWidth={2.5}/>
+          </button>
+        </div>
+
         {/* Grouped Student List per Class */}
         {Object.keys(groupedByClass).length === 0 ? (
           <div style={{background:CARD,border:`1.5px dashed ${BDR}`}} className="rounded-2xl px-4 py-8 text-center">
@@ -1327,7 +1860,7 @@ function TalentMapScreen({go,onStartObs,onSelect}:{go:(s:Screen)=>void;onStartOb
                       <button key={s.id} onClick={() => { onSelect(s.id); go("talent-map-detail"); }}
                         style={{background:CARD,border:`1px solid ${BDR}`,width:"100%",textAlign:"left"}}
                         className="rounded-2xl p-3.5 flex items-center gap-3 hover:bg-[#D4E8DA] transition-colors">
-                        <div style={{width:44,height:44,background:SEC,flexShrink:0}} className="rounded-2xl flex items-center justify-center"><img src={siswaIcon} style={{width:24,height:24,objectFit:"contain"}}/></div>
+                        <div style={{width:44,height:44,background:SEC,flexShrink:0}} className="rounded-2xl flex items-center justify-center text-xl">{s.emoji}</div>
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>{s.name}</p>
                           <p className="text-xs" style={{color:MUTED}}>{s.abk}</p>
@@ -1345,15 +1878,30 @@ function TalentMapScreen({go,onStartObs,onSelect}:{go:(s:Screen)=>void;onStartOb
                         <ChevronRight size={15} style={{color:MUTED,flexShrink:0}}/>
                       </button>
                     ) : (
-                      <div key={s.id} style={{background:BG,border:`2px dashed rgba(91,122,104,0.15)`}} className="rounded-2xl p-3.5 flex items-center gap-3">
-                        <div style={{width:44,height:44,background:"#EDE9E3",flexShrink:0}} className="rounded-2xl flex items-center justify-center opacity-50"><img src={siswaIcon} style={{width:24,height:24,objectFit:"contain"}}/></div>
+                      <div key={s.id} style={{background:CARD,border:`1.5px dashed rgba(91,122,104,0.40)`,boxShadow:"0 2px 8px rgba(91,122,104,0.06)"}} className="rounded-2xl p-3.5 flex items-center gap-3">
+                        <div style={{width:44,height:44,background:"#EDE9E3",flexShrink:0}} className="rounded-2xl flex items-center justify-center text-xl opacity-50">{s.emoji}</div>
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-sm" style={{color:MUTED}}>{s.name}</p>
                           <p className="text-xs" style={{color:MUTED}}>{s.abk}</p>
                           <p className="text-xs mt-1" style={{color:MUTED}}>Belum ada data pengamatan</p>
                         </div>
-                        <button onClick={() => onStartObs(s.id)} style={{background:A,color:"#fff",fontFamily:IPS,minHeight:34,flexShrink:0}} className="px-2.5 rounded-xl text-xs font-semibold flex items-center gap-1">
-                          <ClipboardList size={11}/>Mulai
+                        <button onClick={() => onStartObs(s.id)}
+                          style={{
+                            background:A,
+                            color:"#fff",
+                            fontFamily:PJS,
+                            fontWeight:700,
+                            fontSize:12,
+                            minHeight:36,
+                            padding:"0 12px",
+                            borderRadius:12,
+                            border:"none",
+                            flexShrink:0,
+                            boxShadow:"0 3px 10px rgba(210,125,107,0.38)",
+                            cursor:"pointer"
+                          }}
+                          className="flex items-center gap-1.5 active:scale-95 transition-all">
+                          <ClipboardList size={13}/> Mulai
                         </button>
                       </div>
                     )
@@ -1368,29 +1916,275 @@ function TalentMapScreen({go,onStartObs,onSelect}:{go:(s:Screen)=>void;onStartOb
   );
 }
 
-function TalentMapDetailScreen({onBack,studentId}:{onBack:()=>void;studentId:number}) {
+
+
+// ─── TALENT BAR CHART (Persentase Bakat dan Minat Anak) ─────────────
+interface BarItem {
+  id: string;
+  label: string;
+  pct: number;
+  color: string;
+  icon: string;
+}
+
+function TalentBarChart({ studentId }: { studentId: number }) {
+  const items: BarItem[] = studentId === 2 ? [
+    { id: "seni",       label: "Seni &\nKreativitas", pct: 75, color: "#FF5B8A", icon: "🎨" },
+    { id: "teknologi",  label: "Teknologi &\nDigital", pct: 50, color: "#3B82F6", icon: "💻" },
+    { id: "komunikasi", label: "Komunikasi",           pct: 70, color: "#F59E0B", icon: "💬" },
+    { id: "sains",      label: "Sains &\nRiset",       pct: 40, color: "#8B5CF6", icon: "🧪" },
+    { id: "olahraga",   label: "Olahraga",             pct: 88, color: "#10B981", icon: "🏃" },
+  ] : [
+    { id: "seni",       label: "Seni &\nKreativitas", pct: 85, color: "#FF5B8A", icon: "🎨" },
+    { id: "teknologi",  label: "Teknologi &\nDigital", pct: 72, color: "#3B82F6", icon: "💻" },
+    { id: "komunikasi", label: "Komunikasi",           pct: 60, color: "#F59E0B", icon: "💬" },
+    { id: "sains",      label: "Sains &\nRiset",       pct: 45, color: "#8B5CF6", icon: "🧪" },
+    { id: "olahraga",   label: "Olahraga",             pct: 30, color: "#10B981", icon: "🏃" },
+  ];
+
+  return (
+    <div style={{
+      background: CARD,
+      border: `1.5px solid rgba(91,122,104,0.30)`,
+      borderRadius: 24,
+      padding: "20px 14px 18px",
+      boxShadow: "0 4px 16px rgba(91,122,104,0.08)"
+    }}>
+      <h3 style={{
+        fontFamily: PJS,
+        fontSize: 16,
+        fontWeight: 800,
+        color: "#1E293B",
+        marginBottom: 16,
+        paddingLeft: 4
+      }}>
+        Persentase Bakat dan Minat Anak
+      </h3>
+
+      {/* Chart container with Y-Axis */}
+      <div style={{ display: "flex", gap: 8, height: 200 }}>
+        {/* Y-axis labels */}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+          paddingBottom: 2,
+          paddingRight: 4,
+          fontFamily: DMM,
+          fontSize: 10,
+          color: "#94A3B8",
+          fontWeight: 700,
+          width: 32,
+          flexShrink: 0
+        }}>
+          <span>100%</span>
+          <span>75%</span>
+          <span>50%</span>
+          <span>25%</span>
+          <span>0%</span>
+        </div>
+
+        {/* Bars and grid lines container */}
+        <div style={{ flex: 1, position: "relative", display: "flex", flexDirection: "column" }}>
+          {/* Horizontal grid lines */}
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            pointerEvents: "none"
+          }}>
+            {[100, 75, 50, 25, 0].map(val => (
+              <div key={val} style={{
+                borderBottom: val === 0 ? "1.5px solid #CBD5E1" : "1px dashed #E2E8F0",
+                width: "100%"
+              }}/>
+            ))}
+          </div>
+
+          {/* Bars columns */}
+          <div style={{
+            position: "relative",
+            zIndex: 2,
+            height: "100%",
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-around"
+          }}>
+            {items.map(b => (
+              <div key={b.id} style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                height: "100%",
+                justifyContent: "flex-end",
+                width: 44
+              }}>
+                {/* Percentage label above bar */}
+                <span style={{
+                  fontSize: 12.5,
+                  fontWeight: 800,
+                  color: b.color,
+                  fontFamily: PJS,
+                  marginBottom: 6,
+                  lineHeight: 1
+                }}>
+                  {b.pct}%
+                </span>
+
+                {/* Vertical bar */}
+                <div style={{
+                  width: 36,
+                  height: `${(b.pct / 100) * 82}%`,
+                  background: b.color,
+                  borderRadius: "12px 12px 3px 3px",
+                  boxShadow: `0 4px 12px ${b.color}45`,
+                  transition: "height 0.5s ease"
+                }}/>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Categories below chart */}
+      <div style={{ display: "flex", paddingLeft: 40, marginTop: 12, justifyContent: "space-around" }}>
+        {items.map(b => (
+          <div key={b.id} style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: 52
+          }}>
+            <div style={{
+              width: 34,
+              height: 34,
+              borderRadius: "50%",
+              background: `${b.color}15`,
+              border: `1.5px solid ${b.color}40`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 16
+            }}>
+              {b.icon}
+            </div>
+            <p style={{
+              fontSize: 9.5,
+              fontWeight: 700,
+              color: "#1E293B",
+              fontFamily: PJS,
+              textAlign: "center",
+              lineHeight: 1.25,
+              marginTop: 6,
+              whiteSpace: "pre-line"
+            }}>
+              {b.label}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TalentMapDetailScreen({onBack,studentId,go}:{onBack:()=>void;studentId:number;go:(s:Screen)=>void}) {
   const students = useStudents();
   const s = students.find(x=>x.id===studentId);
   const data = studentTalentDetail[studentId];
   if (!s) return null;
 
+  const getDomainStyle = (title: string) => {
+    if (title.includes("Seni") || title.includes("Kreatif") || title.includes("Visual")) {
+      return { color: "#FF5B8A", bg: "#FFF1F5", border: "#FECDD3", icon: "🎨" };
+    }
+    if (title.includes("Spasial") || title.includes("Digital") || title.includes("Teknologi")) {
+      return { color: "#3B82F6", bg: "#EFF6FF", border: "#BFDBFE", icon: "💻" };
+    }
+    if (title.includes("Musik") || title.includes("Komunikasi") || title.includes("Perkusi")) {
+      return { color: "#F59E0B", bg: "#FFFBEB", border: "#FDE68A", icon: "💬" };
+    }
+    if (title.includes("Sains") || title.includes("Verbal") || title.includes("Kognitif")) {
+      return { color: "#8B5CF6", bg: "#F5F3FF", border: "#DDD6FE", icon: "🧪" };
+    }
+    return { color: "#10B981", bg: "#ECFDF5", border: "#A7F3D0", icon: "🏃" };
+  };
+
+  const competitionBanner = (
+    <div style={{
+      background: `linear-gradient(135deg, ${A} 0%, #C46F5F 100%)`,
+      borderRadius: 22,
+      padding: "16px 18px",
+      color: "#FFFFFF",
+      boxShadow: "0 8px 24px rgba(210,125,107,0.32)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12
+    }}>
+      <div style={{display:"flex", alignItems:"center", gap: 12, minWidth: 0}}>
+        <div style={{
+          width: 44, height: 44, borderRadius: 14,
+          background: "rgba(255,255,255,0.22)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 22, flexShrink: 0, backdropFilter: "blur(4px)"
+        }}>
+          🏆
+        </div>
+        <div style={{minWidth: 0}}>
+          <p style={{fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: "#FFFFFF", lineHeight: 1.2}}>
+            Rekomendasi Lomba & Agenda
+          </p>
+          <p style={{fontSize: 11, color: "rgba(255,255,255,0.92)", marginTop: 2, lineHeight: 1.3}}>
+            Lihat ajang lomba FLS2N, O2SN & LKSN yang cocok untuk {s.name.split(" ")[0]}
+          </p>
+        </div>
+      </div>
+      <button onClick={()=>go("competition")}
+        style={{
+          background: "#FFFFFF",
+          color: A,
+          fontFamily: PJS,
+          fontWeight: 800,
+          fontSize: 12,
+          padding: "9px 14px",
+          borderRadius: 14,
+          border: "none",
+          cursor: "pointer",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+          display: "flex",
+          alignItems: "center",
+          gap: 3,
+          flexShrink: 0
+        }}
+        className="active:scale-95 transition-transform">
+        Lihat <ChevronRight size={13} strokeWidth={2.5}/>
+      </button>
+    </div>
+  );
+
   if (!data) {
     return (
       <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
-        <TBar title="AI Talent Mapping" sub={`${s.name} · ${s.abk}`} onBack={onBack}/>
-        <div className="px-4 pt-4 pb-6 space-y-3">
-          <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-3"><Sparkles size={14} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Ringkasan Bakat</p></div>
+        <TBar title="AI Talent Mapping" sub={`${s.name} · ${s.abk}`} onBack={onBack}
+          right={<button onClick={()=>go("competition")} style={{background:A,color:"#FFFFFF",fontFamily:PJS,fontWeight:800,minHeight:38,borderRadius:12,padding:"0 12px",boxShadow:"0 3px 10px rgba(210,125,107,0.35)",border:"none",cursor:"pointer"}} className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"><Trophy size={14} strokeWidth={2.2}/>Lomba</button>}/>
+        <div className="px-4 pt-4 pb-6 space-y-4">
+          <TalentBarChart studentId={studentId}/>
+          {competitionBanner}
+          <div style={{background:CARD,border:`1.5px solid rgba(91,122,104,0.30)`,borderRadius:24,padding:18,boxShadow:"0 4px 16px rgba(91,122,104,0.08)"}}>
+            <div className="flex items-center gap-2 mb-3"><Sparkles size={16} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Ringkasan Bakat</p></div>
             <div className="flex items-center justify-between mb-1.5">
               <p className="font-bold text-sm" style={{color:TEXT}}>{s.talent||"Belum teridentifikasi"}</p>
               <div className="flex items-center gap-1.5">
                 <div className="flex gap-0.5">{Array.from({length:5}).map((_,i)=><Star key={i} size={12} style={{color:i<s.stars?A:"#E5E7EB",fill:i<s.stars?A:"#E5E7EB"}}/>)}</div>
-                <span className="text-xs font-bold" style={{color:T,fontFamily:DMM}}>{s.talentScore}</span>
+                <span className="text-xs font-bold" style={{color:DEEP,fontFamily:DMM}}>{s.talentScore}</span>
               </div>
             </div>
-            <div className="h-1.5 rounded-full mb-2" style={{background:"#EDE9E3"}}><div className="h-full rounded-full" style={{width:`${s.talentScore}%`,background:T}}/></div>
-            <div style={{background:SEC}} className="rounded-xl px-3 py-2.5 flex items-start gap-1.5">
-              <Info size={12} style={{color:T,flexShrink:0,marginTop:2}}/>
+            <div className="h-2 rounded-full mb-2" style={{background:"#EDE9E3"}}><div className="h-full rounded-full" style={{width:`${s.talentScore}%`,background:A}}/></div>
+            <div style={{background:"#F5F9F7",border:`1.5px solid rgba(91,122,104,0.25)`,borderRadius:16,padding:"12px 14px"}} className="flex items-start gap-2">
+              <Info size={14} style={{color:DEEP,flexShrink:0,marginTop:2}}/>
               <p className="text-xs leading-relaxed" style={{color:TEXT}}>
                 Analisis mendalam akan tersedia setelah beberapa sesi pengamatan. Gaya belajar sementara: <strong>{s.caraBelajar||"belum terdeteksi"}</strong>.
               </p>
@@ -1403,38 +2197,45 @@ function TalentMapDetailScreen({onBack,studentId}:{onBack:()=>void;studentId:num
 
   return (
     <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
-      <TBar title="AI Talent Mapping" sub={`${s.name} · ${s.abk}`} onBack={onBack}/>
-      <div className="px-4 pt-4 pb-6 space-y-3">
-        <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-          <p className="font-bold text-sm mb-3" style={{fontFamily:PJS,color:TEXT}}>Peta Bakat</p>
-          <div style={{height:180}}>
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={data.radar}>
-                <PolarGrid key="pg" stroke="#D4E8DA"/>
-                <PolarAngleAxis key="pa" dataKey="s" tick={{fontSize:10,fill:MUTED,fontFamily:DMM}}/>
-                <Radar key="ra" dataKey="A" stroke={T} fill={T} fillOpacity={0.15} strokeWidth={2}/>
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+      <TBar title="AI Talent Mapping" sub={`${s.name} · ${s.abk}`} onBack={onBack}
+        right={<button onClick={()=>go("competition")} style={{background:A,color:"#FFFFFF",fontFamily:PJS,fontWeight:800,minHeight:38,borderRadius:12,padding:"0 12px",boxShadow:"0 3px 10px rgba(210,125,107,0.35)",border:"none",cursor:"pointer"}} className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"><Trophy size={14} strokeWidth={2.2}/>Lomba</button>}/>
+      <div className="px-4 pt-4 pb-6 space-y-4">
+        {/* Diagram Batang: Persentase Bakat dan Minat Anak */}
+        <TalentBarChart studentId={studentId}/>
 
-        <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-3"><Sparkles size={14} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Hasil Talent Mapping</p></div>
-          {data.domains.map((x,idx)=>(
-            <div key={x.t} className="mb-4 last:mb-0 pb-4 last:pb-0" style={{borderBottom:idx<data.domains.length-1?`1px solid ${BDR}`:"none"}}>
-              <div className="flex items-center justify-between mb-1.5">
-                <p className="font-bold text-sm" style={{color:TEXT}}>{x.t}</p>
-                <div className="flex items-center gap-1.5">
-                  <div className="flex gap-0.5">{Array.from({length:5}).map((_,i)=><Star key={i} size={12} style={{color:i<x.st?A:"#E5E7EB",fill:i<x.st?A:"#E5E7EB"}}/>)}</div>
-                  <span className="text-xs font-bold" style={{color:T,fontFamily:DMM}}>{x.sc}</span>
+        {/* Link Menuju Rekomendasi Lomba */}
+        {competitionBanner}
+
+        {/* Hasil Talent Mapping List with distinct colorful badges & accents */}
+        <div style={{background:CARD,border:`1.5px solid rgba(91,122,104,0.30)`,borderRadius:24,padding:18,boxShadow:"0 4px 16px rgba(91,122,104,0.08)"}}>
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles size={16} style={{color:A}}/>
+            <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Hasil Talent Mapping</p>
+          </div>
+          {data.domains.map((x,idx)=>{
+            const ds = getDomainStyle(x.t);
+            return (
+              <div key={x.t} className="mb-4 last:mb-0 pb-4 last:pb-0" style={{borderBottom:idx<data.domains.length-1?`1px solid rgba(91,122,104,0.18)`:"none"}}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <span style={{fontSize:16}}>{ds.icon}</span>
+                    <p className="font-bold text-sm" style={{color:TEXT,fontFamily:PJS}}>{x.t}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-0.5">{Array.from({length:5}).map((_,i)=><Star key={i} size={13} style={{color:i<x.st?ds.color:"#CBD5E1",fill:i<x.st?ds.color:"#CBD5E1"}}/>)}</div>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{background:ds.bg,color:ds.color,border:`1px solid ${ds.border}`,fontFamily:DMM}}>{x.sc}%</span>
+                  </div>
+                </div>
+                <div className="h-2 rounded-full mb-2.5" style={{background:"#EDE9E3"}}>
+                  <div className="h-full rounded-full transition-all" style={{width:`${x.sc}%`,background:ds.color}}/>
+                </div>
+                <div style={{background:ds.bg,border:`1.5px solid ${ds.border}`,borderRadius:14,padding:"10px 12px"}} className="flex items-start gap-2">
+                  <Info size={13} style={{color:ds.color,flexShrink:0,marginTop:2}}/>
+                  <p className="text-xs leading-relaxed" style={{color:TEXT}}><strong>Mengapa:</strong> {x.r}</p>
                 </div>
               </div>
-              <div className="h-1.5 rounded-full mb-2" style={{background:"#EDE9E3"}}><div className="h-full rounded-full" style={{width:`${x.sc}%`,background:T}}/></div>
-              <div style={{background:SEC}} className="rounded-xl px-3 py-2.5 flex items-start gap-1.5">
-                <Info size={12} style={{color:T,flexShrink:0,marginTop:2}}/><p className="text-xs leading-relaxed" style={{color:TEXT}}><strong>Mengapa:</strong> {x.r}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -1454,23 +2255,23 @@ function LearningRecScreen({onBack,studentId}:{onBack:()=>void;studentId:number}
       <TBar title="Rekomendasi Pembelajaran" sub={`${nama} · Gaya ${gaya}`} onBack={onBack}/>
       <div className="px-4 pt-4 pb-6 space-y-3">
         <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-3"><CheckSquare size={16} style={{color:T}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Strategi yang Disarankan</p></div>
+          <div className="flex items-center gap-2 mb-3"><CheckSquare size={16} style={{color:DEEP}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Strategi yang Disarankan</p></div>
           {meta.strategi.map(t=>(
-            <div key={t} style={{background:BG,border:`1px solid ${BDR}`}} className="rounded-xl p-3 mb-2 last:mb-0">
-              <div className="flex items-start gap-2"><CheckCircle size={15} style={{color:T,flexShrink:0,marginTop:2}}/><p className="text-sm font-semibold" style={{color:TEXT}}>{t}</p></div>
+            <div key={t} style={{background:CARD,border:`1.5px solid rgba(91,122,104,0.32)`,borderRadius:14,boxShadow:"0 2px 6px rgba(91,122,104,0.06)"}} className="p-3 mb-2 last:mb-0">
+              <div className="flex items-start gap-2"><CheckCircle size={16} style={{color:DEEP,flexShrink:0,marginTop:2}}/><p className="text-sm font-semibold" style={{color:TEXT}}>{t}</p></div>
             </div>
           ))}
-          <div style={{background:SEC}} className="rounded-xl px-3 py-2.5 mt-2 flex items-start gap-2">
-            <Target size={13} style={{color:T,flexShrink:0,marginTop:2}}/>
-            <p className="text-xs leading-relaxed" style={{color:T}}>Strategi ini dipilih AI karena gaya belajar dominan {nama} adalah <strong>{gaya}</strong>.</p>
+          <div style={{background:DEEP,borderRadius:14,color:"#FFFFFF",boxShadow:"0 3px 10px rgba(91,122,104,0.22)"}} className="px-3.5 py-3 mt-2 flex items-start gap-2">
+            <Target size={15} style={{color:"#D4E8DA",flexShrink:0,marginTop:2}}/>
+            <p className="text-xs leading-relaxed" style={{color:"#FFFFFF"}}>Strategi ini dipilih AI karena gaya belajar dominan {nama} adalah <strong style={{color:"#D4E8DA"}}>{gaya}</strong>.</p>
           </div>
         </div>
 
         <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-3"><XCircle size={16} style={{color:"#B91C1C"}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Strategi yang Dihindari</p></div>
+          <div className="flex items-center gap-2 mb-3"><XCircle size={16} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Strategi yang Dihindari</p></div>
           {meta.hindari.map(t=>(
-            <div key={t} style={{background:"#FEF2F2",border:"1px solid #FECACA"}} className="rounded-xl p-3 mb-2 last:mb-0">
-              <div className="flex items-start gap-2"><XCircle size={15} style={{color:"#B91C1C",flexShrink:0,marginTop:2}}/><p className="text-sm font-semibold" style={{color:TEXT}}>{t}</p></div>
+            <div key={t} style={{background:"rgba(210,125,107,0.10)",border:`1.5px solid rgba(210,125,107,0.35)`,borderRadius:14}} className="p-3 mb-2 last:mb-0">
+              <div className="flex items-start gap-2"><XCircle size={16} style={{color:A,flexShrink:0,marginTop:2}}/><p className="text-sm font-semibold" style={{color:TEXT}}>{t}</p></div>
             </div>
           ))}
         </div>
@@ -1515,8 +2316,8 @@ function CompetitionScreen({onStartObs, agendas, onAddAgenda}:{onStartObs:(id:nu
 
         {mainTab === "agenda" && (
           <div className="space-y-4">
-             <button onClick={()=>setShowAdd(true)} className="w-full flex items-center justify-center gap-1 text-white rounded-xl py-3 text-sm font-semibold shadow-sm" style={{background:A}}>
-               <Plus size={16}/> Tambah Agenda
+             <button onClick={()=>setShowAdd(true)} className="w-full flex items-center justify-center gap-1.5 text-white rounded-2xl py-3.5 text-sm font-bold active:scale-[0.98] transition-transform" style={{background:A,fontFamily:PJS,boxShadow:"0 6px 20px rgba(210,125,107,0.42)",border:"none",cursor:"pointer"}}>
+               <Plus size={16} strokeWidth={2.5}/> Tambah Agenda
              </button>
 
              <div className="space-y-3">
@@ -1543,16 +2344,22 @@ function CompetitionScreen({onStartObs, agendas, onAddAgenda}:{onStartObs:(id:nu
 
         {mainTab === "lomba" && (
           <div className="space-y-4">
-            <div style={{background:SEC,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl p-3 flex items-start gap-2">
-              <Info size={13} style={{color:T,flexShrink:0,marginTop:2}}/>
-              <p className="text-xs leading-relaxed" style={{color:T}}>Hanya 3 lomba resmi. Pendaftaran manual oleh sekolah — klik <strong>"Daftarkan"</strong> untuk ubah status.</p>
+            <div style={{background:DEEP,borderRadius:18,color:"#FFFFFF",boxShadow:"0 4px 14px rgba(91,122,104,0.25)"}} className="p-3.5 flex items-start gap-2.5">
+              <Info size={16} style={{color:"#D4E8DA",flexShrink:0,marginTop:2}}/>
+              <p className="text-xs leading-relaxed" style={{color:"#FFFFFF"}}>Hanya 3 lomba resmi. Pendaftaran manual oleh sekolah — klik <strong style={{color:"#D4E8DA"}}>"Daftarkan"</strong> untuk ubah status.</p>
             </div>
 
             <div className="flex rounded-2xl p-1" style={{background:"#EDE9E3"}}>
               {(["lomba","siswa"] as const).map(m=>(
                 <button key={m} onClick={()=>setViewMode(m)}
-                  style={{background:viewMode===m?CARD:"transparent",color:viewMode===m?TEXT:MUTED,fontFamily:IPS,minHeight:36}}
-                  className="flex-1 rounded-lg text-xs font-bold transition-all capitalize">
+                  style={{
+                    background:viewMode===m?DEEP:"transparent",
+                    color:viewMode===m?"#fff":MUTED,
+                    fontFamily:PJS,
+                    fontWeight:viewMode===m?800:600,
+                    minHeight:36
+                  }}
+                  className="flex-1 rounded-lg text-xs transition-all capitalize">
                   {m==="lomba"?"Per Lomba":"Per Siswa"}
                 </button>
               ))}
@@ -1564,14 +2371,14 @@ function CompetitionScreen({onStartObs, agendas, onAddAgenda}:{onStartObs:(id:nu
                 .map(m=>({...m,student:students.find(s=>s.id===m.id)}))
                 .filter((m): m is typeof m & {student:Student} => !!m.student);
               return (
-                <div key={lomba.k} style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-3 px-4 py-3" style={{borderBottom:`1px solid ${BDR}`,background:SEC}}>
+                <div key={lomba.k} style={{background:CARD,border:`1px solid ${BDR}`,boxShadow:"0 2px 10px rgba(91,122,104,0.08)"}} className="rounded-2xl overflow-hidden">
+                  <div className="flex items-center gap-3 px-4 py-3" style={{borderBottom:`1px solid ${BDR}`,background:DEEP,color:"#FFFFFF"}}>
                     <span className="text-xl">{lomba.icon}</span>
                     <div>
-                      <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>{lomba.k}</p>
-                      <p className="text-xs" style={{color:MUTED}}>{lomba.full}</p>
+                      <p className="font-bold text-sm" style={{fontFamily:PJS,color:"#FFFFFF"}}>{lomba.k}</p>
+                      <p className="text-xs" style={{color:"rgba(255,255,255,0.85)"}}>{lomba.full}</p>
                     </div>
-                    <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full" style={{background:T,color:"#fff"}}>{matchedStudents.length} siswa</span>
+                    <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full" style={{background:A,color:"#fff",fontFamily:PJS}}>{matchedStudents.length} siswa</span>
                   </div>
                   {matchedStudents.length===0
                     ? <p className="px-4 py-3 text-xs" style={{color:MUTED}}>Belum ada siswa yang cocok dengan lomba ini.</p>
@@ -1582,8 +2389,8 @@ function CompetitionScreen({onStartObs, agendas, onAddAgenda}:{onStartObs:(id:nu
                             <p className="font-semibold text-sm truncate" style={{color:TEXT}}>{m.student.name}</p>
                             <p className="text-xs" style={{color:MUTED}}>Cabang: {m.cabang}</p>
                             <div className="flex items-center gap-2 mt-1">
-                              <div className="h-1.5 flex-1 rounded-full" style={{background:"#EDE9E3"}}><div className="h-full rounded-full" style={{width:`${m.match}%`,background:T}}/></div>
-                              <span className="text-xs font-bold flex-shrink-0" style={{color:T,fontFamily:DMM}}>{m.match}%</span>
+                              <div className="h-2 flex-1 rounded-full" style={{background:"#EDE9E3"}}><div className="h-full rounded-full" style={{width:`${m.match}%`,background:DEEP}}/></div>
+                              <span className="text-xs font-bold flex-shrink-0" style={{color:DEEP,fontFamily:DMM}}>{m.match}%</span>
                             </div>
                             <p className="text-xs leading-relaxed mt-1.5" style={{color:MUTED}}>💡 {m.alasan}</p>
                           </div>
@@ -1639,14 +2446,29 @@ function CompetitionScreen({onStartObs, agendas, onAddAgenda}:{onStartObs:(id:nu
                 ))}
 
                 {students.filter(s=>!s.hasObs).map(s=>(
-                  <div key={s.id} style={{background:BG,border:`2px dashed rgba(91,122,104,0.15)`}} className="rounded-2xl px-4 py-3 flex items-center gap-3">
+                  <div key={s.id} style={{background:CARD,border:`1.5px dashed rgba(91,122,104,0.40)`,boxShadow:"0 2px 8px rgba(91,122,104,0.06)"}} className="rounded-2xl px-4 py-3 flex items-center gap-3">
                     <span className="text-xl opacity-40">{s.emoji}</span>
                     <div className="flex-1">
                       <p className="font-semibold text-sm" style={{color:MUTED}}>{s.name}</p>
                       <p className="text-xs" style={{color:MUTED}}>Rekomendasi tersedia setelah pengamatan selesai.</p>
                     </div>
-                    <button onClick={()=>onStartObs(s.id)} style={{background:A,color:"#fff",fontFamily:IPS,minHeight:36,flexShrink:0}} className="px-2.5 rounded-xl text-xs font-semibold flex items-center gap-1">
-                      <ClipboardList size={11}/>Pengamatan
+                    <button onClick={()=>onStartObs(s.id)}
+                      style={{
+                        background:A,
+                        color:"#fff",
+                        fontFamily:PJS,
+                        fontWeight:700,
+                        fontSize:12,
+                        minHeight:36,
+                        padding:"0 12px",
+                        borderRadius:12,
+                        border:"none",
+                        flexShrink:0,
+                        boxShadow:"0 3px 10px rgba(210,125,107,0.38)",
+                        cursor:"pointer"
+                      }}
+                      className="flex items-center gap-1.5 active:scale-95 transition-all">
+                      <ClipboardList size={13}/> Pengamatan
                     </button>
                   </div>
                 ))}
@@ -1748,18 +2570,14 @@ const MAIN_SCREENS:Screen[] = [
 type GuruSetup = null | "akun" | "sekolah" | "siswa";
 
 const DEFAULT_GURU: GuruProfile = {
-  nama:"Sari Dewi, S.Pd.", email:"sari.dewi@gmail.com",
-  sekolah:"SLB Harapan Bangsa",
-  jabatan:"Guru Pendamping Khusus (GPK)",
-  noHp:"081234567890",
-  kelas:["VII A","VIII B"],
-  abk:["Autism Spectrum Disorder","Tunarungu","Tunadaksa","Tunagrahita Ringan"],
-  kelasAbkMap:{
-    "VII A":  "Autism Spectrum Disorder",
-    "VIII B": "Tunarungu",
-    "IX A":   "Tunadaksa",
-    "IX C":   "Tunagrahita Ringan",
-  },
+  nama: "Sari Dewi, S.Pd.",
+  email: "sari.dewi@gmail.com",
+  sekolah: "",
+  jabatan: "",
+  noHp: "",
+  kelas: [],
+  abk: [],
+  kelasAbkMap: {},
 };
 
 export default function App() {
@@ -1915,7 +2733,7 @@ export default function App() {
   const headerTitle = (): [string,string] => {
     switch(screen) {
       case "dashboard":       return ["Beranda", `${guru.nama.split(" ")[0]} · ${guru.sekolah}`];
-      case "students":        return ["Siswa & Kelompok", `${list.length} siswa · ${guru.kelas.join(", ")}`];
+      case "students":        return ["Kelas Saya", "Kelola Kelas dengan Mudah"];
       case "talent-map":      return ["Peta Bakat", guru.sekolah];
       case "competition":     return ["Agenda", "Agenda & Rekomendasi Lomba"];
       case "report":          return ["Laporan", "Untuk orang tua"];
@@ -1945,12 +2763,12 @@ export default function App() {
       );
 
       case "dashboard":        return <DashboardGuru go={go} onStartObs={startObs} guru={guru} onAddStudent={()=>openAddStudent(false)}/>;
-      case "students":         return <StudentsScreen go={go} onAddStudent={()=>openAddStudent(false)} onSelect={(id)=>{setSelectedStudentId(id);go("profile");}}/>;
+      case "students":         return <StudentsScreen go={go} onAddStudent={()=>openAddStudent(false)} onSelect={(id)=>{setSelectedStudentId(id);go("profile");}} guru={guru}/>;
       case "profile":          return <ProfileScreen onBack={goBack} go={go} studentId={selectedStudentId} onStartObs={startObs} onRegenKode={regenKode} namaSekolah={guru.sekolah} laporan={laporan} onKirim={kirimLaporan}/>;
       case "kode-akses":       return <KodeAksesScreen onBack={goBack} onBuat={buatKode} onHapus={hapusKode} namaSekolah={guru.sekolah}/>;
       case "observation":      return <ObservationScreen onBack={goBack} onDone={finishObs} studentId={selectedStudentId}/>;
       case "talent-map":       return <TalentMapScreen go={go} onStartObs={startObs} onSelect={setSelectedStudentId}/>;
-      case "talent-map-detail":return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId}/>;
+      case "talent-map-detail":return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go}/>;
       case "learning-rec":     return <LearningRecScreen onBack={goBack} studentId={selectedStudentId}/>;
       case "competition":      return <CompetitionScreen onStartObs={startObs} agendas={agendas} onAddAgenda={(a)=>setAgendas([...agendas,a])}/>;
       case "report":           return <ReportScreen namaSekolah={guru.sekolah}/>;
@@ -2016,23 +2834,24 @@ export default function App() {
           )}
           {/* Content */}
           <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",background:BG,position:"relative",fontSize:`${fontSize}rem`}}>
-            {showNav && screen !== "dashboard" && <GlobalHeader title={title} sub={sub}/>}
+            {showNav && screen !== "dashboard" && screen !== "students" && <GlobalHeader title={title} sub={sub}/>}
             {renderScreen()}
 
             {/* Tombol tambah siswa mengambang — selalu dalam jangkauan ibu jari */}
             {role==="guru" && !guruSetup && !showOnboarding && !showAddStudent &&
-             ["dashboard","students","talent-map","competition","report"].includes(screen) && (
+             ["dashboard","talent-map","competition","report"].includes(screen) && (
               <button onClick={()=>openAddStudent(false)}
                 style={{
                   position:"absolute", right:16, bottom:16, zIndex:40,
-                  width:52, height:52,
-                  background:DEEP, color:"#fff", fontFamily:IPS,
-                  boxShadow:"0 8px 24px rgba(46,62,53,0.38)",
+                  width:54, height:54,
+                  background:A, color:"#fff", fontFamily:PJS,
+                  boxShadow:"0 8px 24px rgba(210,125,107,0.45)",
                   borderRadius:"50%", border:"none", cursor:"pointer",
                   display:"flex", alignItems:"center", justifyContent:"center",
                 }}
-                className="active:scale-95 transition-transform">
-                <span style={{fontSize:26, fontWeight:300, lineHeight:1}}>+</span>
+                className="active:scale-95 transition-transform"
+                title="Tambah Siswa">
+                <span style={{fontSize:28, fontWeight:400, lineHeight:1}}>+</span>
               </button>
             )}
 
