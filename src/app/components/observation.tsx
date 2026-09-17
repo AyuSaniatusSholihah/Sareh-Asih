@@ -10,6 +10,7 @@ import {
   useStudents, type ObsKategori, type AsesmenKategori,
 } from "./data";
 import { VoiceTextarea } from "./voice-input";
+import siswaIcon from "@/imports/siswa-icon.png";
 
 type Tahap = "pengamatan" | "asesmen" | "catatan";
 
@@ -90,7 +91,7 @@ export function ObservationScreen({onBack,onDone,studentId}:{
       {/* Identitas + progress */}
       <div style={{background:CARD,borderBottom:`1px solid ${BDR}`}} className="px-4 pt-2 pb-3">
         <div className="flex items-center gap-3 mb-3">
-          <span style={{fontSize:28}}>{student.emoji}</span>
+          <img src={siswaIcon} style={{width:28,height:28,objectFit:"contain"}}/>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>{student.name}</p>
             <div className="flex gap-1.5 mt-0.5 flex-wrap">
