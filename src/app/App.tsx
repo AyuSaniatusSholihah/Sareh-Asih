@@ -30,6 +30,7 @@ import {
 import { AddStudentSheet } from "./components/add-student";
 import guruIcon from "@/imports/guru-icon.png";
 import ortuIcon from "@/imports/ortu-icon.png";
+import siswaIcon from "@/imports/siswa-icon.png";
 import { ObservationScreen } from "./components/observation";
 import { VoiceTextarea } from "./components/voice-input";
 import { KodeAksesCard, KodeAksesScreen, ExportPanel, StudentPicker } from "./components/kode-manager";
@@ -77,7 +78,7 @@ function SearchOverlay({onClose}:{onClose:()=>void}) {
           <div style={{marginTop:10,display:"flex",flexDirection:"column",gap:6}}>
             {results.map(s=>(
               <div key={s.id} onClick={onClose} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 4px",borderBottom:`1px solid ${BDR}`,cursor:"pointer"}}>
-                <span style={{fontSize:22}}>{s.emoji}</span>
+                <img src={siswaIcon} style={{width:24,height:24,objectFit:"contain"}}/>
                 <div>
                   <p style={{fontSize:13,fontWeight:600,color:TEXT,fontFamily:PJS}}>{s.name}</p>
                   <p style={{fontSize:11,color:MUTED,fontFamily:IPS}}>{s.kelas} · {s.abk}</p>
@@ -646,7 +647,7 @@ function DashboardGuru({go,onStartObs,guru,onAddStudent}:{
                       {siswaList.slice(0,5).map(s=>(
                         <button key={s.id} onClick={()=>onStartObs(s.id)}
                           style={{display:"flex",alignItems:"center",gap:6,background:BG,border:`1px solid ${BDR}`,borderRadius:10,padding:"6px 10px",cursor:"pointer"}}>
-                          <span style={{fontSize:18}}>{s.emoji}</span>
+                          <img src={siswaIcon} style={{width:20,height:20,objectFit:"contain"}}/>
                           <div style={{textAlign:"left"}}>
                             <p style={{fontSize:12,fontWeight:600,color:TEXT,lineHeight:1}}>{s.name.split(" ")[0]}</p>
                             {!s.hasObs && <p style={{fontSize:9,color:A,marginTop:1,fontWeight:600}}>Belum diamati</p>}
@@ -748,7 +749,7 @@ function StudentsScreen({go,onAddStudent,onSelect}:{go:(s:Screen)=>void;onAddStu
           <div className="space-y-2">
             {filtered.map(s=>(
               <button key={s.id} onClick={()=>onSelect(s.id)} style={{background:CARD,border:`1px solid ${BDR}`,width:"100%",textAlign:"left",minHeight:76}} className="rounded-2xl p-4 flex items-center gap-3">
-                <div style={{width:48,height:48,background:SEC,flexShrink:0}} className="rounded-2xl flex items-center justify-center text-2xl">{s.emoji}</div>
+                <div style={{width:48,height:48,background:SEC,flexShrink:0}} className="rounded-2xl flex items-center justify-center"><img src={siswaIcon} style={{width:28,height:28,objectFit:"contain"}}/></div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>{s.name}</p>
                   <p className="text-xs" style={{color:MUTED}}>Kelas {s.kelas}{s.age?` · ${s.age}th`:""} · {s.teacher}</p>
@@ -801,7 +802,7 @@ function StudentsScreen({go,onAddStudent,onSelect}:{go:(s:Screen)=>void;onAddStu
                         <div className="flex items-center gap-2 mt-0.5">
                           <div className="flex items-center">
                             {members.slice(0,4).map((s,i)=>(
-                              <span key={s.id} style={{fontSize:16,marginLeft:i===0?0:-4}}>{s.emoji}</span>
+                              <img key={s.id} src={siswaIcon} style={{width:18,height:18,marginLeft:i===0?0:-4,objectFit:"contain"}}/>
                             ))}
                           </div>
                           <span className="text-xs" style={{color:MUTED}}>{members.length} siswa</span>
@@ -817,7 +818,7 @@ function StudentsScreen({go,onAddStudent,onSelect}:{go:(s:Screen)=>void;onAddStu
                             const tc = s.talent ? TALENT_COLOR[s.talent] : null;
                             return (
                               <div key={s.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{background:BG}}>
-                                <span style={{fontSize:20,flexShrink:0}}>{s.emoji}</span>
+                                <img src={siswaIcon} style={{width:24,height:24,objectFit:"contain",flexShrink:0}}/>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-semibold" style={{color:TEXT,fontFamily:IPS}}>{s.name}</p>
                                   <p className="text-xs" style={{color:MUTED}}>Kelas {s.kelas} · {s.abk}</p>
@@ -872,7 +873,7 @@ function StudentsScreen({go,onAddStudent,onSelect}:{go:(s:Screen)=>void;onAddStu
                         <div className="flex items-center gap-2 mt-0.5">
                           <div className="flex items-center">
                             {members.slice(0,4).map((s,i)=>(
-                              <span key={s.id} style={{fontSize:16,marginLeft:i===0?0:-4}}>{s.emoji}</span>
+                              <img key={s.id} src={siswaIcon} style={{width:18,height:18,marginLeft:i===0?0:-4,objectFit:"contain"}}/>
                             ))}
                           </div>
                           <span className="text-xs" style={{color:MUTED}}>{members.length} siswa</span>
@@ -887,7 +888,7 @@ function StudentsScreen({go,onAddStudent,onSelect}:{go:(s:Screen)=>void;onAddStu
                         <div className="px-4 pt-3 pb-4 flex flex-col gap-2">
                           {members.map(s=>(
                             <div key={s.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{background:BG}}>
-                              <span style={{fontSize:20,flexShrink:0}}>{s.emoji}</span>
+                              <img src={siswaIcon} style={{width:24,height:24,objectFit:"contain",flexShrink:0}}/>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold" style={{color:TEXT,fontFamily:IPS}}>{s.name}</p>
                                 <p className="text-xs" style={{color:MUTED}}>{s.abk} · {s.caraBelajar}</p>
@@ -923,7 +924,7 @@ function StudentsScreen({go,onAddStudent,onSelect}:{go:(s:Screen)=>void;onAddStu
               <div className="flex flex-wrap gap-1.5">
                 {noObsStudents.map(s=>(
                   <div key={s.id} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl" style={{background:BG,border:`1px solid ${BDR}`}}>
-                    <span style={{fontSize:14}}>{s.emoji}</span>
+                    <img src={siswaIcon} style={{width:16,height:16,objectFit:"contain"}}/>
                     <span className="text-xs font-semibold" style={{color:MUTED}}>{s.name.split(" ")[0]}</span>
                   </div>
                 ))}
@@ -1326,7 +1327,7 @@ function TalentMapScreen({go,onStartObs,onSelect}:{go:(s:Screen)=>void;onStartOb
                       <button key={s.id} onClick={() => { onSelect(s.id); go("talent-map-detail"); }}
                         style={{background:CARD,border:`1px solid ${BDR}`,width:"100%",textAlign:"left"}}
                         className="rounded-2xl p-3.5 flex items-center gap-3 hover:bg-[#D4E8DA] transition-colors">
-                        <div style={{width:44,height:44,background:SEC,flexShrink:0}} className="rounded-2xl flex items-center justify-center text-xl">{s.emoji}</div>
+                        <div style={{width:44,height:44,background:SEC,flexShrink:0}} className="rounded-2xl flex items-center justify-center"><img src={siswaIcon} style={{width:24,height:24,objectFit:"contain"}}/></div>
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>{s.name}</p>
                           <p className="text-xs" style={{color:MUTED}}>{s.abk}</p>
@@ -1345,7 +1346,7 @@ function TalentMapScreen({go,onStartObs,onSelect}:{go:(s:Screen)=>void;onStartOb
                       </button>
                     ) : (
                       <div key={s.id} style={{background:BG,border:`2px dashed rgba(91,122,104,0.15)`}} className="rounded-2xl p-3.5 flex items-center gap-3">
-                        <div style={{width:44,height:44,background:"#EDE9E3",flexShrink:0}} className="rounded-2xl flex items-center justify-center text-xl opacity-50">{s.emoji}</div>
+                        <div style={{width:44,height:44,background:"#EDE9E3",flexShrink:0}} className="rounded-2xl flex items-center justify-center opacity-50"><img src={siswaIcon} style={{width:24,height:24,objectFit:"contain"}}/></div>
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-sm" style={{color:MUTED}}>{s.name}</p>
                           <p className="text-xs" style={{color:MUTED}}>{s.abk}</p>
