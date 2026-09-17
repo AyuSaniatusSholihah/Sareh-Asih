@@ -82,13 +82,15 @@ export function ObservationScreen({onBack,onDone,studentId}:{
     {k:"asesmen",   l:"Asesmen",   n:`${terisi}/${totalAsesmen}`},
     {k:"catatan",   l:"Catatan",   n:catatan.trim()?"✓":"—"},
   ];
+  const curIdx = TAHAP_TABS.findIndex(t=>t.k===tahap);
 
   return (
     <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
       <TBar title="Pengamatan & Asesmen" sub={student.name} onBack={onBack}/>
 
-      {/* Identitas + progress */}
-      <div style={{background:CARD,borderBottom:`1px solid ${BDR}`}} className="px-4 pt-2 pb-3">
+      {/* Identitas + stepper + progress (terkunci saat scroll) */}
+      <div style={{position:"sticky",top:0,zIndex:20,background:"#F7F5F0",boxShadow:"0 4px 12px rgba(91,122,104,0.08)"}}>
+      <div style={{background:CARD}} className="px-4 pt-2 pb-3">
         <div className="flex items-center gap-3 mb-3">
           <span style={{fontSize:28}}>{student.emoji}</span>
           <div className="flex-1 min-w-0">
@@ -100,42 +102,82 @@ export function ObservationScreen({onBack,onDone,studentId}:{
           </div>
         </div>
 
-        <div className="flex" style={{borderBottom:`1px solid ${BDR}`,marginLeft:-16,marginRight:-16,paddingLeft:16,paddingRight:16}}>
-          {TAHAP_TABS.map(t=>(
-            <button key={t.k} onClick={()=>setTahap(t.k)}
-              style={{
-                flex:1,minHeight:44,
-                color:tahap===t.k?DEEP:MUTED,
-                borderBottom:tahap===t.k?`3px solid ${DEEP}`:"3px solid transparent",
-                fontFamily:PJS,
-                fontWeight:tahap===t.k?800:600
-              }}
-              className="text-xs">
-              {t.l} <span style={{fontFamily:DMM,fontWeight:700}}>{t.n}</span>
-            </button>
-          ))}
+        <div className="flex" style={{marginLeft:-16,marginRight:-16,paddingLeft:16,paddingRight:16}}>
+          {TAHAP_TABS.map((t,i)=>{
+            const active = tahap===t.k;
+            const stageNum = i+1;
+            return (
+              <button key={t.k} onClick={()=>setTahap(t.k)}
+                style={{
+                  flex:1,minHeight:44,position:"relative",
+                  color:active?DEEP:MUTED,
+                  fontFamily:PJS,
+                  fontWeight:active?800:600
+                }}
+                className="text-xs flex flex-col items-center justify-center gap-1">
+                <div aria-hidden style={{position:"absolute",top:12,left:0,height:2,width:"calc(50% - 11px)",zIndex:0,background:curIdx>=i?DEEP:"#E5E1DB",transition:"background 0.3s"}}/>
+                <div aria-hidden style={{position:"absolute",top:12,right:0,height:2,width:"calc(50% - 11px)",zIndex:0,background:curIdx>=i+1?DEEP:"#E5E1DB",transition:"background 0.3s"}}/>
+                <span style={{
+                  width:22,height:22,borderRadius:11,position:"relative",zIndex:1,
+                  background:active?DEEP:"#E5E1DB",
+                  color:active?"#FFFFFF":MUTED,
+                  fontFamily:DMM,fontWeight:800,fontSize:11,
+                  display:"inline-flex",alignItems:"center",justifyContent:"center",
+                  flexShrink:0
+                }}>{stageNum}</span>
+                <span style={{fontSize:11,lineHeight:1.1,color:active?DEEP:MUTED}}>{t.l}</span>
+              </button>
+            );
+          })}
         </div>
+      </div>
+
+      {/* ── PROGRESS ── */}
+      <div style={{background:"#F7F5F0",borderBottom:`1px solid ${BDR}`}} className="px-4 py-2.5">
+        {tahap==="pengamatan" && (
+          <div style={{background:CARD,border:`1px solid ${BDR}`,borderRadius:14,padding:"10px 14px",boxShadow:"0 2px 8px rgba(91,122,104,0.06)"}}>
+            <div className="flex justify-between text-xs mb-1.5">
+              <span style={{color:TEXT,fontWeight:600}}>Indikator terpenuhi</span>
+              <span className="font-bold" style={{color:"#059669",fontFamily:DMM,fontSize:13}}>{totalCheck}/{totalObs} · {obsPct}%</span>
+            </div>
+            <div className="h-2 rounded-full" style={{background:"#EDE9E3"}}>
+              <div className="h-full rounded-full transition-all" style={{width:`${obsPct}%`,background:obsPct>0?`linear-gradient(90deg, #10B981 0%, #059669 100%)`:"transparent"}}/>
+            </div>
+          </div>
+        )}
+        {tahap==="asesmen" && (
+          <div style={{background:CARD,border:`1px solid ${BDR}`,borderRadius:14,padding:"10px 14px",boxShadow:"0 2px 8px rgba(91,122,104,0.06)"}}>
+            <div className="flex justify-between text-xs mb-1.5">
+              <span style={{color:TEXT,fontWeight:600}}>Butir asesmen terisi</span>
+              <span className="font-bold" style={{color:A,fontFamily:DMM,fontSize:13}}>{terisi}/{totalAsesmen} · {asesmenPct}%</span>
+            </div>
+            <div className="h-2 rounded-full" style={{background:"#EDE9E3"}}>
+              <div className="h-full rounded-full transition-all" style={{width:`${asesmenPct}%`,background:asesmenPct>0?A:"transparent"}}/>
+            </div>
+          </div>
+        )}
+        {tahap==="catatan" && (
+          <div style={{background:CARD,border:`1px solid ${BDR}`,borderRadius:14,padding:"10px 14px",boxShadow:"0 2px 8px rgba(91,122,104,0.06)"}}>
+            <div className="flex justify-between text-xs mb-1.5">
+              <span style={{color:TEXT,fontWeight:600}}>Ringkasan sesi</span>
+              <span className="font-bold" style={{color:DEEP,fontFamily:DMM,fontSize:13}}>
+                {totalCheck+terisi+(catatan.trim()?1:0)} item terisi
+              </span>
+            </div>
+            <div className="h-2 rounded-full" style={{background:"#EDE9E3"}}>
+              <div className="h-full rounded-full transition-all" style={{
+                width:`${Math.round((totalCheck+terisi+(catatan.trim()?1:0))/(totalObs+totalAsesmen+1)*100)}%`,
+                background:`linear-gradient(90deg, #10B981 0%, ${DEEP} 100%)`
+              }}/>
+            </div>
+          </div>
+        )}
+      </div>
       </div>
 
       {/* ── TAHAP 1: PENGAMATAN BERKATEGORI ── */}
       {tahap==="pengamatan" && (
         <div className="px-4 pt-4 pb-6 space-y-3">
-          <div style={{background:DEEP,borderRadius:18,padding:"14px",color:"#FFFFFF",boxShadow:"0 4px 14px rgba(91,122,104,0.25)"}} className="flex items-start gap-2.5">
-            <Sparkles size={16} style={{color:"#D4E8DA",flexShrink:0,marginTop:2}}/>
-            <p className="text-xs leading-relaxed" style={{color:"#FFFFFF"}}>
-              <strong style={{color:"#FFFFFF"}}>{totalObs} indikator</strong> dalam <strong style={{color:"#FFFFFF"}}>{perKategori.length} kategori</strong> dipilih AI sesuai profil {student.abk}. Buka kategori yang ingin diisi.
-            </p>
-          </div>
-
-          <div style={{background:CARD,border:`1px solid ${BDR}`,borderRadius:18,padding:"14px 16px",boxShadow:"0 2px 8px rgba(91,122,104,0.06)"}}>
-            <div className="flex justify-between text-xs mb-2">
-              <span style={{color:TEXT,fontWeight:600}}>Indikator terpenuhi</span>
-              <span className="font-bold" style={{color:"#059669",fontFamily:DMM,fontSize:13}}>{totalCheck}/{totalObs} · {obsPct}%</span>
-            </div>
-            <div className="h-2.5 rounded-full" style={{background:"#EDE9E3"}}>
-              <div className="h-full rounded-full transition-all" style={{width:`${obsPct}%`,background:obsPct>0?`linear-gradient(90deg, #10B981 0%, #059669 100%)`:"transparent"}}/>
-            </div>
-          </div>
 
           {perKategori.map(({kategori,list})=>{
             const meta = OBS_KAT_META[kategori as ObsKategori];
@@ -209,12 +251,6 @@ export function ObservationScreen({onBack,onDone,studentId}:{
       {/* ── TAHAP 2: ASESMEN 2 KATEGORI ── */}
       {tahap==="asesmen" && (
         <div className="px-4 pt-4 pb-6 space-y-3">
-          <div style={{background:"rgba(210,125,107,0.12)",border:`1.5px solid rgba(210,125,107,0.35)`}} className="rounded-2xl p-3.5 flex items-start gap-2.5">
-            <Gauge size={16} style={{color:A,flexShrink:0,marginTop:1}}/>
-            <p className="text-xs leading-relaxed" style={{color:TEXT}}>
-              Dua kategori tes: <strong style={{color:A}}>Kemandirian</strong> dan <strong style={{color:A}}>Akademik & Bakat</strong>. Pilih tingkat yang paling menggambarkan anak.
-            </p>
-          </div>
 
           {/* Legenda skala */}
           <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl px-4 py-3">
@@ -289,16 +325,6 @@ export function ObservationScreen({onBack,onDone,studentId}:{
               </div>
             );
           })}
-
-          <div style={{background:CARD,border:`1px solid ${BDR}`,borderRadius:18,padding:"14px 16px",boxShadow:"0 2px 8px rgba(91,122,104,0.06)"}}>
-            <div className="flex justify-between text-xs mb-2">
-              <span style={{color:TEXT,fontWeight:600}}>Butir asesmen terisi</span>
-              <span className="font-bold" style={{color:A,fontFamily:DMM,fontSize:13}}>{terisi}/{totalAsesmen} · {asesmenPct}%</span>
-            </div>
-            <div className="h-2.5 rounded-full" style={{background:"#EDE9E3"}}>
-              <div className="h-full rounded-full transition-all" style={{width:`${asesmenPct}%`,background:asesmenPct>0?A:"transparent"}}/>
-            </div>
-          </div>
 
           <PBtn
             full
