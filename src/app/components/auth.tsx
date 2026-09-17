@@ -171,6 +171,10 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
     else onNext();
   };
 
+  const goPrev = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
   const skip = () => onNext();
 
   return (
@@ -204,19 +208,19 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
             >
               <SplashLogo />
             </motion.div>
-            <h1 style={{fontFamily:PJS, fontSize:36, fontWeight:800, letterSpacing:"-0.5px", color:TEXT, lineHeight: 1.2, textAlign: "center"}}>
+            <h1 style={{fontFamily:PJS, fontSize:34, fontWeight:800, letterSpacing:"-0.5px", color:TEXT, lineHeight: 1.2, textAlign: "center"}}>
               Sareh <span style={{color:"#72967F"}}>Asih</span>
             </h1>
-            <p style={{fontFamily:IPS, fontSize:13, color:MUTED, textAlign:"center", maxWidth: "260px", marginTop: "16px", lineHeight: 1.5}}>
+            <p style={{fontFamily:IPS, fontSize:12.5, color:MUTED, textAlign:"center", maxWidth: "260px", marginTop: "14px", lineHeight: 1.5}}>
               Jembatan digital guru SLB dan orang tua dalam mengenali & mengembangkan potensi anak berkebutuhan khusus.
             </p>
 
             {/* Spinner */}
-            <div style={{marginTop: "40px"}}>
+            <div style={{marginTop: "36px"}}>
                <motion.div 
                  animate={{ rotate: 360 }} 
                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                 style={{ width: 28, height: 28, border: "3px solid #8BB098", borderTopColor: "transparent", borderRadius: "50%" }}
+                 style={{ width: 26, height: 26, border: "3px solid #8BB098", borderTopColor: "transparent", borderRadius: "50%" }}
                />
             </div>
 
@@ -255,29 +259,29 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
               }}
             />
 
-            {/* Gradient Overlay - hijau gelap di bawah, transparan di atas */}
+            {/* Gradient Overlay */}
             <div style={{
               position:"absolute", inset:0, zIndex:1,
               background: "linear-gradient(to top, #D4E8DA 0%, rgba(46,85,55,0.3) 50%, rgba(35,64,41,0.2) 75%, rgba(23,43,28,0.15) 87.5%, rgba(0,0,0,0.1) 100%)"
             }}/>
 
-            {/* Konten Teks - di bagian bawah */}
+            {/* Konten Teks - diperkecil agar proporsional dan tidak menutupi visual */}
             <div style={{
-              position:"absolute", bottom:120, left:28, right:28, zIndex:2
+              position:"absolute", bottom:110, left:24, right:24, zIndex:2
             }}>
               <p style={{
-                fontFamily: PJS, fontSize:20, fontWeight:600,
-                color:"#2E3E35", lineHeight:1.5,
+                fontFamily: PJS, fontSize:15, fontWeight:600,
+                color:"#2E3E35", lineHeight:1.55,
                 textAlign:"left",
-                textShadow:"0 1px 2px rgba(255,255,255,0.3)"
+                textShadow:"0 1px 2px rgba(255,255,255,0.4)"
               }}>
                 Bersama teknologi yang inklusif, kita kurangi kesenjangan dan wujudkan pendidikan berkualitas untuk setiap anak.
               </p>
             </div>
 
-            {/* Tombol Mulai - floating di bawah */}
+            {/* Tombol Mulai */}
             <div style={{
-              position:"absolute", bottom:24, left:28, right:28, zIndex:3,
+              position:"absolute", bottom:24, left:24, right:24, zIndex:3,
               display:"flex", justifyContent:"center"
             }}>
               <button
@@ -285,54 +289,83 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
                 className="active:scale-95 transition-transform"
                 style={{
                   width:"100%", maxWidth:342, background:"#FFFFFF", color:"#2E5537",
-                  fontFamily:PJS, fontWeight:700, fontSize:16,
-                  border:"none", borderRadius:20, padding:"16px 24px",
+                  fontFamily:PJS, fontWeight:700, fontSize:15,
+                  border:"none", borderRadius:20, padding:"14px 22px",
                   display:"flex", alignItems:"center", justifyContent:"center",
                   gap:10, cursor:"pointer",
-                  boxShadow:"0 10px 25px rgba(0,0,0,0.2)"
+                  boxShadow:"0 10px 25px rgba(0,0,0,0.18)"
                 }}
               >
                 <span>Mulai</span>
-                <MoveRight size={18} strokeWidth={2.5}/>
+                <MoveRight size={17} strokeWidth={2.5}/>
               </button>
             </div>
-</motion.div>
+          </motion.div>
         ) : (
           <motion.div
             key={`step-${step}`}
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 35 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, x: -35 }}
+            transition={{ duration: 0.28, ease: "easeInOut" }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.15}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -45) goNext();
+              else if (info.offset.x > 45 && step > 1) goPrev();
+            }}
             className="absolute inset-0 flex flex-col bg-[#F1F5F2]"
           >
             {/* HEADER */}
-            <div className="flex justify-between items-center px-6 pt-12 pb-4 z-10">
-              <div style={{ width: 50 }} />
-              <div style={{background:"#D27D6B", color:"#FFF", borderRadius:20, padding:"4px 14px", fontSize:12, fontWeight:700, fontFamily:PJS}}>
+            <div className="flex justify-between items-center px-5 pt-11 pb-3 z-10">
+              <div style={{ width: 44 }}>
+                {step > 1 && (
+                  <button
+                    onClick={goPrev}
+                    className="active:scale-90 transition-transform flex items-center justify-center"
+                    style={{
+                      width: 34, height: 34, borderRadius: 10,
+                      background: "rgba(255,255,255,0.7)", border: "1px solid rgba(91,122,104,0.15)",
+                      color: "#2E3E35", cursor: "pointer"
+                    }}
+                    title="Kembali"
+                  >
+                    <ArrowLeft size={16} />
+                  </button>
+                )}
+              </div>
+              <div style={{background:"#D27D6B", color:"#FFF", borderRadius:20, padding:"3px 12px", fontSize:11, fontWeight:700, fontFamily:PJS, letterSpacing:"0.03em"}}>
                 {step > 1 ? `0${step-1} / 04` : ""}
               </div>
-              <button onClick={skip} className="active:opacity-75 transition-opacity" style={{fontSize:14, fontWeight:600, color:"#6B8070", fontFamily:IPS, border:"none", background:"transparent", cursor:"pointer"}}>
+              <button onClick={skip} className="active:opacity-75 transition-opacity" style={{fontSize:12.5, fontWeight:600, color:"#6B8070", fontFamily:IPS, border:"none", background:"transparent", cursor:"pointer"}}>
                 Lewati
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 pb-24 z-10 no-scrollbar">
+            {/* SLIDE UTAMA (Ukuran Besar, Teks Lebih Rapi & Kecil) */}
+            <div className="flex-1 overflow-y-auto px-4 pb-28 z-10 no-scrollbar">
               {step === 2 && (
                 <>
-                  <h2 style={{fontFamily:PJS, fontSize:28, fontWeight:800, color:"#2E3E35", marginBottom:12, lineHeight:1.2}}>
-                    Kenali Setiap Anak<br/>dengan Lebih Mendalam
-                  </h2>
-                  <p style={{fontSize:15, color:"#5B7A68", lineHeight:1.6, marginBottom:24}}>
-                    Observasi dan asesmen adaptif untuk memahami kebutuhan, minat, dan potensi unik anak.
-                  </p>
+                  <div className="px-1">
+                    <h2 style={{fontFamily:PJS, fontSize:20, fontWeight:800, color:"#2E3E35", marginBottom:6, lineHeight:1.25}}>
+                      Kenali Setiap Anak<br/>dengan Lebih Mendalam
+                    </h2>
+                    <p style={{fontSize:12.5, color:"#5B7A68", lineHeight:1.5, marginBottom:14}}>
+                      Observasi dan asesmen adaptif untuk memahami kebutuhan, minat, dan potensi unik anak.
+                    </p>
+                  </div>
                   
-                  {/* Card Radar Chart */}
-                  <div style={{background:"#FFF", borderRadius:20, padding:"20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.04)"}}>
-                    <h3 style={{fontFamily:PJS, fontSize:16, fontWeight:700, color:"#2E3E35", marginBottom:10}}>Hasil Asesmen</h3>
-                    <div style={{height: 200, width: "100%", marginBottom: 16}}>
+                  {/* Card Radar Chart - Ukuran Besar */}
+                  <div style={{
+                    background:"#FFF", borderRadius:22, padding:"18px 16px",
+                    boxShadow:"0 8px 24px rgba(91,122,104,0.08), 0 1px 3px rgba(0,0,0,0.03)",
+                    border:"1px solid rgba(91,122,104,0.10)"
+                  }}>
+                    <h3 style={{fontFamily:PJS, fontSize:13.5, fontWeight:700, color:"#2E3E35", marginBottom:8}}>Hasil Asesmen</h3>
+                    <div style={{height: 220, width: "100%", marginBottom: 12}}>
                       <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={[
+                        <RadarChart cx="50%" cy="50%" outerRadius="76%" data={[
                           { subject: 'Kognitif', A: 80, fullMark: 100 },
                           { subject: 'Sosial', A: 65, fullMark: 100 },
                           { subject: 'Motorik', A: 50, fullMark: 100 },
@@ -340,24 +373,24 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
                           { subject: 'Bahasa', A: 45, fullMark: 100 },
                         ]}>
                           <PolarGrid stroke="#E5E7EB" />
-                          <PolarAngleAxis dataKey="subject" tick={{fill:"#6B8070", fontSize:12, fontFamily:IPS}} />
+                          <PolarAngleAxis dataKey="subject" tick={{fill:"#6B8070", fontSize:11, fontFamily:IPS}} />
                           <Radar name="Anak" dataKey="A" stroke="#8BB098" strokeWidth={2} fill="#8BB098" fillOpacity={0.4} />
                         </RadarChart>
                       </ResponsiveContainer>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {[
-                        {icon: <User size={18} color="#8BB098"/>, label: "Kemandirian"},
-                        {icon: <Star size={18} color="#D4A843"/>, label: "Minat Bakat"},
-                        {icon: <Users size={18} color="#8BB098"/>, label: "Kemampuan Sosial"},
-                        {icon: <PlayCircle size={18} color="#8BB098"/>, label: "Kemampuan Motorik"},
+                        {icon: <User size={16} color="#8BB098"/>, label: "Kemandirian"},
+                        {icon: <Star size={16} color="#D4A843"/>, label: "Minat Bakat"},
+                        {icon: <Users size={16} color="#8BB098"/>, label: "Kemampuan Sosial"},
+                        {icon: <PlayCircle size={16} color="#8BB098"/>, label: "Kemampuan Motorik"},
                       ].map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-center pb-2.5" style={{borderBottom: idx < 3 ? "1px solid #F3F4F6" : "none"}}>
-                          <div className="flex items-center gap-3">
-                            <div style={{background:"#F1F5F2", padding:6, borderRadius:8}}>{item.icon}</div>
-                            <span style={{fontSize:15, fontWeight:500, color:"#374151"}}>{item.label}</span>
+                        <div key={idx} className="flex justify-between items-center py-2" style={{borderBottom: idx < 3 ? "1px solid #F3F4F6" : "none"}}>
+                          <div className="flex items-center gap-2.5">
+                            <div style={{background:"#F1F5F2", padding:5, borderRadius:8}}>{item.icon}</div>
+                            <span style={{fontSize:13, fontWeight:500, color:"#374151"}}>{item.label}</span>
                           </div>
-                          <ChevronRight size={16} color="#9CA3AF"/>
+                          <ChevronRight size={15} color="#9CA3AF"/>
                         </div>
                       ))}
                     </div>
@@ -367,33 +400,39 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
 
               {step === 3 && (
                 <>
-                  <h2 style={{fontFamily:PJS, fontSize:28, fontWeight:800, color:"#2E3E35", marginBottom:12, lineHeight:1.2}}>
-                    Kembangkan Potensi<br/>Secara Terarah
-                  </h2>
-                  <p style={{fontSize:15, color:"#5B7A68", lineHeight:1.6, marginBottom:24}}>
-                    Rekomendasi strategi belajar dan penyusunan Individual Development Plan (IDP) yang terarah.
-                  </p>
+                  <div className="px-1">
+                    <h2 style={{fontFamily:PJS, fontSize:20, fontWeight:800, color:"#2E3E35", marginBottom:6, lineHeight:1.25}}>
+                      Kembangkan Potensi<br/>Secara Terarah
+                    </h2>
+                    <p style={{fontSize:12.5, color:"#5B7A68", lineHeight:1.5, marginBottom:14}}>
+                      Rekomendasi strategi belajar dan penyusunan Individual Development Plan (IDP) yang terarah.
+                    </p>
+                  </div>
                   
-                  {/* Card Strategi */}
-                  <div style={{background:"#FFF", borderRadius:20, padding:"20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.04)"}}>
-                    <h3 style={{fontFamily:PJS, fontSize:16, fontWeight:700, color:"#2E3E35", marginBottom:16}}>Rekomendasi Pembelajaran</h3>
+                  {/* Card Strategi - Ukuran Besar */}
+                  <div style={{
+                    background:"#FFF", borderRadius:22, padding:"18px 16px",
+                    boxShadow:"0 8px 24px rgba(91,122,104,0.08), 0 1px 3px rgba(0,0,0,0.03)",
+                    border:"1px solid rgba(91,122,104,0.10)"
+                  }}>
+                    <h3 style={{fontFamily:PJS, fontSize:13.5, fontWeight:700, color:"#2E3E35", marginBottom:14}}>Rekomendasi Pembelajaran</h3>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {[
-                        {icon: <TargetIcon size={22} color="#FFF"/>, bg:"#D27D6B", title: "Strategi Belajar", desc: "Metode visual & kinestetik"},
-                        {icon: <Video size={22} color="#FFF"/>, bg:"#D27D6B", title: "Media Belajar", desc: "Video interaktif & alat bantu"},
-                        {icon: <Calendar size={22} color="#FFF"/>, bg:"#D27D6B", title: "Jadwal Rutin", desc: "3x seminggu, 30 menit"},
-                        {icon: <User size={22} color="#FFF"/>, bg:"#D27D6B", title: "IDP (Individual Development Plan)", desc: "Lihat rencana lengkap", isLink: true},
+                        {icon: <TargetIcon size={19} color="#FFF"/>, bg:"#D27D6B", title: "Strategi Belajar", desc: "Metode visual & kinestetik"},
+                        {icon: <Video size={19} color="#FFF"/>, bg:"#D27D6B", title: "Media Belajar", desc: "Video interaktif & alat bantu"},
+                        {icon: <Calendar size={19} color="#FFF"/>, bg:"#D27D6B", title: "Jadwal Rutin", desc: "3x seminggu, 30 menit"},
+                        {icon: <User size={19} color="#FFF"/>, bg:"#D27D6B", title: "IDP (Individual Development Plan)", desc: "Lihat rencana lengkap", isLink: true},
                       ].map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-4 pb-3" style={{borderBottom: idx < 3 ? "1px solid #F3F4F6" : "none"}}>
-                          <div style={{width: 46, height: 46, borderRadius: 12, backgroundColor: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
+                        <div key={idx} className="flex items-center gap-3.5 pb-2.5" style={{borderBottom: idx < 3 ? "1px solid #F3F4F6" : "none"}}>
+                          <div style={{width: 40, height: 40, borderRadius: 12, backgroundColor: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
                             {item.icon}
                           </div>
-                          <div className="flex-1">
-                            <h4 style={{fontSize:15, fontWeight:600, color:"#2E3E35", fontFamily:PJS}}>{item.title}</h4>
-                            <p style={{fontSize:13, color:"#6B8070"}}>{item.desc}</p>
+                          <div className="flex-1 min-w-0">
+                            <h4 style={{fontSize:13, fontWeight:600, color:"#2E3E35", fontFamily:PJS}}>{item.title}</h4>
+                            <p style={{fontSize:11.5, color:"#6B8070", marginTop:1}}>{item.desc}</p>
                           </div>
-                          {item.isLink && <ChevronRight size={18} color="#9CA3AF"/>}
+                          {item.isLink && <ChevronRight size={16} color="#9CA3AF"/>}
                         </div>
                       ))}
                     </div>
@@ -403,37 +442,43 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
 
               {step === 4 && (
                 <>
-                  <h2 style={{fontFamily:PJS, fontSize:28, fontWeight:800, color:"#2E3E35", marginBottom:12, lineHeight:1.2}}>
-                    Raih Prestasi,<br/>Jelajahi Lebih Banyak Peluang
-                  </h2>
-                  <p style={{fontSize:15, color:"#5B7A68", lineHeight:1.6, marginBottom:24}}>
-                    Rekomendasi lomba resmi serta direktori pelatihan dan terapi sesuai minat anak.
-                  </p>
+                  <div className="px-1">
+                    <h2 style={{fontFamily:PJS, fontSize:20, fontWeight:800, color:"#2E3E35", marginBottom:6, lineHeight:1.25}}>
+                      Raih Prestasi,<br/>Jelajahi Lebih Banyak Peluang
+                    </h2>
+                    <p style={{fontSize:12.5, color:"#5B7A68", lineHeight:1.5, marginBottom:14}}>
+                      Rekomendasi lomba resmi serta direktori pelatihan dan terapi sesuai minat anak.
+                    </p>
+                  </div>
                   
-                  {/* Card Lomba */}
-                  <div style={{background:"#FFF", borderRadius:20, padding:"20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.04)"}}>
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 style={{fontFamily:PJS, fontSize:16, fontWeight:700, color:"#2E3E35", display:"flex", alignItems:"center", gap:8}}>
-                        <Trophy size={20} color="#D4A843"/> Lomba & Kompetisi
+                  {/* Card Lomba - Ukuran Besar */}
+                  <div style={{
+                    background:"#FFF", borderRadius:22, padding:"18px 16px",
+                    boxShadow:"0 8px 24px rgba(91,122,104,0.08), 0 1px 3px rgba(0,0,0,0.03)",
+                    border:"1px solid rgba(91,122,104,0.10)"
+                  }}>
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 style={{fontFamily:PJS, fontSize:13.5, fontWeight:700, color:"#2E3E35", display:"flex", alignItems:"center", gap:6}}>
+                        <Trophy size={18} color="#D4A843"/> Lomba & Kompetisi
                       </h3>
-                      <span style={{fontSize: 13, color:"#8BB098", fontWeight: 600}}>Lihat Semua</span>
+                      <span style={{fontSize: 12, color:"#8BB098", fontWeight: 600}}>Lihat Semua</span>
                     </div>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {[
                         {icon: "🏆", bg:"#FEF9EC", title: "Olimpiade Sains Nasional (OSN)", tag: "Sains", tagColor: "#3B82F6", tagBg: "#EFF6FF"},
                         {icon: "🎭", bg:"#FEF2F2", title: "Festival dan Lomba Seni Siswa Nasional (FLS2N)", tag: "Seni", tagColor: "#E8637A", tagBg: "#FDF2F8"},
                         {icon: "💻", bg:"#EFF6FF", title: "Lomba Kompetensi Siswa (LKS)", tag: "Vokasional", tagColor: "#1D4ED8", tagBg: "#EFF6FF"},
                       ].map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-3 pb-3" style={{borderBottom: idx < 2 ? "1px solid #F3F4F6" : "none"}}>
-                          <div style={{width: 46, height: 46, borderRadius: 12, backgroundColor: item.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0}}>
+                        <div key={idx} className="flex items-center gap-3 pb-2.5" style={{borderBottom: idx < 2 ? "1px solid #F3F4F6" : "none"}}>
+                          <div style={{width: 40, height: 40, borderRadius: 12, backgroundColor: item.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 19, flexShrink: 0}}>
                             {item.icon}
                           </div>
-                          <div className="flex-1">
-                            <h4 style={{fontSize:14, fontWeight:600, color:"#2E3E35", fontFamily:PJS, lineHeight:1.3, marginBottom:4}}>{item.title}</h4>
-                            <span style={{fontSize:11, fontWeight:600, color:item.tagColor, backgroundColor:item.tagBg, padding:"2px 8px", borderRadius:4}}>{item.tag}</span>
+                          <div className="flex-1 min-w-0">
+                            <h4 style={{fontSize:12.5, fontWeight:600, color:"#2E3E35", fontFamily:PJS, lineHeight:1.3, marginBottom:3}}>{item.title}</h4>
+                            <span style={{fontSize:10.5, fontWeight:600, color:item.tagColor, backgroundColor:item.tagBg, padding:"1.5px 7px", borderRadius:4}}>{item.tag}</span>
                           </div>
-                          <ChevronRight size={18} color="#9CA3AF"/>
+                          <ChevronRight size={16} color="#9CA3AF"/>
                         </div>
                       ))}
                     </div>
@@ -443,25 +488,31 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
 
               {step === 5 && (
                 <>
-                  <h2 style={{fontFamily:PJS, fontSize:28, fontWeight:800, color:"#2E3E35", marginBottom:12, lineHeight:1.2}}>
-                    Pantau Perkembangan<br/>Lebih Mudah
-                  </h2>
-                  <p style={{fontSize:15, color:"#5B7A68", lineHeight:1.6, marginBottom:24}}>
-                    Akses laporan perkembangan otomatis maupun manual untuk memantau kemajuan anak secara real-time.
-                  </p>
+                  <div className="px-1">
+                    <h2 style={{fontFamily:PJS, fontSize:20, fontWeight:800, color:"#2E3E35", marginBottom:6, lineHeight:1.25}}>
+                      Pantau Perkembangan<br/>Lebih Mudah
+                    </h2>
+                    <p style={{fontSize:12.5, color:"#5B7A68", lineHeight:1.5, marginBottom:14}}>
+                      Akses laporan perkembangan otomatis maupun manual untuk memantau kemajuan anak secara real-time.
+                    </p>
+                  </div>
                   
-                  {/* Card Laporan */}
-                  <div style={{background:"#FFF", borderRadius:20, padding:"20px 16px", boxShadow:"0 4px 20px rgba(0,0,0,0.04)"}}>
-                    <h3 style={{fontFamily:PJS, fontSize:16, fontWeight:700, color:"#2E3E35", display:"flex", alignItems:"center", gap:8, marginBottom:16}}>
-                      <CheckSquare size={20} color="#8BB098"/> Laporan Perkembangan
+                  {/* Card Laporan - Ukuran Besar */}
+                  <div style={{
+                    background:"#FFF", borderRadius:22, padding:"18px 16px",
+                    boxShadow:"0 8px 24px rgba(91,122,104,0.08), 0 1px 3px rgba(0,0,0,0.03)",
+                    border:"1px solid rgba(91,122,104,0.10)"
+                  }}>
+                    <h3 style={{fontFamily:PJS, fontSize:13.5, fontWeight:700, color:"#2E3E35", display:"flex", alignItems:"center", gap:6, marginBottom:12}}>
+                      <CheckSquare size={18} color="#8BB098"/> Laporan Perkembangan
                     </h3>
                     
-                    <div style={{background:"#F9FAFB", padding:"16px", borderRadius:12, marginBottom:16}}>
-                      <div className="flex items-center gap-2 mb-4">
-                        <TrendingUp size={18} color="#8BB098"/>
-                        <span style={{fontSize:14, fontWeight:600, color:"#4B5563"}}>Kemampuan Motorik</span>
+                    <div style={{background:"#F9FAFB", padding:"14px", borderRadius:12, marginBottom:14}}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <TrendingUp size={16} color="#8BB098"/>
+                        <span style={{fontSize:12.5, fontWeight:600, color:"#4B5563"}}>Kemampuan Motorik</span>
                       </div>
-                      <div style={{height: 120, width: "100%", marginLeft: -20}}>
+                      <div style={{height: 130, width: "100%", marginLeft: -20}}>
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={[
                             { name: '1', val: 30 }, { name: '2', val: 40 },
@@ -473,23 +524,23 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
-                      <div className="mt-4 flex items-center gap-1.5">
-                        <span style={{fontSize:13, fontWeight:700, color:"#10B981"}}>↑</span>
-                        <span style={{fontSize:13, color:"#4B5563", fontWeight: 500}}>Meningkat 12% dari periode sebelumnya</span>
+                      <div className="mt-3 flex items-center gap-1.5">
+                        <span style={{fontSize:12, fontWeight:700, color:"#10B981"}}>↑</span>
+                        <span style={{fontSize:11.5, color:"#4B5563", fontWeight: 500}}>Meningkat 12% dari periode sebelumnya</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between" style={{background:"#FEF2F2", padding:"12px 16px", borderRadius:12}}>
-                       <div className="flex items-center gap-3">
-                          <div style={{width: 38, height: 38, borderRadius: 10, backgroundColor: "#FCA5A5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
-                            <Calendar size={20} color="#FFF"/>
+                    <div className="flex items-center justify-between" style={{background:"#FEF2F2", padding:"10px 14px", borderRadius:12}}>
+                       <div className="flex items-center gap-2.5">
+                          <div style={{width: 34, height: 34, borderRadius: 10, backgroundColor: "#FCA5A5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
+                            <Calendar size={18} color="#FFF"/>
                           </div>
                           <div>
-                             <h4 style={{fontSize:14, fontWeight:600, color:"#2E3E35", fontFamily:PJS}}>Laporan Mingguan</h4>
-                             <p style={{fontSize:12, color:"#6B8070"}}>12 Agustus 2026</p>
+                             <h4 style={{fontSize:12.5, fontWeight:600, color:"#2E3E35", fontFamily:PJS}}>Laporan Mingguan</h4>
+                             <p style={{fontSize:11, color:"#6B8070"}}>12 Agustus 2026</p>
                           </div>
                        </div>
-                       <Download size={20} color="#6B8070"/>
+                       <Download size={18} color="#6B8070"/>
                     </div>
                   </div>
                 </>
@@ -497,19 +548,40 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
             </div>
 
             {/* FOOTER NAV */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 z-20 flex justify-between items-center pointer-events-none" style={{background:"transparent"}}>
-              <div style={{ width: 56 }} />
+            <div className="absolute bottom-0 left-0 right-0 p-5 z-20 flex justify-between items-center pointer-events-none" style={{background:"transparent"}}>
+              <div style={{ width: 50 }}>
+                {step > 1 && (
+                  <button
+                    onClick={goPrev}
+                    className="active:scale-90 transition-transform flex items-center justify-center pointer-events-auto"
+                    style={{
+                      width: 44, height: 44, borderRadius: "50%",
+                      background: "#FFFFFF", border: "1.5px solid rgba(91,122,104,0.20)",
+                      color: "#2E3E35", cursor: "pointer",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.06)"
+                    }}
+                    title="Sebelumnya"
+                  >
+                    <ArrowLeft size={18} />
+                  </button>
+                )}
+              </div>
               <div className="flex gap-2 items-center justify-center pointer-events-auto">
                 {[2, 3, 4, 5].map(i => (
-                  <div
+                  <button
                     key={i}
+                    onClick={() => setStep(i)}
                     style={{
                       width: step === i ? 24 : 8,
                       height: 8,
                       borderRadius: 4,
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
                       backgroundColor: step === i ? "#8BB098" : "#D4E8DA",
                       transition: "width 0.3s ease, background-color 0.3s ease"
                     }}
+                    title={`Slide ${i - 1}`}
                   />
                 ))}
               </div>
@@ -517,11 +589,13 @@ export function LandingScreen({onNext}:{onNext:()=>void}) {
                 onClick={goNext}
                 className="active:scale-95 transition-transform flex justify-center items-center pointer-events-auto"
                 style={{
-                  width:56, height:56, background:"#D27D6B", color:"#FFF", borderRadius:"50%", 
+                  width:50, height:50, background:"#D27D6B", color:"#FFF", borderRadius:"50%", 
+                  border:"none", cursor:"pointer",
                   boxShadow:"0 8px 16px rgba(210,125,107,0.4)"
                 }}
+                title={step === 5 ? "Selesai" : "Berikutnya"}
               >
-                <MoveRight size={24} strokeWidth={2.5} />
+                <MoveRight size={22} strokeWidth={2.5} />
               </button>
             </div>
             

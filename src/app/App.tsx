@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Home, Users, ClipboardList, Bell, Search,
   ChevronRight, Star, Brain, Target, CheckCircle,
@@ -184,26 +184,77 @@ function SettingsSheet({onClose, onLogout, role}:{onClose:()=>void; onLogout?:()
           </div>
         )}
 
-        <div style={{marginBottom:18}}>
-          <p style={{fontSize:12,fontWeight:600,color:MUTED,fontFamily:IPS,marginBottom:8,textTransform:"uppercase",letterSpacing:"0.05em"}}>Ukuran Teks</p>
-          <div style={{display:"flex",gap:8}}>
-            {SIZES.map(sz=>(
-              <button key={sz.v} onClick={()=>setFontSize(sz.v)}
-                style={{flex:1,padding:"10px 0",borderRadius:14,border:`2px solid ${fontSize===sz.v?T:BDR}`,background:fontSize===sz.v?SEC:CARD,color:fontSize===sz.v?DEEP:MUTED,fontFamily:IPS,fontSize:13,fontWeight:700,transition:"all 0.15s",cursor:"pointer"}}>
+        {/* Slider Pengatur Ukuran Teks */}
+        <div style={{marginBottom:18, padding:"16px", background:BG, borderRadius:18, border:`1px solid ${BDR}`}}>
+          <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12}}>
+            <p style={{fontSize:12,fontWeight:700,color:DEEP,fontFamily:PJS,textTransform:"uppercase",letterSpacing:"0.05em"}}>Ukuran Teks</p>
+            <span style={{fontSize:12,fontWeight:700,color:TEXT,fontFamily:DMM,background:CARD,padding:"2px 8px",borderRadius:8,border:`1px solid ${BDR}`}}>
+              {Math.round(fontSize * 100)}%
+            </span>
+          </div>
+          
+          {/* Range Slider Geser Kiri Kanan */}
+          <div style={{display:"flex", alignItems:"center", gap:12, margin:"8px 0 14px"}}>
+            <span style={{fontSize:13, fontWeight:700, color:MUTED, fontFamily:PJS, minWidth:16, textAlign:"center"}}>A</span>
+            <div style={{position:"relative", flex:1, display:"flex", alignItems:"center"}}>
+              <input
+                type="range"
+                min="0.85"
+                max="1.35"
+                step="0.05"
+                value={fontSize}
+                onChange={(e)=>setFontSize(parseFloat(e.target.value))}
+                style={{
+                  width:"100%",
+                  height:8,
+                  borderRadius:4,
+                  accentColor:T,
+                  cursor:"pointer",
+                  outline:"none",
+                  WebkitAppearance:"none",
+                  background:`linear-gradient(to right, ${T} 0%, ${T} ${((fontSize - 0.85) / (1.35 - 0.85)) * 100}%, #D4E8DA ${((fontSize - 0.85) / (1.35 - 0.85)) * 100}%, #D4E8DA 100%)`
+                }}
+              />
+            </div>
+            <span style={{fontSize:20, fontWeight:800, color:DEEP, fontFamily:PJS, minWidth:20, textAlign:"center"}}>A</span>
+          </div>
+
+          {/* Preset Buttons */}
+          <div style={{display:"flex", gap:6}}>
+            {([
+              {v:0.85, l:"Kecil"},
+              {v:1.0,  l:"Normal"},
+              {v:1.15, l:"Besar"},
+              {v:1.30, l:"Sangat Besar"}
+            ]).map(sz=>(
+              <button
+                key={sz.v}
+                onClick={()=>setFontSize(sz.v)}
+                style={{
+                  flex:1,
+                  padding:"7px 0",
+                  borderRadius:12,
+                  border:`1.5px solid ${Math.abs(fontSize - sz.v) < 0.03 ? T : BDR}`,
+                  background: Math.abs(fontSize - sz.v) < 0.03 ? SEC : CARD,
+                  color: Math.abs(fontSize - sz.v) < 0.03 ? DEEP : MUTED,
+                  fontFamily:IPS,
+                  fontSize:11.5,
+                  fontWeight:700,
+                  transition:"all 0.15s",
+                  cursor:"pointer"
+                }}
+              >
                 {sz.l}
               </button>
             ))}
           </div>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginTop:12}}>
-            <button onClick={()=>setFontSize(Math.max(1,+(fontSize-0.15).toFixed(2)))}
-              style={{display:"flex",alignItems:"center",gap:6,padding:"8px 18px",borderRadius:12,border:`1px solid ${BDR}`,background:CARD,color:TEXT,fontFamily:IPS,fontSize:13,fontWeight:600,cursor:"pointer"}}>
-              <span style={{fontSize:15,fontWeight:700}}>A</span><span style={{fontSize:11}}>−</span>
-            </button>
-            <span style={{fontSize:12,color:MUTED,fontFamily:IPS}}>{Math.round(fontSize*100)}%</span>
-            <button onClick={()=>setFontSize(Math.min(1.3,+(fontSize+0.15).toFixed(2)))}
-              style={{display:"flex",alignItems:"center",gap:6,padding:"8px 18px",borderRadius:12,border:`1px solid ${BDR}`,background:CARD,color:TEXT,fontFamily:IPS,fontSize:13,fontWeight:600,cursor:"pointer"}}>
-              <span style={{fontSize:19,fontWeight:700}}>A</span><span style={{fontSize:11}}>+</span>
-            </button>
+
+          {/* Live Preview Box */}
+          <div style={{marginTop:12, padding:"10px 12px", background:CARD, borderRadius:12, border:`1px solid ${BDR}`}}>
+            <p style={{fontSize: 10, fontWeight: 700, color: MUTED, fontFamily: DMM, textTransform: "uppercase", marginBottom: 3}}>Pratinjau Teks</p>
+            <p style={{fontSize: `${13 * fontSize}px`, fontWeight: 600, color: TEXT, fontFamily: PJS, lineHeight: 1.4}}>
+              Sareh Asih: Mengenali & Mengembangkan Potensi Anak
+            </p>
           </div>
         </div>
 
@@ -2717,6 +2768,10 @@ export default function App() {
   const [showSearch,setShowSearch]     = useState(false);
   const [showSettings,setShowSettings] = useState(false);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty('--font-size', `${fontSize * 16}px`);
+  }, [fontSize]);
+
   const go    = (s:Screen) => setScreen(s);
   const goTab = (s:Screen) => { setScreen(s); setTab(s); };
 
@@ -2890,7 +2945,7 @@ export default function App() {
   return (
   <StudentsCtx.Provider value={{list, add:addStudent}}>
   <UI.Provider value={uiCtx}>
-    <div className="min-h-screen w-full flex items-center justify-center" style={{background:"#E8E4DD",fontFamily:PJS}}>
+    <div className="min-h-screen w-full flex items-center justify-center" style={{background:"#EBF3ED",fontFamily:PJS}}>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-16 left-16 w-72 h-72 rounded-full opacity-30 blur-3xl" style={{background:`${T}25`}}/>
         <div className="absolute bottom-16 right-16 w-80 h-80 rounded-full opacity-30 blur-3xl" style={{background:`${A}18`}}/>
@@ -2926,7 +2981,7 @@ export default function App() {
           </div>
 
           {screen!=="landing" && (
-            <div style={{background:(screen==="role-select"||screen==="google-login"||screen==="parent-code")?BG:CARD,paddingTop:36,flexShrink:0}}>
+            <div style={{background:BG,paddingTop:36,flexShrink:0}}>
               <StatusBar/>
             </div>
           )}
@@ -2934,24 +2989,6 @@ export default function App() {
           <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",background:BG,position:"relative",fontSize:`${fontSize}rem`}}>
             {showNav && screen !== "dashboard" && screen !== "students" && <GlobalHeader title={title} sub={sub}/>}
             {renderScreen()}
-
-            {/* Tombol tambah siswa mengambang — selalu dalam jangkauan ibu jari */}
-            {role==="guru" && !guruSetup && !showOnboarding && !showAddStudent &&
-             ["dashboard","talent-map","competition","report"].includes(screen) && (
-              <button onClick={()=>openAddStudent(false)}
-                style={{
-                  position:"absolute", right:16, bottom:16, zIndex:40,
-                  width:54, height:54,
-                  background:A, color:"#fff", fontFamily:PJS,
-                  boxShadow:"0 8px 24px rgba(210,125,107,0.45)",
-                  borderRadius:"50%", border:"none", cursor:"pointer",
-                  display:"flex", alignItems:"center", justifyContent:"center",
-                }}
-                className="active:scale-95 transition-transform"
-                title="Tambah Siswa">
-                <span style={{fontSize:28, fontWeight:400, lineHeight:1}}>+</span>
-              </button>
-            )}
 
             {showSearch   && <SearchOverlay onClose={()=>setShowSearch(false)}/>}
             {showSettings && <SettingsSheet onClose={()=>setShowSettings(false)} onLogout={handleLogout} role={role}/>}
