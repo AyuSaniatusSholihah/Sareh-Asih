@@ -7,6 +7,7 @@ export type Role   = "guru" | "ortu";
 export type Screen =
   | "landing" | "role-select" | "google-login" | "parent-code"
   | "dashboard" | "students" | "profile" | "observation" | "kode-akses"
+  | "pengamatan-pending"
   | "talent-map" | "talent-map-detail"
   | "learning-rec"
   | "competition"
