@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   Bell, Users, MessageSquare, Sparkles, Lock, Info, Heart, Star,
   Key, Hash, XCircle, ChevronRight, ChevronLeft, MapPin, Phone,
-  Clock, Wallet, CalendarDays, CheckCircle, Search, FileText, ChevronDown,
+  Clock, Wallet, CalendarDays, CheckCircle, Search, FileText, ChevronDown, X,
 } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -18,10 +18,11 @@ import {
 
 // ─── Modal: masukkan kode akses dari dalam aplikasi ───────────────────
 export function LinkCodeModal({onClose,onLinked,students}:{onClose:()=>void;onLinked:(s:Student)=>void;students:Student[]}) {
-  const [kode,setKode] = useState("");
-  const [err,setErr]   = useState("");
+  const [kode, setKode] = useState("");
+  const [err,  setErr]  = useState("");
 
   const submit = () => {
+    if (!kode.trim()) { setErr("Masukkan kode akses terlebih dahulu"); return; }
     const k = kode.trim().toUpperCase();
     const found = students.find(s=>s.kodeOrtu?.toUpperCase()===k);
     if (!found) { setErr("Kode tidak dikenali. Pastikan kode sesuai yang diberikan guru pendamping."); return; }
@@ -32,7 +33,25 @@ export function LinkCodeModal({onClose,onLinked,students}:{onClose:()=>void;onLi
     <div style={{position:"absolute",inset:0,zIndex:70,display:"flex",flexDirection:"column",justifyContent:"flex-end"}} onClick={onClose}>
       <div style={{position:"absolute",inset:0,background:"rgba(46,62,53,0.5)"}}/>
       <div onClick={e=>e.stopPropagation()} style={{position:"relative",background:CARD,borderRadius:"26px 26px 0 0",padding:"14px 20px 28px"}}>
-        <div style={{width:36,height:4,borderRadius:2,background:"#D1D5DB",margin:"0 auto 16px"}}/>
+        {/* Top bar with drag handle and close button */}
+        <div style={{position:"relative", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:14}}>
+          <div style={{width:36,height:4,borderRadius:2,background:"#D1D5DB"}}/>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              position:"absolute", right:0, top:-4,
+              width:30, height:30, borderRadius:"50%",
+              background:"#F1F5F9", border:"none", cursor:"pointer",
+              display:"flex", alignItems:"center", justifyContent:"center",
+              color:"#64748B",
+            }}
+            className="active:scale-90 transition-transform"
+            title="Tutup"
+          >
+            <X size={16} strokeWidth={2.4} />
+          </button>
+        </div>
         <div className="flex items-center gap-2 mb-1">
           <Key size={16} style={{color:T}}/>
           <p className="font-bold" style={{fontFamily:PJS,fontSize:17,color:TEXT}}>Masukkan Kode Akses</p>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Sparkles, CheckCircle, Circle, ChevronRight, Info, ClipboardList, Gauge,
+  Sparkles, CheckCircle, Circle, ChevronRight, Info, ClipboardList, Gauge, X, ArrowLeft,
 } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, PBtn, TBar,
@@ -13,11 +13,19 @@ import { VoiceTextarea } from "./voice-input";
 
 type Tahap = "pengamatan" | "asesmen" | "catatan";
 
-export function ObservationScreen({onBack,onDone,studentId}:{
-  onBack:()=>void; onDone:(id:number)=>void; studentId:number;
+export function ObservationScreen({
+  onBack,
+  onDone,
+  onSave,
+  studentId,
+}: {
+  onBack: () => void;
+  onDone: (id: number) => void;
+  onSave?: (id: number) => void;
+  studentId: number;
 }) {
   const students = useStudents();
-  const student = students.find(s=>s.id===studentId) ?? students[0];
+  const student = students.find(s => s.id === studentId) ?? students[0];
 
   const items = (student?.abk ? OBS_BY_ABK[student.abk] : undefined)
     ?? Object.entries(OBS_BY_ABK).find(([k]) => student?.abk?.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(student?.abk?.toLowerCase() || ""))?.[1]
@@ -25,11 +33,13 @@ export function ObservationScreen({onBack,onDone,studentId}:{
     ?? Object.values(OBS_BY_ABK)[0]
     ?? [];
 
-  const [tahap,setTahap]   = useState<Tahap>("pengamatan");
-  const [checked,setChecked] = useState<Set<number>>(new Set());
-  const [skor,setSkor]     = useState<Record<number,number>>({});
-  const [buka,setBuka]     = useState<Set<string>>(new Set(["Interaksi Sosial"]));
-  const [catatan,setCatatan] = useState("");
+  const [tahap, setTahap] = useState<Tahap>("pengamatan");
+  const [checked, setChecked] = useState<Set<number>>(new Set());
+  const [skor, setSkor] = useState<Record<number, number>>({});
+  const [buka, setBuka] = useState<Set<string>>(new Set(["Interaksi Sosial"]));
+  const [catatan, setCatatan] = useState("");
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   if (!student) {
     return (
@@ -77,6 +87,25 @@ export function ObservationScreen({onBack,onDone,studentId}:{
 
   const bisaSimpan = totalCheck>0 || terisi>0;
 
+  const handleSimpan = () => {
+    if (!bisaSimpan) return;
+    setIsSaved(true);
+    if (onSave) {
+      onSave(student.id);
+    }
+    setShowResultModal(true);
+  };
+
+  const handleLihatHasil = () => {
+    setShowResultModal(false);
+    onDone(student.id);
+  };
+
+  const handleKembali = () => {
+    setShowResultModal(false);
+    setTahap("catatan");
+  };
+
   const TAHAP_TABS:{k:Tahap;l:string;n:string}[] = [
     {k:"pengamatan", l:"Pengamatan", n:`${totalCheck}/${totalObs}`},
     {k:"asesmen",   l:"Asesmen",   n:`${terisi}/${totalAsesmen}`},
@@ -85,8 +114,28 @@ export function ObservationScreen({onBack,onDone,studentId}:{
   const curIdx = TAHAP_TABS.findIndex(t=>t.k===tahap);
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
-      <TBar title="Pengamatan & Asesmen" sub={student.name} onBack={onBack}/>
+    <div
+      className="flex-1 relative flex flex-col"
+      style={{
+        fontFamily: IPS,
+        position: "relative",
+        height: "100%",
+        width: "100%",
+        overflow: "hidden",
+      }}
+    >
+      {/* Scrollable page body (terkunci saat modal aktif) */}
+      <div
+        className="flex-1"
+        style={{
+          overflowY: showResultModal ? "hidden" : "auto",
+          overscrollBehavior: "contain",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
+        <TBar title="Pengamatan & Asesmen" sub={student.name} onBack={onBack}/>
 
       {/* Identitas + stepper + progress (terkunci saat scroll) */}
       <div style={{position:"sticky",top:0,zIndex:20,background:"#F7F5F0",boxShadow:"0 4px 12px rgba(91,122,104,0.08)"}}>
@@ -238,13 +287,41 @@ export function ObservationScreen({onBack,onDone,studentId}:{
             );
           })}
 
-          <PBtn
-            full
-            label="Lanjut ke Asesmen Kemampuan"
-            icon={<Gauge size={17}/>}
-            onClick={()=>setTahap("asesmen")}
-            size="md"
-          />
+          <div className="flex gap-2.5">
+            <button
+              type="button"
+              onClick={onBack}
+              style={{
+                flex: 1,
+                border: `1.5px solid ${BDR}`,
+                color: DEEP,
+                fontFamily: PJS,
+                fontWeight: 700,
+                fontSize: 13.5,
+                minHeight: 46,
+                background: CARD,
+                borderRadius: 14,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+              }}
+              className="active:scale-[0.98] transition-all"
+            >
+              <ArrowLeft size={15} />
+              <span>Kembali</span>
+            </button>
+            <div style={{ flex: 2 }}>
+              <PBtn
+                full
+                label="Lanjut ke Asesmen"
+                icon={<Gauge size={17}/>}
+                onClick={()=>setTahap("asesmen")}
+                size="md"
+              />
+            </div>
+          </div>
         </div>
       )}
 
@@ -326,13 +403,41 @@ export function ObservationScreen({onBack,onDone,studentId}:{
             );
           })}
 
-          <PBtn
-            full
-            label="Lanjut ke Catatan"
-            icon={<ClipboardList size={17}/>}
-            onClick={()=>setTahap("catatan")}
-            size="md"
-          />
+          <div className="flex gap-2.5">
+            <button
+              type="button"
+              onClick={() => setTahap("pengamatan")}
+              style={{
+                flex: 1,
+                border: `1.5px solid ${BDR}`,
+                color: DEEP,
+                fontFamily: PJS,
+                fontWeight: 700,
+                fontSize: 13.5,
+                minHeight: 46,
+                background: CARD,
+                borderRadius: 14,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+              }}
+              className="active:scale-[0.98] transition-all"
+            >
+              <ArrowLeft size={15} />
+              <span>Kembali</span>
+            </button>
+            <div style={{ flex: 2 }}>
+              <PBtn
+                full
+                label="Lanjut ke Catatan"
+                icon={<ClipboardList size={17}/>}
+                onClick={()=>setTahap("catatan")}
+                size="md"
+              />
+            </div>
+          </div>
         </div>
       )}
 
@@ -370,12 +475,250 @@ export function ObservationScreen({onBack,onDone,studentId}:{
             ))}
           </div>
 
-          <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl px-4 py-3 text-center">
-            <p className="text-xs mb-2.5" style={{color:MUTED}}>
+          {isSaved && (
+            <div
+              style={{
+                background: "#ECFDF5",
+                border: "1px solid #A7F3D0",
+                borderRadius: 14,
+                padding: "10px 14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <CheckCircle size={15} style={{ color: "#059669" }} />
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#059669", fontFamily: PJS }}>
+                  Pengamatan berhasil disimpan
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowResultModal(true)}
+                style={{
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  color: "#059669",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  fontFamily: PJS,
+                }}
+              >
+                Lihat Opsi
+              </button>
+            </div>
+          )}
+
+          <div style={{ background: CARD, border: `1px solid ${BDR}` }} className="rounded-2xl px-4 py-3 text-center">
+            <p className="text-xs mb-2.5" style={{ color: MUTED }}>
               {!bisaSimpan ? "Isi minimal satu indikator atau butir asesmen sebelum menyimpan."
                 : "Data siap diproses AI untuk pemetaan bakat dan rekomendasi belajar."}
             </p>
-            <PBtn full label="Simpan & Proses AI" icon={<Sparkles size={15}/>} onClick={()=>onDone(student.id)} disabled={!bisaSimpan}/>
+            <div className="flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setTahap("asesmen")}
+                style={{
+                  flex: 1,
+                  border: `1.5px solid ${BDR}`,
+                  color: DEEP,
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  minHeight: 46,
+                  background: CARD,
+                  borderRadius: 14,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                }}
+                className="active:scale-[0.98] transition-all"
+              >
+                <ArrowLeft size={15} />
+                <span>Kembali</span>
+              </button>
+              <div style={{ flex: 2 }}>
+                <PBtn
+                  full
+                  label={isSaved ? "Tersimpan ✓ — Simpan Ulang" : "Simpan & Proses AI"}
+                  icon={<Sparkles size={15} />}
+                  onClick={handleSimpan}
+                  disabled={!bisaSimpan}
+                  size="md"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
+
+      {/* ── POP UP MODAL SETELAH SIMPAN (Lihat Hasil Pengamatan / Kembali ke Catatan) — Terkunci Penuh di Frame HP ── */}
+      {showResultModal && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            background: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
+            touchAction: "none",
+            overscrollBehavior: "contain",
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 360,
+              background: "#FFFFFF",
+              borderRadius: 24,
+              padding: "24px 20px 20px",
+              boxShadow: "0 20px 40px rgba(15, 23, 42, 0.20)",
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+            }}
+          >
+            {/* Close 'X' button in top-right */}
+            <button
+              type="button"
+              onClick={handleKembali}
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: "#F1F5F9",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#64748B",
+              }}
+              className="hover:bg-slate-200 active:scale-95 transition-all"
+              title="Tutup"
+            >
+              <X size={16} />
+            </button>
+
+            {/* Success Icon */}
+            <div
+              style={{
+                width: 58,
+                height: 58,
+                borderRadius: 20,
+                background: "#ECFDF5",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 14,
+                boxShadow: "0 4px 14px rgba(5, 150, 105, 0.18)",
+              }}
+            >
+              <CheckCircle size={32} style={{ color: "#059669" }} />
+            </div>
+
+            {/* Title & Description */}
+            <h3
+              style={{
+                fontFamily: PJS,
+                fontSize: 18,
+                fontWeight: 800,
+                color: "#1B2E24",
+                margin: "0 0 8px",
+                lineHeight: 1.3,
+              }}
+            >
+              Pengamatan Tersimpan!
+            </h3>
+            <p
+              style={{
+                fontFamily: IPS,
+                fontSize: 13,
+                color: "#5A6E63",
+                margin: "0 0 20px",
+                lineHeight: 1.5,
+              }}
+            >
+              Data pengamatan untuk <strong>{student.name}</strong> telah berhasil disimpan. Silakan pilih langkah selanjutnya:
+            </p>
+
+            {/* Actions */}
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
+              {/* Button 1: Lihat Hasil Pengamatan */}
+              <button
+                type="button"
+                onClick={handleLihatHasil}
+                style={{
+                  width: "100%",
+                  minHeight: 46,
+                  background: "#2D543E",
+                  color: "#FFFFFF",
+                  fontFamily: PJS,
+                  fontWeight: 800,
+                  fontSize: 14,
+                  borderRadius: 14,
+                  border: "none",
+                  cursor: "pointer",
+                  boxShadow: "0 4px 14px rgba(45, 84, 62, 0.35)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                }}
+                className="hover:brightness-105 active:scale-95 transition-all"
+              >
+                <Sparkles size={16} />
+                <span>Lihat Hasil Pengamatan</span>
+              </button>
+
+              {/* Button 2: Kembali (Redirects to Catatan) */}
+              <button
+                type="button"
+                onClick={handleKembali}
+                style={{
+                  width: "100%",
+                  minHeight: 44,
+                  background: "#F8FAFC",
+                  color: "#475569",
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  borderRadius: 14,
+                  border: "1.5px solid #E2E8F0",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                }}
+                className="hover:bg-slate-100 active:scale-95 transition-all"
+              >
+                <ArrowLeft size={15} />
+                <span>Kembali</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

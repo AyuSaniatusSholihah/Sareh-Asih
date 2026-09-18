@@ -15,6 +15,7 @@ export function TambahSiswaPromptModal({
   onSaveManual,
   onImportSiswa,
   onDone,
+  onClose,
 }: {
   sekolah: string;
   jumlahKelas: number;
@@ -24,6 +25,7 @@ export function TambahSiswaPromptModal({
   onSaveManual: (s: { name: string; abk: string; kelas: string; age: number; emoji: string }) => void;
   onImportSiswa: (siswa: SiswaImportData[]) => void;
   onDone: () => void;
+  onClose?: () => void;
 }) {
   const [mode, setMode] = useState<"choice" | "upload" | "db-sekolah" | "manual">("choice");
 
@@ -68,6 +70,7 @@ export function TambahSiswaPromptModal({
         kelasAbkMap={kelasAbkMap}
         onBack={() => setMode("choice")}
         onSkip={onDone}
+        onClose={onClose || onDone}
         onImport={imported => {
           onImportSiswa(imported);
           setSavedStudents(prev => [...prev, ...imported.map(s => s.nama)]);
@@ -81,6 +84,7 @@ export function TambahSiswaPromptModal({
         sekolah={sekolah}
         onBack={() => setMode("choice")}
         onSkip={onDone}
+        onClose={onClose || onDone}
         onImport={imported => {
           onImportSiswa(imported);
           setSavedStudents(prev => [...prev, ...imported.map(s => s.nama)]);
@@ -92,7 +96,7 @@ export function TambahSiswaPromptModal({
   if (mode === "manual") {
     const canSave = manualNama.trim() !== "";
     return (
-      <ModalShell step={3} total={3} title="Tambah Siswa Manual" desc="Masukkan data siswa satu per satu" onSkip={onDone} skipLabel="Lewati, Nanti Saja →">
+      <ModalShell step={3} total={3} title="Tambah Siswa Manual" desc="Masukkan data siswa satu per satu" onSkip={onDone} skipLabel="Lewati, Nanti Saja →" onClose={onClose || onDone}>
         <div className="space-y-3.5 mb-4">
           <div>
             <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
@@ -230,7 +234,7 @@ export function TambahSiswaPromptModal({
   }
 
   return (
-    <ModalShell step={3} total={3} title="Tambah Siswa" desc="Lengkapi informasi siswa Anda" onSkip={onDone} skipLabel="Upload Nanti →">
+    <ModalShell step={3} total={3} title="Tambah Siswa" desc="Lengkapi informasi siswa Anda" onSkip={onDone} skipLabel="Upload Nanti →" onClose={onClose || onDone}>
 
       {/* Banner sukses setelah simpan manual */}
       {savedStudents.length > 0 && (
@@ -434,12 +438,14 @@ export function UploadSiswaModal({
   kelasAbkMap = {},
   onBack,
   onSkip,
+  onClose,
   onImport,
 }: {
   kelasOptions?: string[];
   kelasAbkMap?: Record<string, string>;
   onBack: () => void;
   onSkip?: () => void;
+  onClose?: () => void;
   onImport: (s: SiswaImportData[]) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -490,7 +496,7 @@ export function UploadSiswaModal({
   const validRows = rows.filter(r => r.valid);
 
   return (
-    <ModalShell step={3} total={3} title="Upload Daftar Siswa" desc="Pilih kelas tujuan terlebih dahulu, kemudian unggah berkas siswa" onSkip={onSkip} skipLabel="Upload Nanti →">
+    <ModalShell step={3} total={3} title="Upload Daftar Siswa" desc="Pilih kelas tujuan terlebih dahulu, kemudian unggah berkas siswa" onSkip={onSkip} skipLabel="Upload Nanti →" onClose={onClose || onSkip}>
       {step === "upload" ? (
         <>
           {/* ── STEP 1: PILIH KELAS DARI KELAS AWAL ── */}
@@ -788,7 +794,19 @@ export const MOCK_DB_SEKOLAH: Record<string, { nama: string; abk: string; ttl: s
   ],
 };
 
-export function PilihKelasDBModal({ sekolah, onBack, onSkip, onImport }: { sekolah: string; onBack: () => void; onSkip?: () => void; onImport: (s: SiswaImportData[]) => void }) {
+export function PilihKelasDBModal({
+  sekolah,
+  onBack,
+  onSkip,
+  onClose,
+  onImport,
+}: {
+  sekolah: string;
+  onBack: () => void;
+  onSkip?: () => void;
+  onClose?: () => void;
+  onImport: (s: SiswaImportData[]) => void;
+}) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -805,7 +823,7 @@ export function PilihKelasDBModal({ sekolah, onBack, onSkip, onImport }: { sekol
   });
 
   return (
-    <ModalShell step={3} total={3} title="Database Sekolah" desc={`${sekolah} · Pilih kelas yang ingin diimpor`} onSkip={onSkip} skipLabel="Lewati →">
+    <ModalShell step={3} total={3} title="Database Sekolah" desc={`${sekolah} · Pilih kelas yang ingin diimpor`} onSkip={onSkip} skipLabel="Lewati →" onClose={onClose || onSkip}>
       {/* Info banner */}
       <div style={{ background: SEC, border: `1px solid rgba(91,122,104,0.2)`, borderRadius: 14, padding: "10px 12px", display: "flex", gap: 8, marginBottom: 12 }}>
         <Database size={13} style={{ color: T, flexShrink: 0, marginTop: 1 }} />

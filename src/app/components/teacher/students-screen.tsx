@@ -1,12 +1,12 @@
 import { useState } from "react";
 import {
   Search, User, Settings, Plus, ArrowLeft, ChevronRight, CheckCircle, UserPlus, Check,
-  Calendar, Users, SlidersHorizontal, X,
+  Calendar, Users, SlidersHorizontal, X, Clock, Sparkles, BookOpen,
 } from "lucide-react";
 import {
   A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, useUI, TBar,
 } from "../ui-kit";
-import { useStudents, type Screen } from "../data";
+import { useStudents, GAYA_META, type Screen } from "../data";
 import { type GuruProfile } from "../auth";
 
 import classDrawingImg from "@/imports/class_drawing.jpg";
@@ -45,6 +45,7 @@ export function getKelasJenjang(k: KelasCardData): "SDLB" | "SMPLB" | "SMALB" {
 }
 
 export const DEFAULT_KELAS_CARDS: KelasCardData[] = [
+  { id: "viii-a", nama: "Kelas VIII A", abk: "Autism Spectrum Disorder", img: classGroupImg, count: 8, jenjang: "SMPLB" },
   { id: "vi-a", nama: "Kelas VI A", abk: "Tunarungu", img: classGroupImg, count: 10, jenjang: "SDLB" },
   { id: "vii", nama: "Kelas VII", abk: "Tunalaras", img: classDrawingImg, count: 10, jenjang: "SMPLB" },
   { id: "ix-a", nama: "IX A", abk: "Tunadaksa", img: classActivityImg, count: 10, jenjang: "SMPLB" },
@@ -65,7 +66,8 @@ export function StudentsScreen({
   const students = useStudents();
   const { openSearch, openSettings } = useUI();
   const [kelasList, setKelasList] = useState<KelasCardData[]>(DEFAULT_KELAS_CARDS);
-  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState<string | null>("viii-a");
+  const [classTab, setClassTab] = useState<"daftar" | "kelompok">("daftar");
   const [isAddingKelas, setIsAddingKelas] = useState(false);
   const [schoolName, setSchoolName] = useState(guru?.sekolah || "SLB N Surakarta");
   const [newNama, setNewNama] = useState("");
@@ -134,11 +136,11 @@ export function StudentsScreen({
     ];
 
     return (
-      <div className="flex-1 flex flex-col relative overflow-hidden" style={{ fontFamily: IPS, background: "#EEF4F0", height: "100%" }}>
+      <div className="flex-1 flex flex-col relative overflow-hidden" style={{ fontFamily: IPS, background: BG, height: "100%" }}>
         {/* Scrollable Form Content */}
         <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
           {/* Top Header */}
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "16px 20px 14px", background: "#EEF4F0" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "16px 20px 14px", background: BG }}>
             <button
               onClick={() => setIsAddingKelas(false)}
               style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 0 0", display: "flex", alignItems: "center", color: "#1B2E24" }}
@@ -461,211 +463,527 @@ export function StudentsScreen({
       s.kelas.toLowerCase().replace(/\s+/g, '').includes(selectedClass.nama.toLowerCase().replace(/\s+/g, '')) ||
       selectedClass.nama.toLowerCase().replace(/\s+/g, '').includes(s.kelas.toLowerCase().replace(/\s+/g, ''))
     );
-    const filteredInClass = classStudents.filter(s =>
+    // If it's Kelas VIII A or no students matched, show the full class roster (all 8 students)
+    const effectiveStudents = (selectedClass.id === "viii-a" || classStudents.length === 0)
+      ? students
+      : classStudents;
+
+    const filteredInClass = effectiveStudents.filter(s =>
       s.name.toLowerCase().includes(q.toLowerCase()) ||
       s.abk.toLowerCase().includes(q.toLowerCase())
     );
 
+    const STUDENT_AVATARS: Record<number, string> = {
+      1: "https://images.unsplash.com/photo-1543332164-6e82f355badc?w=160&auto=format&fit=crop&q=80", // Rafi Pratama (smiling boy)
+      2: "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=160&auto=format&fit=crop&q=80", // Nisa Aulia (girl with crafts)
+      3: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=160&auto=format&fit=crop&q=80", // Arga Saputra (boy playing)
+      4: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=160&auto=format&fit=crop&q=80", // Dina Maharani (girl with glasses)
+      5: "https://images.unsplash.com/photo-1471286174890-9c112ffca56a?w=160&auto=format&fit=crop&q=80", // Budi Santoso (boy with backpack)
+      6: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=160&auto=format&fit=crop&q=80", // Maya Dewi
+      7: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80", // Toni Firmansyah
+      8: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=80", // Sari Indah
+    };
+
+    const getAbkPillStyle = (abk: string) => {
+      const lower = abk.toLowerCase();
+      if (lower.includes("autis") || lower.includes("asd")) {
+        return { bg: "#F3E8FF", color: "#7E22CE" };
+      }
+      if (lower.includes("rungu") || lower.includes("wicara")) {
+        return { bg: "#EFF6FF", color: "#2563EB" };
+      }
+      if (lower.includes("daksa")) {
+        return { bg: "#FFF7ED", color: "#C2410C" };
+      }
+      if (lower.includes("grahita")) {
+        return { bg: "#FDF2F8", color: "#BE185D" };
+      }
+      if (lower.includes("netra")) {
+        return { bg: "#FEF3C7", color: "#D97706" };
+      }
+      if (lower.includes("laras")) {
+        return { bg: "#F1F5F9", color: "#475569" };
+      }
+      return { bg: "#F3E8FF", color: "#7E22CE" };
+    };
+
+    // Learning groups for the "Kelompok Belajar" tab
+    const learningGroups = [
+      {
+        name: "Kelompok Visual",
+        icon: "👁️",
+        desc: "Belajar optimal dengan diagram, kartu visual, dan demonstrasi nyata",
+        members: effectiveStudents.filter(s => (s.caraBelajar || "").includes("Visual")),
+        color: "#2D543E",
+        tagBg: "rgba(45,84,62,0.10)",
+        tagText: "#2D543E",
+        strategi: ["Gunakan kartu langkah visual konkret", "Beri contoh gambar sebelum instruksi tugas"],
+      },
+      {
+        name: "Kelompok Kinestetik",
+        icon: "✋",
+        desc: "Belajar optimal melalui manipulasi objek, eksperimen fisik, dan bergerak",
+        members: effectiveStudents.filter(s => (s.caraBelajar || "").includes("Kinestetik")),
+        color: "#D26E5B",
+        tagBg: "rgba(210,110,91,0.10)",
+        tagText: "#D26E5B",
+        strategi: ["Sediakan media sensorik 3D", "Beri jeda gerak berkala setiap 15 menit"],
+      },
+      {
+        name: "Kelompok Auditori & Musik",
+        icon: "🎵",
+        desc: "Belajar optimal dengan ritme suara, instruksi lisan terstruktur, dan lagu",
+        members: effectiveStudents.filter(s => (s.caraBelajar || "").includes("Auditori")),
+        color: "#2563EB",
+        tagBg: "rgba(37,99,235,0.10)",
+        tagText: "#2563EB",
+        strategi: ["Instruksi lisan singkat dan berulang", "Gunakan pengiring irama untuk transisi belajar"],
+      },
+    ];
+
     return (
-      <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: "#F7F9F8" }}>
-        <TBar
-          title={selectedClass.nama}
-          sub={`${selectedClass.abk} · ${classStudents.length} Siswa`}
-          onBack={() => { setSelectedClassId(null); setQ(""); }}
-          right={
-            <button
-              onClick={onAddStudent}
-              style={{
-                background: A,
-                color: "#fff",
-                fontFamily: PJS,
-                minHeight: 38,
-                borderRadius: 12,
-                padding: "0 12px",
-                fontWeight: 800,
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 3px 10px rgba(210,125,107,0.35)"
-              }}
-              className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"
-            >
-              <UserPlus size={14} /> Tambah Siswa
-            </button>
-          }
-        />
+      <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, background: BG }}>
+        {/* ── Header (Exact Match to Mockup) ── */}
+        <div style={{ background: "#FFFFFF", padding: "14px 20px 0", flexShrink: 0, borderBottom: "1px solid rgba(91,122,104,0.10)" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+              {/* Subtle back button to return to Kelas Saya */}
+              <button
+                onClick={() => { setSelectedClassId(null); setQ(""); }}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 12,
+                  background: "rgba(139,176,152,0.14)",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#1B2E24",
+                  flexShrink: 0
+                }}
+                title="Kembali ke Daftar Kelas"
+                className="active:scale-95 transition-transform"
+              >
+                <ArrowLeft size={18} />
+              </button>
 
-        <div style={{ padding: "14px 16px 80px", display: "flex", flexDirection: "column", gap: 12 }}>
-          {/* Search bar inside class */}
-          <div style={{ position: "relative" }}>
-            <Search size={18} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#94A3B8" }} />
-            <input
-              value={q}
-              onChange={e => setQ(e.target.value)}
-              placeholder={`Cari siswa di ${selectedClass.nama}...`}
-              style={{
-                width: "100%",
-                border: "1.5px solid rgba(91,122,104,0.20)",
-                borderRadius: 16,
-                padding: "11px 14px 11px 40px",
-                fontSize: 14,
-                color: TEXT,
-                fontFamily: IPS,
-                background: CARD,
-                outline: "none",
-                minHeight: 46
-              }}
-            />
-          </div>
-
-          {classStudents.length === 0 ? (
-            <div style={{ background: CARD, border: `1.5px dashed ${BDR}`, borderRadius: 22, padding: "32px 20px", textAlign: "center" }}>
-              <div style={{ width: 52, height: 52, background: SEC, borderRadius: 16, margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>
-                🏫
+              <div style={{ minWidth: 0 }}>
+                <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+                  {selectedClass.nama}
+                </h1>
+                <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "3px 0 0", fontWeight: 500 }}>
+                  {effectiveStudents.length} Siswa
+                </p>
               </div>
-              <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 15, color: TEXT, marginBottom: 4 }}>Belum ada siswa di {selectedClass.nama}</p>
-              <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.5, marginBottom: 16 }}>Tambahkan siswa pertama ke kelas ini untuk mulai memantau perkembangan dan bakatnya.</p>
-              <button onClick={onAddStudent} style={{ background: A, color: "#fff", fontFamily: PJS, fontWeight: 800, fontSize: 12, padding: "10px 18px", borderRadius: 14, border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <UserPlus size={15} /> Tambah Siswa ke {selectedClass.nama}
+            </div>
+
+            {/* Standard 3 squircle buttons in top-right */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
+              <button
+                onClick={openSearch}
+                style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                className="active:scale-95 transition-transform"
+                title="Cari"
+              >
+                <Search size={17} style={{ color: "#1B2E24" }} />
+              </button>
+              <button
+                onClick={() => {
+                  if (students.length > 0) onSelect(students[0].id);
+                }}
+                style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                className="active:scale-95 transition-transform"
+                title="Profil Siswa"
+              >
+                <User size={17} style={{ color: "#1B2E24" }} />
+              </button>
+              <button
+                onClick={openSettings}
+                style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                className="active:scale-95 transition-transform"
+                title="Pengaturan"
+              >
+                <Settings size={17} style={{ color: "#1B2E24" }} />
               </button>
             </div>
-          ) : (
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: 10
-            }}>
-              {filteredInClass.map(s => (
-                <button
-                  key={s.id}
-                  onClick={() => onSelect(s.id)}
+          </div>
+
+          {/* ── Tabs (Daftar Siswa / Kelompok Belajar) ── */}
+          <div style={{ display: "flex", marginTop: 14 }}>
+            <button
+              onClick={() => setClassTab("daftar")}
+              style={{
+                flex: 1,
+                padding: "10px 0 12px",
+                background: "transparent",
+                border: "none",
+                borderBottom: classTab === "daftar" ? "2.5px solid #2D543E" : "2.5px solid transparent",
+                fontFamily: PJS,
+                fontWeight: classTab === "daftar" ? 700 : 600,
+                fontSize: 14,
+                color: classTab === "daftar" ? "#2D543E" : "#5A6E63",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+              }}
+            >
+              Daftar Siswa
+            </button>
+            <button
+              onClick={() => setClassTab("kelompok")}
+              style={{
+                flex: 1,
+                padding: "10px 0 12px",
+                background: "transparent",
+                border: "none",
+                borderBottom: classTab === "kelompok" ? "2.5px solid #2D543E" : "2.5px solid transparent",
+                fontFamily: PJS,
+                fontWeight: classTab === "kelompok" ? 700 : 600,
+                fontSize: 14,
+                color: classTab === "kelompok" ? "#2D543E" : "#5A6E63",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+              }}
+            >
+              Kelompok Belajar
+            </button>
+          </div>
+        </div>
+
+        {/* ── Tab: DAFTAR SISWA ── */}
+        {classTab === "daftar" && (
+          <>
+            {/* Search Bar */}
+            <div style={{ padding: "14px 16px 8px" }}>
+              <div style={{ position: "relative" }}>
+                <Search size={18} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94A3B8" }} />
+                <input
+                  value={q}
+                  onChange={e => setQ(e.target.value)}
+                  placeholder="Cari nama atau jenis ABK..."
                   style={{
-                    background: CARD,
-                    border: `1.5px solid rgba(91,122,104,0.18)`,
-                    borderRadius: 20,
-                    padding: "14px 10px 12px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
-                    boxShadow: "0 2px 8px rgba(91,122,104,0.06)",
-                    cursor: "pointer",
-                    position: "relative",
                     width: "100%",
-                    minWidth: 0,
-                  }}
-                  className="active:scale-[0.98] transition-all hover:shadow-md group"
-                >
-                  {/* Emoji Avatar */}
-                  <div style={{
-                    width: 48,
-                    height: 48,
-                    background: SEC,
-                    borderRadius: 16,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 24,
-                    marginBottom: 8,
-                    boxShadow: "inset 0 0 0 1px rgba(91,122,104,0.14)"
-                  }}>
-                    {s.emoji}
-                  </div>
-
-                  {/* Name */}
-                  <p style={{
-                    fontFamily: PJS,
+                    background: "#FFFFFF",
+                    border: "1px solid rgba(91,122,104,0.12)",
+                    borderRadius: 24,
+                    padding: "12px 18px 12px 44px",
                     fontSize: 13.5,
-                    fontWeight: 800,
-                    color: TEXT,
-                    lineHeight: 1.25,
-                    width: "100%",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap"
-                  }} title={s.name}>
-                    {s.name}
-                  </p>
+                    color: "#1B2E24",
+                    fontFamily: IPS,
+                    outline: "none",
+                    boxShadow: "0 2px 8px rgba(91,122,104,0.04)",
+                    boxSizing: "border-box"
+                  }}
+                />
+                {q && (
+                  <button
+                    onClick={() => setQ("")}
+                    style={{
+                      position: "absolute",
+                      right: 14,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "#E2E8F0",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: 20,
+                      height: 20,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      color: "#64748B",
+                    }}
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+            </div>
 
-                  {/* ABK & Age */}
-                  <p style={{
-                    fontSize: 11,
-                    color: MUTED,
-                    marginTop: 2,
-                    marginBottom: 8,
-                    width: "100%",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap"
-                  }}>
-                    {s.abk}{s.age ? ` · ${s.age} th` : ""}
-                  </p>
+            {/* List of Student Cards */}
+            <div style={{ padding: "8px 16px 96px", display: "flex", flexDirection: "column", gap: 12 }}>
+              {filteredInClass.map(s => {
+                const abkPill = getAbkPillStyle(s.abk);
+                return (
+                  <div
+                    key={s.id}
+                    onClick={() => onSelect(s.id)}
+                    style={{
+                      background: "#FFFFFF",
+                      borderRadius: 20,
+                      padding: "14px 16px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 14,
+                      boxShadow: "0 2px 10px rgba(91,122,104,0.06)",
+                      border: "1px solid rgba(91,122,104,0.10)",
+                      cursor: "pointer",
+                      position: "relative",
+                    }}
+                    className="active:scale-[0.99] transition-all hover:shadow-md"
+                  >
+                    {/* Student Photo */}
+                    <div
+                      style={{
+                        width: 52,
+                        height: 52,
+                        borderRadius: "50%",
+                        overflow: "hidden",
+                        flexShrink: 0,
+                        background: "#E2E8F0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <img
+                        src={STUDENT_AVATARS[s.id] || `https://api.dicebear.com/7.x/bottts/svg?seed=${s.name}`}
+                        alt={s.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = "none";
+                          if (e.currentTarget.parentElement) {
+                            e.currentTarget.parentElement.innerText = s.emoji || "👤";
+                            e.currentTarget.parentElement.style.fontSize = "24px";
+                          }
+                        }}
+                      />
+                    </div>
 
-                  {/* Observation Status Badge */}
-                  <span style={{
-                    fontSize: 9.5,
-                    fontWeight: 700,
-                    padding: "3px 8px",
-                    borderRadius: 12,
-                    background: s.hasObs ? "#ECFDF5" : "rgba(210,125,107,0.14)",
-                    color: s.hasObs ? "#059669" : A,
-                    border: `1px solid ${s.hasObs ? "#A7F3D0" : "rgba(210,125,107,0.35)"}`,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 3,
-                    maxWidth: "100%",
-                    whiteSpace: "nowrap"
-                  }}>
-                    {s.hasObs ? <CheckCircle size={10} /> : null}
-                    {s.hasObs ? "Sudah Diamati" : "Belum Diamati"}
-                  </span>
+                    {/* Middle: Student Details */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h3
+                        style={{
+                          fontFamily: PJS,
+                          fontSize: 15.5,
+                          fontWeight: 800,
+                          color: "#1B2E24",
+                          margin: 0,
+                          lineHeight: 1.25,
+                        }}
+                      >
+                        {s.name}
+                      </h3>
 
-                  {/* Talent Badge */}
-                  {s.talent && (
-                    <span style={{
-                      fontSize: 9.5,
-                      fontWeight: 700,
-                      padding: "2px 7px",
-                      borderRadius: 10,
-                      background: SEC,
-                      color: DEEP,
-                      marginTop: 5,
-                      maxWidth: "100%",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap"
-                    }}>
-                      {s.talent}
-                    </span>
-                  )}
-                </button>
-              ))}
+                      {/* Subtitle if Dina Maharani (matches mockup) or if specified */}
+                      {s.id === 4 && (
+                        <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#64748B", margin: "2px 0 4px" }}>
+                          Kelas IX C · 15th · Bu Sari
+                        </p>
+                      )}
+
+                      {/* Badges */}
+                      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginTop: s.id === 4 ? 0 : 5 }}>
+                        {/* ABK Badge */}
+                        <span
+                          style={{
+                            background: abkPill.bg,
+                            color: abkPill.color,
+                            fontSize: 11,
+                            fontWeight: 700,
+                            fontFamily: PJS,
+                            padding: "3.5px 10px",
+                            borderRadius: 14,
+                            display: "inline-block",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {s.abk}
+                        </span>
+
+                        {/* Observation Status Badge */}
+                        {s.hasObs ? (
+                          <span
+                            style={{
+                              background: "#ECFDF5",
+                              color: "#059669",
+                              fontSize: 11,
+                              fontWeight: 700,
+                              fontFamily: PJS,
+                              padding: "3.5px 10px",
+                              borderRadius: 14,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4,
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            <CheckCircle size={12} strokeWidth={2.5} />
+                            <span>Pengamatan ada</span>
+                          </span>
+                        ) : (
+                          <span
+                            style={{
+                              background: "#FFFBEB",
+                              color: "#B45309",
+                              fontSize: 11,
+                              fontWeight: 700,
+                              fontFamily: PJS,
+                              padding: "3.5px 10px",
+                              borderRadius: 14,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4,
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            <Clock size={11} strokeWidth={2.5} />
+                            <span>Belum pengamatan</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Right Chevron */}
+                    <ChevronRight size={18} style={{ color: "#94A3B8", flexShrink: 0 }} />
+                  </div>
+                );
+              })}
 
               {filteredInClass.length === 0 && (
-                <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "24px 10px", color: MUTED, fontSize: 12 }}>
-                  Tidak ada siswa yang cocok dengan pencarian.
+                <div style={{ textAlign: "center", padding: "36px 16px", color: MUTED, fontSize: 13 }}>
+                  Tidak ada siswa yang cocok dengan pencarian "{q}".
                 </div>
               )}
             </div>
-          )}
 
-          <button
-            onClick={() => setSelectedClassId(null)}
-            style={{
-              marginTop: 12,
-              background: "transparent",
-              color: DEEP,
-              border: `1.5px solid ${BDR}`,
-              borderRadius: 14,
-              padding: "10px",
-              fontFamily: PJS,
-              fontWeight: 700,
-              fontSize: 12,
-              cursor: "pointer"
-            }}
-          >
-            ← Kembali ke Semua Kelas
-          </button>
-        </div>
+            {/* Floating Action Button: + Tambah Siswa */}
+            <button
+              onClick={onAddStudent}
+              style={{
+                position: "absolute",
+                bottom: 82,
+                right: 20,
+                background: "#D26E5B",
+                color: "#FFFFFF",
+                fontFamily: PJS,
+                fontWeight: 700,
+                fontSize: 13.5,
+                borderRadius: 18,
+                padding: "12px 18px",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 6px 18px rgba(210,110,91,0.45)",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                zIndex: 40,
+              }}
+              className="active:scale-95 transition-all hover:brightness-105"
+            >
+              <Plus size={16} strokeWidth={2.5} />
+              <span>Tambah Siswa</span>
+            </button>
+          </>
+        )}
+
+        {/* ── Tab: KELOMPOK BELAJAR ── */}
+        {classTab === "kelompok" && (
+          <div style={{ padding: "14px 16px 96px", display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "14px 16px", border: "1px solid rgba(91,122,104,0.12)", boxShadow: "0 2px 8px rgba(91,122,104,0.04)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                <Sparkles size={16} style={{ color: "#2D543E" }} />
+                <h2 style={{ fontFamily: PJS, fontSize: 14.5, fontWeight: 800, color: "#1B2E24", margin: 0 }}>
+                  Pengelompokan Belajar Adaptif
+                </h2>
+              </div>
+              <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", lineHeight: 1.5, margin: 0 }}>
+                Kelompok otomatis disusun berdasarkan gaya belajar dominan siswa di {selectedClass.nama} untuk mendukung diferensiasi instruksi.
+              </p>
+            </div>
+
+            {learningGroups.map(grp => (
+              <div
+                key={grp.name}
+                style={{
+                  background: "#FFFFFF",
+                  borderRadius: 20,
+                  padding: "16px",
+                  border: "1px solid rgba(91,122,104,0.12)",
+                  boxShadow: "0 2px 10px rgba(91,122,104,0.05)",
+                }}
+              >
+                {/* Group Header */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 20 }}>{grp.icon}</span>
+                    <div>
+                      <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: "#1B2E24", margin: 0 }}>
+                        {grp.name}
+                      </h3>
+                      <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#64748B", margin: 0 }}>
+                        {grp.desc}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      background: grp.tagBg,
+                      color: grp.tagText,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      fontFamily: PJS,
+                      padding: "4px 10px",
+                      borderRadius: 12,
+                      whiteSpace: "nowrap"
+                    }}
+                  >
+                    {grp.members.length} Siswa
+                  </span>
+                </div>
+
+                {/* Members Avatars and Names */}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+                  {grp.members.map(m => (
+                    <div
+                      key={m.id}
+                      onClick={() => onSelect(m.id)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        background: "rgba(139,176,152,0.10)",
+                        padding: "5px 10px 5px 6px",
+                        borderRadius: 20,
+                        cursor: "pointer",
+                        border: "1px solid rgba(91,122,104,0.14)"
+                      }}
+                      className="active:scale-95 transition-transform"
+                    >
+                      <img
+                        src={STUDENT_AVATARS[m.id] || `https://api.dicebear.com/7.x/bottts/svg?seed=${m.name}`}
+                        alt={m.name}
+                        style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover" }}
+                      />
+                      <span style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: "#1B2E24" }}>
+                        {m.name.split(" ")[0]}
+                      </span>
+                    </div>
+                  ))}
+                  {grp.members.length === 0 && (
+                    <p style={{ fontFamily: IPS, fontSize: 12, color: "#94A3B8", fontStyle: "italic", margin: "4px 0" }}>
+                      Belum ada siswa di kelompok ini
+                    </p>
+                  )}
+                </div>
+
+                {/* Recommended Strategies */}
+                <div style={{ background: "#F8FAFC", borderRadius: 14, padding: "10px 12px", border: "1px solid #EDF2F7" }}>
+                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 700, color: "#475569", margin: "0 0 6px" }}>
+                    Strategi Utama:
+                  </p>
+                  <ul style={{ margin: 0, paddingLeft: 16, fontSize: 11.5, color: "#64748B", lineHeight: 1.5 }}>
+                    {grp.strategi.map((s, idx) => (
+                      <li key={idx}>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -679,35 +997,38 @@ export function StudentsScreen({
   });
 
   return (
-    <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, background: "#F7F9F8" }}>
+    <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, background: BG }}>
       {/* ── Header ── */}
-      <div style={{ background: CARD, paddingTop: 12 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "8px 20px 10px" }}>
-          <div>
-            <h1 style={{ fontFamily: PJS, fontSize: 24, fontWeight: 800, color: "#1B2E24", lineHeight: 1.15 }}>
+      <div style={{ background: "#FFFFFF", padding: "14px 20px 10px", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
               Kelas Saya
             </h1>
-            <p style={{ fontSize: 13, color: MUTED, marginTop: 4, fontWeight: 500 }}>
+            <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "4px 0 0", fontWeight: 500 }}>
               Kelola Kelas dengan Mudah
             </p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 4 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
             <button onClick={openSearch}
-              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.12)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform"
               title="Cari">
-              <Search size={16} style={{ color: TEXT }} />
+              <Search size={17} style={{ color: "#1B2E24" }} />
             </button>
             <button onClick={() => {
               if (students.length > 0) onSelect(students[0].id);
             }}
-              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.12)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform"
               title="Profil Siswa">
-              <User size={16} style={{ color: TEXT }} />
+              <User size={17} style={{ color: "#1B2E24" }} />
             </button>
             <button onClick={openSettings}
-              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.12)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform"
               title="Pengaturan">
-              <Settings size={16} style={{ color: TEXT }} />
+              <Settings size={17} style={{ color: "#1B2E24" }} />
             </button>
           </div>
         </div>

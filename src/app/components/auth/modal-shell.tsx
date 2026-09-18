@@ -1,4 +1,5 @@
 import React from "react";
+import { X } from "lucide-react";
 import { T, CARD, TEXT, MUTED, BDR, PJS, IPS, DMM } from "../ui-kit";
 
 export interface ModalShellProps {
@@ -9,15 +10,42 @@ export interface ModalShellProps {
   children: React.ReactNode;
   onSkip?: () => void;
   skipLabel?: string;
+  onClose?: () => void;
 }
 
-export function ModalShell({ step, total, title, desc, children, onSkip, skipLabel }: ModalShellProps) {
+export function ModalShell({ step, total, title, desc, children, onSkip, skipLabel, onClose }: ModalShellProps) {
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: 70, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-      <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.5)" }} />
+      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.5)", cursor: onClose ? "pointer" : "default" }} />
       <div style={{ position: "relative", background: CARD, borderRadius: "26px 26px 0 0", maxHeight: "93%", display: "flex", flexDirection: "column" }}>
-        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+        {/* Top Handle and Close Button */}
+        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", paddingTop: 12, paddingBottom: 6, flexShrink: 0 }}>
           <div style={{ width: 36, height: 4, borderRadius: 2, background: "#D1D5DB" }} />
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                position: "absolute",
+                right: 16,
+                top: 8,
+                width: 30,
+                height: 30,
+                borderRadius: "50%",
+                background: "#F1F5F9",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#64748B",
+              }}
+              className="active:scale-90 transition-transform"
+              title="Tutup"
+            >
+              <X size={16} strokeWidth={2.4} />
+            </button>
+          )}
         </div>
         <div className="px-5 pb-3 flex-shrink-0" style={{ borderBottom: `1px solid ${BDR}` }}>
           <div className="flex items-center gap-1.5 mb-2">

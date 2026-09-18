@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Briefcase, Phone, CheckCircle } from "lucide-react";
+import { Briefcase, Phone, CheckCircle, ArrowLeft } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, Field } from "../ui-kit";
 import { ModalShell } from "./modal-shell";
 import { GoogleMark } from "./illustrations";
@@ -17,7 +17,15 @@ export interface GuruProfile {
 }
 
 // SRS-F-002: Profil guru lengkap — nama, email, jabatan, noHp
-export function AkunGuruModal({ profile, onNext }: { profile: GuruProfile; onNext: (p: { nama: string; email: string; jabatan: string; noHp: string }) => void }) {
+export function AkunGuruModal({
+  profile,
+  onNext,
+  onClose,
+}: {
+  profile: GuruProfile;
+  onNext: (p: { nama: string; email: string; jabatan: string; noHp: string }) => void;
+  onClose?: () => void;
+}) {
   const [nama, setNama] = useState(profile.nama);
   const [email, setEmail] = useState(profile.email);
   const [jabatan, setJabatan] = useState(profile.jabatan || "");
@@ -33,7 +41,13 @@ export function AkunGuruModal({ profile, onNext }: { profile: GuruProfile; onNex
   ];
 
   return (
-    <ModalShell step={1} total={3} title="Konfirmasi Profil Anda" desc="Data diambil dari akun Google. Lengkapi jabatan untuk melanjutkan.">
+    <ModalShell
+      step={1}
+      total={3}
+      title="Konfirmasi Profil Anda"
+      desc="Data diambil dari akun Google. Lengkapi jabatan untuk melanjutkan."
+      onClose={onClose}
+    >
       {/* Google badge */}
       <div style={{ background: SEC, border: `1px solid rgba(91,122,104,0.2)` }} className="rounded-2xl px-4 py-3 flex items-center gap-3 mb-4">
         <GoogleMark size={18} />
@@ -96,54 +110,82 @@ export function AkunGuruModal({ profile, onNext }: { profile: GuruProfile; onNex
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => {
-          if (!valid || isSaving || isSaved) return;
-          setIsSaving(true);
-          setTimeout(() => {
-            setIsSaving(false);
-            setIsSaved(true);
-            setTimeout(() => {
-              onNext({ nama: nama.trim(), email: email.trim(), jabatan: jabatan.trim(), noHp: noHp.trim() });
-            }, 700);
-          }, 600);
-        }}
-        disabled={!valid || isSaving || isSaved}
-        style={{
-          width: "100%",
-          background: isSaved ? "#10B981" : isSaving ? DEEP : valid ? A : "#D1D5DB",
-          color: "#fff",
-          fontFamily: PJS,
-          fontWeight: 700,
-          fontSize: 15,
-          minHeight: 52,
-          borderRadius: 16,
-          marginTop: 18,
-          border: "none",
-          cursor: valid && !isSaving && !isSaved ? "pointer" : "not-allowed",
-          boxShadow: isSaved ? "0 6px 20px rgba(16,185,129,0.42)" : valid ? "0 6px 20px rgba(210,125,107,0.42)" : "none",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 8,
-          transition: "all 0.25s ease",
-        }}
-        className="active:scale-[0.98] transition-all">
-        {isSaving ? (
-          <>
-            <span style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />
-            Menyimpan Akun…
-          </>
-        ) : isSaved ? (
-          <>
-            <CheckCircle size={18} strokeWidth={2.6} />
-            Data Akun Disimpan!
-          </>
-        ) : (
-          "Lanjut ke Profil Sekolah →"
+      <div className="flex gap-2.5 mt-4">
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              flex: 1,
+              border: `2px solid ${DEEP}`,
+              color: DEEP,
+              fontFamily: PJS,
+              fontWeight: 700,
+              fontSize: 14,
+              minHeight: 52,
+              background: CARD,
+              borderRadius: 16,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+            }}
+            className="active:scale-[0.98] transition-all"
+          >
+            <ArrowLeft size={15} />
+            <span>Kembali</span>
+          </button>
         )}
-      </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (!valid || isSaving || isSaved) return;
+            setIsSaving(true);
+            setTimeout(() => {
+              setIsSaving(false);
+              setIsSaved(true);
+              setTimeout(() => {
+                onNext({ nama: nama.trim(), email: email.trim(), jabatan, noHp: noHp.trim() });
+              }, 700);
+            }, 600);
+          }}
+          disabled={!valid || isSaving || isSaved}
+          style={{
+            flex: onClose ? 2 : 1,
+            background: isSaved ? "#10B981" : isSaving ? DEEP : valid ? A : "#D1D5DB",
+            color: "#fff",
+            fontFamily: PJS,
+            fontWeight: 700,
+            fontSize: 15,
+            minHeight: 52,
+            borderRadius: 16,
+            border: "none",
+            cursor: valid && !isSaving && !isSaved ? "pointer" : "not-allowed",
+            boxShadow: isSaved ? "0 6px 20px rgba(16,185,129,0.42)" : valid ? "0 6px 20px rgba(210,125,107,0.42)" : "none",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            transition: "all 0.25s ease",
+          }}
+          className="active:scale-[0.98] transition-all"
+        >
+          {isSaving ? (
+            <>
+              <span style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.4)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />
+              Menyimpan Akun…
+            </>
+          ) : isSaved ? (
+            <>
+              <CheckCircle size={18} strokeWidth={2.6} />
+              Data Akun Disimpan!
+            </>
+          ) : (
+            "Lanjut ke Profil Sekolah →"
+          )}
+        </button>
+      </div>
     </ModalShell>
   );
 }
