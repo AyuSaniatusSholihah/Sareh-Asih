@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  HelpCircle, Heart, Shield, LogOut, Volume2, VolumeX, ChevronRight,
+  HelpCircle, Heart, Shield, LogOut, Volume2, VolumeX, ChevronRight, X,
 } from "lucide-react";
 import {
   T, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, useUI,
@@ -56,9 +56,34 @@ export function SettingsSheet({
 
   return (
     <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.45)", zIndex: 80, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} onClick={onClose}>
-      <div style={{ background: CARD, borderRadius: "24px 24px 0 0", padding: "20px 20px 32px", maxHeight: "90%", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
-        <div style={{ width: 40, height: 4, borderRadius: 2, background: BDR, margin: "0 auto 18px" }} />
-        <p style={{ fontSize: 16, fontWeight: 700, color: TEXT, fontFamily: PJS, marginBottom: 16 }}>Pengaturan & Bantuan</p>
+      <div style={{ background: CARD, borderRadius: "24px 24px 0 0", padding: "16px 20px 32px", maxHeight: "90%", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+        {/* Top Handle Bar */}
+        <div style={{ width: 40, height: 4, borderRadius: 2, background: BDR, margin: "0 auto 12px" }} />
+
+        {/* Modal Header with Close 'X' Button on Right */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <p style={{ fontSize: 16, fontWeight: 700, color: TEXT, fontFamily: PJS, margin: 0 }}>Pengaturan & Bantuan</p>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              background: "#F1F5F9",
+              border: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#64748B",
+            }}
+            className="active:scale-90 transition-transform"
+            title="Tutup"
+          >
+            <X size={17} strokeWidth={2.4} />
+          </button>
+        </div>
 
         {/* Akun & Logout */}
         {role && onLogout && (
