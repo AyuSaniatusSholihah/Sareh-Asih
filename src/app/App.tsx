@@ -370,10 +370,11 @@ export default function App() {
                       const defaultKelas = kelasKeys[0] || "VII A";
                       importedSiswa.forEach((s, idx) => {
                         const emoji = ["👦", "👧", "🧑"][idx % 3];
+                        const targetKelas = s.kelas || defaultKelas;
                         addStudent({
                           name: s.nama,
-                          abk: s.abk || "Belum Ditentukan",
-                          kelas: defaultKelas,
+                          abk: s.abk || guru.kelasAbkMap[targetKelas] || "Belum Ditentukan",
+                          kelas: targetKelas,
                           age: 0,
                           emoji,
                           talent: "", talentScore: 0, stars: 0,
@@ -386,7 +387,6 @@ export default function App() {
                           rentang: "", minat: "", terapi: "",
                         });
                       });
-                      finishGuruSetup();
                     }}
                     onDone={finishGuruSetup}
                   />

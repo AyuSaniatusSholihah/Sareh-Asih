@@ -7,9 +7,11 @@ export interface ModalShellProps {
   title: string;
   desc: string;
   children: React.ReactNode;
+  onSkip?: () => void;
+  skipLabel?: string;
 }
 
-export function ModalShell({ step, total, title, desc, children }: ModalShellProps) {
+export function ModalShell({ step, total, title, desc, children, onSkip, skipLabel }: ModalShellProps) {
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: 70, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
       <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.5)" }} />
@@ -24,8 +26,22 @@ export function ModalShell({ step, total, title, desc, children }: ModalShellPro
             ))}
             <span className="text-xs ml-1" style={{ color: MUTED, fontFamily: DMM }}>{step}/{total}</span>
           </div>
-          <p className="font-bold" style={{ fontFamily: PJS, fontSize: 18, color: TEXT }}>{title}</p>
-          <p className="text-xs mt-0.5" style={{ color: MUTED, fontFamily: IPS }}>{desc}</p>
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <p className="font-bold" style={{ fontFamily: PJS, fontSize: 18, color: TEXT, margin: 0 }}>{title}</p>
+              <p className="text-xs mt-0.5" style={{ color: MUTED, fontFamily: IPS, margin: 0 }}>{desc}</p>
+            </div>
+            {onSkip && (
+              <button
+                type="button"
+                onClick={onSkip}
+                className="text-xs font-bold px-3 py-1.5 rounded-xl transition-colors cursor-pointer border-none shrink-0"
+                style={{ background: "#EAF2EC", color: T, fontFamily: PJS }}
+              >
+                {skipLabel || "Upload Nanti →"}
+              </button>
+            )}
+          </div>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-4 pb-6">{children}</div>
       </div>

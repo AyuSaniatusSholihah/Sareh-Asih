@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   Search, User, Settings, Plus, ArrowLeft, ChevronRight, CheckCircle, UserPlus, Check,
+  Calendar, Users, SlidersHorizontal, X,
 } from "lucide-react";
 import {
   A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, useUI, TBar,
@@ -18,12 +19,36 @@ export interface KelasCardData {
   abk: string;
   img: string;
   count?: number;
+  jenjang?: "SDLB" | "SMPLB" | "SMALB";
+}
+
+export const JENJANG_OPTIONS = [
+  { id: "Semua", label: "Semua Jenjang" },
+  { id: "SDLB", label: "SDLB" },
+  { id: "SMPLB", label: "SMPLB" },
+  { id: "SMALB", label: "SMALB" },
+];
+
+export function getKelasJenjang(k: KelasCardData): "SDLB" | "SMPLB" | "SMALB" {
+  if (k.jenjang) return k.jenjang;
+  const upper = k.nama.toUpperCase();
+  if (upper.includes("SMALB") || /\b(X|XI|XII)\b/.test(upper) || /\b(10|11|12)\b/.test(upper)) {
+    return "SMALB";
+  }
+  if (upper.includes("SMPLB") || /\b(VII|VIII|IX)\b/.test(upper) || /\b([7-9])\b/.test(upper)) {
+    return "SMPLB";
+  }
+  if (upper.includes("SDLB") || /\b(I|II|III|IV|V|VI)\b/.test(upper) || /\b([1-6])\b/.test(upper)) {
+    return "SDLB";
+  }
+  return "SMPLB";
 }
 
 export const DEFAULT_KELAS_CARDS: KelasCardData[] = [
-  { id: "vii", nama: "Kelas VII", abk: "Tunalaras", img: classDrawingImg, count: 10 },
-  { id: "vi-a", nama: "Kelas VI A", abk: "Tunarungu", img: classGroupImg, count: 10 },
-  { id: "ix-a", nama: "IX A", abk: "Tunadaksa", img: classActivityImg, count: 10 },
+  { id: "vi-a", nama: "Kelas VI A", abk: "Tunarungu", img: classGroupImg, count: 10, jenjang: "SDLB" },
+  { id: "vii", nama: "Kelas VII", abk: "Tunalaras", img: classDrawingImg, count: 10, jenjang: "SMPLB" },
+  { id: "ix-a", nama: "IX A", abk: "Tunadaksa", img: classActivityImg, count: 10, jenjang: "SMPLB" },
+  { id: "x-b", nama: "Kelas X B", abk: "Autism Spectrum", img: classDrawingImg, count: 8, jenjang: "SMALB" },
 ];
 
 export function StudentsScreen({
@@ -44,12 +69,15 @@ export function StudentsScreen({
   const [isAddingKelas, setIsAddingKelas] = useState(false);
   const [schoolName, setSchoolName] = useState(guru?.sekolah || "SLB N Surakarta");
   const [newNama, setNewNama] = useState("");
+  const [selectedJenjang, setSelectedJenjang] = useState<string>("Semua");
+  const [selectedNewJenjang, setSelectedNewJenjang] = useState<"SDLB" | "SMPLB" | "SMALB">("SMPLB");
   const [selectedAbk, setSelectedAbk] = useState("Autism Spectrum Disorder");
   const [customAbk, setCustomAbk] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [justAddedKelasNama, setJustAddedKelasNama] = useState("");
   const [q, setQ] = useState("");
   const [selectedTA, setSelectedTA] = useState("2025/2026");
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
   const tahunAjaranList = ["2023/2024", "2024/2025", "2025/2026"];
 
   const selectedClass = kelasList.find(k => k.id === selectedClassId);
@@ -76,6 +104,7 @@ export function StudentsScreen({
       id: Date.now().toString(),
       nama: namaAdded,
       abk: abkFinal,
+      jenjang: selectedNewJenjang,
       img: imgs[kelasList.length % imgs.length],
       count: 0,
     };
@@ -182,6 +211,45 @@ export function StudentsScreen({
                   boxSizing: "border-box"
                 }}
               />
+            </div>
+
+            {/* Field 3: Jenjang Pendidikan * */}
+            <div style={{ marginBottom: 18 }}>
+              <label style={{ display: "block", fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: "#1B2E24", marginBottom: 8 }}>
+                Jenjang Pendidikan <span style={{ color: "#EF4444" }}>*</span>
+              </label>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                {(["SDLB", "SMPLB", "SMALB"] as const).map(j => {
+                  const isSel = selectedNewJenjang === j;
+                  const labelMap = {
+                    SDLB: "SDLB (I - VI)",
+                    SMPLB: "SMPLB (VII - IX)",
+                    SMALB: "SMALB (X - XII)"
+                  };
+                  return (
+                    <button
+                      key={j}
+                      type="button"
+                      onClick={() => setSelectedNewJenjang(j)}
+                      style={{
+                        padding: "9px 6px",
+                        borderRadius: 14,
+                        border: isSel ? `1.5px solid ${DEEP}` : `1.5px solid #E2E8F0`,
+                        background: isSel ? SEC : "#FFFFFF",
+                        color: isSel ? DEEP : "#475569",
+                        fontFamily: PJS,
+                        fontSize: 11.5,
+                        fontWeight: isSel ? 800 : 700,
+                        cursor: "pointer",
+                        textAlign: "center",
+                        transition: "all 0.15s"
+                      }}
+                    >
+                      {labelMap[j]}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* ABK Options Chips */}
@@ -461,7 +529,11 @@ export function StudentsScreen({
               </button>
             </div>
           ) : (
-            <div className="space-y-2.5">
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: 10
+            }}>
               {filteredInClass.map(s => (
                 <button
                   key={s.id}
@@ -469,50 +541,110 @@ export function StudentsScreen({
                   style={{
                     background: CARD,
                     border: `1.5px solid rgba(91,122,104,0.18)`,
-                    width: "100%",
-                    textAlign: "left",
                     borderRadius: 20,
-                    padding: "12px 14px",
+                    padding: "14px 10px 12px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center",
+                    boxShadow: "0 2px 8px rgba(91,122,104,0.06)",
+                    cursor: "pointer",
+                    position: "relative",
+                    width: "100%",
+                    minWidth: 0,
+                  }}
+                  className="active:scale-[0.98] transition-all hover:shadow-md group"
+                >
+                  {/* Emoji Avatar */}
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    background: SEC,
+                    borderRadius: 16,
                     display: "flex",
                     alignItems: "center",
-                    gap: 12,
-                    boxShadow: "0 2px 8px rgba(91,122,104,0.06)",
-                    cursor: "pointer"
-                  }}
-                  className="active:scale-[0.99] transition-transform"
-                >
-                  <div style={{ width: 46, height: 46, background: SEC, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>
+                    justifyContent: "center",
+                    fontSize: 24,
+                    marginBottom: 8,
+                    boxShadow: "inset 0 0 0 1px rgba(91,122,104,0.14)"
+                  }}>
                     {s.emoji}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontFamily: PJS, fontSize: 14.5, fontWeight: 800, color: TEXT }}>{s.name}</p>
-                    <p style={{ fontSize: 11.5, color: MUTED, marginTop: 2 }}>{s.abk}{s.age ? ` · ${s.age} th` : ""}</p>
-                    <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-                      <span style={{
-                        fontSize: 10.5,
-                        fontWeight: 700,
-                        padding: "2px 8px",
-                        borderRadius: 12,
-                        background: s.hasObs ? "#ECFDF5" : "rgba(210,125,107,0.14)",
-                        color: s.hasObs ? "#059669" : A,
-                        border: `1px solid ${s.hasObs ? "#A7F3D0" : "rgba(210,125,107,0.35)"}`,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 3
-                      }}>
-                        {s.hasObs ? <CheckCircle size={10} /> : null}
-                        {s.hasObs ? "Sudah Diamati" : "Belum Diamati"}
-                      </span>
-                      {s.talent && (
-                        <span style={{ fontSize: 10.5, fontWeight: 700, padding: "2px 8px", borderRadius: 12, background: SEC, color: DEEP }}>
-                          {s.talent}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <ChevronRight size={16} style={{ color: MUTED, flexShrink: 0 }} strokeWidth={2.2} />
+
+                  {/* Name */}
+                  <p style={{
+                    fontFamily: PJS,
+                    fontSize: 13.5,
+                    fontWeight: 800,
+                    color: TEXT,
+                    lineHeight: 1.25,
+                    width: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap"
+                  }} title={s.name}>
+                    {s.name}
+                  </p>
+
+                  {/* ABK & Age */}
+                  <p style={{
+                    fontSize: 11,
+                    color: MUTED,
+                    marginTop: 2,
+                    marginBottom: 8,
+                    width: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap"
+                  }}>
+                    {s.abk}{s.age ? ` · ${s.age} th` : ""}
+                  </p>
+
+                  {/* Observation Status Badge */}
+                  <span style={{
+                    fontSize: 9.5,
+                    fontWeight: 700,
+                    padding: "3px 8px",
+                    borderRadius: 12,
+                    background: s.hasObs ? "#ECFDF5" : "rgba(210,125,107,0.14)",
+                    color: s.hasObs ? "#059669" : A,
+                    border: `1px solid ${s.hasObs ? "#A7F3D0" : "rgba(210,125,107,0.35)"}`,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 3,
+                    maxWidth: "100%",
+                    whiteSpace: "nowrap"
+                  }}>
+                    {s.hasObs ? <CheckCircle size={10} /> : null}
+                    {s.hasObs ? "Sudah Diamati" : "Belum Diamati"}
+                  </span>
+
+                  {/* Talent Badge */}
+                  {s.talent && (
+                    <span style={{
+                      fontSize: 9.5,
+                      fontWeight: 700,
+                      padding: "2px 7px",
+                      borderRadius: 10,
+                      background: SEC,
+                      color: DEEP,
+                      marginTop: 5,
+                      maxWidth: "100%",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap"
+                    }}>
+                      {s.talent}
+                    </span>
+                  )}
                 </button>
               ))}
+
+              {filteredInClass.length === 0 && (
+                <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "24px 10px", color: MUTED, fontSize: 12 }}>
+                  Tidak ada siswa yang cocok dengan pencarian.
+                </div>
+              )}
             </div>
           )}
 
@@ -539,10 +671,12 @@ export function StudentsScreen({
   }
 
   // ─── MAIN VIEW: KELAS SAYA SCREEN (Exact Match to Mockup) ─────────────
-  const filteredClasses = kelasList.filter(k =>
-    k.nama.toLowerCase().includes(q.toLowerCase()) ||
-    k.abk.toLowerCase().includes(q.toLowerCase())
-  );
+  const filteredClasses = kelasList.filter(k => {
+    const matchesQ = k.nama.toLowerCase().includes(q.toLowerCase()) ||
+      k.abk.toLowerCase().includes(q.toLowerCase());
+    const matchesJenjang = selectedJenjang === "Semua" || getKelasJenjang(k) === selectedJenjang;
+    return matchesQ && matchesJenjang;
+  });
 
   return (
     <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, background: "#F7F9F8" }}>
@@ -579,62 +713,412 @@ export function StudentsScreen({
         </div>
       </div>
 
-      {/* ── Search Bar ── */}
-      <div style={{ padding: "14px 16px 6px" }}>
-        <div style={{ position: "relative" }}>
-          <Search size={18} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#94A3B8" }} />
-          <input
-            value={q}
-            onChange={e => setQ(e.target.value)}
-            placeholder="Cari nama atau jenis ABK..."
-            style={{
-              width: "100%",
-              border: "1.5px solid rgba(91,122,104,0.20)",
-              borderRadius: 18,
-              padding: "12px 14px 12px 42px",
-              fontSize: 14,
-              color: TEXT,
-              fontFamily: IPS,
-              background: CARD,
-              outline: "none",
-              minHeight: 48,
-              boxShadow: "0 2px 6px rgba(91,122,104,0.04)"
-            }}
-          />
-        </div>
-      </div>
+      {/* ── Search Bar & Filter Button ── */}
+      {(() => {
+        const isFilterActive = selectedJenjang !== "Semua" || selectedTA !== "2025/2026";
+        return (
+          <>
+            <div style={{ padding: "14px 16px 6px", display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ position: "relative", flex: 1 }}>
+                <Search size={18} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#94A3B8" }} />
+                <input
+                  value={q}
+                  onChange={e => setQ(e.target.value)}
+                  placeholder="Cari nama atau jenis ABK..."
+                  style={{
+                    width: "100%",
+                    border: "1.5px solid rgba(91,122,104,0.20)",
+                    borderRadius: 18,
+                    padding: "12px 36px 12px 42px",
+                    fontSize: 13.5,
+                    color: TEXT,
+                    fontFamily: IPS,
+                    background: CARD,
+                    outline: "none",
+                    minHeight: 46,
+                    boxShadow: "0 2px 6px rgba(91,122,104,0.04)",
+                    boxSizing: "border-box"
+                  }}
+                />
+                {q && (
+                  <button
+                    type="button"
+                    onClick={() => setQ("")}
+                    style={{
+                      position: "absolute",
+                      right: 12,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "#E2E8F0",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: 20,
+                      height: 20,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      color: "#64748B"
+                    }}
+                    title="Hapus pencarian"
+                  >
+                    <X size={12} strokeWidth={2.5} />
+                  </button>
+                )}
+              </div>
 
-      {/* ── Tahun Ajaran Filter ── */}
-      <div style={{ padding: "10px 16px 0" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, overflowX: "auto", paddingBottom: 2 }}>
-          <span style={{ flexShrink: 0, fontSize: 11.5, fontWeight: 700, color: MUTED, fontFamily: PJS }}>TA:</span>
-          {tahunAjaranList.map(ta => (
-            <button
-              key={ta}
-              type="button"
-              onClick={() => setSelectedTA(ta)}
-              style={{
-                flexShrink: 0,
-                padding: "6px 14px",
-                borderRadius: 20,
-                border: selectedTA === ta ? `1.5px solid ${DEEP}` : `1.5px solid ${BDR}`,
-                background: selectedTA === ta ? DEEP : CARD,
-                color: selectedTA === ta ? "#fff" : TEXT,
-                fontFamily: PJS, fontWeight: 700, fontSize: 12,
-                cursor: "pointer", transition: "all 0.15s",
-                boxShadow: selectedTA === ta ? "0 2px 8px rgba(46,62,53,0.2)" : "none",
-              }}
-            >
-              {ta}
-            </button>
-          ))}
-        </div>
-      </div>
+              {/* Filter Button */}
+              <button
+                type="button"
+                onClick={() => setShowFilterSheet(true)}
+                style={{
+                  height: 46,
+                  padding: "0 13px",
+                  borderRadius: 18,
+                  border: isFilterActive ? "1.5px solid #3F6851" : "1.5px solid rgba(91,122,104,0.20)",
+                  background: isFilterActive ? "#3F6851" : CARD,
+                  color: isFilterActive ? "#FFFFFF" : "#1B2E24",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  fontSize: 13,
+                  flexShrink: 0,
+                  boxShadow: isFilterActive ? "0 3px 10px rgba(63,104,81,0.25)" : "0 2px 6px rgba(91,122,104,0.04)",
+                  position: "relative",
+                  transition: "all 0.15s ease"
+                }}
+                className="active:scale-95"
+                title="Filter Kelas"
+              >
+                <SlidersHorizontal size={17} strokeWidth={2.4} />
+                <span>Filter</span>
+                {isFilterActive && (
+                  <span style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: "#4ADE80",
+                    border: "2px solid #3F6851",
+                    position: "absolute",
+                    top: 6,
+                    right: 6
+                  }} />
+                )}
+              </button>
+            </div>
+
+            {/* Active Filter Chips (if any filter is active) */}
+            {isFilterActive && (
+              <div style={{ padding: "2px 16px 8px", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 11, fontFamily: IPS, color: "#64748B", fontWeight: 600 }}>Filter aktif:</span>
+                {selectedJenjang !== "Semua" && (
+                  <span style={{
+                    fontSize: 11,
+                    fontFamily: PJS,
+                    fontWeight: 700,
+                    background: "#E8F3ED",
+                    color: "#2C543E",
+                    padding: "3px 8px 3px 10px",
+                    borderRadius: 999,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                    border: "1px solid #B8DCC6"
+                  }}>
+                    Jenjang: {selectedJenjang}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedJenjang("Semua")}
+                      style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", color: "#2C543E" }}
+                      title="Hapus filter jenjang"
+                    >
+                      <X size={12} strokeWidth={2.5} />
+                    </button>
+                  </span>
+                )}
+                {selectedTA !== "2025/2026" && (
+                  <span style={{
+                    fontSize: 11,
+                    fontFamily: PJS,
+                    fontWeight: 700,
+                    background: "#E8F3ED",
+                    color: "#2C543E",
+                    padding: "3px 8px 3px 10px",
+                    borderRadius: 999,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                    border: "1px solid #B8DCC6"
+                  }}>
+                    TA: {selectedTA}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTA("2025/2026")}
+                      style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", color: "#2C543E" }}
+                      title="Hapus filter tahun ajaran"
+                    >
+                      <X size={12} strokeWidth={2.5} />
+                    </button>
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedJenjang("Semua");
+                    setSelectedTA("2025/2026");
+                  }}
+                  style={{
+                    fontSize: 11,
+                    fontFamily: IPS,
+                    color: "#DC2626",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "2px 4px",
+                    fontWeight: 600,
+                    textDecoration: "underline"
+                  }}
+                >
+                  Reset
+                </button>
+              </div>
+            )}
+
+            {/* ── Filter Bottom Sheet Modal ── */}
+            {showFilterSheet && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "rgba(0,0,0,0.45)",
+                  backdropFilter: "blur(3px)",
+                  WebkitBackdropFilter: "blur(3px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                  zIndex: 100
+                }}
+                onClick={() => setShowFilterSheet(false)}
+              >
+                <div
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    background: "#FFFFFF",
+                    borderTopLeftRadius: 26,
+                    borderTopRightRadius: 26,
+                    padding: "16px 20px 24px",
+                    boxShadow: "0 -8px 32px rgba(0,0,0,0.18)",
+                    borderTop: "1.5px solid rgba(91,122,104,0.15)",
+                    maxHeight: "85%",
+                    overflowY: "auto"
+                  }}
+                >
+                  {/* Drag Handle Indicator */}
+                  <div style={{ width: 38, height: 4, background: "#CBD5E1", borderRadius: 999, margin: "0 auto 14px" }} />
+
+                  {/* Modal Header */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 10,
+                        background: "#E8F3ED",
+                        color: "#2C543E",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                        <SlidersHorizontal size={16} strokeWidth={2.4} />
+                      </div>
+                      <div>
+                        <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 16, color: "#1B2E24", margin: 0 }}>
+                          Filter Kelas
+                        </h3>
+                        <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#64748B", margin: 0, marginTop: 1 }}>
+                          Saring daftar kelas sesuai kebutuhan
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowFilterSheet(false)}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        background: "#F1F5F9",
+                        border: "none",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#64748B"
+                      }}
+                      title="Tutup"
+                    >
+                      <X size={16} strokeWidth={2.4} />
+                    </button>
+                  </div>
+
+                  {/* 1. Tahun Ajaran */}
+                  <div style={{ marginBottom: 18 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 9 }}>
+                      <Calendar size={15} strokeWidth={2.3} style={{ color: "#3F6851" }} />
+                      <span style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13, color: "#1B2E24" }}>
+                        Tahun Ajaran
+                      </span>
+                    </div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {tahunAjaranList.map(ta => {
+                        const isSel = selectedTA === ta;
+                        return (
+                          <button
+                            key={ta}
+                            type="button"
+                            onClick={() => setSelectedTA(ta)}
+                            style={{
+                              padding: "7px 16px",
+                              borderRadius: 9999,
+                              border: isSel ? "1.5px solid #3F6851" : "1.5px solid #CBD5E1",
+                              background: isSel ? "#3F6851" : "#F8FAFC",
+                              color: isSel ? "#FFFFFF" : "#334155",
+                              fontFamily: PJS,
+                              fontWeight: 700,
+                              fontSize: 12.5,
+                              cursor: "pointer",
+                              transition: "all 0.15s",
+                              boxShadow: isSel ? "0 2px 6px rgba(63,104,81,0.25)" : "none"
+                            }}
+                            className="active:scale-95"
+                          >
+                            {ta}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 2. Jenjang Kelas */}
+                  <div style={{ marginBottom: 22 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 9 }}>
+                      <Users size={15} strokeWidth={2.3} style={{ color: "#3F6851" }} />
+                      <span style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13, color: "#1B2E24" }}>
+                        Jenjang Kelas
+                      </span>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
+                      {(["Semua", "SDLB", "SMPLB", "SMALB"] as const).map(j => {
+                        const isSel = selectedJenjang === j;
+                        return (
+                          <button
+                            key={j}
+                            type="button"
+                            onClick={() => setSelectedJenjang(j)}
+                            style={{
+                              padding: "10px 12px",
+                              borderRadius: 14,
+                              border: isSel ? "1.5px solid #3F6851" : "1.5px solid #E2E8F0",
+                              background: isSel ? "#EBF3ED" : "#FFFFFF",
+                              color: isSel ? "#1E3E2B" : "#475569",
+                              fontFamily: PJS,
+                              fontWeight: isSel ? 800 : 700,
+                              fontSize: 12.5,
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              transition: "all 0.15s"
+                            }}
+                            className="active:scale-95"
+                          >
+                            <span>{j === "Semua" ? "Semua Jenjang" : j}</span>
+                            {isSel && (
+                              <div style={{
+                                width: 18,
+                                height: 18,
+                                borderRadius: "50%",
+                                background: "#3F6851",
+                                color: "#fff",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center"
+                              }}>
+                                <Check size={12} strokeWidth={3} />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div style={{ display: "flex", gap: 10, paddingTop: 6 }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedJenjang("Semua");
+                        setSelectedTA("2025/2026");
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: "12px",
+                        borderRadius: 14,
+                        border: "1.5px solid #CBD5E1",
+                        background: "#FFFFFF",
+                        color: "#475569",
+                        fontFamily: PJS,
+                        fontWeight: 700,
+                        fontSize: 13,
+                        cursor: "pointer"
+                      }}
+                      className="active:scale-95"
+                    >
+                      Reset Filter
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowFilterSheet(false)}
+                      style={{
+                        flex: 1.5,
+                        padding: "12px",
+                        borderRadius: 14,
+                        border: "none",
+                        background: "#3F6851",
+                        color: "#FFFFFF",
+                        fontFamily: PJS,
+                        fontWeight: 800,
+                        fontSize: 13,
+                        cursor: "pointer",
+                        boxShadow: "0 4px 12px rgba(63,104,81,0.25)"
+                      }}
+                      className="active:scale-95"
+                    >
+                      Terapkan
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        );
+      })()}
 
       {/* ── Class Cards List ── */}
-      <div style={{ padding: "10px 16px 90px", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{
+        padding: "10px 16px 90px",
+        display: "grid",
+        gridTemplateColumns: "repeat(2, 1fr)",
+        gap: 12
+      }}>
         {filteredClasses.map(k => {
           const abkStyle = getAbkBadge(k.abk);
+          const jenjangLabel = getKelasJenjang(k);
           const studentCount = students.filter(s =>
             s.kelas.toLowerCase().replace(/\s+/g, '').includes(k.nama.toLowerCase().replace(/\s+/g, '')) ||
             k.nama.toLowerCase().replace(/\s+/g, '').includes(s.kelas.toLowerCase().replace(/\s+/g, ''))
@@ -647,85 +1131,131 @@ export function StudentsScreen({
               style={{
                 background: CARD,
                 border: `1.5px solid rgba(91,122,104,0.18)`,
-                borderRadius: 22,
-                padding: "14px 16px",
+                borderRadius: 20,
+                padding: "10px",
                 display: "flex",
-                alignItems: "center",
-                gap: 14,
+                flexDirection: "column",
                 width: "100%",
                 textAlign: "left",
                 cursor: "pointer",
                 boxShadow: "0 4px 14px rgba(91,122,104,0.06)",
+                minWidth: 0,
               }}
-              className="active:scale-[0.99] transition-all hover:shadow-md"
+              className="active:scale-[0.98] transition-all hover:shadow-md"
             >
-              {/* Left: Illustration Image */}
-              <img
-                src={k.img}
-                alt={k.nama}
-                style={{
-                  width: 72,
-                  height: 72,
-                  borderRadius: 18,
-                  objectFit: "cover",
-                  flexShrink: 0,
-                  border: "1px solid rgba(0,0,0,0.06)"
-                }}
-              />
+              {/* Image Banner */}
+              <div style={{
+                position: "relative",
+                width: "100%",
+                height: 94,
+                borderRadius: 14,
+                overflow: "hidden",
+                marginBottom: 10,
+                border: "1px solid rgba(0,0,0,0.06)"
+              }}>
+                <img
+                  src={k.img}
+                  alt={k.nama}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover"
+                  }}
+                />
+                <span style={{
+                  position: "absolute",
+                  top: 6,
+                  right: 6,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  padding: "2.5px 7px",
+                  borderRadius: 12,
+                  background: "rgba(255,255,255,0.92)",
+                  color: "#059669",
+                  backdropFilter: "blur(4px)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 3,
+                  fontFamily: PJS,
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+                }}>
+                  <CheckCircle size={10} strokeWidth={2.5} /> {studentCount} Siswa
+                </span>
+              </div>
 
-              {/* Middle: Class Details */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
-                  <p style={{ fontFamily: PJS, fontSize: 16.5, fontWeight: 800, color: "#1B2E24", lineHeight: 1.2 }}>
-                    {k.nama}
-                  </p>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#5B7A68", fontFamily: PJS }}>
-                    {guru?.sekolah || "SLB N Surakarta"}
-                  </span>
-                </div>
+              {/* Class Details */}
+              <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+                <p style={{
+                  fontFamily: PJS,
+                  fontSize: 15,
+                  fontWeight: 800,
+                  color: "#1B2E24",
+                  lineHeight: 1.2,
+                  marginBottom: 2,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap"
+                }} title={k.nama}>
+                  {k.nama}
+                </p>
 
-                <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 8, flexWrap: "wrap" }}>
-                  {/* ABK badge */}
+                <p style={{
+                  fontSize: 10.5,
+                  fontWeight: 600,
+                  color: "#5B7A68",
+                  fontFamily: PJS,
+                  marginBottom: 8,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap"
+                }}>
+                  {guru?.sekolah || "SLB N Surakarta"}
+                </p>
+
+                <div style={{ display: "flex", gap: 4, alignItems: "center", flexWrap: "wrap" }}>
                   <span style={{
-                    fontSize: 11,
+                    fontSize: 9.5,
+                    fontWeight: 800,
+                    padding: "2px 7px",
+                    borderRadius: 12,
+                    background: "#EEF2F6",
+                    color: "#334155",
+                    border: "1px solid #CBD5E1",
+                    fontFamily: PJS
+                  }}>
+                    {jenjangLabel}
+                  </span>
+                  <span style={{
+                    fontSize: 10,
                     fontWeight: 700,
-                    padding: "3.5px 10px",
-                    borderRadius: 20,
+                    padding: "2.5px 8px",
+                    borderRadius: 14,
                     background: abkStyle.bg,
                     color: abkStyle.color,
                     border: abkStyle.border,
-                    fontFamily: PJS
+                    fontFamily: PJS,
+                    maxWidth: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap"
                   }}>
                     {k.abk}
                   </span>
-
-                  {/* Student count badge */}
-                  <span style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    padding: "3.5px 10px",
-                    borderRadius: 20,
-                    background: "#ECFDF5",
-                    color: "#059669",
-                    border: "1px solid #A7F3D0",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 3.5,
-                    fontFamily: PJS
-                  }}>
-                    <CheckCircle size={11} strokeWidth={2.5} /> {studentCount} Siswa
-                  </span>
                 </div>
               </div>
-
-              {/* Right: Chevron arrow */}
-              <ChevronRight size={18} style={{ color: "#2E3E35", flexShrink: 0, marginLeft: 2 }} strokeWidth={2.2} />
             </button>
           );
         })}
 
         {filteredClasses.length === 0 && (
-          <div style={{ background: CARD, border: `1.5px dashed ${BDR}`, borderRadius: 22, padding: "36px 20px", textAlign: "center" }}>
+          <div style={{
+            gridColumn: "1 / -1",
+            background: CARD,
+            border: `1.5px dashed ${BDR}`,
+            borderRadius: 22,
+            padding: "36px 20px",
+            textAlign: "center"
+          }}>
             <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>Tidak ada kelas yang cocok</p>
             <p style={{ fontSize: 12, color: MUTED, marginBottom: 14 }}>Gunakan kata kunci lain atau tambahkan kelas baru.</p>
             <button onClick={() => setIsAddingKelas(true)} style={{ background: A, color: "#fff", fontFamily: PJS, fontWeight: 800, fontSize: 12, padding: "10px 16px", borderRadius: 14, border: "none", cursor: "pointer" }}>
