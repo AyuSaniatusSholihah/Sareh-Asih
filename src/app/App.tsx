@@ -244,7 +244,15 @@ export default function App() {
         />
       );
 
-      case "dashboard": return <DashboardGuru go={go} onStartObs={startObs} guru={guru} onAddStudent={() => openAddStudent(false)} />;
+      case "dashboard": return (
+        <DashboardGuru
+          go={go}
+          onStartObs={startObs}
+          guru={guru}
+          onAddStudent={() => openAddStudent(false)}
+          laporan={laporan}
+        />
+      );
       case "pengamatan-pending": return <PengamatanPendingScreen onBack={goBack} onStartObs={startObs} />;
       case "students": return <StudentsScreen go={go} onAddStudent={() => openAddStudent(false)} onSelect={(id) => { setSelectedStudentId(id); go("profile"); }} guru={guru} />;
       case "profile": return <StudentProfileScreen onBack={goBack} go={go} studentId={selectedStudentId} onStartObs={startObs} onRegenKode={regenKode} namaSekolah={guru.sekolah} laporan={laporan} onKirim={kirimLaporan} />;
