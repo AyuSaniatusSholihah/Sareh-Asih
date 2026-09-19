@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
-  Plus, Calendar, Info, CheckSquare, Lock, ClipboardList,
+  Plus, Calendar, CheckSquare, LayoutGrid, Palette, GraduationCap,
+  Lightbulb, MapPin, Tag, Users, ChevronRight, ChevronDown,
 } from "lucide-react";
 import {
   A, T, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, SBadge, BG,
@@ -8,6 +9,98 @@ import {
 import {
   useStudents, LOMBA, studentCompDetail, type Student,
 } from "../data";
+
+import classActivityImg from "@/imports/class_activity.jpg";
+import classDrawingImg from "@/imports/class_drawing.jpg";
+import classGroupImg from "@/imports/class_group.jpg";
+
+export const AGENDA_PRESETS = [
+  { id: "group", label: "Pentas Seni", img: classGroupImg },
+  { id: "activity", label: "Olahraga", img: classActivityImg },
+  { id: "drawing", label: "Karya Seni", img: classDrawingImg },
+];
+
+function formatAgendaDate(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  } catch {
+    return dateStr;
+  }
+}
+
+// ─── Custom Card Icons matching Mockup ───────────────────────────────
+function PaletteMintIcon() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 5C10.82 5 5 10.82 5 18C5 21.8 6.64 25.22 9.25 27.61C10 28.3 11 28.66 12 28.59C13.59 28.49 14.78 27.08 14.61 25.49C14.49 24.37 14.93 23.27 15.76 22.55C16.58 21.83 17.69 21.57 18.76 21.83C21.2 22.45 23.74 20.91 24.29 18.47C24.58 17.19 25.63 16.22 26.93 16.04C28.77 15.79 30.36 17.19 30.44 19.04C30.79 18.7 31 18.36 31 18C31 10.82 25.18 5 18 5Z" fill="#FDE68A" stroke="#F59E0B" strokeWidth="1.2"/>
+      <circle cx="11.5" cy="18" r="2.2" fill="#E6F4F1" stroke="#F59E0B" strokeWidth="0.8"/>
+      <circle cx="11.5" cy="11.5" r="2" fill="#EF4444" />
+      <circle cx="17.5" cy="8.5" r="2" fill="#3B82F6" />
+      <circle cx="23.5" cy="10.5" r="2" fill="#10B981" />
+      <circle cx="26" cy="15" r="2" fill="#F97316" />
+      <path d="M22 28L30 18" stroke="#1E293B" strokeWidth="2.6" strokeLinecap="round"/>
+      <path d="M30 18L32.2 15.2C32.5 14.8 32.3 14.2 31.8 14.1C31.2 14 30.6 14.4 30.3 14.8L28 17.5" fill="#3B82F6" stroke="#2563EB" strokeWidth="1"/>
+      <circle cx="21" cy="29" r="1.4" fill="#3B82F6" />
+    </svg>
+  );
+}
+
+function RunnerBlueIcon() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 19H12" stroke="#EAB308" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M7 23H14" stroke="#84CC16" strokeWidth="2.5" strokeLinecap="round"/>
+      <circle cx="23" cy="8.5" r="3.2" fill="#0284C7" />
+      <path d="M19 14.5L23.5 12L28 16" stroke="#0284C7" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M21 13.5L18 20L13 21" stroke="#0284C7" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M18 20L21.5 25L24 30" stroke="#0284C7" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M18.5 20L15 26" stroke="#84CC16" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function GradPurpleIcon() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 7L4 14L18 21L32 14L18 7Z" fill="#8B5CF6" stroke="#7C3AED" strokeWidth="1.2" strokeLinejoin="round"/>
+      <path d="M9 16.8V22.5C9 25.5 13 28 18 28C23 28 27 25.5 27 22.5V16.8" fill="#7C3AED" fillOpacity="0.85" stroke="#6D28D9" strokeWidth="1"/>
+      <path d="M26 14.5V23" stroke="#F59E0B" strokeWidth="1.8" strokeLinecap="round"/>
+      <circle cx="26" cy="24" r="1.6" fill="#F59E0B"/>
+    </svg>
+  );
+}
+
+function PalettePeachIcon() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 5C10.82 5 5 10.82 5 18C5 21.8 6.64 25.22 9.25 27.61C10 28.3 11 28.66 12 28.59C13.59 28.49 14.78 27.08 14.61 25.49C14.49 24.37 14.93 23.27 15.76 22.55C16.58 21.83 17.69 21.57 18.76 21.83C21.2 22.45 23.74 20.91 24.29 18.47C24.58 17.19 25.63 16.22 26.93 16.04C28.77 15.79 30.36 17.19 30.44 19.04C30.79 18.7 31 18.36 31 18C31 10.82 25.18 5 18 5Z" fill="#FDE68A" stroke="#F59E0B" strokeWidth="1.2"/>
+      <circle cx="11.5" cy="18" r="2.2" fill="#FEF0E6" stroke="#F59E0B" strokeWidth="0.8"/>
+      <circle cx="11.5" cy="11.5" r="2" fill="#EF4444" />
+      <circle cx="17.5" cy="8.5" r="2" fill="#EC4899" />
+      <circle cx="23.5" cy="10.5" r="2" fill="#8B5CF6" />
+      <circle cx="26" cy="15" r="2" fill="#F59E0B" />
+      <path d="M22 28L30 18" stroke="#1E293B" strokeWidth="2.6" strokeLinecap="round"/>
+      <path d="M30 18L32.2 15.2C32.5 14.8 32.3 14.2 31.8 14.1C31.2 14 30.6 14.4 30.3 14.8L28 17.5" fill="#EC4899" stroke="#DB2777" strokeWidth="1"/>
+      <circle cx="21" cy="29" r="1.4" fill="#EC4899" />
+    </svg>
+  );
+}
+
+function RunningManIcon({ size = 15, color = "currentColor" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="17" cy="4" r="2" fill={color} stroke="none" />
+      <path d="M15 8l-3 4-3-1-3 4" />
+      <path d="M12 12l2 4 4 1" />
+      <path d="M12 12V8l3-1" />
+      <path d="M8 15l-2 5" />
+    </svg>
+  );
+}
 
 export function CompetitionScreen({
   onStartObs,
@@ -21,16 +114,29 @@ export function CompetitionScreen({
   const students = useStudents();
   const withObs = students.filter(s => s.hasObs);
   const [mainTab, setMainTab] = useState<"agenda" | "lomba">("agenda");
-  const [viewMode, setViewMode] = useState<"lomba" | "siswa">("lomba");
+  const [lombaCategory, setLombaCategory] = useState<"Semua" | "Seni" | "Olahraga" | "Akademik">("Semua");
+  const [expandedLomba, setExpandedLomba] = useState<string | null>(null);
+
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ type: "sekolah", title: "", date: "", desc: "" });
+  const [form, setForm] = useState({
+    type: "sekolah",
+    title: "",
+    date: "",
+    desc: "",
+    img: classGroupImg
+  });
 
   const handleSubmit = () => {
     if (!form.title || !form.date) return;
     onAddAgenda({ ...form, id: Date.now() });
     setShowAdd(false);
-    setForm({ type: "sekolah", title: "", date: "", desc: "" });
+    setForm({ type: "sekolah", title: "", date: "", desc: "", img: classGroupImg });
   };
+
+  const filteredLomba = LOMBA.filter(l => {
+    if (lombaCategory === "Semua") return true;
+    return l.category === lombaCategory;
+  });
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
@@ -64,160 +170,390 @@ export function CompetitionScreen({
               <Plus size={16} strokeWidth={2.5} /> Tambah Agenda
             </button>
 
-            <div className="space-y-3">
+            {/* ── 2 Kolom Grid Agenda Sekolah dengan Gambar ── */}
+            <div className="grid grid-cols-2 gap-3">
               {agendas.length === 0 ? (
-                <div style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 20, padding: 24, textAlign: "center" }}>
+                <div className="col-span-2" style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 20, padding: 24, textAlign: "center" }}>
                   <Calendar size={28} style={{ color: MUTED, margin: "0 auto 8px" }} />
                   <p className="text-sm font-semibold" style={{ color: MUTED }}>Belum ada agenda aktif.</p>
                 </div>
               ) : (
-                agendas.map(a => (
-                  <div key={a.id} style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 20, padding: 16, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }}>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide" style={{ background: a.type === "sekolah" ? "#E3F2FD" : "#FFF3E0", color: a.type === "sekolah" ? "#1565C0" : "#E65100" }}>{a.type}</span>
-                      <span className="text-xs font-semibold text-gray-500">{a.date}</span>
+                agendas.map((a, i) => {
+                  const cardImg = a.img || AGENDA_PRESETS[i % AGENDA_PRESETS.length].img;
+                  return (
+                    <div
+                      key={a.id}
+                      style={{
+                        background: CARD,
+                        border: `1.5px solid ${BDR}`,
+                        borderRadius: 20,
+                        overflow: "hidden",
+                        boxShadow: "0 2px 10px rgba(91,122,104,0.06)",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                      className="hover:shadow-md transition-shadow"
+                    >
+                      {/* Image with Category Badge */}
+                      <div style={{ position: "relative", width: "100%", height: 100, background: "#E2E8F0" }}>
+                        <img
+                          src={cardImg}
+                          alt={a.title}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: 8,
+                            left: 8,
+                            background: a.type === "sekolah" ? "#2563EB" : "#EA580C",
+                            color: "#FFFFFF",
+                            fontSize: 9,
+                            fontWeight: 800,
+                            fontFamily: PJS,
+                            padding: "3px 8px",
+                            borderRadius: 12,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.04em",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
+                          }}
+                        >
+                          {a.type === "sekolah" ? "Sekolah" : "Lomba"}
+                        </span>
+                      </div>
+
+                      {/* Content */}
+                      <div style={{ padding: "11px 11px 13px", display: "flex", flexDirection: "column", flex: 1 }}>
+                        <div className="flex items-center gap-1 mb-1" style={{ color: "#5B7A68" }}>
+                          <Calendar size={11} strokeWidth={2.2} style={{ flexShrink: 0 }} />
+                          <span style={{ fontSize: 10.5, fontWeight: 700, fontFamily: DMM, color: "#475569" }}>
+                            {formatAgendaDate(a.date)}
+                          </span>
+                        </div>
+
+                        <p
+                          style={{
+                            fontFamily: PJS,
+                            fontWeight: 800,
+                            fontSize: 12.5,
+                            color: TEXT,
+                            lineHeight: 1.3,
+                            marginBottom: 4,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                          title={a.title}
+                        >
+                          {a.title}
+                        </p>
+
+                        {a.desc && (
+                          <p
+                            style={{
+                              fontSize: 10.5,
+                              color: MUTED,
+                              lineHeight: 1.35,
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              marginTop: "auto",
+                              paddingTop: 3,
+                            }}
+                          >
+                            {a.desc}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <p className="font-bold text-sm leading-snug">{a.title}</p>
-                    {a.desc && <p className="text-xs text-gray-500 mt-2 leading-relaxed">{a.desc}</p>}
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
         )}
 
         {mainTab === "lomba" && (
-          <div className="space-y-4">
-            <div style={{ background: DEEP, borderRadius: 18, color: "#FFFFFF", boxShadow: "0 4px 14px rgba(91,122,104,0.25)" }} className="p-3.5 flex items-start gap-2.5">
-              <Info size={16} style={{ color: "#D4E8DA", flexShrink: 0, marginTop: 2 }} />
-              <p className="text-xs leading-relaxed" style={{ color: "#FFFFFF" }}>Hanya 3 lomba resmi. Pendaftaran manual oleh sekolah — klik <strong style={{ color: "#D4E8DA" }}>"Daftarkan"</strong> untuk ubah status.</p>
+          <div className="space-y-3.5">
+            {/* ── Filter Kategori Pills (Semua, Seni, Olahraga, Akademik) ── */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+              {[
+                { id: "Semua", label: "Semua", icon: <LayoutGrid size={15} strokeWidth={2.2} /> },
+                { id: "Seni", label: "Seni", icon: <Palette size={15} strokeWidth={2.2} /> },
+                { id: "Olahraga", label: "Olahraga", icon: <RunningManIcon size={15} /> },
+                { id: "Akademik", label: "Akademik", icon: <GraduationCap size={15} strokeWidth={2.2} /> },
+              ].map(f => {
+                const isActive = lombaCategory === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => setLombaCategory(f.id as any)}
+                    style={{
+                      background: isActive ? "#4D6B58" : "#FFFFFF",
+                      color: isActive ? "#FFFFFF" : "#334155",
+                      border: isActive ? "none" : "1.5px solid #E2E8F0",
+                      borderRadius: 16,
+                      boxShadow: isActive ? "0 2px 8px rgba(77,107,88,0.22)" : "0 1px 3px rgba(0,0,0,0.02)",
+                      fontFamily: PJS,
+                      fontWeight: isActive ? 700 : 600,
+                      fontSize: 12.5,
+                      padding: "8px 14px",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {f.icon}
+                    <span>{f.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="flex rounded-2xl p-1" style={{ background: "#EDE9E3" }}>
-              {(["lomba", "siswa"] as const).map(m => (
-                <button key={m} onClick={() => setViewMode(m)}
-                  style={{
-                    background: viewMode === m ? DEEP : "transparent",
-                    color: viewMode === m ? "#fff" : MUTED,
-                    fontFamily: PJS,
-                    fontWeight: viewMode === m ? 800 : 600,
-                    minHeight: 36
-                  }}
-                  className="flex-1 rounded-lg text-xs transition-all capitalize">
-                  {m === "lomba" ? "Per Lomba" : "Per Siswa"}
-                </button>
-              ))}
+            {/* ── Subtitle / Tip Bar ── */}
+            <div className="flex items-center gap-2 px-1 text-[11.5px]" style={{ color: "#5B7A68" }}>
+              <Lightbulb size={14} className="text-[#5B7A68] flex-shrink-0" strokeWidth={2.2} />
+              <span style={{ fontWeight: 500 }}>Ketuk lomba untuk melihat siswa yang direkomendasikan</span>
             </div>
 
-            {viewMode === "lomba" && LOMBA.map(lomba => {
-              const matched = studentCompDetail[lomba.k] ?? [];
-              const matchedStudents = matched
-                .map(m => ({ ...m, student: students.find(s => s.id === m.id) }))
-                .filter((m): m is typeof m & { student: Student } => !!m.student);
-              return (
-                <div key={lomba.k} style={{ background: CARD, border: `1.5px solid ${BDR}`, boxShadow: "0 2px 10px rgba(91,122,104,0.08)" }} className="rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: `1px solid ${BDR}`, background: DEEP, color: "#FFFFFF" }}>
-                    <span className="text-xl">{lomba.icon}</span>
-                    <div>
-                      <p className="font-bold text-sm" style={{ fontFamily: PJS, color: "#FFFFFF" }}>{lomba.k}</p>
-                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.85)" }}>{lomba.full}</p>
-                    </div>
-                    <span className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: A, color: "#fff", fontFamily: PJS }}>{matchedStudents.length} siswa</span>
-                  </div>
-                  {matchedStudents.length === 0
-                    ? <p className="px-4 py-3 text-xs" style={{ color: MUTED }}>Belum ada siswa yang cocok dengan lomba ini.</p>
-                    : matchedStudents.map((m, i) => (
-                      <div key={m.id} className="px-4 py-3 flex items-center gap-3" style={{ borderBottom: i < matchedStudents.length - 1 ? `1px solid ${BDR}` : "none" }}>
-                        <span className="text-lg flex-shrink-0">{m.student.emoji}</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm truncate" style={{ color: TEXT }}>{m.student.name}</p>
-                          <p className="text-xs" style={{ color: MUTED }}>Cabang: {m.cabang}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <div className="h-2 flex-1 rounded-full" style={{ background: "#EDE9E3" }}><div className="h-full rounded-full" style={{ width: `${m.match}%`, background: DEEP }} /></div>
-                            <span className="text-xs font-bold flex-shrink-0" style={{ color: DEEP, fontFamily: DMM }}>{m.match}%</span>
-                          </div>
-                          <p className="text-xs leading-relaxed mt-1.5" style={{ color: MUTED }}>💡 {m.alasan}</p>
+            {/* ── List Lomba Cards ── */}
+            <div className="space-y-3">
+              {filteredLomba.map(lomba => {
+                const matched = studentCompDetail[lomba.k] ?? [];
+                const matchedStudents = matched
+                  .map(m => ({ ...m, student: students.find(s => s.id === m.id) }))
+                  .filter((m): m is typeof m & { student: Student } => !!m.student);
+
+                const isExpanded = expandedLomba === lomba.k;
+
+                return (
+                  <div
+                    key={lomba.k}
+                    style={{
+                      background: "#FFFFFF",
+                      border: "1.5px solid #E6ECE8",
+                      borderRadius: 22,
+                      boxShadow: "0 2px 10px rgba(91,122,104,0.06)",
+                      overflow: "hidden",
+                    }}
+                    className="transition-all hover:shadow-md"
+                  >
+                    {/* Clickable Header */}
+                    <div
+                      className="p-3.5 cursor-pointer select-none"
+                      onClick={() => setExpandedLomba(isExpanded ? null : lomba.k)}
+                    >
+                      {/* Top Row: Icon + Title/Sub + Badge + Chevron */}
+                      <div className="flex items-center gap-3">
+                        {/* Illustration Squircle */}
+                        <div
+                          style={{
+                            width: 52,
+                            height: 52,
+                            borderRadius: 18,
+                            background: lomba.iconBg,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {lomba.iconType === "palette-mint" && <PaletteMintIcon />}
+                          {lomba.iconType === "runner-blue" && <RunnerBlueIcon />}
+                          {lomba.iconType === "grad-purple" && <GradPurpleIcon />}
+                          {lomba.iconType === "palette-peach" && <PalettePeachIcon />}
                         </div>
-                        <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                          <SBadge s={m.status} />
-                          {m.status !== "Didaftarkan" &&
-                            <button style={{ background: A, color: "#fff", fontFamily: IPS, minHeight: 32 }} className="px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1">
-                              <CheckSquare size={11} />Daftarkan
-                            </button>
-                          }
+
+                        {/* Title & Subtitle */}
+                        <div className="flex-1 min-w-0 pr-1">
+                          <h4
+                            style={{
+                              fontFamily: PJS,
+                              fontWeight: 800,
+                              fontSize: 14,
+                              color: "#1B2E24",
+                              lineHeight: 1.25,
+                              marginBottom: 2,
+                            }}
+                            className="truncate"
+                          >
+                            {lomba.k}
+                          </h4>
+                          <p
+                            style={{
+                              fontSize: 11,
+                              color: "#64748B",
+                              lineHeight: 1.3,
+                              fontWeight: 500,
+                            }}
+                            className="line-clamp-2"
+                          >
+                            {lomba.full}
+                          </p>
+                        </div>
+
+                        {/* Terracotta Badge + Chevron */}
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <div
+                            style={{
+                              background: "#D27D6B",
+                              color: "#FFFFFF",
+                              fontFamily: PJS,
+                              fontWeight: 700,
+                              fontSize: 11,
+                              padding: "5px 9px",
+                              borderRadius: 9999,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 4,
+                              boxShadow: "0 2px 6px rgba(210,125,107,0.32)",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            <Users size={12} strokeWidth={2.4} />
+                            <span>{matchedStudents.length} siswa cocok</span>
+                          </div>
+                          <div style={{ color: "#374151" }}>
+                            {isExpanded ? (
+                              <ChevronDown size={17} strokeWidth={2.5} />
+                            ) : (
+                              <ChevronRight size={17} strokeWidth={2.5} />
+                            )}
+                          </div>
                         </div>
                       </div>
-                    ))
-                  }
-                </div>
-              );
-            })}
 
-            {viewMode === "siswa" && (
-              <div className="space-y-3">
-                {withObs.length === 0 && (
-                  <div style={{ background: CARD, border: `1.5px solid ${BDR}` }} className="rounded-2xl p-6 text-center">
-                    <Lock size={28} style={{ color: MUTED, margin: "0 auto 8px" }} />
-                    <p className="text-sm font-semibold" style={{ color: MUTED }}>Belum ada siswa yang memiliki hasil pengamatan.</p>
-                  </div>
-                )}
-                {withObs.map(s => (
-                  <div key={s.id} style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 20, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }} className="overflow-hidden">
-                    <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: `1px solid ${BDR}` }}>
-                      <span className="text-xl">{s.emoji}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>{s.name}</p>
-                        <p className="text-xs" style={{ color: MUTED }}>{s.abk}</p>
+                      {/* Bottom Meta Row (Date | Level | Category) */}
+                      <div
+                        className="flex items-center gap-2 mt-3 pt-2.5 text-[11px] font-medium"
+                        style={{
+                          borderTop: "1px solid #F1F5F3",
+                          color: "#4B5563",
+                          fontFamily: DMM,
+                        }}
+                      >
+                        <div className="flex items-center gap-1">
+                          <Calendar size={12} className="text-[#5B7A68] stroke-[2.2]" />
+                          <span>{lomba.date}</span>
+                        </div>
+
+                        <span style={{ color: "#D1D5DB" }}>|</span>
+
+                        <div className="flex items-center gap-1">
+                          <MapPin size={12} className="text-[#5B7A68] stroke-[2.2]" />
+                          <span>{lomba.level}</span>
+                        </div>
+
+                        <span style={{ color: "#D1D5DB" }}>|</span>
+
+                        <div className="flex items-center gap-1">
+                          <Tag size={12} className="text-[#5B7A68] stroke-[2.2]" />
+                          <span>{lomba.category}</span>
+                        </div>
                       </div>
-                      <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: SEC, color: T }}>{s.comps.length} lomba</span>
                     </div>
-                    {s.comps.length === 0
-                      ? <p className="px-4 py-3 text-xs" style={{ color: MUTED }}>Belum ada rekomendasi lomba untuk siswa ini.</p>
-                      : s.comps.map((c, i) => {
-                        const detail = studentCompDetail[c]?.find(d => d.id === s.id);
-                        return (
-                          <div key={c} className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: i < s.comps.length - 1 ? `1px solid ${BDR}` : "none" }}>
-                            <div>
-                              <p className="font-semibold text-sm" style={{ color: TEXT }}>{c}</p>
-                              <p className="text-xs" style={{ color: MUTED }}>Cabang: {detail?.cabang ?? "—"} · {detail?.match ?? "—"}% cocok</p>
-                            </div>
-                            <SBadge s={detail?.status ?? "Direkomendasikan"} />
-                          </div>
-                        );
-                      })
-                    }
-                  </div>
-                ))}
 
-                {students.filter(s => !s.hasObs).map(s => (
-                  <div key={s.id} style={{ background: CARD, border: `1.5px dashed rgba(91,122,104,0.40)`, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }} className="rounded-2xl px-4 py-3 flex items-center gap-3">
-                    <span className="text-xl opacity-40">{s.emoji}</span>
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm" style={{ color: MUTED }}>{s.name}</p>
-                      <p className="text-xs" style={{ color: MUTED }}>Rekomendasi tersedia setelah pengamatan selesai.</p>
-                    </div>
-                    <button onClick={() => onStartObs(s.id)}
-                      style={{
-                        background: A,
-                        color: "#fff",
-                        fontFamily: PJS,
-                        fontWeight: 700,
-                        fontSize: 12,
-                        minHeight: 36,
-                        padding: "0 12px",
-                        borderRadius: 12,
-                        border: "none",
-                        flexShrink: 0,
-                        boxShadow: "0 3px 10px rgba(210,125,107,0.38)",
-                        cursor: "pointer"
-                      }}
-                      className="flex items-center gap-1.5 active:scale-95 transition-all">
-                      <ClipboardList size={13} /> Pengamatan
-                    </button>
+                    {/* Accordion Content: Matched Students List */}
+                    {isExpanded && (
+                      <div
+                        style={{
+                          borderTop: "1.5px dashed #E2E8F0",
+                          background: "#F8FAF9",
+                          padding: "12px 14px 14px",
+                        }}
+                        onClick={e => e.stopPropagation()}
+                      >
+                        <p
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 800,
+                            color: "#1B2E24",
+                            fontFamily: PJS,
+                            marginBottom: 10,
+                          }}
+                        >
+                          Siswa yang Direkomendasikan:
+                        </p>
+
+                        {matchedStudents.length === 0 ? (
+                          <p className="text-sm" style={{ color: MUTED }}>
+                            Belum ada siswa yang cocok dengan kriteria lomba ini.
+                          </p>
+                        ) : (
+                          <div className="space-y-3">
+                            {matchedStudents.map((m) => (
+                              <div
+                                key={m.id}
+                                style={{
+                                  background: "#FFFFFF",
+                                  border: "1.5px solid #E2ECE5",
+                                  borderRadius: 16,
+                                  padding: "12px 14px",
+                                }}
+                                className="shadow-xs"
+                              >
+                                {/* Header: Emoji + Nama + Kelas */}
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-xl leading-none">{m.student.emoji}</span>
+                                  <p
+                                    style={{
+                                      color: TEXT,
+                                      fontFamily: PJS,
+                                      fontSize: 14.5,
+                                      fontWeight: 800,
+                                    }}
+                                    className="truncate flex-1"
+                                  >
+                                    {m.student.name}
+                                  </p>
+                                  <span className="text-[12px] font-semibold text-[#64748B]">
+                                    {m.student.kelas}
+                                  </span>
+                                </div>
+
+                                <p className="text-[12.5px] mb-2" style={{ color: "#475569" }}>
+                                  Cabang: <span className="font-bold text-[#1E293B]">{m.cabang}</span>
+                                </p>
+
+                                {/* Bilah Kecocokan Full Width ke Kiri */}
+                                <div className="flex items-center gap-2.5 mb-2.5">
+                                  <div className="h-2 flex-1 rounded-full" style={{ background: "#E2E8F0" }}>
+                                    <div className="h-full rounded-full" style={{ width: `${m.match}%`, background: "#5B7A68" }} />
+                                  </div>
+                                  <span className="text-[12px] font-extrabold flex-shrink-0" style={{ color: "#2E3E35", fontFamily: DMM }}>
+                                    {m.match}% cocok
+                                  </span>
+                                </div>
+
+                                {/* Kotak Alasan Full Width */}
+                                <p
+                                  style={{
+                                    fontSize: 12,
+                                    lineHeight: 1.5,
+                                    color: "#334155",
+                                    background: "#F4F8F5",
+                                    borderRadius: 10,
+                                    padding: "9px 12px",
+                                    margin: 0,
+                                  }}
+                                >
+                                  💡 {m.alasan}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -228,6 +564,30 @@ export function CompetitionScreen({
             <h3 className="font-bold text-lg">Tambah Agenda</h3>
 
             <div className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold block mb-1.5">Pilih Foto Kegiatan</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {AGENDA_PRESETS.map(p => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setForm({ ...form, img: p.img })}
+                      style={{
+                        border: form.img === p.img ? `2px solid ${T}` : "1.5px solid #E2E8F0",
+                        borderRadius: 12,
+                        overflow: "hidden",
+                        padding: 2,
+                        background: form.img === p.img ? SEC : "#fff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <img src={p.img} alt={p.label} style={{ width: "100%", height: 48, objectFit: "cover", borderRadius: 8 }} />
+                      <p style={{ fontSize: 9.5, fontWeight: 700, marginTop: 4, marginBottom: 2, color: form.img === p.img ? DEEP : MUTED, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.label}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label className="text-xs font-semibold block mb-1">Jenis</label>
                 <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} className="w-full border rounded-xl px-3 py-2 text-sm bg-gray-50 outline-none">

@@ -23,7 +23,7 @@ export function ProfilSekolahModal({
   const [isSaved, setIsSaved] = useState(false);
 
   // Tab mode pembuatan kelas
-  const [activeTab, setActiveTab] = useState<"reguler" | "vokasional" | "mandiri">("reguler");
+  const [activeTab, setActiveTab] = useState<"reguler" | "vokasional">("reguler");
 
   // 1. State Reguler (SDLB / SMPLB / SMALB)
   const [jenjang, setJenjang] = useState<"SDLB" | "SMPLB" | "SMALB">("SMPLB");
@@ -32,19 +32,14 @@ export function ProfilSekolahModal({
   const [selectedKekhususan, setSelectedKekhususan] = useState<string[]>(["B"]);
   // Detail untuk Disabilitas Ganda
   const [detailGanda, setDetailGanda] = useState<string>("");
-  // Input manual jenis kelas jika tidak ada di preset (misal: Inklusi, ADHD, Slow Learner)
-  const [useCustomJenis, setUseCustomJenis] = useState<boolean>(false);
+  // Input manual jenis kelas jika pilih "Lainnya" (misal: Inklusi, ADHD, Slow Learner)
   const [customJenisInput, setCustomJenisInput] = useState<string>("");
+  const [customAbkInput, setCustomAbkInput] = useState<string>("Autism Spectrum Disorder");
   const [rombelParalel, setRombelParalel] = useState<string>("");
 
   // 2. State Vokasional (SMPLB & SMALB)
   const [vokasiJenjang, setVokasiJenjang] = useState<"SMPLB" | "SMALB">("SMALB");
   const [vokasiItem, setVokasiItem] = useState<string>("Tata Boga");
-
-  // 3. State Mandiri
-  const [mandiriNama, setMandiriNama] = useState<string>("");
-  const [mandiriAbk, setMandiriAbk] = useState<string>("Autism Spectrum Disorder");
-  const [mandiriLainnya, setMandiriLainnya] = useState<string>("");
 
   // Konfigurasi Jenjang
   const JENJANG_MAP = {
@@ -61,6 +56,7 @@ export function ProfilSekolahModal({
     { kode: "D", nama: "Kelas Tunadaksa (D)", ringkas: "Tunadaksa", abk: "Tunadaksa", desc: "Hambatan fisik/motorik" },
     { kode: "Autis", nama: "Kelas Spektrum Autis", ringkas: "Autis", abk: "Autism Spectrum Disorder", desc: "Penanganan & kurikulum adaptif" },
     { kode: "Ganda", nama: "Kelas Disabilitas Ganda", ringkas: "Disabilitas Ganda", abk: "Disabilitas Ganda", desc: "Memiliki lebih dari satu ragam disabilitas" },
+    { kode: "Lainnya", nama: "Lainnya (Input Sendiri)", ringkas: "Lainnya", abk: "Lainnya", desc: "Ketikkan kelas / layanan khusus jika tidak ada di daftar" },
   ];
 
   // Presets kombinasi disabilitas ganda
@@ -84,7 +80,7 @@ export function ProfilSekolahModal({
   const toggleKekhususan = (kode: string) => {
     setSelectedKekhususan(prev => {
       if (prev.includes(kode)) {
-        if (prev.length === 1 && !useCustomJenis) return prev;
+        if (prev.length === 1) return prev;
         return prev.filter(k => k !== kode);
       } else {
         return [...prev, kode];
@@ -104,7 +100,7 @@ export function ProfilSekolahModal({
     const parts: string[] = [];
 
     if (selectedObjs.length > 0) {
-      const regularCodes = selectedObjs.filter(k => k.kode !== "Ganda").map(k => k.kode);
+      const regularCodes = selectedObjs.filter(k => k.kode !== "Ganda" && k.kode !== "Lainnya").map(k => k.kode);
       if (regularCodes.length > 0) {
         parts.push(regularCodes.join(", "));
       }
@@ -112,10 +108,10 @@ export function ProfilSekolahModal({
         const gandaLabel = detailGanda.trim() ? `Ganda: ${detailGanda.trim()}` : "Ganda";
         parts.push(gandaLabel);
       }
-    }
-
-    if (useCustomJenis && customJenisInput.trim()) {
-      parts.push(customJenisInput.trim());
+      if (selectedKekhususan.includes("Lainnya")) {
+        const customLabel = customJenisInput.trim() ? customJenisInput.trim() : "Kustom";
+        parts.push(customLabel);
+      }
     }
 
     const labelBagian = parts.length > 0 ? parts.join(" · ") : "Umum";
@@ -137,14 +133,12 @@ export function ProfilSekolahModal({
     selectedObjs.forEach(k => {
       if (k.kode === "Ganda") {
         abkItems.push(detailGanda.trim() ? `Disabilitas Ganda (${detailGanda.trim()})` : "Disabilitas Ganda");
+      } else if (k.kode === "Lainnya") {
+        abkItems.push(customAbkInput.trim() || customJenisInput.trim() || "Kebutuhan Khusus");
       } else {
         abkItems.push(k.abk);
       }
     });
-
-    if (useCustomJenis && customJenisInput.trim()) {
-      abkItems.push(customJenisInput.trim());
-    }
 
     const finalAbk = abkItems.join(" · ") || "Kebutuhan Khusus";
     const namaKelas = getPreviewReguler();
@@ -157,16 +151,6 @@ export function ProfilSekolahModal({
     const vObj = VOKASIONAL_LIST.find(v => v.id === vokasiItem || v.ringkas === vokasiItem) || VOKASIONAL_LIST[1];
     const namaKelas = getPreviewVokasi();
     setKelasAbkMap(prev => ({ ...prev, [namaKelas]: vObj.abk }));
-  };
-
-  // Handler tambah kelas mandiri
-  const addMandiri = () => {
-    const nama = mandiriNama.trim();
-    if (!nama) return;
-    const finalAbk = mandiriAbk === "Lainnya" ? (mandiriLainnya.trim() || "Kebutuhan Khusus") : mandiriAbk;
-    setKelasAbkMap(prev => ({ ...prev, [nama]: finalAbk }));
-    setMandiriNama("");
-    setMandiriLainnya("");
   };
 
   const removeClass = (k: string) =>
@@ -330,21 +314,20 @@ export function ProfilSekolahModal({
               )}
             </div>
 
-            {/* 3 Tab Mode Pilihan */}
-            <div className="grid grid-cols-3 gap-1 p-1 rounded-xl mb-3" style={{ background: CARD, border: `1px solid ${BDR}` }}>
+            {/* 2 Tab Mode Pilihan */}
+            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl mb-3" style={{ background: CARD, border: `1px solid ${BDR}` }}>
               {[
                 { id: "reguler", label: "🏫 Reguler SLB" },
                 { id: "vokasional", label: "✂️ Vokasional" },
-                { id: "mandiri", label: "✍️ Mandiri" },
               ].map(tab => (
                 <button
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id as any)}
                   style={{
-                    padding: "7px 4px",
+                    padding: "8px 4px",
                     borderRadius: 9,
-                    fontSize: 11,
+                    fontSize: 11.5,
                     fontWeight: 700,
                     fontFamily: IPS,
                     border: "none",
@@ -546,59 +529,69 @@ export function ProfilSekolahModal({
                   </div>
                 )}
 
-                {/* OPSI INPUT MANUAL JENIS KELAS */}
-                <div
-                  className="p-2.5 rounded-xl border transition-all"
-                  style={{
-                    background: useCustomJenis ? "#FEF9C3" : CARD,
-                    borderColor: useCustomJenis ? "#FACC15" : BDR,
-                  }}>
-                  <button
-                    type="button"
-                    onClick={() => setUseCustomJenis(!useCustomJenis)}
-                    className="w-full flex items-center justify-between text-left cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <Plus size={14} style={{ color: useCustomJenis ? "#854D0E" : MUTED }} />
-                      <span
-                        className="text-xs font-bold"
-                        style={{ color: useCustomJenis ? "#854D0E" : TEXT, fontFamily: IPS }}>
-                        Input Manual Jenis Kelas Lainnya
-                      </span>
-                    </div>
-                    <span
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{
-                        background: useCustomJenis ? "#FDE047" : BG,
-                        color: useCustomJenis ? "#713F12" : MUTED,
-                      }}>
-                      {useCustomJenis ? "Aktif ✓" : "+ Tambah Manual"}
-                    </span>
-                  </button>
-
-                  {useCustomJenis && (
-                    <div className="mt-2 pt-2 border-t border-amber-200/70 space-y-1.5">
-                      <p className="text-[10px]" style={{ color: "#713F12", fontFamily: IPS }}>
-                        Ketik jenis kelas kustom untuk <strong>{jenjang} Kelas {tingkat}</strong> (contoh: Inklusi, Hambatan Wicara, Slow Learner, ADHD, dsb):
+                {/* Sub-panel Input Kustom Lainnya */}
+                {selectedKekhususan.includes("Lainnya") && (
+                  <div
+                    className="p-3 rounded-xl space-y-2.5 border"
+                    style={{ background: "#FEF9C3", borderColor: "#FACC15" }}>
+                    <div className="flex items-center gap-1.5">
+                      <span style={{ fontSize: 16 }}>✏️</span>
+                      <p className="text-xs font-bold" style={{ color: "#854D0E", fontFamily: IPS }}>
+                        Input Kelas / Layanan Lainnya (Kustom):
                       </p>
-                      <input
-                        value={customJenisInput}
-                        onChange={e => setCustomJenisInput(e.target.value)}
-                        placeholder="Tulis jenis kelas manual..."
+                    </div>
+                    <p className="text-[10px]" style={{ color: "#713F12", fontFamily: IPS }}>
+                      Ketikkan nama atau jenis kelas yang tidak ada di daftar (contoh: Inklusi, Terapi Wicara, ADHD, Kelas Transisi, dsb):
+                    </p>
+                    <input
+                      value={customJenisInput}
+                      onChange={e => setCustomJenisInput(e.target.value)}
+                      placeholder="Tuliskan nama jenis kelas di sini..."
+                      style={{
+                        width: "100%",
+                        border: "1.5px solid #FCD34D",
+                        borderRadius: 10,
+                        padding: "8px 12px",
+                        fontSize: 12,
+                        color: TEXT,
+                        fontFamily: IPS,
+                        background: "#fff",
+                        outline: "none",
+                        boxSizing: "border-box"
+                      }}
+                    />
+                    <div className="pt-0.5">
+                      <label className="text-[10px] font-bold block mb-1" style={{ color: "#854D0E", fontFamily: IPS }}>
+                        Jenis Kebutuhan Khusus / ABK Terkait:
+                      </label>
+                      <select
+                        value={customAbkInput}
+                        onChange={e => setCustomAbkInput(e.target.value)}
                         style={{
                           width: "100%",
                           border: "1.5px solid #FCD34D",
                           borderRadius: 10,
                           padding: "7px 10px",
-                          fontSize: 12,
+                          fontSize: 11.5,
                           color: TEXT,
                           fontFamily: IPS,
                           background: "#fff",
                           outline: "none",
-                        }}
-                      />
+                          boxSizing: "border-box"
+                        }}>
+                        <option value="Autism Spectrum Disorder">Autism Spectrum Disorder (ASD)</option>
+                        <option value="Tunarungu">Tunarungu / Wicara</option>
+                        <option value="Tunadaksa">Tunadaksa (Fisik/Motorik)</option>
+                        <option value="Tunagrahita Ringan">Tunagrahita Ringan</option>
+                        <option value="Tunagrahita Sedang">Tunagrahita Sedang</option>
+                        <option value="Tunanetra">Tunanetra</option>
+                        <option value="Tunalaras">Tunalaras</option>
+                        <option value="Disabilitas Ganda">Disabilitas Ganda</option>
+                        <option value="Inklusi & Lainnya">Inklusi / ADHD / Lainnya</option>
+                      </select>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Rombel paralel opsional */}
                 <div className="flex items-center gap-2">
@@ -772,113 +765,6 @@ export function ProfilSekolahModal({
               </div>
             )}
 
-            {/* TAB 3: INPUT MANDIRI */}
-            {activeTab === "mandiri" && (
-              <div className="space-y-3">
-                <div className="p-2.5 rounded-xl flex items-start gap-2" style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
-                  <span style={{ fontSize: 16 }}>✍️</span>
-                  <p className="text-[11px] leading-relaxed" style={{ color: "#1E40AF", fontFamily: IPS }}>
-                    <strong>Input Mandiri:</strong> Gunakan opsi ini jika sekolah memiliki format nama kelas, ekskul, atau kelompok terapi khusus.
-                  </p>
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold block mb-1" style={{ color: TEXT, fontFamily: IPS }}>
-                    Nama Kelas Kustom <span style={{ color: A }}>*</span>
-                  </label>
-                  <input
-                    value={mandiriNama}
-                    onChange={e => setMandiriNama(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addMandiri(); } }}
-                    placeholder="Contoh: Kelas Transisi, Ekskul Musik, Inklusi 4B..."
-                    style={{
-                      width: "100%",
-                      border: `1.5px solid ${BDR}`,
-                      borderRadius: 12,
-                      padding: "9px 12px",
-                      fontSize: 13,
-                      color: TEXT,
-                      fontFamily: IPS,
-                      background: CARD,
-                      outline: "none",
-                      minHeight: 42,
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold block mb-1.5" style={{ color: TEXT, fontFamily: IPS }}>
-                    Jenis Kebutuhan Khusus / ABK:
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[...ABK_OPTIONS, "Vokasional", "Lainnya"].map(abk => (
-                      <button
-                        key={abk}
-                        type="button"
-                        onClick={() => setMandiriAbk(abk)}
-                        style={{
-                          background: mandiriAbk === abk ? SEC : CARD,
-                          border: `1.5px solid ${mandiriAbk === abk ? T : BDR}`,
-                          color: mandiriAbk === abk ? DEEP : MUTED,
-                          padding: "6px 10px",
-                          borderRadius: 14,
-                          fontSize: 11,
-                          fontWeight: 600,
-                          fontFamily: IPS,
-                          cursor: "pointer",
-                          transition: "all 0.15s",
-                        }}>
-                        {abk}
-                      </button>
-                    ))}
-                  </div>
-                  {mandiriAbk === "Lainnya" && (
-                    <input
-                      autoFocus
-                      placeholder="Tulis jenis kebutuhan khusus spesifik..."
-                      value={mandiriLainnya}
-                      onChange={e => setMandiriLainnya(e.target.value)}
-                      style={{
-                        width: "100%",
-                        border: `1.5px solid ${BDR}`,
-                        borderRadius: 12,
-                        padding: "8px 12px",
-                        fontSize: 12,
-                        color: TEXT,
-                        fontFamily: IPS,
-                        background: CARD,
-                        outline: "none",
-                        marginTop: 8,
-                      }}
-                    />
-                  )}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={addMandiri}
-                  disabled={!mandiriNama.trim()}
-                  style={{
-                    width: "100%",
-                    height: 40,
-                    borderRadius: 11,
-                    background: mandiriNama.trim() ? T : "#CBD5E1",
-                    border: "none",
-                    cursor: mandiriNama.trim() ? "pointer" : "default",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#fff",
-                    fontWeight: 700,
-                    fontFamily: IPS,
-                    fontSize: 13,
-                    marginTop: 6,
-                  }}>
-                  <Plus size={16} style={{ marginRight: 6 }} /> Tambahkan Kelas Mandiri
-                </button>
-              </div>
-            )}
-
             {/* DAFTAR KELAS YANG SUDAH DITAMBAHKAN */}
             <div className="mt-4 pt-3 border-t" style={{ borderColor: BDR }}>
               <p className="text-xs font-bold mb-2 flex items-center justify-between" style={{ color: TEXT, fontFamily: PJS }}>
@@ -896,7 +782,7 @@ export function ProfilSekolahModal({
                     Belum ada kelas yang ditambahkan.
                   </p>
                   <p className="text-[11px] mt-0.5" style={{ color: MUTED, fontFamily: IPS }}>
-                    Pilih tab di atas (Reguler, Vokasional, atau Mandiri) lalu tekan tombol <strong>Tambah</strong>.
+                    Pilih tab di atas (Reguler atau Vokasional) lalu tekan tombol <strong>Tambah</strong>.
                   </p>
                 </div>
               ) : (

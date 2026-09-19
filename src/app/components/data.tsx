@@ -257,10 +257,54 @@ export const studentTalentDetail: Record<number, { domains: {t:string;sc:number;
 };
 
 // ─── Lomba ───────────────────────────────────────────────────────────
-export const LOMBA = [
-  { k:"FLS2N-PDBK", full:"Festival & Lomba Seni Siswa Nasional — PDBK", icon:"🎨" },
-  { k:"O2SN Diksus",full:"Olimpiade Olahraga Siswa Nasional — Diksus",   icon:"⚽" },
-  { k:"LKS",        full:"Lomba Kompetensi Siswa",                        icon:"💻" },
+// ─── Lomba ───────────────────────────────────────────────────────────
+export interface LombaItem {
+  k: string;
+  full: string;
+  category: "Seni" | "Olahraga" | "Akademik";
+  date: string;
+  level: string;
+  iconBg: string;
+  iconType: "palette-mint" | "runner-blue" | "grad-purple" | "palette-peach";
+}
+
+export const LOMBA: LombaItem[] = [
+  {
+    k: "FLS2N-PDBK",
+    full: "Festival & Lomba Seni Siswa Nasional (PDBK)",
+    category: "Seni",
+    date: "12–15 Jul 2026",
+    level: "Tingkat Nasional",
+    iconBg: "#E6F4F1",
+    iconType: "palette-mint",
+  },
+  {
+    k: "O2SN Pendidikan Khusus",
+    full: "Olimpiade Olahraga Siswa Nasional Pendidikan Khusus",
+    category: "Olahraga",
+    date: "20–24 Jul 2026",
+    level: "Tingkat Nasional",
+    iconBg: "#E1F0FE",
+    iconType: "runner-blue",
+  },
+  {
+    k: "Lomba Cerdas Cermat",
+    full: "Pendidikan Khusus",
+    category: "Akademik",
+    date: "5 Agu 2026",
+    level: "Tingkat Provinsi",
+    iconBg: "#EFEAFF",
+    iconType: "grad-purple",
+  },
+  {
+    k: "Festival Seni Pertunjukan",
+    full: "Siswa Berkebutuhan Khusus",
+    category: "Seni",
+    date: "10–12 Sep 2026",
+    level: "Tingkat Kabupaten",
+    iconBg: "#FEF0E6",
+    iconType: "palette-peach",
+  },
 ];
 
 export const studentCompDetail: Record<string,{id:number;cabang:string;match:number;status:StatusType;alasan:string}[]> = {
@@ -268,9 +312,21 @@ export const studentCompDetail: Record<string,{id:number;cabang:string;match:num
     {id:1,cabang:"Seni Lukis",       match:98,status:"Didaftarkan",     alasan:"Seni visual Rafi sangat kuat (90/100). Koordinasi motorik halus sesuai kriteria penilaian."},
     {id:2,cabang:"Seni Pertunjukan", match:78,status:"Direkomendasikan",alasan:"Ekspresi musikal Nisa kuat dan cocok untuk cabang seni pertunjukan non-verbal."},
   ],
+  "O2SN Pendidikan Khusus":[
+    {id:2,cabang:"Boccia",           match:80,status:"Direkomendasikan",alasan:"Motorik Nisa sangat baik (75/100), sangat cocok untuk Boccia."},
+    {id:1,cabang:"Boccia",           match:72,status:"Direkomendasikan",alasan:"Konsentrasi dan motorik Rafi mendukung olahraga presisi tanpa komunikasi verbal."},
+    {id:8,cabang:"Bulutangkis",      match:76,status:"Direkomendasikan",alasan:"Kelincahan dan refleks Sari aktif dalam aktivitas olahraga berkoordinasi cepat."},
+  ],
   "O2SN Diksus":[
-    {id:1,cabang:"Boccia",match:72,status:"Direkomendasikan", alasan:"Konsentrasi dan motorik Rafi mendukung olahraga presisi tanpa komunikasi verbal."},
-    {id:2,cabang:"Boccia",match:80,status:"Direkomendasikan", alasan:"Motorik Nisa sangat baik (75/100), sangat cocok untuk Boccia."},
+    {id:2,cabang:"Boccia",           match:80,status:"Direkomendasikan",alasan:"Motorik Nisa sangat baik (75/100), sangat cocok untuk Boccia."},
+    {id:1,cabang:"Boccia",           match:72,status:"Direkomendasikan",alasan:"Konsentrasi dan motorik Rafi mendukung olahraga presisi tanpa komunikasi verbal."},
+  ],
+  "Lomba Cerdas Cermat":[
+    {id:3,cabang:"Matematika Kreatif",match:85,status:"Direkomendasikan",alasan:"Pemahaman logika pola, bentuk, dan konsentrasi analisis Arga sangat baik."},
+    {id:7,cabang:"Literasi Digital",  match:81,status:"Direkomendasikan",alasan:"Kemampuan komputasi dan pemecahan masalah Toni sangat menonjol di bidang akademik digital."},
+  ],
+  "Festival Seni Pertunjukan":[
+    {id:4,cabang:"Tari Tradisional Kreasi",match:88,status:"Direkomendasikan",alasan:"Bakat kinestetik dan ekspresi gerak Dina sangat menonjol saat menari."},
   ],
   "LKS":[
     {id:1,cabang:"Desain Grafis",match:83,status:"Direkomendasikan", alasan:"Kemampuan spasial dan visual Rafi (85/100) cocok untuk desain grafis digital."},
