@@ -1,5 +1,5 @@
 export * from "./dashboard-guru";
-export * from "./pengamatan-pending-screen";
+export * from "./asesmen-pending-screen";
 export * from "./students-screen";
 export * from "./student-profile-screen";
 export * from "./talent-map-screen";

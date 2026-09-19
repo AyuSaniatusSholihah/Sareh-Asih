@@ -13,7 +13,7 @@ export const INFO_PANELS = [
     label: "Panduan Penggunaan",
     body: [
       "Tambah siswa lewat tombol oranye “Tambah Siswa” yang selalu ada di pojok kanan bawah. Cukup 3 kolom wajib: nama, kelas, dan jenis ABK.",
-      "Buka Pengamatan & Asesmen dari kartu siswa. Indikator dikelompokkan per kategori — Interaksi Sosial, Komunikasi, Motorik & Sensorik, Fokus & Kognitif, Minat & Bakat.",
+      "Buka Asesmen & Asesmen dari kartu siswa. Indikator dikelompokkan per kategori — Interaksi Sosial, Komunikasi, Motorik & Sensorik, Fokus & Kognitif, Minat & Bakat.",
       "Tahap Asesmen berisi dua kategori tes: Kemandirian dan Akademik & Bakat, dinilai dengan 4 tingkat.",
       "Catatan dan laporan bisa diisi dengan suara — tekan tombol mikrofon lalu bicara, tidak perlu mengetik.",
       "Kode akses orang tua dibuat guru di tab “Kode Ortu” pada profil siswa, lalu dibagikan ke orang tua.",
@@ -23,7 +23,7 @@ export const INFO_PANELS = [
     icon: <Heart size={16} />,
     label: "Tentang Sareh Asih",
     body: [
-      "Sareh Asih adalah pendamping belajar harian untuk guru dan orang tua. Guru mencatat pengamatan sehari-hari, menilai kemampuan tiap anak, lalu hasilnya disatukan menjadi laporan sederhana yang mudah dibaca orang tua.",
+      "Sareh Asih adalah pendamping belajar harian untuk guru dan orang tua. Guru mencatat asesmen sehari-hari, menilai kemampuan tiap anak, lalu hasilnya disatukan menjadi laporan sederhana yang mudah dibaca orang tua.",
       "Setiap anak tumbuh dengan caranya sendiri — AI di sini bekerja sebagai rekan guru: membantu menenggarai potensi, tetapi keputusan tetap sepenuhnya di tangan guru.",
       "Alur utamanya singkat: amati keseharian anak, nilai sesuai kemampuannya, lalu bagikan perkembangannya ke orang tua.",
       "Dibuat untuk GEMASTIK XVII kategori UX Design.",

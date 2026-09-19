@@ -13,7 +13,7 @@ export interface GuruProfile {
   noHp: string;              // SRS-F-002: nomor HP (opsional)
   kelas: string[];           // derived from kelasAbkMap keys
   abk: string[];             // derived from kelasAbkMap values (unique)
-  kelasAbkMap: Record<string, string>; // "VII A" → "Autism Spectrum Disorder"
+  kelasAbkMap: Record<string, string>; // "VII A" → "Tunanetra"
 }
 
 // SRS-F-002: Profil guru lengkap — nama, email, jabatan, noHp

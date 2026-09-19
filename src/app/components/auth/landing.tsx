@@ -207,7 +207,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                       Kenali Setiap Anak<br />dengan Lebih Mendalam
                     </h2>
                     <p style={{ fontSize: 12.5, color: "#5B7A68", lineHeight: 1.5, marginBottom: 14 }}>
-                      Observasi dan asesmen adaptif untuk memahami kebutuhan, minat, dan potensi unik anak.
+                      Asesmen dan asesmen adaptif untuk memahami kebutuhan, minat, dan potensi unik anak.
                     </p>
                   </div>
 

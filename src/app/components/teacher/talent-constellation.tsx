@@ -66,13 +66,12 @@ const SUB_CLR = "#A9C4B5";
 const TERRACOTTA_LIGHT = "#E8B4A0";
 
 const DEFAULT_COLORS: Record<string, string> = {
-  "Seni Visual": "#E06D63",
-  "Musik Perkusi": "#F5B74F",
-  "Desain Digital": "#38A3F1",
-  "Tari": "#C490D1",
-  "Desain Spasial": "#8BB098",
-  "Motorik Halus": "#E6C27A",
-  "Bahasa": "#B8A9D4",
+  "Realistic": "#B45309",
+  "Investigative": "#1D4ED8",
+  "Artistic": "#9D174D",
+  "Social": "#15803D",
+  "Enterprising": "#C2410C",
+  "Conventional": "#4338CA",
 };
 
 const BG_STARS = [
@@ -265,7 +264,7 @@ function EmptyState() {
           <circle cx={48} cy={40} r={2} fill="#A9C4B5" />
         </svg>
         <p style={{ fontFamily: PJS, fontSize: 12, color: SUB_CLR, margin: 0, lineHeight: 1.5 }}>
-          Belum ada pemetaan bakat. Mulai dari pengamatan pertama.
+          Belum ada pemetaan bakat. Mulai dari asesmen pertama.
         </p>
       </div>
     </div>
@@ -574,7 +573,7 @@ export function TalentConstellation({
             {/* Note for few students */}
             {noteFew && (
               <p style={{ fontFamily: PJS, fontSize: 10, color: SUB_CLR, margin: "8px 0 0", textAlign: "center", lineHeight: 1.4 }}>
-                Hasil akan lebih lengkap seiring bertambahnya pengamatan.
+                Hasil akan lebih lengkap seiring bertambahnya asesmen.
               </p>
             )}
           </motion.div>

@@ -371,7 +371,7 @@ export function ProfileScreen({
     ["Tingkat Dukungan", s.tingkatDukungan || "Belum diisi"],
     ["Kemampuan Komunikasi", s.komunikasi || "Belum diisi"],
     ["Kemampuan Motorik", s.motorik || "Belum diisi"],
-    ["Cara Belajar Dominan", s.caraBelajar || "Menunggu hasil pengamatan"],
+    ["Cara Belajar Dominan", s.caraBelajar || "Menunggu hasil asesmen"],
     ["Rentang Konsentrasi", s.rentang || "Belum diisi"],
     ["Minat Awal", s.minat || "Belum diisi"],
     ["Riwayat Terapi", s.terapi || "Belum diisi"],
@@ -380,7 +380,7 @@ export function ProfileScreen({
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS }}>
       <TBar title="Profil Siswa" sub={s.name} onBack={onBack}
-        right={<button onClick={() => onStartObs(s.id)} style={{ background: A, color: "#fff", fontFamily: PJS, fontWeight: 800, minHeight: 42, borderRadius: 14, padding: "0 16px", boxShadow: "0 4px 14px rgba(210,125,107,0.42)", border: "none", cursor: "pointer" }} className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"><ClipboardList size={14} strokeWidth={2.2} />Pengamatan</button>} />
+        right={<button onClick={() => onStartObs(s.id)} style={{ background: A, color: "#fff", fontFamily: PJS, fontWeight: 800, minHeight: 42, borderRadius: 14, padding: "0 16px", boxShadow: "0 4px 14px rgba(210,125,107,0.42)", border: "none", cursor: "pointer" }} className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"><ClipboardList size={14} strokeWidth={2.2} />Asesmen</button>} />
       <div style={{ background: CARD, borderBottom: `1px solid ${BDR}` }} className="px-4 py-3 flex items-center gap-3">
         <div style={{ width: 52, height: 52, background: SEC, border: `1.5px solid rgba(91,122,104,0.25)`, flexShrink: 0 }} className="rounded-2xl flex items-center justify-center text-2xl">{s.emoji}</div>
         <div className="flex-1">
