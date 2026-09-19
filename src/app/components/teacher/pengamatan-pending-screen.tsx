@@ -25,7 +25,7 @@ export function PengamatanPendingScreen({
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       <TBar
-        title="Pengamatan Perlu Diperiksa"
+        title="Asesmen Perlu Diperiksa"
         sub={`${pending.length} siswa belum dinilai`}
         onBack={onBack}
       />
@@ -43,8 +43,8 @@ export function PengamatanPendingScreen({
               <Clock size={19} style={{ color: "#FFFFFF" }} />
             </div>
             <div>
-              <p style={{ fontSize: 13, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, lineHeight: 1.2 }}>{pending.length} pengamatan perlu diperiksa</p>
-              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.88)", marginTop: 2, lineHeight: 1.3 }}>Daftar siswa yang belum dilengkapi pengamatan</p>
+              <p style={{ fontSize: 13, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, lineHeight: 1.2 }}>{pending.length} asesmen perlu diperiksa</p>
+              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.88)", marginTop: 2, lineHeight: 1.3 }}>Daftar siswa yang belum dilengkapi asesmen</p>
             </div>
           </div>
         )}
@@ -56,7 +56,7 @@ export function PengamatanPendingScreen({
               <CheckCircle size={26} style={{ color: DEEP }} />
             </div>
             <p style={{ fontWeight: 700, fontSize: 14, fontFamily: PJS, color: TEXT, marginBottom: 6 }}>Semua siswa sudah diamati</p>
-            <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.6 }}>Tidak ada pengamatan yang perlu diperiksa. Tambahkan siswa baru atau tinjau kembali profil siswa.</p>
+            <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.6 }}>Tidak ada asesmen yang perlu diperiksa. Tambahkan siswa baru atau tinjau kembali profil siswa.</p>
             <div className="mt-4">
               <PBtn full label="Kembali ke Beranda" icon={<Home size={15} />} onClick={onBack} size="sm" />
             </div>

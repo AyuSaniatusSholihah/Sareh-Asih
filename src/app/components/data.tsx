@@ -7,7 +7,7 @@ export type Role   = "guru" | "ortu";
 export type Screen =
   | "landing" | "role-select" | "google-login" | "parent-code"
   | "dashboard" | "students" | "profile" | "observation" | "kode-akses"
-  | "pengamatan-pending"
+  | "asesmen-pending"
   | "talent-map" | "talent-map-detail"
   | "learning-rec"
   | "competition"
@@ -26,14 +26,14 @@ export interface Student {
 
 // ─── Seed data ───────────────────────────────────────────────────────
 export const seedStudents: Student[] = [
-  { id:1, name:"Rafi Pratama",   abk:"Autism Spectrum Disorder", kelas:"VII A",  age:13, emoji:"👦", talent:"Seni Visual",    talentScore:90, stars:5, teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
-  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",                kelas:"VIII B", age:14, emoji:"👧", talent:"Musik Perkusi",  talentScore:84, stars:4, teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA" },
-  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",                kelas:"VII A",  age:12, emoji:"👦", talent:"Desain Digital", talentScore:76, stars:4, teacher:"Pak Budi", hasObs:true,  comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
-  { id:4, name:"Dina Maharani",  abk:"Tunagrahita Ringan",       kelas:"IX C",   age:15, emoji:"👧", talent:"Tari",           talentScore:71, stars:4, teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
-  { id:5, name:"Budi Santoso",   abk:"Autism Spectrum Disorder", kelas:"VII A",  age:13, emoji:"👦", talent:"Seni Visual",    talentScore:82, stars:4, teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
-  { id:6, name:"Maya Dewi",      abk:"Tunagrahita Ringan",       kelas:"VIII B", age:14, emoji:"👧", talent:"Tari",           talentScore:68, stars:3, teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
-  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",                kelas:"IX A",   age:15, emoji:"👦", talent:"Desain Digital", talentScore:79, stars:4, teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI" },
-  { id:8, name:"Sari Indah",     abk:"Tunarungu",                kelas:"VIII A", age:13, emoji:"👧", talent:"Musik Perkusi",  talentScore:73, stars:4, teacher:"Bu Rina",  hasObs:true,  comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
+  { id:1, name:"Rafi Pratama",   abk:"Tunanetra (Low Vision)",   kelas:"VII A",  age:13, emoji:"👦", talent:"Artistic",       talentScore:90, stars:5, teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
+  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",                kelas:"VIII B", age:14, emoji:"👧", talent:"Realistic",      talentScore:84, stars:4, teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA" },
+  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",                kelas:"VII A",  age:12, emoji:"👦", talent:"Investigative",  talentScore:76, stars:4, teacher:"Pak Budi", hasObs:true,  comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
+  { id:4, name:"Dina Maharani",  abk:"Tunanetra (Total)",        kelas:"IX C",   age:15, emoji:"👧", talent:"Social",         talentScore:71, stars:4, teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
+  { id:5, name:"Budi Santoso",   abk:"Tunadaksa (Cerebral Palsy)",kelas:"VII A",  age:13, emoji:"👦", talent:"Enterprising",   talentScore:82, stars:4, teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
+  { id:6, name:"Maya Dewi",      abk:"Tunarungu (Hard of Hearing)",kelas:"VIII B", age:14, emoji:"👧", talent:"Conventional",   talentScore:68, stars:3, teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
+  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",                kelas:"IX A",   age:15, emoji:"👦", talent:"Realistic",      talentScore:79, stars:4, teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI" },
+  { id:8, name:"Sari Indah",     abk:"Tunarungu",                kelas:"VIII A", age:13, emoji:"👧", talent:"Artistic",       talentScore:73, stars:4, teacher:"Bu Rina",  hasObs:true,  comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
 ];
 
 // ─── Laporan ke orang tua ────────────────────────────────────────────
@@ -67,8 +67,8 @@ export const useAddStudent = () => useContext(StudentsCtx).add;
 
 // ─── Pilihan form ────────────────────────────────────────────────────
 export const ABK_OPTIONS = [
-  "Autism Spectrum Disorder","Tunarungu","Tunadaksa",
-  "Tunagrahita Ringan","Tunagrahita Sedang","Tunanetra","Tunalaras",
+  "Tunanetra (Low Vision)","Tunarungu","Tunadaksa",
+  "Tunanetra (Total)","Tunarungu (Hard of Hearing)","Tunanetra","Tunalaras",
 ];
 export const KELAS_OPTIONS = [
   "VII A","VII B","VIII A","VIII B","IX A","IX B","IX C",
@@ -77,139 +77,116 @@ export const CARA_BELAJAR_OPTIONS = [
   "Visual","Auditori","Kinestetik","Visual & Kinestetik","Auditori & Kinestetik",
 ];
 
-// ─── Pengamatan per jenis ABK ─────────────────────────────────────────
-/** Kategori pengamatan — indikator dikelompokkan agar guru mudah menelusuri. */
-export type ObsKategori = "Interaksi Sosial" | "Komunikasi" | "Motorik & Sensorik" | "Fokus & Kognitif" | "Minat & Bakat";
+// ─── Profil Fungsional (Tahap 1) ─────────────────────────────────────────
+export type FungsionalKategori = "Kognisi" | "Mobilitas" | "Perawatan Diri" | "Interaksi dengan Orang Lain" | "Aktivitas Sehari-hari" | "Partisipasi";
 
-export const OBS_KATEGORI: ObsKategori[] = [
-  "Interaksi Sosial","Komunikasi","Motorik & Sensorik","Fokus & Kognitif","Minat & Bakat",
+export const FUNGSIONAL_KATEGORI: FungsionalKategori[] = [
+  "Kognisi", "Mobilitas", "Perawatan Diri", "Interaksi dengan Orang Lain", "Aktivitas Sehari-hari", "Partisipasi"
 ];
 
-export const OBS_KAT_META: Record<ObsKategori,{icon:string;color:string;bg:string;desc:string}> = {
-  "Interaksi Sosial":   {icon:"🤝", color:"#059669", bg:"#ECFDF5", desc:"Cara anak berhubungan dengan teman dan guru"},
-  "Komunikasi":         {icon:"💬", color:"#0284C7", bg:"#F0F9FF", desc:"Menyampaikan dan memahami pesan"},
-  "Motorik & Sensorik": {icon:"✋", color:"#8BB098", bg:"#EBF3ED", desc:"Gerak tubuh dan respons indra"},
-  "Fokus & Kognitif":   {icon:"🧠", color:"#7C3AED", bg:"#F5F3FF", desc:"Perhatian, ingatan, dan pemahaman"},
-  "Minat & Bakat":      {icon:"✨", color:"#F59E0B", bg:"#FFFBEB", desc:"Kegiatan yang menarik minat anak"},
+export const FUNGSIONAL_META: Record<FungsionalKategori,{icon:string;color:string;bg:string;desc:string}> = {
+  "Kognisi": {icon:"🧠", color:"#0284C7", bg:"#F0F9FF", desc:"Memahami instruksi, memori, dan penyelesaian masalah"},
+  "Mobilitas": {icon:"🏃", color:"#059669", bg:"#ECFDF5", desc:"Berpindah tempat dan menavigasi lingkungan"},
+  "Perawatan Diri": {icon:"🧍", color:"#F59E0B", bg:"#FFFBEB", desc:"Makan, ke toilet, dan menjaga kerapian"},
+  "Interaksi dengan Orang Lain": {icon:"🤝", color:"#7C3AED", bg:"#F5F3FF", desc:"Komunikasi dan respons sosial"},
+  "Aktivitas Sehari-hari": {icon:"📅", color:"#D97706", bg:"#FEF3C7", desc:"Tanggung jawab rutin dan tugas sekolah"},
+  "Partisipasi": {icon:"🙋", color:"#DB2777", bg:"#FDF2F8", desc:"Keterlibatan dalam kegiatan kelas atau kelompok"},
 };
 
-export interface ObsItem { id:number; text:string; tag:string; kategori:ObsKategori }
-
-/** Indikator interaksi sosial yang berlaku untuk semua jenis ABK. */
-const SOSIAL_UMUM: ObsItem[] = [
-  {id:101, text:"Mau bermain atau bekerja berdampingan dengan teman",       tag:"Kebersamaan",  kategori:"Interaksi Sosial"},
-  {id:102, text:"Menyapa atau merespons sapaan guru maupun teman",          tag:"Respons",      kategori:"Interaksi Sosial"},
-  {id:103, text:"Mau bergantian dan menunggu giliran",                      tag:"Regulasi",     kategori:"Interaksi Sosial"},
-  {id:104, text:"Meminta bantuan saat mengalami kesulitan",                 tag:"Inisiatif",    kategori:"Interaksi Sosial"},
-  {id:105, text:"Menunjukkan empati saat teman kesulitan atau sedih",       tag:"Empati",       kategori:"Interaksi Sosial"},
+export const SKALA_FUNGSIONAL = [
+  {v:-1, l:"N/A",     d:"Tidak dapat dijawab / diamati",       color:"#94A3B8", bg:"#F1F5F9"},
+  {v:0, l:"Belum",    d:"0 Belum bisa sama sekali",            color:"#D27D6B", bg:"#F8EBE8"},
+  {v:1, l:"Dibantu",  d:"1 Bisa dengan bantuan penuh",         color:"#F59E0B", bg:"#FFFBEB"},
+  {v:2, l:"Sebagian", d:"2 Bisa sebagian, butuh diingatkan",   color:"#8BB098", bg:"#EBF3ED"},
+  {v:3, l:"Mandiri",  d:"3 Bisa sendiri secara konsisten",     color:"#2E3E35", bg:"#D4E8DA"},
 ];
 
-const BASE: Record<string, ObsItem[]> = {
-  "Autism Spectrum Disorder": [
-    {id:1, text:"Fokus pada tugas visual >15 menit tanpa gangguan",           tag:"Konsentrasi", kategori:"Fokus & Kognitif"},
-    {id:2, text:"Menyukai aktivitas menggambar atau mewarnai secara mandiri", tag:"Minat",       kategori:"Minat & Bakat"},
-    {id:3, text:"Koordinasi motorik halus (pensil/kuas) baik",                tag:"Motorik",     kategori:"Motorik & Sensorik"},
-    {id:4, text:"Respons instruksi visual tanpa penjelasan verbal",           tag:"Komunikasi",  kategori:"Komunikasi"},
-    {id:5, text:"Menyelesaikan proyek multi-langkah secara konsisten",        tag:"Kognitif",    kategori:"Fokus & Kognitif"},
-    {id:6, text:"Percaya diri menunjukkan karya kepada orang lain",           tag:"Sosial",      kategori:"Interaksi Sosial"},
-    {id:7, text:"Tetap tenang saat rutinitas kelas berubah",                  tag:"Adaptasi",    kategori:"Motorik & Sensorik"},
-  ],
-  "Tunarungu": [
-    {id:1, text:"Merespons instruksi melalui kontak mata dan isyarat visual", tag:"Komunikasi",  kategori:"Komunikasi"},
-    {id:2, text:"Mampu memahami ekspresi wajah dan bahasa tubuh guru",        tag:"Sosial",      kategori:"Interaksi Sosial"},
-    {id:3, text:"Koordinasi motorik dan gerak tubuh baik",                    tag:"Motorik",     kategori:"Motorik & Sensorik"},
-    {id:4, text:"Menggunakan BISINDO/SIBI untuk berkomunikasi",               tag:"Bahasa",      kategori:"Komunikasi"},
-    {id:5, text:"Merespons getaran ritme/musik melalui sentuhan",             tag:"Sensorik",    kategori:"Motorik & Sensorik"},
-    {id:6, text:"Fokus visual terjaga >20 menit dalam aktivitas terstruktur", tag:"Konsentrasi", kategori:"Fokus & Kognitif"},
-    {id:7, text:"Dapat mengikuti urutan instruksi bergambar",                 tag:"Kognitif",    kategori:"Fokus & Kognitif"},
-    {id:8, text:"Antusias pada kegiatan gerak, tari, atau ritme",             tag:"Minat",       kategori:"Minat & Bakat"},
-  ],
-  "Tunadaksa": [
-    {id:1, text:"Konsentrasi dan fokus intelektual terjaga dengan baik",        tag:"Kognitif",     kategori:"Fokus & Kognitif"},
-    {id:2, text:"Mampu mengikuti instruksi verbal multi-langkah",               tag:"Komunikasi",   kategori:"Komunikasi"},
-    {id:3, text:"Kreativitas tinggi dalam menyampaikan ide",                    tag:"Kreativitas",  kategori:"Minat & Bakat"},
-    {id:4, text:"Eksplorasi media seni adaptif (digital/oral/manual terbatas)", tag:"Seni",         kategori:"Minat & Bakat"},
-    {id:5, text:"Kepercayaan diri dalam berinteraksi sosial",                   tag:"Sosial",       kategori:"Interaksi Sosial"},
-    {id:6, text:"Mampu berpartisipasi dengan alat bantu yang tersedia",         tag:"Adaptasi",     kategori:"Motorik & Sensorik"},
-    {id:7, text:"Mengendalikan gerak tangan/kepala untuk mengoperasikan alat",  tag:"Motorik",      kategori:"Motorik & Sensorik"},
-  ],
-  "Tunagrahita Ringan": [
-    {id:1, text:"Mengikuti instruksi sederhana 1–2 langkah",         tag:"Kognitif",  kategori:"Fokus & Kognitif"},
-    {id:2, text:"Mengenal dan membedakan bentuk serta warna dasar",  tag:"Persepsi",  kategori:"Fokus & Kognitif"},
-    {id:3, text:"Mampu meniru gerakan fisik yang dicontohkan guru",  tag:"Motorik",   kategori:"Motorik & Sensorik"},
-    {id:4, text:"Berpartisipasi aktif dalam aktivitas kelompok",     tag:"Sosial",    kategori:"Interaksi Sosial"},
-    {id:5, text:"Merespons positif terhadap pujian dan penguatan",   tag:"Motivasi",  kategori:"Interaksi Sosial"},
-    {id:6, text:"Menunjukkan minat pada aktivitas musik atau gerak", tag:"Minat",     kategori:"Minat & Bakat"},
-    {id:7, text:"Menyampaikan kebutuhan dengan kalimat sederhana",   tag:"Komunikasi",kategori:"Komunikasi"},
-  ],
-  "Tunagrahita Sedang": [
-    {id:1, text:"Merespons namanya saat dipanggil",               tag:"Atensi",     kategori:"Fokus & Kognitif"},
-    {id:2, text:"Meniru gerakan sederhana yang dicontohkan",      tag:"Motorik",    kategori:"Motorik & Sensorik"},
-    {id:3, text:"Menunjukkan ketertarikan pada warna atau bunyi", tag:"Sensorik",   kategori:"Minat & Bakat"},
-    {id:4, text:"Mampu duduk tenang minimal 10 menit",            tag:"Konsentrasi",kategori:"Fokus & Kognitif"},
-    {id:5, text:"Berinteraksi positif dengan teman sekelas",      tag:"Sosial",     kategori:"Interaksi Sosial"},
-    {id:6, text:"Menunjuk atau memberi isyarat saat menginginkan sesuatu", tag:"Komunikasi", kategori:"Komunikasi"},
-  ],
-  "Tunanetra": [
-    {id:1, text:"Merespons instruksi verbal dengan tepat",        tag:"Komunikasi", kategori:"Komunikasi"},
-    {id:2, text:"Mengenali objek melalui perabaan",               tag:"Sensorik",   kategori:"Motorik & Sensorik"},
-    {id:3, text:"Kepekaan terhadap nada dan irama musik",         tag:"Musik",      kategori:"Minat & Bakat"},
-    {id:4, text:"Orientasi dan mobilitas di ruang kelas baik",    tag:"Motorik",    kategori:"Motorik & Sensorik"},
-    {id:5, text:"Daya ingat auditori kuat (hafalan lagu/cerita)", tag:"Kognitif",   kategori:"Fokus & Kognitif"},
-    {id:6, text:"Percaya diri berbicara di depan kelompok",       tag:"Sosial",     kategori:"Interaksi Sosial"},
-  ],
-  "Tunalaras": [
-    {id:1, text:"Mampu mengelola emosi saat kegiatan berlangsung",  tag:"Emosi",       kategori:"Interaksi Sosial"},
-    {id:2, text:"Mengikuti aturan kelas yang disepakati",           tag:"Perilaku",    kategori:"Interaksi Sosial"},
-    {id:3, text:"Menyelesaikan tugas tanpa meninggalkan tempat",    tag:"Konsentrasi", kategori:"Fokus & Kognitif"},
-    {id:4, text:"Menyampaikan keinginan secara verbal, bukan fisik",tag:"Komunikasi",  kategori:"Komunikasi"},
-    {id:5, text:"Menunjukkan minat pada aktivitas tertentu",        tag:"Minat",       kategori:"Minat & Bakat"},
-    {id:6, text:"Menyalurkan energi lewat aktivitas fisik terarah", tag:"Motorik",     kategori:"Motorik & Sensorik"},
-  ],
-};
+export interface FungsionalItem { id:number; text:string; kategori:FungsionalKategori }
 
-/** Setiap jenis ABK otomatis mendapat indikator interaksi sosial umum. */
-export const OBS_BY_ABK: Record<string, ObsItem[]> = Object.fromEntries(
-  Object.entries(BASE).map(([abk,items])=>{
-    const sudahAda = new Set(items.filter(i=>i.kategori==="Interaksi Sosial").map(i=>i.tag));
-    const tambahan = SOSIAL_UMUM.filter(i=>!sudahAda.has(i.tag));
-    return [abk, [...items, ...tambahan]];
-  })
-);
-
-// ─── Asesmen kemampuan (2 kategori tes) ──────────────────────────────
-export type AsesmenKategori = "Kemandirian" | "Akademik & Bakat";
-
-export interface AsesmenItem { id:number; text:string; kategori:AsesmenKategori; petunjuk:string }
-
-/** Skala penilaian — sengaja hanya 4 tingkat agar cepat diisi guru. */
-export const SKALA = [
-  {v:0, l:"Belum",         d:"Belum muncul sama sekali",            color:"#D27D6B", bg:"#F8EBE8"},
-  {v:1, l:"Dibantu",       d:"Bisa dengan bantuan penuh guru",      color:"#8BB098", bg:"#EBF3ED"},
-  {v:2, l:"Sebagian",      d:"Bisa sebagian, sesekali diingatkan",  color:"#5B7A68", bg:"#E8EFEA"},
-  {v:3, l:"Mandiri",       d:"Bisa sendiri secara konsisten",       color:"#2E3E35", bg:"#D4E8DA"},
+export const PROFIL_FUNGSIONAL: FungsionalItem[] = [
+  // D1 Kognisi
+  {id:101, kategori:"Kognisi", text:"Memahami instruksi bertahap (2-3 langkah) yang diberikan guru."},
+  {id:102, kategori:"Kognisi", text:"Mengingat informasi pelajaran dari pertemuan sebelumnya."},
+  {id:103, kategori:"Kognisi", text:"Mempertahankan perhatian pada satu tugas hingga selesai."},
+  {id:104, kategori:"Kognisi", text:"Menemukan cara alternatif ketika menghadapi kesulitan dalam tugas."},
+  // D2 Mobilitas
+  {id:201, kategori:"Mobilitas", text:"Berpindah tempat di dalam ruang kelas."},
+  {id:202, kategori:"Mobilitas", text:"Menavigasi lingkungan sekolah di luar kelas (kantin, toilet, lapangan)."},
+  {id:203, kategori:"Mobilitas", text:"Mengikuti kegiatan yang melibatkan gerak fisik."},
+  {id:204, kategori:"Mobilitas", text:"Menyesuaikan diri ketika ada perubahan tata letak atau rute."},
+  // D3 Perawatan Diri
+  {id:301, kategori:"Perawatan Diri", text:"Makan dan minum sendiri saat istirahat."},
+  {id:302, kategori:"Perawatan Diri", text:"Ke toilet dan membersihkan diri sendiri."},
+  {id:303, kategori:"Perawatan Diri", text:"Menjaga kerapian diri dan seragam."},
+  {id:304, kategori:"Perawatan Diri", text:"Menjaga dan mengelola barang miliknya sendiri."},
+  // D4 Interaksi dengan Orang Lain
+  {id:401, kategori:"Interaksi dengan Orang Lain", text:"Memulai komunikasi dengan teman atau guru."},
+  {id:402, kategori:"Interaksi dengan Orang Lain", text:"Merespons ketika disapa atau diajak berkomunikasi."},
+  {id:403, kategori:"Interaksi dengan Orang Lain", text:"Menjaga interaksi berlangsung dua arah (bukan hanya menjawab satu kali)."},
+  {id:404, kategori:"Interaksi dengan Orang Lain", text:"Menyelesaikan perselisihan dengan teman tanpa bantuan orang dewasa."},
+  // D5 Aktivitas Sehari-hari
+  {id:501, kategori:"Aktivitas Sehari-hari", text:"Memulai tugas tanpa harus diminta berulang."},
+  {id:502, kategori:"Aktivitas Sehari-hari", text:"Menyelesaikan tugas sekolah dalam waktu yang tersedia."},
+  {id:503, kategori:"Aktivitas Sehari-hari", text:"Menyiapkan dan merapikan alat belajar sendiri."},
+  {id:504, kategori:"Aktivitas Sehari-hari", text:"Berpindah antar kegiatan mengikuti jadwal tanpa pendampingan."},
+  // D6 Partisipasi
+  {id:601, kategori:"Partisipasi", text:"Terlibat aktif dalam kegiatan kelompok di kelas."},
+  {id:602, kategori:"Partisipasi", text:"Ikut serta dalam kegiatan sekolah di luar jam pelajaran."},
+  {id:603, kategori:"Partisipasi", text:"Menggunakan alat bantu atau teknologi pendukungnya secara mandiri."},
+  {id:604, kategori:"Partisipasi", text:"Menyampaikan kebutuhan atau meminta penyesuaian ketika menghadapi hambatan."},
 ];
 
-export const ASESMEN_META: Record<AsesmenKategori,{icon:string;color:string;bg:string;desc:string}> = {
-  "Kemandirian":     {icon:"🧍", color:"#5B7A68", bg:"#E8EFEA", desc:"Kemampuan mengurus diri dan menyelesaikan tugas sendiri"},
-  "Akademik & Bakat":{icon:"📚", color:"#D27D6B", bg:"#F8EBE8", desc:"Kemampuan dasar akademik dan potensi bakat yang menonjol"},
+// ─── Profil Kecenderungan Aktivitas / RIASEC (Tahap 2) ─────────────────────────
+export type RiasecKategori = "Realistic" | "Investigative" | "Artistic" | "Social" | "Enterprising" | "Conventional";
+
+export const RIASEC_KATEGORI: RiasecKategori[] = [
+  "Realistic", "Investigative", "Artistic", "Social", "Enterprising", "Conventional"
+];
+
+export const RIASEC_META: Record<RiasecKategori,{icon:string;color:string;bg:string;desc:string;letter:string}> = {
+  "Realistic":     {icon:"🛠️", color:"#B45309", bg:"#FEF3C7", desc:"Bekerja dengan tangan, alat, benda konkret, aktivitas fisik", letter:"R"},
+  "Investigative": {icon:"🔍", color:"#1D4ED8", bg:"#DBEAFE", desc:"Mengamati, menyelidiki, memecahkan masalah", letter:"I"},
+  "Artistic":      {icon:"🎨", color:"#9D174D", bg:"#FCE7F3", desc:"Mengekspresikan diri lewat seni, cerita, gerak, musik", letter:"A"},
+  "Social":        {icon:"🤝", color:"#15803D", bg:"#DCFCE7", desc:"Membantu, mengajari, dan peduli pada orang lain", letter:"S"},
+  "Enterprising":  {icon:"🗣️", color:"#C2410C", bg:"#FFEDD5", desc:"Memimpin, mengajak, memengaruhi, berani tampil", letter:"E"},
+  "Conventional":  {icon:"📋", color:"#4338CA", bg:"#E0E7FF", desc:"Ketelitian, keteraturan, prosedur yang jelas", letter:"C"},
 };
 
-export const ASESMEN: AsesmenItem[] = [
-  // Kemandirian
-  {id:1, kategori:"Kemandirian", text:"Merapikan alat belajar setelah selesai",        petunjuk:"Amati saat pergantian jam pelajaran"},
-  {id:2, kategori:"Kemandirian", text:"Makan dan minum tanpa bantuan",                 petunjuk:"Amati saat istirahat"},
-  {id:3, kategori:"Kemandirian", text:"Ke toilet dan membersihkan diri sendiri",       petunjuk:"Tanyakan juga pada orang tua"},
-  {id:4, kategori:"Kemandirian", text:"Memulai tugas tanpa harus diminta berulang",    petunjuk:"Amati awal aktivitas kelas"},
-  {id:5, kategori:"Kemandirian", text:"Berpindah antar kegiatan tanpa pendampingan",   petunjuk:"Amati transisi kegiatan"},
-  {id:6, kategori:"Kemandirian", text:"Menjaga barang miliknya sendiri",               petunjuk:"Amati sepanjang hari"},
-  // Akademik & Bakat
-  {id:7,  kategori:"Akademik & Bakat", text:"Mengenali huruf atau kata yang sering dijumpai", petunjuk:"Gunakan kartu kata sederhana"},
-  {id:8,  kategori:"Akademik & Bakat", text:"Mengenali angka dan jumlah benda 1–10",          petunjuk:"Gunakan benda konkret"},
-  {id:9,  kategori:"Akademik & Bakat", text:"Menyalin bentuk, huruf, atau gambar",            petunjuk:"Beri contoh untuk ditiru"},
-  {id:10, kategori:"Akademik & Bakat", text:"Menunjukkan karya yang menonjol di satu bidang", petunjuk:"Seni, musik, gerak, atau kriya"},
-  {id:11, kategori:"Akademik & Bakat", text:"Bertahan lama pada kegiatan yang ia sukai",      petunjuk:"Catat perkiraan durasinya"},
-  {id:12, kategori:"Akademik & Bakat", text:"Mengulang keterampilan tanpa diminta",           petunjuk:"Tanda minat kuat pada bidang itu"},
+export const SKALA_RIASEC = [
+  {v:-1, l:"N/A", d:"Tidak dapat dijawab / diamati", color:"#94A3B8", bg:"#F1F5F9"},
+  {v:0, l:"Tidak Pernah", d:"0 Tidak pernah",       color:"#64748B", bg:"#F1F5F9"},
+  {v:1, l:"Kadang",       d:"1 Kadang",             color:"#0EA5E9", bg:"#F0F9FF"},
+  {v:2, l:"Sering",       d:"2 Sering",             color:"#2563EB", bg:"#EFF6FF"},
+  {v:3, l:"Sangat Sering",d:"3 Sangat sering",      color:"#1E3A8A", bg:"#DBEAFE"},
+];
+
+export interface RiasecItem { id:number; text:string; kategori:RiasecKategori }
+
+export const PROFIL_KECENDERUNGAN: RiasecItem[] = [
+  // Realistic
+  {id:1001, kategori:"Realistic", text:"Tertarik membongkar, merakit, atau memperbaiki benda."},
+  {id:1002, kategori:"Realistic", text:"Memilih kegiatan yang menggunakan tangan atau alat (prakarya, kriya, berkebun)."},
+  {id:1003, kategori:"Realistic", text:"Menikmati kegiatan yang melibatkan gerak tubuh atau olahraga."},
+  // Investigative
+  {id:2001, kategori:"Investigative", text:"Mengajukan pertanyaan “mengapa” atau “bagaimana” di luar yang ditanyakan guru."},
+  {id:2002, kategori:"Investigative", text:"Tertarik mencoba-coba untuk menemukan jawaban sendiri."},
+  {id:2003, kategori:"Investigative", text:"Menikmati teka-teki, pola, hitungan, atau tantangan berpikir."},
+  // Artistic
+  {id:3001, kategori:"Artistic", text:"Memilih kegiatan menggambar, mewarnai, membentuk, atau kriya (tunanetra: seni taktil/keramik)."},
+  {id:3002, kategori:"Artistic", text:"Menunjukkan ketertarikan pada musik, ritme, atau gerak/tari."},
+  {id:3003, kategori:"Artistic", text:"Senang bercerita, menulis, atau memerankan sesuatu."},
+  // Social
+  {id:4001, kategori:"Social", text:"Membantu teman yang mengalami kesulitan tanpa diminta."},
+  {id:4002, kategori:"Social", text:"Menjelaskan atau mengajari sesuatu kepada temannya."},
+  {id:4003, kategori:"Social", text:"Memilih mengerjakan sesuatu bersama teman daripada sendirian."},
+  // Enterprising
+  {id:5001, kategori:"Enterprising", text:"Mengambil peran memimpin ketika bekerja dalam kelompok."},
+  {id:5002, kategori:"Enterprising", text:"Mengajak teman mengikuti ide atau rencananya."},
+  {id:5003, kategori:"Enterprising", text:"Berani tampil atau menyampaikan sesuatu di depan orang banyak."},
+  // Conventional
+  {id:6001, kategori:"Conventional", text:"Merapikan, menyusun, atau mengurutkan benda atas kemauan sendiri."},
+  {id:6002, kategori:"Conventional", text:"Memperbaiki detail dan terganggu bila ada yang tidak rapi atau keliru."},
+  {id:6003, kategori:"Conventional", text:"Lebih nyaman pada tugas dengan aturan dan langkah yang jelas."},
 ];
 
 export const progressData = [
@@ -229,10 +206,12 @@ export const GAYA_META: Record<string,{icon:string;warna:string;strategi:string[
 };
 
 export const TALENT_COLOR: Record<string,{bg:string;text:string}> = {
-  "Seni Visual":   {bg:"#EDE9FE",text:"#6D28D9"},
-  "Musik Perkusi": {bg:"#E0F2FE",text:"#0369A1"},
-  "Desain Digital":{bg:"#FEF9C3",text:"#92400E"},
-  "Tari":          {bg:"#FCE7F3",text:"#9D174D"},
+  "Realistic":     {bg:"#FEF3C7",text:"#B45309"},
+  "Investigative": {bg:"#DBEAFE",text:"#1D4ED8"},
+  "Artistic":      {bg:"#FCE7F3",text:"#9D174D"},
+  "Social":        {bg:"#DCFCE7",text:"#15803D"},
+  "Enterprising":  {bg:"#FFEDD5",text:"#C2410C"},
+  "Conventional":  {bg:"#E0E7FF",text:"#4338CA"},
 };
 
 // ─── Talent detail ───────────────────────────────────────────────────
@@ -240,18 +219,18 @@ export const studentTalentDetail: Record<number, { domains: {t:string;sc:number;
   1: {
     radar:[{s:"Visual",A:90},{s:"Motorik",A:65},{s:"Sosial",A:55},{s:"Verbal",A:40},{s:"Musik",A:70},{s:"Spasial",A:85}],
     domains:[
-      {t:"Seni Visual",sc:90,st:5,r:"Fokus tinggi pada tugas visual, koordinasi motorik halus sangat baik, dan inisiatif menggambar mandiri konsisten dalam 3 sesi pengamatan terakhir."},
-      {t:"Desain Spasial",sc:85,st:4,r:"Pemahaman bentuk dan konstruksi di atas rata-rata. Mampu merekonstruksi objek 3D dari panduan 2D tanpa bimbingan verbal."},
-      {t:"Musik",sc:70,st:4,r:"Respons positif terhadap ritme dan pola, meskipun belum menjadi minat dominan."},
-      {t:"Komunikasi Verbal",sc:40,st:2,r:"Terbatas sesuai profil ASD — ini area dukungan, bukan hambatan pengembangan bakat lain."},
+      {t:"Artistic",sc:90,st:5,r:"Fokus tinggi pada tugas visual, koordinasi motorik halus sangat baik, dan inisiatif menggambar mandiri konsisten dalam 3 sesi asesmen terakhir."},
+      {t:"Investigative",sc:85,st:4,r:"Pemahaman bentuk dan konstruksi di atas rata-rata. Mampu merekonstruksi objek 3D dari panduan 2D tanpa bimbingan verbal."},
+      {t:"Realistic",sc:70,st:4,r:"Respons positif terhadap ritme dan pola, meskipun belum menjadi minat dominan."},
+      {t:"Social",sc:40,st:2,r:"Terbatas sesuai profil Tunanetra — ini area dukungan, bukan hambatan pengembangan bakat lain."},
     ],
   },
   2: {
     radar:[{s:"Visual",A:55},{s:"Motorik",A:75},{s:"Sosial",A:70},{s:"Verbal",A:30},{s:"Musik",A:88},{s:"Spasial",A:60}],
     domains:[
-      {t:"Musik Perkusi",sc:88,st:5,r:"Respons ritmis sangat kuat. Mampu menangkap pola musik melalui getaran dan ekspresi wajah instruktur tanpa bergantung pada pendengaran verbal."},
-      {t:"Kemampuan Motorik",sc:75,st:4,r:"Koordinasi tubuh sangat baik, mendukung aktivitas seni pertunjukan dan olahraga presisi."},
-      {t:"Seni Visual",sc:55,st:3,r:"Potensi pendukung yang cukup, perlu dikembangkan lebih lanjut dengan metode visual-kinestetik."},
+      {t:"Realistic",sc:88,st:5,r:"Respons ritmis sangat kuat. Mampu menangkap pola musik melalui getaran dan ekspresi wajah instruktur tanpa bergantung pada pendengaran verbal."},
+      {t:"Investigative",sc:75,st:4,r:"Koordinasi tubuh sangat baik, mendukung aktivitas seni pertunjukan dan olahraga presisi."},
+      {t:"Artistic",sc:55,st:3,r:"Potensi pendukung yang cukup, perlu dikembangkan lebih lanjut dengan metode visual-kinestetik."},
     ],
   },
 };

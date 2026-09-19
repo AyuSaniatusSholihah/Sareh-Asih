@@ -45,11 +45,11 @@ export function getKelasJenjang(k: KelasCardData): "SDLB" | "SMPLB" | "SMALB" {
 }
 
 export const DEFAULT_KELAS_CARDS: KelasCardData[] = [
-  { id: "viii-a", nama: "Kelas VIII A", abk: "Autism Spectrum Disorder", img: classGroupImg, count: 8, jenjang: "SMPLB" },
+  { id: "viii-a", nama: "Kelas VIII A", abk: "Tunanetra (Low Vision)", img: classGroupImg, count: 8, jenjang: "SMPLB" },
   { id: "vi-a", nama: "Kelas VI A", abk: "Tunarungu", img: classGroupImg, count: 10, jenjang: "SDLB" },
   { id: "vii", nama: "Kelas VII", abk: "Tunalaras", img: classDrawingImg, count: 10, jenjang: "SMPLB" },
   { id: "ix-a", nama: "IX A", abk: "Tunadaksa", img: classActivityImg, count: 10, jenjang: "SMPLB" },
-  { id: "x-b", nama: "Kelas X B", abk: "Autism Spectrum", img: classDrawingImg, count: 8, jenjang: "SMALB" },
+  { id: "x-b", nama: "Kelas X B", abk: "Tunanetra", img: classDrawingImg, count: 8, jenjang: "SMALB" },
 ];
 
 export function StudentsScreen({
@@ -72,7 +72,7 @@ export function StudentsScreen({
   const [newNama, setNewNama] = useState("");
   const [selectedJenjang, setSelectedJenjang] = useState<string>("Semua");
   const [selectedNewJenjang, setSelectedNewJenjang] = useState<"SDLB" | "SMPLB" | "SMALB">("SMPLB");
-  const [selectedAbk, setSelectedAbk] = useState("Autism Spectrum Disorder");
+  const [selectedAbk, setSelectedAbk] = useState("Tunanetra (Low Vision)");
   const [customAbk, setCustomAbk] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [justAddedKelasNama, setJustAddedKelasNama] = useState("");
@@ -84,7 +84,7 @@ export function StudentsScreen({
   const selectedClass = kelasList.find(k => k.id === selectedClassId);
 
   const getAbkBadge = (abk: string) => {
-    if (abk.includes("Laras") || abk.includes("Ganda") || abk.includes("Autis")) {
+    if (abk.includes("Laras") || abk.includes("Ganda") || abk.includes("Tunanetra")) {
       return { bg: "#F3E8FF", color: "#7C3AED", border: "1px solid #E9D5FF" };
     }
     if (abk.includes("Rungu") || abk.includes("Wicara")) {
@@ -123,11 +123,11 @@ export function StudentsScreen({
   // ─── DEDICATED VIEW: TAMBAH KELAS (Exact Match to Mockup) ─────────────
   if (isAddingKelas) {
     const abkOptions = [
-      "Autism Spectrum Disorder",
+      "Tunanetra (Low Vision)",
       "Tunarungu",
       "Tunadaksa",
-      "Tunagrahita Ringan",
-      "Tunagrahita Sedang",
+      "Tunanetra (Total)",
+      "Tunarungu (Hard of Hearing)",
       "Tunanetra",
       "Tunalaras",
       "Lainnya"
@@ -709,7 +709,7 @@ export function StudentsScreen({
                             }}
                           >
                             <CheckCircle size={12} strokeWidth={2.5} />
-                            <span>Pengamatan ada</span>
+                            <span>Asesmen ada</span>
                           </span>
                         ) : (
                           <span
@@ -728,7 +728,7 @@ export function StudentsScreen({
                             }}
                           >
                             <Clock size={11} strokeWidth={2.5} />
-                            <span>Belum pengamatan</span>
+                            <span>Belum asesmen</span>
                           </span>
                         )}
                       </div>

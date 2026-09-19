@@ -155,7 +155,7 @@ export default function App() {
       ? {
         ...s,
         hasObs: true,
-        talent: s.talent || "Seni Visual",
+        talent: s.talent || "Artistic",
         talentScore: s.talentScore || 72,
         stars: s.stars || 4,
         caraBelajar: s.caraBelajar || "Visual & Kinestetik"
@@ -205,7 +205,7 @@ export default function App() {
 
   const goBack = () => {
     if (screen === "kode-akses") goTab("dashboard");
-    else if (screen === "pengamatan-pending") goTab("dashboard");
+    else if (screen === "asesmen-pending") goTab("dashboard");
     else if (screen === "profile") goTab("students");
     else if (screen === "observation") go("profile");
     else if (screen === "talent-map-detail") goTab("talent-map");
@@ -220,7 +220,7 @@ export default function App() {
   const headerTitle = (): [string, string] => {
     switch (screen) {
       case "dashboard": return ["Beranda", `${guru.nama.split(" ")[0]} · ${guru.sekolah}`];
-      case "pengamatan-pending": return ["Pengamatan Perlu Diperiksa", "Daftar siswa yang belum dinilai"];
+      case "asesmen-pending": return ["Asesmen Perlu Diperiksa", "Daftar siswa yang belum dinilai"];
       case "students": return ["Kelas Saya", "Kelola Kelas dengan Mudah"];
       case "talent-map": return ["Peta Bakat", guru.sekolah];
       case "competition": return ["Agenda", "Agenda & Rekomendasi Lomba"];
@@ -259,7 +259,7 @@ export default function App() {
           laporan={laporan}
         />
       );
-      case "pengamatan-pending": return <PengamatanPendingScreen onBack={goBack} onStartObs={startObs} />;
+      case "asesmen-pending": return <PengamatanPendingScreen onBack={goBack} onStartObs={startObs} />;
       case "students": return <StudentsScreen go={go} onAddStudent={() => openAddStudent(false)} onSelect={(id) => { setSelectedStudentId(id); go("profile"); }} guru={guru} />;
       case "profile": return <StudentProfileScreen onBack={goBack} go={go} studentId={selectedStudentId} onStartObs={startObs} onRegenKode={regenKode} namaSekolah={guru.sekolah} laporan={laporan} onKirim={kirimLaporan} />;
       case "kode-akses": return <KodeAksesScreen onBack={goBack} onBuat={buatKode} onHapus={hapusKode} namaSekolah={guru.sekolah} />;
@@ -272,7 +272,7 @@ export default function App() {
               ? {
                 ...s,
                 hasObs: true,
-                talent: s.talent || "Seni Visual",
+                talent: s.talent || "Artistic",
                 talentScore: s.talentScore || 72,
                 stars: s.stars || 4,
                 caraBelajar: s.caraBelajar || "Visual & Kinestetik"
