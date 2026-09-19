@@ -272,7 +272,17 @@ export default function App() {
       case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
       case "competition": return <CompetitionScreen onStartObs={startObs} agendas={agendas} onAddAgenda={(a) => setAgendas([...agendas, a])} />;
-      case "report": return <ReportScreen namaSekolah={guru.sekolah} />;
+      case "report": return (
+        <ReportScreen
+          namaSekolah={guru.sekolah}
+          onProfile={() => {
+            if (list.length > 0) {
+              setSelectedStudentId(list[0].id);
+              go("profile");
+            }
+          }}
+        />
+      );
 
       case "parent-dashboard": return <ParentDashboard go={go} child={child} namaOrtu={namaOrtu} onOpenCode={() => setShowLinkCode(true)} />;
       case "parent-detail": return <ParentDetailScreen onBack={goBack} child={child} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} onBaca={tandaiDibaca} />;
