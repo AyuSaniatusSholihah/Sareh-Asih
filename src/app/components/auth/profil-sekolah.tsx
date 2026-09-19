@@ -10,10 +10,12 @@ export function ProfilSekolahModal({
   profile,
   onBack,
   onNext,
+  onClose,
 }: {
   profile: GuruProfile;
   onBack: () => void;
   onNext: (p: { sekolah: string; kelas: string[]; abk: string[]; kelasAbkMap: Record<string, string> }) => void;
+  onClose?: () => void;
 }) {
   const [sekolah, setSekolah] = useState(profile.sekolah);
   const [kelasAbkMap, setKelasAbkMap] = useState<Record<string, string>>(profile.kelasAbkMap ?? {});
@@ -187,7 +189,9 @@ export function ProfilSekolahModal({
       step={2}
       total={3}
       title="Profil Sekolah & Kelas"
-      desc="Pilih sekolah dan buat kelompok kelas SLB sesuai jenjang & layanan.">
+      desc="Pilih sekolah dan buat kelompok kelas SLB sesuai jenjang & layanan."
+      onClose={onClose}
+    >
       <div className="space-y-4">
 
         {/* ─── Sub-step indicator lingkaran (Sticky / Pinned at Top) ─── */}

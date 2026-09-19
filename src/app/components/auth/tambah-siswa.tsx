@@ -3,7 +3,7 @@ import { Users, Database, Upload, UserPlus, ChevronRight, AlertCircle, Trash2, C
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS } from "../ui-kit";
 import { ModalShell } from "./modal-shell";
 
-export type SiswaImportData = { nama: string; abk: string; ttl: string };
+export type SiswaImportData = { nama: string; abk: string; ttl: string; kelas?: string };
 
 // ─── GURU: POP-UP 3 — Tambah Siswa (Database, Upload, Manual) ──
 export function TambahSiswaPromptModal({
@@ -15,6 +15,7 @@ export function TambahSiswaPromptModal({
   onSaveManual,
   onImportSiswa,
   onDone,
+  onClose,
 }: {
   sekolah: string;
   jumlahKelas: number;
@@ -24,6 +25,7 @@ export function TambahSiswaPromptModal({
   onSaveManual: (s: { name: string; abk: string; kelas: string; age: number; emoji: string }) => void;
   onImportSiswa: (siswa: SiswaImportData[]) => void;
   onDone: () => void;
+  onClose?: () => void;
 }) {
   const [mode, setMode] = useState<"choice" | "upload" | "db-sekolah" | "manual">("choice");
 
@@ -62,14 +64,39 @@ export function TambahSiswaPromptModal({
   };
 
   if (mode === "upload")
-    return <UploadSiswaModal onBack={() => setMode("choice")} onImport={onImportSiswa} />;
+    return (
+      <UploadSiswaModal
+        kelasOptions={kelasOptions}
+        kelasAbkMap={kelasAbkMap}
+        onBack={() => setMode("choice")}
+        onSkip={onDone}
+        onClose={onClose || onDone}
+        onImport={imported => {
+          onImportSiswa(imported);
+          setSavedStudents(prev => [...prev, ...imported.map(s => s.nama)]);
+          setMode("choice");
+        }}
+      />
+    );
   if (mode === "db-sekolah")
-    return <PilihKelasDBModal sekolah={sekolah} onBack={() => setMode("choice")} onImport={onImportSiswa} />;
+    return (
+      <PilihKelasDBModal
+        sekolah={sekolah}
+        onBack={() => setMode("choice")}
+        onSkip={onDone}
+        onClose={onClose || onDone}
+        onImport={imported => {
+          onImportSiswa(imported);
+          setSavedStudents(prev => [...prev, ...imported.map(s => s.nama)]);
+          setMode("choice");
+        }}
+      />
+    );
 
   if (mode === "manual") {
     const canSave = manualNama.trim() !== "";
     return (
-      <ModalShell step={3} total={3} title="Tambah Siswa Manual" desc="Masukkan data siswa satu per satu">
+      <ModalShell step={3} total={3} title="Tambah Siswa Manual" desc="Masukkan data siswa satu per satu" onSkip={onDone} skipLabel="Lewati, Nanti Saja →" onClose={onClose || onDone}>
         <div className="space-y-3.5 mb-4">
           <div>
             <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
@@ -191,12 +218,23 @@ export function TambahSiswaPromptModal({
             Simpan Siswa
           </button>
         </div>
+        <button
+          type="button"
+          onClick={onDone}
+          style={{
+            width: "100%", background: "transparent", border: "none",
+            color: MUTED, fontFamily: IPS, fontSize: 12, fontWeight: 600,
+            cursor: "pointer", marginTop: 10, textAlign: "center"
+          }}
+        >
+          Lewati langkah ini, upload nanti →
+        </button>
       </ModalShell>
     );
   }
 
   return (
-    <ModalShell step={3} total={3} title="Tambah Siswa" desc="Lengkapi informasi siswa Anda">
+    <ModalShell step={3} total={3} title="Tambah Siswa" desc="Lengkapi informasi siswa Anda" onSkip={onDone} skipLabel="Upload Nanti →" onClose={onClose || onDone}>
 
       {/* Banner sukses setelah simpan manual */}
       {savedStudents.length > 0 && (
@@ -352,16 +390,41 @@ export function TambahSiswaPromptModal({
           )}
         </div>
       ) : (
-        onBack && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
           <button
             type="button"
-            onClick={onBack}
-            style={{ width: "100%", color: MUTED, fontFamily: IPS, minHeight: 38, background: "transparent", border: "none", cursor: "pointer" }}
-            className="text-xs font-semibold"
+            onClick={onDone}
+            style={{
+              width: "100%",
+              background: "#fff",
+              color: T,
+              fontFamily: PJS,
+              fontWeight: 800,
+              fontSize: 13,
+              padding: "12px 0",
+              borderRadius: 16,
+              border: `1.5px solid ${T}`,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+              boxShadow: "0 2px 8px rgba(115,139,123,0.12)"
+            }}
           >
-            ← Kembali ke Profil Sekolah
+            <span>Lewati, Upload Nanti →</span>
           </button>
-        )
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              style={{ width: "100%", color: MUTED, fontFamily: IPS, minHeight: 36, background: "transparent", border: "none", cursor: "pointer" }}
+              className="text-xs font-semibold"
+            >
+              ← Kembali ke Profil Sekolah
+            </button>
+          )}
+        </div>
       )}
     </ModalShell>
   );
@@ -370,12 +433,31 @@ export function TambahSiswaPromptModal({
 // ─── UPLOAD SISWA MODAL — CSV parser functional (SRS-F-003) ──────────
 type SiswaCSV = { nama: string; abk: string; ttl: string; valid: boolean };
 
-export function UploadSiswaModal({ onBack, onImport }: { onBack: () => void; onImport: (s: SiswaImportData[]) => void }) {
+export function UploadSiswaModal({
+  kelasOptions = [],
+  kelasAbkMap = {},
+  onBack,
+  onSkip,
+  onClose,
+  onImport,
+}: {
+  kelasOptions?: string[];
+  kelasAbkMap?: Record<string, string>;
+  onBack: () => void;
+  onSkip?: () => void;
+  onClose?: () => void;
+  onImport: (s: SiswaImportData[]) => void;
+}) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState<SiswaCSV[]>([]);
   const [err, setErr] = useState("");
   const [fileName, setFileName] = useState("");
   const [step, setStep] = useState<"upload" | "preview">("upload");
+
+  // Kelas yang dipilih dari kelas-kelas awal
+  const [selectedKelas, setSelectedKelas] = useState<string>(
+    kelasOptions.length === 1 ? kelasOptions[0] : ""
+  );
 
   const parseCSV = (text: string): SiswaCSV[] => {
     const lines = text.trim().split(/\r?\n/);
@@ -389,6 +471,10 @@ export function UploadSiswaModal({ onBack, onImport }: { onBack: () => void; onI
 
   const handleFile = (file: File) => {
     if (!file) return;
+    if (!selectedKelas) {
+      setErr("Silakan pilih salah satu kelas di dropdown atas terlebih dahulu.");
+      return;
+    }
     setFileName(file.name);
     setErr("");
     const ext = file.name.split(".").pop()?.toLowerCase();
@@ -410,28 +496,142 @@ export function UploadSiswaModal({ onBack, onImport }: { onBack: () => void; onI
   const validRows = rows.filter(r => r.valid);
 
   return (
-    <ModalShell step={3} total={3} title="Upload Daftar Siswa" desc="Format: CSV dengan kolom Nama, Jenis Hambatan, TTL">
+    <ModalShell step={3} total={3} title="Upload Daftar Siswa" desc="Pilih kelas tujuan terlebih dahulu, kemudian unggah berkas siswa" onSkip={onSkip} skipLabel="Upload Nanti →" onClose={onClose || onSkip}>
       {step === "upload" ? (
         <>
+          {/* ── STEP 1: PILIH KELAS DARI KELAS AWAL ── */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: TEXT, fontFamily: PJS }}>
+                1. Pilih Kelas Tujuan <span style={{ color: "#B91C1C" }}>*</span>
+              </label>
+              {kelasOptions.length > 1 && (
+                <span style={{ fontSize: 10, color: MUTED, fontFamily: IPS }}>
+                  ({kelasOptions.length} kelas terdaftar)
+                </span>
+              )}
+            </div>
+
+            {kelasOptions.length > 1 ? (
+              <div style={{ position: "relative" }}>
+                <select
+                  value={selectedKelas}
+                  onChange={e => {
+                    setSelectedKelas(e.target.value);
+                    if (err.includes("pilih salah satu kelas")) setErr("");
+                  }}
+                  style={{
+                    width: "100%",
+                    background: selectedKelas ? "#F4F8F5" : CARD,
+                    border: `1.5px solid ${selectedKelas ? T : BDR}`,
+                    borderRadius: 14,
+                    padding: "11px 36px 11px 14px",
+                    fontSize: 13,
+                    color: selectedKelas ? DEEP : MUTED,
+                    fontWeight: selectedKelas ? 700 : 500,
+                    fontFamily: IPS,
+                    outline: "none",
+                    appearance: "none",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                    transition: "all 0.15s"
+                  }}
+                >
+                  <option value="" disabled>-- Pilih salah satu kelas yang didaftarkan --</option>
+                  {kelasOptions.map(k => (
+                    <option key={k} value={k}>
+                      {k} {kelasAbkMap[k] ? `— (${kelasAbkMap[k]})` : ""}
+                    </option>
+                  ))}
+                </select>
+                <div style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", fontSize: 11, color: selectedKelas ? T : MUTED }}>
+                  ▼
+                </div>
+              </div>
+            ) : (
+              <div style={{
+                background: "#F4F8F5",
+                border: `1.5px solid ${T}`,
+                borderRadius: 14,
+                padding: "10px 14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}>
+                <div>
+                  <p style={{ fontSize: 10, color: MUTED, fontFamily: IPS }}>Kelas Tujuan (Otomatis):</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: DEEP, fontFamily: PJS, margin: 0 }}>
+                    {kelasOptions[0] || "VII A"} {kelasAbkMap[kelasOptions[0]] ? `— ${kelasAbkMap[kelasOptions[0]]}` : ""}
+                  </p>
+                </div>
+                <span style={{ fontSize: 10, fontWeight: 700, background: SEC, color: T, padding: "3px 8px", borderRadius: 20 }}>
+                  ✓ Terpilih
+                </span>
+              </div>
+            )}
+
+            {kelasOptions.length > 1 && !selectedKelas && (
+              <p style={{ fontSize: 11, color: "#B91C1C", marginTop: 5, fontFamily: IPS, display: "flex", alignItems: "center", gap: 4 }}>
+                <AlertCircle size={12} /> Silakan pilih kelas tujuan di dropdown sebelum mengunggah file.
+              </p>
+            )}
+          </div>
+
+          {/* ── STEP 2: UPLOAD BERKAS SISWA ── */}
+          <div style={{ marginBottom: 6 }}>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: TEXT, fontFamily: PJS, marginBottom: 6 }}>
+              2. Upload File Berkas Siswa <span style={{ color: "#B91C1C" }}>*</span>
+            </label>
+          </div>
+
           {/* Drop zone */}
           <div
-            onClick={() => fileRef.current?.click()}
+            onClick={() => {
+              if (!selectedKelas) {
+                setErr("Silakan pilih salah satu kelas di dropdown atas terlebih dahulu.");
+                return;
+              }
+              fileRef.current?.click();
+            }}
             onDragOver={e => { e.preventDefault(); }}
-            onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
+            onDrop={e => {
+              e.preventDefault();
+              if (!selectedKelas) {
+                setErr("Silakan pilih salah satu kelas di dropdown atas terlebih dahulu.");
+                return;
+              }
+              const f = e.dataTransfer.files[0];
+              if (f) handleFile(f);
+            }}
             style={{
-              border: `2px dashed ${err ? "#B91C1C" : T}`, borderRadius: 18, padding: "28px 20px",
-              textAlign: "center", cursor: "pointer", background: err ? "#FEF2F2" : SEC,
-              marginBottom: 16
+              border: `2px dashed ${!selectedKelas ? "#D1D5DB" : err ? "#B91C1C" : T}`,
+              borderRadius: 18,
+              padding: "24px 20px",
+              textAlign: "center",
+              cursor: !selectedKelas ? "not-allowed" : "pointer",
+              background: !selectedKelas ? "#F9FAFB" : err ? "#FEF2F2" : SEC,
+              opacity: !selectedKelas ? 0.7 : 1,
+              marginBottom: 16,
+              transition: "all 0.2s ease"
             }}>
-            <div style={{ width: 52, height: 52, borderRadius: 16, background: CARD, margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Upload size={24} style={{ color: err ? "#B91C1C" : T }} />
+            <div style={{ width: 50, height: 50, borderRadius: 16, background: CARD, margin: "0 auto 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Upload size={24} style={{ color: !selectedKelas ? MUTED : err ? "#B91C1C" : T }} />
             </div>
-            <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 14, color: err ? "#B91C1C" : TEXT, marginBottom: 4 }}>
-              {fileName ? fileName : "Ketuk untuk pilih file"}
+            <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 13, color: !selectedKelas ? MUTED : err ? "#B91C1C" : TEXT, marginBottom: 3 }}>
+              {!selectedKelas
+                ? "Pilih kelas di atas untuk membuka upload file"
+                : fileName
+                ? fileName
+                : `Ketuk untuk pilih file siswa Kelas ${selectedKelas}`}
             </p>
-            <p style={{ fontSize: 11, color: MUTED }}>atau seret & lepas di sini</p>
+            <p style={{ fontSize: 11, color: MUTED }}>
+              {!selectedKelas
+                ? "Upload file terkunci sampai kelas dipilih"
+                : "atau seret & lepas berkas di sini"}
+            </p>
           </div>
           <input ref={fileRef} type="file" accept=".csv,.txt" style={{ display: "none" }}
+            disabled={!selectedKelas}
             onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
 
           {err && (
@@ -453,20 +653,36 @@ export function UploadSiswaModal({ onBack, onImport }: { onBack: () => void; onI
             <p style={{ fontSize: 11, color: MUTED, marginTop: 8, fontFamily: IPS }}>💡 Buka Excel → File → Save As → CSV (Comma delimited)</p>
           </div>
 
-          <button onClick={onBack}
-            style={{ width: "100%", background: "transparent", border: `1px solid ${BDR}`, color: MUTED, fontFamily: IPS, minHeight: 44, marginTop: 14, borderRadius: 14, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-            ← Kembali
-          </button>
+          <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+            <button onClick={onBack}
+              style={{ flex: 1, background: "transparent", border: `1px solid ${BDR}`, color: MUTED, fontFamily: IPS, minHeight: 44, borderRadius: 14, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+              ← Kembali
+            </button>
+            {onSkip && (
+              <button
+                type="button"
+                onClick={onSkip}
+                style={{ flex: 1, background: "#F4F8F5", border: `1.5px solid ${T}`, color: T, fontFamily: IPS, minHeight: 44, borderRadius: 14, fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+              >
+                Lewati, Upload Nanti →
+              </button>
+            )}
+          </div>
         </>
       ) : (
         <>
           {/* Preview tabel */}
-          <div style={{ display: "flex", alignItems: "center", justifyBetween: "space-between", marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
             <div>
               <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 14, color: TEXT }}>{fileName}</p>
-              <p style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>
-                {validRows.length} siswa siap diimpor{rows.length !== validRows.length ? ` · ${rows.length - validRows.length} baris tidak valid` : ""}
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                <span style={{ fontSize: 11, background: SEC, color: T, fontWeight: 700, padding: "2px 8px", borderRadius: 12 }}>
+                  Kelas {selectedKelas}
+                </span>
+                <p style={{ fontSize: 11, color: MUTED }}>
+                  {validRows.length} siswa siap diimpor{rows.length !== validRows.length ? ` · ${rows.length - validRows.length} tidak valid` : ""}
+                </p>
+              </div>
             </div>
             <button onClick={() => { setStep("upload"); setRows([]); setFileName(""); setErr(""); }}
               style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: MUTED, background: "transparent", border: "none", cursor: "pointer" }}>
@@ -476,8 +692,8 @@ export function UploadSiswaModal({ onBack, onImport }: { onBack: () => void; onI
 
           <div style={{ border: `1px solid ${BDR}`, borderRadius: 14, overflow: "hidden", marginBottom: 14 }}>
             {/* Header */}
-            <div style={{ display: "grid", gridTemplateColumns: "2fr 2fr 2fr", background: SEC, padding: "8px 12px", gap: 8 }}>
-              {["Nama Lengkap", "Jenis Hambatan", "TTL"].map(h => (
+            <div style={{ display: "grid", gridTemplateColumns: "2.2fr 1.5fr 2.3fr", background: SEC, padding: "8px 12px", gap: 8 }}>
+              {["Nama Lengkap", "Kelas", "Hambatan / ABK"].map(h => (
                 <p key={h} style={{ fontSize: 10, fontWeight: 700, color: DEEP, fontFamily: IPS, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</p>
               ))}
             </div>
@@ -485,7 +701,7 @@ export function UploadSiswaModal({ onBack, onImport }: { onBack: () => void; onI
             <div style={{ maxHeight: 220, overflowY: "auto" }}>
               {rows.map((r, i) => (
                 <div key={i} style={{
-                  display: "grid", gridTemplateColumns: "2fr 2fr 2fr",
+                  display: "grid", gridTemplateColumns: "2.2fr 1.5fr 2.3fr",
                   padding: "9px 12px", gap: 8,
                   borderTop: `1px solid ${BDR}`,
                   background: r.valid ? "transparent" : "#FEF2F2"
@@ -493,8 +709,12 @@ export function UploadSiswaModal({ onBack, onImport }: { onBack: () => void; onI
                   <p style={{ fontSize: 12, color: r.valid ? TEXT : "#B91C1C", fontWeight: r.valid ? 600 : 400, fontFamily: IPS, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {r.nama || "(kosong)"}
                   </p>
-                  <p style={{ fontSize: 12, color: MUTED, fontFamily: IPS, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.abk || "—"}</p>
-                  <p style={{ fontSize: 11, color: MUTED, fontFamily: IPS, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.ttl || "—"}</p>
+                  <p style={{ fontSize: 11, color: DEEP, fontWeight: 600, fontFamily: IPS, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {selectedKelas}
+                  </p>
+                  <p style={{ fontSize: 12, color: MUTED, fontFamily: IPS, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {r.abk || kelasAbkMap[selectedKelas] || "—"}
+                  </p>
                 </div>
               ))}
             </div>
@@ -505,12 +725,43 @@ export function UploadSiswaModal({ onBack, onImport }: { onBack: () => void; onI
               style={{ flex: 1, border: `1.5px solid ${T}`, color: T, fontFamily: IPS, minHeight: 48, borderRadius: 14, fontSize: 13, fontWeight: 700, background: CARD, cursor: "pointer" }}>
               Kembali
             </button>
-            <button onClick={() => onImport(validRows)}
+            <button
+              onClick={() => {
+                const defaultAbk = kelasAbkMap[selectedKelas] || "Autism Spectrum Disorder";
+                const mappedSiswa: SiswaImportData[] = validRows.map(r => ({
+                  nama: r.nama,
+                  abk: r.abk || defaultAbk,
+                  ttl: r.ttl,
+                  kelas: selectedKelas,
+                }));
+                onImport(mappedSiswa);
+              }}
               disabled={validRows.length === 0}
-              style={{ flex: 2, background: validRows.length ? A : "#D1D5DB", color: "#fff", fontFamily: IPS, minHeight: 48, borderRadius: 14, fontSize: 13, fontWeight: 700, border: "none", cursor: validRows.length ? "pointer" : "default" }}>
-              Import {validRows.length} Siswa →
+              style={{
+                flex: 2,
+                background: validRows.length ? A : "#D1D5DB",
+                color: "#fff",
+                fontFamily: IPS,
+                minHeight: 48,
+                borderRadius: 14,
+                fontSize: 13,
+                fontWeight: 700,
+                border: "none",
+                cursor: validRows.length ? "pointer" : "default"
+              }}
+            >
+              Import {validRows.length} Siswa ke {selectedKelas} →
             </button>
           </div>
+          {onSkip && (
+            <button
+              type="button"
+              onClick={onSkip}
+              style={{ width: "100%", background: "transparent", border: "none", color: MUTED, fontFamily: IPS, fontSize: 12, fontWeight: 600, cursor: "pointer", marginTop: 8 }}
+            >
+              Lewati langkah ini, upload nanti →
+            </button>
+          )}
         </>
       )}
     </ModalShell>
@@ -543,7 +794,19 @@ export const MOCK_DB_SEKOLAH: Record<string, { nama: string; abk: string; ttl: s
   ],
 };
 
-export function PilihKelasDBModal({ sekolah, onBack, onImport }: { sekolah: string; onBack: () => void; onImport: (s: SiswaImportData[]) => void }) {
+export function PilihKelasDBModal({
+  sekolah,
+  onBack,
+  onSkip,
+  onClose,
+  onImport,
+}: {
+  sekolah: string;
+  onBack: () => void;
+  onSkip?: () => void;
+  onClose?: () => void;
+  onImport: (s: SiswaImportData[]) => void;
+}) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -553,10 +816,14 @@ export function PilihKelasDBModal({ sekolah, onBack, onImport }: { sekolah: stri
     return n;
   });
 
-  const siswaSelected = [...selected].flatMap(k => MOCK_DB_SEKOLAH[k] || []);
+  const siswaSelected = [...selected].flatMap(k => {
+    const list = MOCK_DB_SEKOLAH[k] || [];
+    const kelasName = k.split(" – ")[0] || k;
+    return list.map(s => ({ ...s, kelas: kelasName }));
+  });
 
   return (
-    <ModalShell step={3} total={3} title="Database Sekolah" desc={`${sekolah} · Pilih kelas yang ingin diimpor`}>
+    <ModalShell step={3} total={3} title="Database Sekolah" desc={`${sekolah} · Pilih kelas yang ingin diimpor`} onSkip={onSkip} skipLabel="Lewati →" onClose={onClose || onSkip}>
       {/* Info banner */}
       <div style={{ background: SEC, border: `1px solid rgba(91,122,104,0.2)`, borderRadius: 14, padding: "10px 12px", display: "flex", gap: 8, marginBottom: 12 }}>
         <Database size={13} style={{ color: T, flexShrink: 0, marginTop: 1 }} />
@@ -565,42 +832,73 @@ export function PilihKelasDBModal({ sekolah, onBack, onImport }: { sekolah: stri
         </p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, marginBottom: 14 }}>
         {Object.entries(MOCK_DB_SEKOLAH).map(([kelas, siswas]) => {
           const isSelected = selected.has(kelas);
           const isExpanded = expanded === kelas;
+          const [namaKelas, jenisAbk] = kelas.includes(" – ") ? kelas.split(" – ") : [kelas, ""];
+
           return (
-            <div key={kelas} style={{ border: `1.5px solid ${isSelected ? T : BDR}`, borderRadius: 16, overflow: "hidden", background: isSelected ? SEC : CARD, transition: "all 0.15s" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", cursor: "pointer" }}
-                onClick={() => toggleKelas(kelas)}>
-                {/* Checkbox */}
-                <div style={{
-                  width: 20, height: 20, borderRadius: 6, border: `2px solid ${isSelected ? T : BDR}`,
-                  background: isSelected ? T : "transparent", flexShrink: 0,
-                  display: "flex", alignItems: "center", justifyContent: "center"
-                }}>
-                  {isSelected && <CheckCircle size={12} style={{ color: "#fff" }} />}
+            <div
+              key={kelas}
+              style={{
+                border: `1.5px solid ${isSelected ? T : BDR}`,
+                borderRadius: 16,
+                padding: "10px",
+                background: isSelected ? SEC : CARD,
+                transition: "all 0.15s",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                minWidth: 0
+              }}
+              onClick={() => toggleKelas(kelas)}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                  {/* Checkbox */}
+                  <div style={{
+                    width: 18, height: 18, borderRadius: 6, border: `2px solid ${isSelected ? T : BDR}`,
+                    background: isSelected ? T : "transparent", flexShrink: 0,
+                    display: "flex", alignItems: "center", justifyContent: "center"
+                  }}>
+                    {isSelected && <CheckCircle size={12} style={{ color: "#fff" }} />}
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: DEEP, background: "rgba(91,122,104,0.12)", padding: "2px 6px", borderRadius: 10 }}>
+                    {siswas.length} siswa
+                  </span>
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: isSelected ? DEEP : TEXT, fontFamily: IPS }}>{kelas}</p>
-                  <p style={{ fontSize: 11, color: MUTED, marginTop: 1 }}>{siswas.length} siswa</p>
-                </div>
-                {/* Expand toggle */}
-                <button onClick={e => { e.stopPropagation(); setExpanded(p => p === kelas ? null : kelas); }}
-                  style={{ background: "transparent", border: "none", cursor: "pointer", padding: "4px", color: MUTED }}>
-                  <ChevronRight size={14} style={{ transform: isExpanded ? "rotate(90deg)" : "none", transition: "transform 0.2s" }} />
+
+                <p style={{ fontSize: 12.5, fontWeight: 700, color: isSelected ? DEEP : TEXT, fontFamily: IPS, lineHeight: 1.2 }}>
+                  {namaKelas}
+                </p>
+                {jenisAbk && (
+                  <p style={{ fontSize: 10.5, color: MUTED, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {jenisAbk}
+                  </p>
+                )}
+              </div>
+
+              {/* Expand toggle */}
+              <div style={{ marginTop: 8, paddingTop: 6, borderTop: `1px solid ${BDR}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={e => { e.stopPropagation(); setExpanded(p => p === kelas ? null : kelas); }}
+                  style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0, color: MUTED, fontSize: 10, fontWeight: 600, display: "flex", alignItems: "center", gap: 2 }}
+                >
+                  <span>{isExpanded ? "Tutup" : "Lihat Siswa"}</span>
+                  <ChevronRight size={11} style={{ transform: isExpanded ? "rotate(90deg)" : "none", transition: "transform 0.2s" }} />
                 </button>
               </div>
+
               {/* Expanded: preview siswa */}
               {isExpanded && (
-                <div style={{ borderTop: `1px solid ${BDR}`, padding: "8px 14px 10px" }}>
+                <div style={{ marginTop: 6, paddingTop: 6, borderTop: `1px solid ${BDR}` }} onClick={e => e.stopPropagation()}>
                   {siswas.map(s => (
-                    <div key={s.nama} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: `1px solid ${BDR}` }}>
-                      <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, fontFamily: IPS }}>{s.nama}</p>
-                      <div style={{ textAlign: "right" }}>
-                        <p style={{ fontSize: 11, color: T, fontWeight: 600 }}>{s.abk}</p>
-                        <p style={{ fontSize: 10, color: MUTED }}>{s.ttl}</p>
-                      </div>
+                    <div key={s.nama} style={{ padding: "3px 0", borderBottom: `1px solid rgba(91,122,104,0.1)` }}>
+                      <p style={{ fontSize: 11, fontWeight: 600, color: TEXT, fontFamily: IPS, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.nama}</p>
+                      <p style={{ fontSize: 9.5, color: T, fontWeight: 600 }}>{s.abk}</p>
                     </div>
                   ))}
                 </div>
@@ -630,6 +928,15 @@ export function PilihKelasDBModal({ sekolah, onBack, onImport }: { sekolah: stri
           Import {siswaSelected.length > 0 ? `${siswaSelected.length} Siswa` : "Siswa"} →
         </button>
       </div>
+      {onSkip && (
+        <button
+          type="button"
+          onClick={onSkip}
+          style={{ width: "100%", background: "transparent", border: "none", color: MUTED, fontFamily: IPS, fontSize: 12, fontWeight: 600, cursor: "pointer", marginTop: 8 }}
+        >
+          Lewati langkah ini, upload nanti →
+        </button>
+      )}
     </ModalShell>
   );
 }

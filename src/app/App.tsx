@@ -156,7 +156,7 @@ export default function App() {
       }
       : s));
     setSelectedStudentId(id);
-    goTab("talent-map");
+    go("talent-map-detail");
   };
 
   const openAddStudent = (firstTime = false) => { setAddFirstTime(firstTime); setShowAddStudent(true); };
@@ -218,7 +218,7 @@ export default function App() {
       case "students": return ["Kelas Saya", "Kelola Kelas dengan Mudah"];
       case "talent-map": return ["Peta Bakat", guru.sekolah];
       case "competition": return ["Agenda", "Agenda & Rekomendasi Lomba"];
-      case "report": return ["Laporan", "Untuk orang tua"];
+      case "report": return ["Laporan", "Rekap data siswa & pemetaan bakat"];
       case "parent-dashboard": return ["Beranda", child ? `Orang Tua · ${child.name}` : "Orang Tua · belum terhubung"];
       case "parent-detail": return ["Perkembangan Anak", child ? child.name : "Belum terhubung"];
       case "parent-calendar": return ["Kalender", child ? `Umum + agenda ${guru.sekolah}` : "Kegiatan terbuka untuk umum"];
@@ -257,7 +257,25 @@ export default function App() {
       case "students": return <StudentsScreen go={go} onAddStudent={() => openAddStudent(false)} onSelect={(id) => { setSelectedStudentId(id); go("profile"); }} guru={guru} />;
       case "profile": return <StudentProfileScreen onBack={goBack} go={go} studentId={selectedStudentId} onStartObs={startObs} onRegenKode={regenKode} namaSekolah={guru.sekolah} laporan={laporan} onKirim={kirimLaporan} />;
       case "kode-akses": return <KodeAksesScreen onBack={goBack} onBuat={buatKode} onHapus={hapusKode} namaSekolah={guru.sekolah} />;
-      case "observation": return <ObservationScreen onBack={goBack} onDone={finishObs} studentId={selectedStudentId} />;
+      case "observation": return (
+        <ObservationScreen
+          onBack={goBack}
+          onDone={finishObs}
+          onSave={(id) => {
+            setList(prev => prev.map(s => s.id === id
+              ? {
+                ...s,
+                hasObs: true,
+                talent: s.talent || "Seni Visual",
+                talentScore: s.talentScore || 72,
+                stars: s.stars || 4,
+                caraBelajar: s.caraBelajar || "Visual & Kinestetik"
+              }
+              : s));
+          }}
+          studentId={selectedStudentId}
+        />
+      );
       case "talent-map": return <TalentMapScreen go={go} onStartObs={startObs} onSelect={setSelectedStudentId} />;
       case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
@@ -319,13 +337,24 @@ export default function App() {
               </div>
 
               {screen !== "landing" && (
-                <div style={{ background: BG, paddingTop: 36, flexShrink: 0 }}>
+                <div style={{ background: "#FFFFFF", paddingTop: 36, flexShrink: 0 }}>
                   <StatusBar />
                 </div>
               )}
               {/* Content */}
               <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: BG, position: "relative", fontSize: `${fontSize}rem` }}>
-                {showNav && screen !== "dashboard" && screen !== "students" && <GlobalHeader title={title} sub={sub} />}
+                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && (
+                  <GlobalHeader
+                    title={title}
+                    sub={sub}
+                    onProfile={() => {
+                      if (list.length > 0) {
+                        setSelectedStudentId(list[0].id);
+                        go("profile");
+                      }
+                    }}
+                  />
+                )}
                 {renderScreen()}
 
                 {showSearch && <SearchOverlay onClose={() => setShowSearch(false)} />}
@@ -342,11 +371,19 @@ export default function App() {
 
                 {/* Pop-up setup guru bertahap */}
                 {guruSetup === "akun" && (
-                  <AkunGuruModal profile={guru} onNext={(p) => { setGuru(g => ({ ...g, ...p })); setGuruSetup("sekolah"); }} />
+                  <AkunGuruModal
+                    profile={guru}
+                    onClose={() => setGuruSetup(null)}
+                    onNext={(p) => { setGuru(g => ({ ...g, ...p })); setGuruSetup("sekolah"); }}
+                  />
                 )}
                 {guruSetup === "sekolah" && (
-                  <ProfilSekolahModal profile={guru} onBack={() => setGuruSetup("akun")}
-                    onNext={(p) => { setGuru(g => ({ ...g, ...p })); setGuruSetup("siswa"); }} />
+                  <ProfilSekolahModal
+                    profile={guru}
+                    onClose={() => setGuruSetup(null)}
+                    onBack={() => setGuruSetup("akun")}
+                    onNext={(p) => { setGuru(g => ({ ...g, ...p })); setGuruSetup("siswa"); }}
+                  />
                 )}
                 {guruSetup === "siswa" && (
                   <TambahSiswaPromptModal
@@ -354,6 +391,7 @@ export default function App() {
                     jumlahKelas={guru.kelas.length}
                     kelasAbkMap={guru.kelasAbkMap}
                     teacher={guru.nama}
+                    onClose={() => setGuruSetup(null)}
                     onBack={() => setGuruSetup("sekolah")}
                     onSaveManual={(s) => {
                       addStudent({
@@ -378,10 +416,11 @@ export default function App() {
                       const defaultKelas = kelasKeys[0] || "VII A";
                       importedSiswa.forEach((s, idx) => {
                         const emoji = ["👦", "👧", "🧑"][idx % 3];
+                        const targetKelas = s.kelas || defaultKelas;
                         addStudent({
                           name: s.nama,
-                          abk: s.abk || "Belum Ditentukan",
-                          kelas: defaultKelas,
+                          abk: s.abk || guru.kelasAbkMap[targetKelas] || "Belum Ditentukan",
+                          kelas: targetKelas,
                           age: 0,
                           emoji,
                           talent: "", talentScore: 0, stars: 0,
@@ -394,7 +433,6 @@ export default function App() {
                           rentang: "", minat: "", terapi: "",
                         });
                       });
-                      finishGuruSetup();
                     }}
                     onDone={finishGuruSetup}
                   />

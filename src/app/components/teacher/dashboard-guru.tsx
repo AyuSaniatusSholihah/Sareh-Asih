@@ -121,37 +121,39 @@ export function DashboardGuru({
   ];
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: "#F7F9F8" }}>
+    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       {/* ── Header ── */}
-      <div style={{ background: CARD, paddingTop: 12 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "8px 20px 10px" }}>
-          <div>
-            <p style={{ fontSize: 13, color: MUTED, fontWeight: 500 }}>Selamat pagi,</p>
-            <h1 style={{ fontFamily: PJS, fontSize: 24, fontWeight: 800, color: TEXT, lineHeight: 1.15, display: "flex", alignItems: "center", gap: 6 }}>
-              {firstName} <span>👋</span>
+      <div style={{ background: "#FFFFFF", padding: "14px 20px 10px", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+              Beranda
             </h1>
+            <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "4px 0 0", fontWeight: 500 }}>
+              Selamat pagi, {firstName} 👋 · {guru.sekolah}
+            </p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 4 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
             <button onClick={openSearch}
-              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.12)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform"
               title="Cari">
-              <Search size={16} style={{ color: TEXT }} />
+              <Search size={17} style={{ color: "#1B2E24" }} />
             </button>
-            <button style={{ width: 38, height: 38, background: "rgba(139,176,152,0.12)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
-              title="Notifikasi">
-              <Bell size={16} style={{ color: TEXT }} />
-              {pendingObs.length > 0 && (
-                <span style={{ position: "absolute", top: 8, right: 9, width: 7, height: 7, background: A, borderRadius: "50%", border: "2px solid #fff" }} />
-              )}
+            <button onClick={() => go("students")}
+              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform"
+              title="Profil Siswa">
+              <User size={17} style={{ color: "#1B2E24" }} />
             </button>
             <button onClick={openSettings}
-              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.12)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform"
               title="Pengaturan">
-              <Settings size={16} style={{ color: TEXT }} />
+              <Settings size={17} style={{ color: "#1B2E24" }} />
             </button>
           </div>
         </div>
-        <p style={{ fontSize: 12, color: MUTED, padding: "0 20px 14px" }}>Pantau perkembangan siswa dengan mudah.</p>
       </div>
 
       <div style={{ padding: "14px 16px 90px", display: "flex", flexDirection: "column", gap: 16 }}>

@@ -123,11 +123,15 @@ function bagianSiswa(s:Student, index:number, total:number) {
   </div>`;
 }
 
-export function exportLaporanPemetaan(list:Student[], namaSekolah:string) {
+export function buildLaporanHTML(list:Student[], namaSekolah:string) {
   const satu = list.length === 1;
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Laporan Pemetaan Bakat</title>
 <style>
+  @media print {
+    body { margin: 16mm 14mm !important; }
+    @page { margin: 10mm; }
+  }
   body{font-family:'Calibri','Segoe UI',sans-serif;color:#2E3E35;line-height:1.6;font-size:11pt;margin:32px}
   h1{font-size:19pt;margin:0 0 4px;color:#2E3E35}
   h2{font-size:14pt;margin:26px 0 2px;padding-bottom:5px;border-bottom:2px solid #8BB098;color:#2E3E35}
@@ -143,7 +147,7 @@ export function exportLaporanPemetaan(list:Student[], namaSekolah:string) {
   td.mid{text-align:center}
   ul{margin:4px 0 10px 18px;padding:0}
   li{margin-bottom:3px}
-  .ttd{margin-top:22px;font-size:10pt}
+  .ttd{margin-top:22px;font-size:10pt;page-break-inside:avoid}
   .garis{height:44px}
   .ttd p:last-child{border-top:1px solid #2E3E35;display:inline-block;padding-top:3px;min-width:190px}
   .catatan{background:#F3F8F4;border-left:3px solid #8BB098;padding:9px 12px;font-size:9.5pt;color:#5B7A68;margin-top:26px}
@@ -155,9 +159,49 @@ export function exportLaporanPemetaan(list:Student[], namaSekolah:string) {
   </div>
   ${satu ? "" : `<p class="meta">Daftar siswa: ${list.map(s=>esc(s.name)).join(", ")}</p>`}
   ${list.map((s,i)=>bagianSiswa(s,i,list.length)).join("")}
-  <p class="catatan">Laporan ini dihasilkan TalentaABK dari data pengamatan dan asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen tenaga ahli.</p>
+  <p class="catatan">Laporan ini dihasilkan Sareh Asih dari data pengamatan dan asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen tenaga ahli.</p>
 </body></html>`;
+}
 
+export function printReportPDF(list: Student[], namaSekolah: string) {
+  const html = buildLaporanHTML(list, namaSekolah);
+  const iframe = document.createElement("iframe");
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "none";
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentWindow?.document || iframe.contentDocument;
+  if (doc) {
+    doc.open();
+    doc.write(html);
+    doc.close();
+    setTimeout(() => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } catch {
+        window.print();
+      }
+      setTimeout(() => {
+        try {
+          document.body.removeChild(iframe);
+        } catch {
+          // ignore
+        }
+      }, 3000);
+    }, 400);
+  } else {
+    window.print();
+  }
+}
+
+export function exportLaporanPemetaan(list:Student[], namaSekolah:string) {
+  const satu = list.length === 1;
+  const html = buildLaporanHTML(list, namaSekolah);
   const nama = satu
     ? `laporan-pemetaan-${list[0].name.toLowerCase().replace(/\s+/g,"-")}-${stempel()}.doc`
     : `laporan-pemetaan-${list.length}-siswa-${stempel()}.doc`;

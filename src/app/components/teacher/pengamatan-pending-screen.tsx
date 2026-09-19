@@ -1,7 +1,7 @@
 import React from "react";
 import { Clock, CheckCircle, Home, ChevronRight } from "lucide-react";
 import {
-  A, T, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar, PBtn,
+  A, T, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar, PBtn, BG,
 } from "../ui-kit";
 import { useStudents } from "../data";
 
@@ -23,7 +23,7 @@ export function PengamatanPendingScreen({
   );
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: "#F7F9F8" }}>
+    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       <TBar
         title="Pengamatan Perlu Diperiksa"
         sub={`${pending.length} siswa belum dinilai`}

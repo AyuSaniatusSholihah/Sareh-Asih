@@ -3,7 +3,7 @@ import {
   Plus, Calendar, Info, CheckSquare, Lock, ClipboardList,
 } from "lucide-react";
 import {
-  A, T, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, SBadge,
+  A, T, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, SBadge, BG,
 } from "../ui-kit";
 import {
   useStudents, LOMBA, studentCompDetail, type Student,
@@ -33,18 +33,26 @@ export function CompetitionScreen({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS }}>
-      <div style={{ background: CARD }} className="px-4 pt-2 pb-3">
-        <p className="font-bold text-xl" style={{ fontFamily: PJS, color: TEXT }}>Agenda & Lomba</p>
-      </div>
-
+    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       <div className="px-4 pt-4 pb-6 space-y-4">
         {/* Main Tabs */}
-        <div className="flex rounded-2xl p-1" style={{ background: "#EDE9E3" }}>
+        <div className="flex rounded-2xl p-1.5" style={{ background: "#E5ECE7" }}>
           {(["agenda", "lomba"] as const).map(m => (
             <button key={m} onClick={() => setMainTab(m)}
-              style={{ background: mainTab === m ? CARD : "transparent", color: mainTab === m ? TEXT : MUTED, fontFamily: IPS, minHeight: 40 }}
-              className="flex-1 rounded-xl text-xs font-bold transition-all capitalize">
+              style={{
+                background: mainTab === m ? "#FFFFFF" : "transparent",
+                color: mainTab === m ? "#1B2E24" : "#4D6B58",
+                fontFamily: mainTab === m ? PJS : IPS,
+                fontWeight: mainTab === m ? 800 : 700,
+                fontSize: 13,
+                minHeight: 42,
+                borderRadius: 14,
+                border: "none",
+                cursor: "pointer",
+                boxShadow: mainTab === m ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
+                transition: "all 0.15s ease",
+              }}
+              className="flex-1 capitalize">
               {m === "agenda" ? "Agenda Sekolah" : "Rekomendasi Lomba"}
             </button>
           ))}
