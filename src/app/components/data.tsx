@@ -26,12 +26,12 @@ export interface Student {
 
 // ─── Seed data ───────────────────────────────────────────────────────
 export const seedStudents: Student[] = [
-  { id:1, name:"Rafi Pratama",   abk:"Tunanetra (Low Vision)",   kelas:"VII A",  age:13, emoji:"👦", talent:"Artistic",       talentScore:90, stars:5, teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
+  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", talent:"Artistic",       talentScore:90, stars:5, teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
   { id:2, name:"Nisa Aulia",     abk:"Tunarungu",                kelas:"VIII B", age:14, emoji:"👧", talent:"Realistic",      talentScore:84, stars:4, teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA" },
   { id:3, name:"Arga Saputra",   abk:"Tunadaksa",                kelas:"VII A",  age:12, emoji:"👦", talent:"Investigative",  talentScore:76, stars:4, teacher:"Pak Budi", hasObs:true,  comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
-  { id:4, name:"Dina Maharani",  abk:"Tunanetra (Total)",        kelas:"IX C",   age:15, emoji:"👧", talent:"Social",         talentScore:71, stars:4, teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
-  { id:5, name:"Budi Santoso",   abk:"Tunadaksa (Cerebral Palsy)",kelas:"VII A",  age:13, emoji:"👦", talent:"Enterprising",   talentScore:82, stars:4, teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
-  { id:6, name:"Maya Dewi",      abk:"Tunarungu (Hard of Hearing)",kelas:"VIII B", age:14, emoji:"👧", talent:"Conventional",   talentScore:68, stars:3, teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
+  { id:4, name:"Dina Maharani",  abk:"Tunanetra",        kelas:"IX C",   age:15, emoji:"👧", talent:"Social",         talentScore:71, stars:4, teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
+  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",kelas:"VII A",  age:13, emoji:"👦", talent:"Enterprising",   talentScore:82, stars:4, teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
+  { id:6, name:"Maya Dewi",      abk:"Tunarungu",kelas:"VIII B", age:14, emoji:"👧", talent:"Conventional",   talentScore:68, stars:3, teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
   { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",                kelas:"IX A",   age:15, emoji:"👦", talent:"Realistic",      talentScore:79, stars:4, teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI" },
   { id:8, name:"Sari Indah",     abk:"Tunarungu",                kelas:"VIII A", age:13, emoji:"👧", talent:"Artistic",       talentScore:73, stars:4, teacher:"Bu Rina",  hasObs:true,  comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
 ];
@@ -67,8 +67,8 @@ export const useAddStudent = () => useContext(StudentsCtx).add;
 
 // ─── Pilihan form ────────────────────────────────────────────────────
 export const ABK_OPTIONS = [
-  "Tunanetra (Low Vision)","Tunarungu","Tunadaksa",
-  "Tunanetra (Total)","Tunarungu (Hard of Hearing)","Tunanetra","Tunalaras",
+  "Tunanetra","Tunarungu","Tunadaksa",
+  "Tunanetra","Tunarungu","Tunanetra","Tunalaras",
 ];
 export const KELAS_OPTIONS = [
   "VII A","VII B","VIII A","VIII B","IX A","IX B","IX C",

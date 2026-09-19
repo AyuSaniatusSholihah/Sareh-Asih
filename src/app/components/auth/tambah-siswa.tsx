@@ -36,13 +36,13 @@ export function TambahSiswaPromptModal({
   const kelasOptions = Object.keys(kelasAbkMap).length ? Object.keys(kelasAbkMap) : ["VII A", "VII B", "VIII A"];
   const [manualNama, setManualNama] = useState("");
   const [manualKelas, setManualKelas] = useState(kelasOptions[0] || "VII A");
-  const [manualAbk, setManualAbk] = useState(kelasAbkMap[kelasOptions[0]] || "Tunanetra (Low Vision)");
+  const [manualAbk, setManualAbk] = useState(kelasAbkMap[kelasOptions[0]] || "Tunanetra");
   const [manualEmoji, setManualEmoji] = useState("👦");
 
   const resetManualForm = () => {
     setManualNama("");
     setManualKelas(kelasOptions[0] || "VII A");
-    setManualAbk(kelasAbkMap[kelasOptions[0]] || "Tunanetra (Low Vision)");
+    setManualAbk(kelasAbkMap[kelasOptions[0]] || "Tunanetra");
     setManualEmoji("👦");
   };
 
@@ -50,10 +50,10 @@ export function TambahSiswaPromptModal({
     e.preventDefault();
     const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(
       "Nama Lengkap,Jenis Hambatan,TTL\n" +
-      "Rafi Pratama,Tunanetra (Low Vision),Bandung 12 Maret 2014\n" +
+      "Rafi Pratama,Tunanetra,Bandung 12 Maret 2014\n" +
       "Nisa Aulia,Tunarungu,Jakarta 05 Juli 2013\n" +
       "Arga Saputra,Tunadaksa,Depok 20 Nov 2015\n" +
-      "Siti Nurhaliza,Tunanetra (Total),Surakarta 18 Agu 2014\n"
+      "Siti Nurhaliza,Tunanetra,Surakarta 18 Agu 2014\n"
     );
     const link = document.createElement("a");
     link.setAttribute("href", csvContent);
@@ -169,7 +169,7 @@ export function TambahSiswaPromptModal({
             <input
               value={manualAbk}
               onChange={e => setManualAbk(e.target.value)}
-              placeholder="Contoh: Tunanetra (Low Vision)"
+              placeholder="Contoh: Tunanetra"
               style={{
                 width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 14,
                 padding: "11px 14px", fontSize: 13, color: TEXT, outline: "none",
@@ -198,7 +198,7 @@ export function TambahSiswaPromptModal({
               if (canSave) {
                 onSaveManual({
                   name: manualNama.trim(),
-                  abk: manualAbk.trim() || "Tunanetra (Low Vision)",
+                  abk: manualAbk.trim() || "Tunanetra",
                   kelas: manualKelas,
                   age: 13,
                   emoji: manualEmoji,
@@ -727,7 +727,7 @@ export function UploadSiswaModal({
             </button>
             <button
               onClick={() => {
-                const defaultAbk = kelasAbkMap[selectedKelas] || "Tunanetra (Low Vision)";
+                const defaultAbk = kelasAbkMap[selectedKelas] || "Tunanetra";
                 const mappedSiswa: SiswaImportData[] = validRows.map(r => ({
                   nama: r.nama,
                   abk: r.abk || defaultAbk,
@@ -785,8 +785,8 @@ export const MOCK_DB_SEKOLAH: Record<string, { nama: string; abk: string; ttl: s
     { nama: "Toni Hermawan", abk: "Tunadaksa", ttl: "Tangerang, 17 Aug 2013" },
   ],
   "VIII B – Tunanetra": [
-    { nama: "Budi Santoso", abk: "Tunanetra (Total)", ttl: "Bandung, 29 Jan 2014" },
-    { nama: "Siti Nurhaliza", abk: "Tunarungu (Hard of Hearing)", ttl: "Jakarta, 11 Okt 2013" },
+    { nama: "Budi Santoso", abk: "Tunanetra", ttl: "Bandung, 29 Jan 2014" },
+    { nama: "Siti Nurhaliza", abk: "Tunarungu", ttl: "Jakarta, 11 Okt 2013" },
   ],
   "IX A – Kesulitan Belajar": [
     { nama: "Kevin Alvaro", abk: "Disleksia", ttl: "Depok, 08 Des 2012" },

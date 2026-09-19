@@ -5,7 +5,7 @@ import {
 } from "../ui-kit";
 import { useStudents } from "../data";
 
-export function PengamatanPendingScreen({
+export function AsesmenPendingScreen({
   onBack,
   onStartObs,
 }: {

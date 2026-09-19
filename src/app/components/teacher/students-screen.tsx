@@ -45,7 +45,7 @@ export function getKelasJenjang(k: KelasCardData): "SDLB" | "SMPLB" | "SMALB" {
 }
 
 export const DEFAULT_KELAS_CARDS: KelasCardData[] = [
-  { id: "viii-a", nama: "Kelas VIII A", abk: "Tunanetra (Low Vision)", img: classGroupImg, count: 8, jenjang: "SMPLB" },
+  { id: "viii-a", nama: "Kelas VIII A", abk: "Tunanetra", img: classGroupImg, count: 8, jenjang: "SMPLB" },
   { id: "vi-a", nama: "Kelas VI A", abk: "Tunarungu", img: classGroupImg, count: 10, jenjang: "SDLB" },
   { id: "vii", nama: "Kelas VII", abk: "Tunalaras", img: classDrawingImg, count: 10, jenjang: "SMPLB" },
   { id: "ix-a", nama: "IX A", abk: "Tunadaksa", img: classActivityImg, count: 10, jenjang: "SMPLB" },
@@ -72,7 +72,7 @@ export function StudentsScreen({
   const [newNama, setNewNama] = useState("");
   const [selectedJenjang, setSelectedJenjang] = useState<string>("Semua");
   const [selectedNewJenjang, setSelectedNewJenjang] = useState<"SDLB" | "SMPLB" | "SMALB">("SMPLB");
-  const [selectedAbk, setSelectedAbk] = useState("Tunanetra (Low Vision)");
+  const [selectedAbk, setSelectedAbk] = useState("Tunanetra");
   const [customAbk, setCustomAbk] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [justAddedKelasNama, setJustAddedKelasNama] = useState("");
@@ -123,11 +123,11 @@ export function StudentsScreen({
   // ─── DEDICATED VIEW: TAMBAH KELAS (Exact Match to Mockup) ─────────────
   if (isAddingKelas) {
     const abkOptions = [
-      "Tunanetra (Low Vision)",
+      "Tunanetra",
       "Tunarungu",
       "Tunadaksa",
-      "Tunanetra (Total)",
-      "Tunarungu (Hard of Hearing)",
+      "Tunanetra",
+      "Tunarungu",
       "Tunanetra",
       "Tunalaras",
       "Lainnya"

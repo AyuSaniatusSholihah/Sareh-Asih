@@ -28,7 +28,7 @@ import {
 
 // Teacher components
 import {
-  DashboardGuru, PengamatanPendingScreen, StudentsScreen,
+  DashboardGuru, AsesmenPendingScreen, StudentsScreen,
   StudentProfileScreen, TalentMapScreen, TalentMapDetailScreen,
   LearningRecScreen, CompetitionScreen, ReportScreen,
 } from "./components/teacher";
@@ -259,7 +259,7 @@ export default function App() {
           laporan={laporan}
         />
       );
-      case "asesmen-pending": return <PengamatanPendingScreen onBack={goBack} onStartObs={startObs} />;
+      case "asesmen-pending": return <AsesmenPendingScreen onBack={goBack} onStartObs={startObs} />;
       case "students": return <StudentsScreen go={go} onAddStudent={() => openAddStudent(false)} onSelect={(id) => { setSelectedStudentId(id); go("profile"); }} guru={guru} />;
       case "profile": return <StudentProfileScreen onBack={goBack} go={go} studentId={selectedStudentId} onStartObs={startObs} onRegenKode={regenKode} namaSekolah={guru.sekolah} laporan={laporan} onKirim={kirimLaporan} />;
       case "kode-akses": return <KodeAksesScreen onBack={goBack} onBuat={buatKode} onHapus={hapusKode} namaSekolah={guru.sekolah} />;
