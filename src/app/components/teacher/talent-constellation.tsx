@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { List, Eye } from "lucide-react";
-import { PJS } from "../ui-kit";
+import { List, Eye, ChevronRight } from "lucide-react";
+import { PJS, CARD, BDR } from "../ui-kit";
 
 // ─── Types ──────────────────────────────────────────────────────────
 export interface ConstellationStudent {
@@ -18,6 +18,20 @@ interface Star {
   y: number;
   r: number;
   color: string;
+}
+
+// ─── Constellation Network Icon SVG ─────────────────────────────────
+function ConstellationIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7 6L11 11M11 11L17 8M11 11L9 17M11 11L18 15" stroke="#142B20" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="7" cy="6" r="2.5" fill="#142B20"/>
+      <circle cx="17" cy="8" r="2.5" fill="#142B20"/>
+      <circle cx="9" cy="17" r="2.5" fill="#142B20"/>
+      <circle cx="18" cy="15" r="2.5" fill="#142B20"/>
+      <circle cx="11" cy="11" r="3.2" fill="#142B20"/>
+    </svg>
+  );
 }
 
 // ─── Seeded PRNG (mulberry32) ───────────────────────────────────────
@@ -47,18 +61,17 @@ const MIN_DIST = 34;
 const R_MIN = 4;
 const R_MAX = 9;
 
-const CARD_BG = "#2E3E35";
 const LABEL_CLR = "#EAF3DE";
 const SUB_CLR = "#A9C4B5";
 const TERRACOTTA_LIGHT = "#E8B4A0";
 
 const DEFAULT_COLORS: Record<string, string> = {
-  "Seni Visual": "#E59A88",
+  "Seni Visual": "#E06D63",
+  "Musik Perkusi": "#F5B74F",
+  "Desain Digital": "#38A3F1",
+  "Tari": "#C490D1",
   "Desain Spasial": "#8BB098",
   "Motorik Halus": "#E6C27A",
-  "Musik Perkusi": "#7BAFD4",
-  "Tari": "#C490D1",
-  "Desain Digital": "#A8C4B0",
   "Bahasa": "#B8A9D4",
 };
 
@@ -211,12 +224,17 @@ function StarTooltip({ star }: { star: Star }) {
 function Skeleton() {
   return (
     <div
-      style={{ background: CARD_BG, borderRadius: 14, padding: 12 }}
+      style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 24, padding: 16 }}
       className="animate-pulse"
     >
-      <div style={{ height: 13, width: 140, background: "rgba(255,255,255,0.08)", borderRadius: 4, marginBottom: 6 }} />
-      <div style={{ height: 11, width: 180, background: "rgba(255,255,255,0.05)", borderRadius: 4, marginBottom: 12 }} />
-      <div style={{ height: 100, background: "rgba(255,255,255,0.04)", borderRadius: 10 }} />
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        <div style={{ width: 44, height: 44, borderRadius: 16, background: "#D5E7DC" }} />
+        <div>
+          <div style={{ height: 14, width: 140, background: "#E2ECE5", borderRadius: 4, marginBottom: 6 }} />
+          <div style={{ height: 11, width: 180, background: "#E2ECE5", borderRadius: 4 }} />
+        </div>
+      </div>
+      <div style={{ height: 140, background: "#182C22", borderRadius: 18 }} />
     </div>
   );
 }
@@ -224,17 +242,32 @@ function Skeleton() {
 // ─── Empty state ────────────────────────────────────────────────────
 function EmptyState() {
   return (
-    <div style={{ background: CARD_BG, borderRadius: 14, padding: 20, textAlign: "center" }}>
-      <svg width={60} height={60} viewBox="0 0 60 60" style={{ margin: "0 auto 10px", opacity: 0.3 }}>
-        <circle cx={20} cy={20} r={3} fill="#A9C4B5" />
-        <circle cx={40} cy={15} r={2} fill="#A9C4B5" />
-        <circle cx={30} cy={38} r={2.5} fill="#A9C4B5" />
-        <circle cx={15} cy={42} r={1.5} fill="#A9C4B5" />
-        <circle cx={48} cy={40} r={2} fill="#A9C4B5" />
-      </svg>
-      <p style={{ fontFamily: PJS, fontSize: 12, color: SUB_CLR, margin: 0, lineHeight: 1.5 }}>
-        Belum ada pemetaan bakat. Mulai dari pengamatan pertama.
-      </p>
+    <div style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 24, padding: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        <div style={{ width: 44, height: 44, borderRadius: 16, background: "#D5E7DC", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <ConstellationIcon />
+        </div>
+        <div>
+          <h3 style={{ fontFamily: PJS, fontSize: 15.5, fontWeight: 800, color: "#142B20", margin: 0 }}>
+            Konstelasi bakat kelas
+          </h3>
+          <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 600, color: "#2E6B48", margin: "2px 0 0" }}>
+            Warna: bakat dominan. Ukuran: kemajuan.
+          </p>
+        </div>
+      </div>
+      <div style={{ background: "#182C22", borderRadius: 18, padding: 24, textAlign: "center" }}>
+        <svg width={60} height={60} viewBox="0 0 60 60" style={{ margin: "0 auto 10px", opacity: 0.3 }}>
+          <circle cx={20} cy={20} r={3} fill="#A9C4B5" />
+          <circle cx={40} cy={15} r={2} fill="#A9C4B5" />
+          <circle cx={30} cy={38} r={2.5} fill="#A9C4B5" />
+          <circle cx={15} cy={42} r={1.5} fill="#A9C4B5" />
+          <circle cx={48} cy={40} r={2} fill="#A9C4B5" />
+        </svg>
+        <p style={{ fontFamily: PJS, fontSize: 12, color: SUB_CLR, margin: 0, lineHeight: 1.5 }}>
+          Belum ada pemetaan bakat. Mulai dari pengamatan pertama.
+        </p>
+      </div>
     </div>
   );
 }
@@ -324,42 +357,101 @@ export function TalentConstellation({
   const noteFew = students.length > 0 && students.length < 3;
 
   return (
-    <div style={{ background: CARD_BG, borderRadius: 14, padding: 12, overflow: "hidden" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-        <div>
-          <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 500, color: LABEL_CLR, margin: 0 }}>
-            Konstelasi bakat kelas
-          </p>
-          <p style={{ fontFamily: PJS, fontSize: 11, color: SUB_CLR, margin: "1px 0 0" }}>
-            Warna: bakat dominan. Ukuran: kemajuan.
-          </p>
+    <div
+      style={{
+        background: CARD,
+        border: `1.5px solid ${BDR}`,
+        borderRadius: 24,
+        padding: "16px 14px 14px",
+        boxShadow: "0 2px 12px rgba(91,122,104,0.06)",
+        overflow: "hidden",
+      }}
+    >
+      {/* ── Header Cerah sesuai acuan gambar & Kode Akses Orang Tua ── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 16,
+              background: "#D5E7DC",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <ConstellationIcon />
+          </div>
+
+          <div style={{ minWidth: 0 }}>
+            <h3
+              style={{
+                fontFamily: PJS,
+                fontSize: 16,
+                fontWeight: 800,
+                color: "#142B20",
+                lineHeight: 1.2,
+                margin: 0,
+              }}
+              className="truncate"
+            >
+              Konstelasi bakat kelas
+            </h3>
+            <p
+              style={{
+                fontFamily: PJS,
+                fontSize: 11.5,
+                fontWeight: 600,
+                color: "#2E6B48",
+                margin: "2px 0 0",
+                lineHeight: 1.3,
+              }}
+            >
+              Warna: bakat dominan. Ukuran: kemajuan.
+            </p>
+          </div>
         </div>
+
         <button
           onClick={() => setView(view === "constellation" ? "list" : "constellation")}
           style={{
-            background: "rgba(255,255,255,0.08)",
+            background: "#8EAFA0",
             border: "none",
-            borderRadius: 6,
-            padding: "4px 8px",
+            borderRadius: 9999,
+            padding: "6px 12px",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             gap: 4,
-            color: SUB_CLR,
-            fontSize: 10,
+            color: "#FFFFFF",
+            fontSize: 11.5,
             fontFamily: PJS,
-            fontWeight: 600,
+            fontWeight: 700,
+            boxShadow: "0 2px 6px rgba(91,122,104,0.25)",
+            flexShrink: 0,
           }}
+          className="active:scale-95 transition-transform"
           title={view === "constellation" ? "Lihat sebagai daftar" : "Lihat peta bintang"}
           aria-label={view === "constellation" ? "Alihkan ke tampilan daftar" : "Alihkan ke tampilan konstelasi"}
         >
-          {view === "constellation" ? <List size={12} /> : <Eye size={12} />}
-          {view === "constellation" ? "Daftar" : "Peta"}
+          {view === "constellation" ? <List size={13} strokeWidth={2.5} /> : <Eye size={13} strokeWidth={2.5} />}
+          <span>{view === "constellation" ? "Daftar" : "Peta"}</span>
+          <ChevronRight size={13} strokeWidth={2.5} />
         </button>
       </div>
 
-      <AnimatePresence mode="wait">
+      {/* ── Dark Starfield Canvas Inside ── */}
+      <div
+        style={{
+          background: "#182C22",
+          borderRadius: 18,
+          padding: "10px 10px 12px",
+          overflow: "hidden",
+        }}
+      >
+        <AnimatePresence mode="wait">
         {view === "constellation" ? (
           <motion.div
             key="constellation"
@@ -554,21 +646,22 @@ export function TalentConstellation({
         )}
       </AnimatePresence>
 
-      {/* Legend */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
-        {Array.from(domains.entries()).map(([domain, color]) => (
-          <span
-            key={domain}
-            style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: SUB_CLR, fontFamily: PJS, fontWeight: 600 }}
-          >
-            <span style={{ width: 7, height: 7, borderRadius: "50%", background: color, flexShrink: 0 }} />
-            {domain}
-          </span>
-        ))}
+        {/* Legend */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 12, flexWrap: "wrap", paddingLeft: 4 }}>
+          {Array.from(domains.entries()).map(([domain, color]) => (
+            <span
+              key={domain}
+              style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "#D1E3D8", fontFamily: PJS, fontWeight: 700 }}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
+              {domain}
+            </span>
+          ))}
+        </div>
+        <p style={{ fontSize: 10, color: "rgba(169,196,181,0.65)", marginTop: 6, paddingLeft: 4, fontFamily: PJS }}>
+          Cincin putus-putus: perlu perhatian
+        </p>
       </div>
-      <p style={{ fontSize: 9.5, color: "rgba(169,196,181,0.6)", marginTop: 4, fontFamily: PJS }}>
-        Cincin putus-putus: perlu perhatian
-      </p>
     </div>
   );
 }
