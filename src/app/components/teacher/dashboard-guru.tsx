@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import {
   Percent, Star, Calendar, FileText, Search, Bell, Settings,
-  ChevronRight, Activity, ClipboardCheck,
+  ChevronRight, Activity, ClipboardCheck, User,
 } from "lucide-react";
 import {
-  A, CARD, TEXT, MUTED, BDR, DEEP, PJS, IPS, DMM, useUI,
+  A, BG, CARD, TEXT, MUTED, BDR, DEEP, PJS, IPS, DMM, useUI,
 } from "../ui-kit";
 import {
   useStudents, type Screen, type LaporanKirim,
