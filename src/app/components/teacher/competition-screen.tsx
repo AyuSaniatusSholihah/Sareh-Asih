@@ -518,16 +518,6 @@ export function CompetitionScreen({
                                     💡 {m.alasan}
                                   </p>
                                 </div>
-                                {m.status !== "Didaftarkan" && (
-                                  <button
-                                    type="button"
-                                    style={{ background: "#D27D6B", color: "#fff", fontFamily: IPS, minHeight: 28 }}
-                                    className="px-2 py-1 rounded-lg text-[10.5px] font-semibold flex items-center gap-1 shrink-0 mt-0.5 active:scale-95"
-                                    onClick={() => alert(`Siswa ${m.student.name} berhasil didaftarkan ke ${lomba.k}!`)}
-                                  >
-                                    <CheckSquare size={11} /> Daftarkan
-                                  </button>
-                                )}
                               </div>
                             ))}
                           </div>
