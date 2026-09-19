@@ -335,7 +335,7 @@ export default function App() {
               )}
               {/* Content */}
               <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: BG, position: "relative", fontSize: `${fontSize}rem` }}>
-                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && (
+                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && (
                   <GlobalHeader
                     title={title}
                     sub={sub}

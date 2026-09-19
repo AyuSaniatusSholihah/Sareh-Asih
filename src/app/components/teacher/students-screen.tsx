@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   Search, User, Settings, Plus, ArrowLeft, ChevronRight, CheckCircle, UserPlus, Check,
-  Calendar, Users, SlidersHorizontal, X, Clock, Sparkles, BookOpen,
+  Calendar, Users, SlidersHorizontal, X, Clock, BookOpen,
 } from "lucide-react";
 import {
   A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, useUI, TBar,
@@ -67,7 +67,6 @@ export function StudentsScreen({
   const { openSearch, openSettings } = useUI();
   const [kelasList, setKelasList] = useState<KelasCardData[]>(DEFAULT_KELAS_CARDS);
   const [selectedClassId, setSelectedClassId] = useState<string | null>("viii-a");
-  const [classTab, setClassTab] = useState<"daftar" | "kelompok">("daftar");
   const [isAddingKelas, setIsAddingKelas] = useState(false);
   const [schoolName, setSchoolName] = useState(guru?.sekolah || "SLB N Surakarta");
   const [newNama, setNewNama] = useState("");
@@ -98,10 +97,9 @@ export function StudentsScreen({
   };
 
   const handleSaveKelas = () => {
-    if (!newNama.trim()) return;
     const abkFinal = selectedAbk === "Lainnya" && customAbk.trim() ? customAbk.trim() : selectedAbk;
     const imgs = [classDrawingImg, classGroupImg, classActivityImg];
-    const namaAdded = newNama.trim();
+    const namaAdded = newNama.trim() || `Kelas ${selectedNewJenjang}`;
     const newK: KelasCardData = {
       id: Date.now().toString(),
       nama: namaAdded,
@@ -191,29 +189,7 @@ export function StudentsScreen({
               />
             </div>
 
-            {/* Field 2: Kelompok Kelas/Ekskul/Mapel * */}
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: "block", fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: "#1B2E24", marginBottom: 8 }}>
-                Kelompok Kelas/Ekskul/Mapel <span style={{ color: "#EF4444" }}>*</span>
-              </label>
-              <input
-                value={newNama}
-                onChange={e => setNewNama(e.target.value)}
-                placeholder="Nama kelas · contoh: VII A"
-                style={{
-                  width: "100%",
-                  border: "1.5px solid #E2E8F0",
-                  borderRadius: 14,
-                  padding: "13px 16px",
-                  fontSize: 13.5,
-                  fontFamily: IPS,
-                  color: "#1B2E24",
-                  background: "#FFFFFF",
-                  outline: "none",
-                  boxSizing: "border-box"
-                }}
-              />
-            </div>
+
 
             {/* Field 3: Jenjang Pendidikan * */}
             <div style={{ marginBottom: 18 }}>
@@ -313,27 +289,26 @@ export function StudentsScreen({
             {/* Submit Button */}
             <button
               type="button"
-              disabled={!newNama.trim()}
               onClick={handleSaveKelas}
               style={{
                 width: "100%",
                 padding: "14px",
                 borderRadius: 14,
-                background: newNama.trim() ? "#5B7A68" : "#CBD5E1",
+                background: "#5B7A68",
                 color: "#FFFFFF",
                 border: "none",
                 fontFamily: PJS,
                 fontSize: 14,
                 fontWeight: 800,
-                cursor: newNama.trim() ? "pointer" : "not-allowed",
+                cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 6,
                 transition: "all 0.2s ease",
-                boxShadow: newNama.trim() ? "0 4px 14px rgba(91,122,104,0.25)" : "none"
+                boxShadow: "0 4px 14px rgba(91,122,104,0.25)"
               }}
-              className={newNama.trim() ? "active:scale-[0.98]" : ""}
+              className="active:scale-[0.98]"
             >
               <Plus size={16} strokeWidth={2.8} /> Tambah Kelas
             </button>
@@ -347,7 +322,7 @@ export function StudentsScreen({
               marginBottom: 0,
               lineHeight: 1.4
             }}>
-              Isi nama kelas + tekan jenis ABK, lalu tekan <strong style={{ color: "#334155" }}>Tambah Kelas</strong>
+              Pilih jenjang + jenis ABK, lalu tekan <strong style={{ color: "#334155" }}>Tambah Kelas</strong>
             </p>
           </div>
         </div>
@@ -507,44 +482,10 @@ export function StudentsScreen({
       return { bg: "#F3E8FF", color: "#7E22CE" };
     };
 
-    // Learning groups for the "Kelompok Belajar" tab
-    const learningGroups = [
-      {
-        name: "Kelompok Visual",
-        icon: "👁️",
-        desc: "Belajar optimal dengan diagram, kartu visual, dan demonstrasi nyata",
-        members: effectiveStudents.filter(s => (s.caraBelajar || "").includes("Visual")),
-        color: "#2D543E",
-        tagBg: "rgba(45,84,62,0.10)",
-        tagText: "#2D543E",
-        strategi: ["Gunakan kartu langkah visual konkret", "Beri contoh gambar sebelum instruksi tugas"],
-      },
-      {
-        name: "Kelompok Kinestetik",
-        icon: "✋",
-        desc: "Belajar optimal melalui manipulasi objek, eksperimen fisik, dan bergerak",
-        members: effectiveStudents.filter(s => (s.caraBelajar || "").includes("Kinestetik")),
-        color: "#D26E5B",
-        tagBg: "rgba(210,110,91,0.10)",
-        tagText: "#D26E5B",
-        strategi: ["Sediakan media sensorik 3D", "Beri jeda gerak berkala setiap 15 menit"],
-      },
-      {
-        name: "Kelompok Auditori & Musik",
-        icon: "🎵",
-        desc: "Belajar optimal dengan ritme suara, instruksi lisan terstruktur, dan lagu",
-        members: effectiveStudents.filter(s => (s.caraBelajar || "").includes("Auditori")),
-        color: "#2563EB",
-        tagBg: "rgba(37,99,235,0.10)",
-        tagText: "#2563EB",
-        strategi: ["Instruksi lisan singkat dan berulang", "Gunakan pengiring irama untuk transisi belajar"],
-      },
-    ];
-
     return (
       <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, background: BG }}>
         {/* ── Header (Exact Match to Mockup) ── */}
-        <div style={{ background: "#FFFFFF", padding: "14px 20px 0", flexShrink: 0, borderBottom: "1px solid rgba(91,122,104,0.10)" }}>
+        <div style={{ background: "#FFFFFF", padding: "14px 20px 14px", flexShrink: 0, borderBottom: "1px solid rgba(91,122,104,0.10)" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
               {/* Subtle back button to return to Kelas Saya */}
@@ -609,55 +550,12 @@ export function StudentsScreen({
               </button>
             </div>
           </div>
-
-          {/* ── Tabs (Daftar Siswa / Kelompok Belajar) ── */}
-          <div style={{ display: "flex", marginTop: 14 }}>
-            <button
-              onClick={() => setClassTab("daftar")}
-              style={{
-                flex: 1,
-                padding: "10px 0 12px",
-                background: "transparent",
-                border: "none",
-                borderBottom: classTab === "daftar" ? "2.5px solid #2D543E" : "2.5px solid transparent",
-                fontFamily: PJS,
-                fontWeight: classTab === "daftar" ? 700 : 600,
-                fontSize: 14,
-                color: classTab === "daftar" ? "#2D543E" : "#5A6E63",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              Daftar Siswa
-            </button>
-            <button
-              onClick={() => setClassTab("kelompok")}
-              style={{
-                flex: 1,
-                padding: "10px 0 12px",
-                background: "transparent",
-                border: "none",
-                borderBottom: classTab === "kelompok" ? "2.5px solid #2D543E" : "2.5px solid transparent",
-                fontFamily: PJS,
-                fontWeight: classTab === "kelompok" ? 700 : 600,
-                fontSize: 14,
-                color: classTab === "kelompok" ? "#2D543E" : "#5A6E63",
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              Kelompok Belajar
-            </button>
-          </div>
         </div>
 
-        {/* ── Tab: DAFTAR SISWA ── */}
-        {classTab === "daftar" && (
-          <>
-            {/* Search Bar */}
-            <div style={{ padding: "14px 16px 8px" }}>
-              <div style={{ position: "relative" }}>
-                <Search size={18} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94A3B8" }} />
+        {/* Search Bar */}
+        <div style={{ padding: "14px 16px 8px" }}>
+          <div style={{ position: "relative" }}>
+            <Search size={18} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94A3B8" }} />
                 <input
                   value={q}
                   onChange={e => setQ(e.target.value)}
@@ -876,114 +774,7 @@ export function StudentsScreen({
               <Plus size={16} strokeWidth={2.5} />
               <span>Tambah Siswa</span>
             </button>
-          </>
-        )}
 
-        {/* ── Tab: KELOMPOK BELAJAR ── */}
-        {classTab === "kelompok" && (
-          <div style={{ padding: "14px 16px 96px", display: "flex", flexDirection: "column", gap: 14 }}>
-            <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "14px 16px", border: "1px solid rgba(91,122,104,0.12)", boxShadow: "0 2px 8px rgba(91,122,104,0.04)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <Sparkles size={16} style={{ color: "#2D543E" }} />
-                <h2 style={{ fontFamily: PJS, fontSize: 14.5, fontWeight: 800, color: "#1B2E24", margin: 0 }}>
-                  Pengelompokan Belajar Adaptif
-                </h2>
-              </div>
-              <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", lineHeight: 1.5, margin: 0 }}>
-                Kelompok otomatis disusun berdasarkan gaya belajar dominan siswa di {selectedClass.nama} untuk mendukung diferensiasi instruksi.
-              </p>
-            </div>
-
-            {learningGroups.map(grp => (
-              <div
-                key={grp.name}
-                style={{
-                  background: "#FFFFFF",
-                  borderRadius: 20,
-                  padding: "16px",
-                  border: "1px solid rgba(91,122,104,0.12)",
-                  boxShadow: "0 2px 10px rgba(91,122,104,0.05)",
-                }}
-              >
-                {/* Group Header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 20 }}>{grp.icon}</span>
-                    <div>
-                      <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: "#1B2E24", margin: 0 }}>
-                        {grp.name}
-                      </h3>
-                      <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#64748B", margin: 0 }}>
-                        {grp.desc}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    style={{
-                      background: grp.tagBg,
-                      color: grp.tagText,
-                      fontSize: 11,
-                      fontWeight: 700,
-                      fontFamily: PJS,
-                      padding: "4px 10px",
-                      borderRadius: 12,
-                      whiteSpace: "nowrap"
-                    }}
-                  >
-                    {grp.members.length} Siswa
-                  </span>
-                </div>
-
-                {/* Members Avatars and Names */}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-                  {grp.members.map(m => (
-                    <div
-                      key={m.id}
-                      onClick={() => onSelect(m.id)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        background: "rgba(139,176,152,0.10)",
-                        padding: "5px 10px 5px 6px",
-                        borderRadius: 20,
-                        cursor: "pointer",
-                        border: "1px solid rgba(91,122,104,0.14)"
-                      }}
-                      className="active:scale-95 transition-transform"
-                    >
-                      <img
-                        src={STUDENT_AVATARS[m.id] || `https://api.dicebear.com/7.x/bottts/svg?seed=${m.name}`}
-                        alt={m.name}
-                        style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover" }}
-                      />
-                      <span style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: "#1B2E24" }}>
-                        {m.name.split(" ")[0]}
-                      </span>
-                    </div>
-                  ))}
-                  {grp.members.length === 0 && (
-                    <p style={{ fontFamily: IPS, fontSize: 12, color: "#94A3B8", fontStyle: "italic", margin: "4px 0" }}>
-                      Belum ada siswa di kelompok ini
-                    </p>
-                  )}
-                </div>
-
-                {/* Recommended Strategies */}
-                <div style={{ background: "#F8FAFC", borderRadius: 14, padding: "10px 12px", border: "1px solid #EDF2F7" }}>
-                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 700, color: "#475569", margin: "0 0 6px" }}>
-                    Strategi Utama:
-                  </p>
-                  <ul style={{ margin: 0, paddingLeft: 16, fontSize: 11.5, color: "#64748B", lineHeight: 1.5 }}>
-                    {grp.strategi.map((s, idx) => (
-                      <li key={idx}>{s}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     );
   }
