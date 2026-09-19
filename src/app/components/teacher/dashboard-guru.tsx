@@ -1,35 +1,81 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Percent, Star, Calendar, FileText, Search, Bell, Settings,
-  ChevronRight, Users, UserPlus, User,
+  ChevronRight, Activity, ClipboardCheck, User,
 } from "lucide-react";
 import {
-  A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, useUI, PBtn,
+  A, BG, CARD, TEXT, MUTED, BDR, DEEP, PJS, IPS, DMM, useUI,
 } from "../ui-kit";
-import { useStudents, type Screen } from "../data";
+import {
+  useStudents, type Screen, type LaporanKirim,
+} from "../data";
 import { type GuruProfile } from "../auth";
+import { KodeAksesCard } from "../kode-manager";
+import { TalentConstellation, type ConstellationStudent } from "./talent-constellation";
 
 export function DashboardGuru({
   go,
   onStartObs,
   guru,
   onAddStudent,
+  laporan = [],
 }: {
   go: (s: Screen) => void;
   onStartObs: (id: number) => void;
   guru: GuruProfile;
   onAddStudent: () => void;
+  laporan: LaporanKirim[];
 }) {
   const students = useStudents();
   const { openSearch, openSettings } = useUI();
   const pendingObs = students.filter(s => !s.hasObs);
   const firstName = guru.nama.split(" ")[0];
-  const sudahDiamati = students.length - pendingObs.length;
-  const pctDiamati = students.length ? Math.round((sudahDiamati / students.length) * 100) : 0;
-  const rataBakat = students.length
-    ? Math.round(students.reduce((a, s) => a + (s.talentScore || 0), 0) / students.length)
-    : 0;
-  const donutC = 2 * Math.PI * 34;
+
+  // ── Data untuk TalentConstellation ──
+  const constellationStudents: ConstellationStudent[] = useMemo(
+    () =>
+      students
+        .filter(s => !!s.talent)
+        .map(s => ({
+          id: String(s.id),
+          name: s.name,
+          domain: s.talent,
+          progress: s.talentScore || 0,
+          needsAttention: !s.hasObs,
+        })),
+    [students],
+  );
+
+  // ── Aktivitas terbaru (feed guru: pengamatan + laporan terkirim) ──
+  const aktivitas = [
+    ...pendingObs.slice(0, 1).map(s => ({
+      id: `p${s.id}`,
+      I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: A }} />,
+      bg: "rgba(210,125,107,0.12)",
+      judul: "Pengamatan belum tuntas",
+      ket: `${s.name.split(" ")[0]} · ${s.talent}`,
+      waktu: "Perlu aksi", tint: A,
+    })),
+    ...students.filter(s => s.hasObs).slice(0, 2).map((s, i) => ({
+      id: `o${s.id}`,
+      I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: "#059669" }} />,
+      bg: "#ECFDF5",
+      judul: "Pengamatan selesai",
+      ket: `${s.name.split(" ")[0]} · ${s.talent}`,
+      waktu: ["Baru saja", "Hari ini"][i] ?? "Hari ini", tint: "#059669",
+    })),
+    ...laporan.slice().reverse().slice(0, 3).map(l => {
+      const s = students.find(x => x.id === l.studentId);
+      return {
+        id: `l${l.id}`,
+        I: <FileText size={16} strokeWidth={2.3} style={{ color: DEEP }} />,
+        bg: "rgba(91,122,104,0.12)",
+        judul: "Laporan dikirim ke orang tua",
+        ket: `${s?.name.split(" ")[0] ?? "Siswa"} · ${l.judul}`,
+        waktu: l.dikirimPada, tint: DEEP,
+      };
+    }),
+  ].slice(0, 5);
 
   const quickActions = [
     {
@@ -73,14 +119,6 @@ export function DashboardGuru({
       onClick: () => go("report"),
     },
   ];
-
-  // Group students by kelas
-  const kelasList = Object.entries(
-    students.reduce((acc, s) => {
-      (acc[s.kelas] ||= []).push(s);
-      return acc;
-    }, {} as Record<string, typeof students>)
-  );
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
@@ -234,81 +272,36 @@ export function DashboardGuru({
           </div>
         </div>
 
-        {/* ── Ikhtisar Perkembangan Siswa ── */}
+        {/* ── Sorotan Bakat (Konstelasi) ── */}
+        <TalentConstellation
+          students={constellationStudents}
+          onSelectStudent={() => go("talent-map")}
+        />
+
+        {/* ── Kartu kode akses orang tua (dipakai ulang dari KodeAksesCard) ── */}
+        {students.length > 0 && <KodeAksesCard onOpen={() => go("kode-akses")} />}
+
+        {/* ── Aktivitas Terbaru ── */}
         <div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT }}>Ikhtisar Perkembangan</p>
-            <button onClick={() => go("students")} style={{ fontSize: 12, fontWeight: 700, color: DEEP, background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 3 }}>
-              Lihat semua <ChevronRight size={12} strokeWidth={2.2} />
-            </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+            <Activity size={16} style={{ color: DEEP }} />
+            <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT }}>Aktivitas Terbaru</p>
           </div>
-
-          {students.length === 0 ? (
-            <div style={{ background: CARD, border: `1.5px dashed ${BDR}`, borderRadius: 22, padding: 24, textAlign: "center" }}>
-              <div style={{ width: 52, height: 52, background: SEC, borderRadius: 16, margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Users size={24} style={{ color: DEEP }} />
-              </div>
-              <p style={{ fontWeight: 700, fontSize: 14, fontFamily: PJS, color: TEXT, marginBottom: 6 }}>Belum ada siswa</p>
-              <p style={{ fontSize: 12, color: MUTED, lineHeight: 1.6, marginBottom: 16 }}>Tambahkan siswa untuk mulai pengamatan dan pemetaan bakat.</p>
-              <PBtn full label="Tambah Siswa" icon={<UserPlus size={15} />} onClick={onAddStudent} />
-            </div>
-          ) : (
-            <>
-              <div style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 22, padding: 16, boxShadow: "0 2px 10px rgba(91,122,104,0.08)", display: "flex", alignItems: "center", gap: 16 }}>
-                <div style={{ position: "relative", width: 84, height: 84, flexShrink: 0 }}>
-                  <svg width={84} height={84} viewBox="0 0 84 84">
-                    <circle cx={42} cy={42} r={34} fill="none" stroke="#EDE9E3" strokeWidth={9} />
-                    <circle cx={42} cy={42} r={34} fill="none" stroke="#059669" strokeWidth={9} strokeLinecap="round"
-                      strokeDasharray={`${(pctDiamati / 100) * donutC} ${donutC}`} transform="rotate(-90 42 42)" />
-                  </svg>
-                  <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                    <p style={{ fontFamily: DMM, fontWeight: 800, fontSize: 17, color: TEXT, lineHeight: 1, margin: 0 }}>{pctDiamati}%</p>
-                    <p style={{ fontSize: 9, color: MUTED, fontWeight: 700, marginTop: 2 }}>diamati</p>
-                  </div>
+          <div style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 22, padding: "4px 14px", boxShadow: "0 2px 10px rgba(91,122,104,0.08)" }}>
+            {aktivitas.map((a, i) => (
+              <div key={a.id}
+                style={{ display: "flex", alignItems: "center", gap: 11, padding: "11px 0", borderTop: i === 0 ? "none" : `1px solid ${BDR}` }}>
+                <div style={{ width: 38, height: 38, borderRadius: 13, background: a.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {a.I}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0 }}>{sudahDiamati} dari {students.length} siswa sudah diamati</p>
-                  <p style={{ fontSize: 11, color: MUTED, marginTop: 2, lineHeight: 1.4 }}>Rata-rata skor bakat <strong style={{ color: DEEP }}>{rataBakat}/100</strong></p>
-                  <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
-                    {[
-                      { l: "Total", v: students.length, c: TEXT, b: BG },
-                      { l: "Sudah", v: sudahDiamati, c: "#059669", b: "#ECFDF5" },
-                      { l: "Belum", v: pendingObs.length, c: A, b: "rgba(210,125,107,0.12)" },
-                    ].map((s) => (
-                      <span key={s.l} style={{ flex: 1, textAlign: "center", background: s.b, border: `1.5px solid ${s.c}30`, borderRadius: 12, padding: "7px 4px" }}>
-                        <p style={{ fontFamily: DMM, fontWeight: 800, fontSize: 14, color: s.c, lineHeight: 1, margin: 0 }}>{s.v}</p>
-                        <p style={{ fontSize: 9, color: MUTED, fontWeight: 600, marginTop: 2 }}>{s.l}</p>
-                      </span>
-                    ))}
-                  </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 12.5, color: TEXT, margin: 0, lineHeight: 1.25 }}>{a.judul}</p>
+                  <p style={{ fontSize: 10.5, color: MUTED, margin: "2px 0 0", lineHeight: 1.35, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.ket}</p>
                 </div>
+                <span style={{ fontSize: 9.5, color: a.tint, fontWeight: 800, fontFamily: DMM, flexShrink: 0 }}>{a.waktu}</span>
               </div>
-
-              {/* Progress per kelas */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
-                {kelasList.map(([kelas, siswaList]) => {
-                  const sudah = siswaList.filter(s => s.hasObs).length;
-                  const pr = siswaList.length ? Math.round((sudah / siswaList.length) * 100) : 0;
-                  return (
-                    <div key={kelas} style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 16, padding: "11px 13px", boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 15 }}>🏫</span>
-                          <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 13, color: TEXT, margin: 0 }}>{kelas}</p>
-                        </div>
-                        <span style={{ fontFamily: DMM, fontWeight: 800, fontSize: 11, color: pr === 100 ? "#059669" : pr > 0 ? DEEP : MUTED }}>
-                          {sudah}/{siswaList.length} · {pr}%
-                        </span>
-                      </div>
-                      <div style={{ height: 7, borderRadius: 99, background: "#EDE9E3" }}>
-                        <div style={{ height: "100%", borderRadius: 99, background: pr === 100 ? "#10B981" : "#8BB098", width: `${pr}%`, transition: "width 0.4s" }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
+            ))}
+          </div>
         </div>
       </div>
     </div>
