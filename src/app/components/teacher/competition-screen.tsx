@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Plus, Calendar, Info, CheckSquare, Lock, ClipboardList,
+  Plus, Calendar, CheckSquare,
 } from "lucide-react";
 import {
   A, T, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, SBadge, BG,
@@ -21,7 +21,6 @@ export function CompetitionScreen({
   const students = useStudents();
   const withObs = students.filter(s => s.hasObs);
   const [mainTab, setMainTab] = useState<"agenda" | "lomba">("agenda");
-  const [viewMode, setViewMode] = useState<"lomba" | "siswa">("lomba");
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState({ type: "sekolah", title: "", date: "", desc: "" });
 
@@ -88,28 +87,7 @@ export function CompetitionScreen({
 
         {mainTab === "lomba" && (
           <div className="space-y-4">
-            <div style={{ background: DEEP, borderRadius: 18, color: "#FFFFFF", boxShadow: "0 4px 14px rgba(91,122,104,0.25)" }} className="p-3.5 flex items-start gap-2.5">
-              <Info size={16} style={{ color: "#D4E8DA", flexShrink: 0, marginTop: 2 }} />
-              <p className="text-xs leading-relaxed" style={{ color: "#FFFFFF" }}>Hanya 3 lomba resmi. Pendaftaran manual oleh sekolah — klik <strong style={{ color: "#D4E8DA" }}>"Daftarkan"</strong> untuk ubah status.</p>
-            </div>
-
-            <div className="flex rounded-2xl p-1" style={{ background: "#EDE9E3" }}>
-              {(["lomba", "siswa"] as const).map(m => (
-                <button key={m} onClick={() => setViewMode(m)}
-                  style={{
-                    background: viewMode === m ? DEEP : "transparent",
-                    color: viewMode === m ? "#fff" : MUTED,
-                    fontFamily: PJS,
-                    fontWeight: viewMode === m ? 800 : 600,
-                    minHeight: 36
-                  }}
-                  className="flex-1 rounded-lg text-xs transition-all capitalize">
-                  {m === "lomba" ? "Per Lomba" : "Per Siswa"}
-                </button>
-              ))}
-            </div>
-
-            {viewMode === "lomba" && LOMBA.map(lomba => {
+            {LOMBA.map(lomba => {
               const matched = studentCompDetail[lomba.k] ?? [];
               const matchedStudents = matched
                 .map(m => ({ ...m, student: students.find(s => s.id === m.id) }))
@@ -152,72 +130,6 @@ export function CompetitionScreen({
                 </div>
               );
             })}
-
-            {viewMode === "siswa" && (
-              <div className="space-y-3">
-                {withObs.length === 0 && (
-                  <div style={{ background: CARD, border: `1.5px solid ${BDR}` }} className="rounded-2xl p-6 text-center">
-                    <Lock size={28} style={{ color: MUTED, margin: "0 auto 8px" }} />
-                    <p className="text-sm font-semibold" style={{ color: MUTED }}>Belum ada siswa yang memiliki hasil pengamatan.</p>
-                  </div>
-                )}
-                {withObs.map(s => (
-                  <div key={s.id} style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 20, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }} className="overflow-hidden">
-                    <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: `1px solid ${BDR}` }}>
-                      <span className="text-xl">{s.emoji}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>{s.name}</p>
-                        <p className="text-xs" style={{ color: MUTED }}>{s.abk}</p>
-                      </div>
-                      <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: SEC, color: T }}>{s.comps.length} lomba</span>
-                    </div>
-                    {s.comps.length === 0
-                      ? <p className="px-4 py-3 text-xs" style={{ color: MUTED }}>Belum ada rekomendasi lomba untuk siswa ini.</p>
-                      : s.comps.map((c, i) => {
-                        const detail = studentCompDetail[c]?.find(d => d.id === s.id);
-                        return (
-                          <div key={c} className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: i < s.comps.length - 1 ? `1px solid ${BDR}` : "none" }}>
-                            <div>
-                              <p className="font-semibold text-sm" style={{ color: TEXT }}>{c}</p>
-                              <p className="text-xs" style={{ color: MUTED }}>Cabang: {detail?.cabang ?? "—"} · {detail?.match ?? "—"}% cocok</p>
-                            </div>
-                            <SBadge s={detail?.status ?? "Direkomendasikan"} />
-                          </div>
-                        );
-                      })
-                    }
-                  </div>
-                ))}
-
-                {students.filter(s => !s.hasObs).map(s => (
-                  <div key={s.id} style={{ background: CARD, border: `1.5px dashed rgba(91,122,104,0.40)`, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }} className="rounded-2xl px-4 py-3 flex items-center gap-3">
-                    <span className="text-xl opacity-40">{s.emoji}</span>
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm" style={{ color: MUTED }}>{s.name}</p>
-                      <p className="text-xs" style={{ color: MUTED }}>Rekomendasi tersedia setelah pengamatan selesai.</p>
-                    </div>
-                    <button onClick={() => onStartObs(s.id)}
-                      style={{
-                        background: A,
-                        color: "#fff",
-                        fontFamily: PJS,
-                        fontWeight: 700,
-                        fontSize: 12,
-                        minHeight: 36,
-                        padding: "0 12px",
-                        borderRadius: 12,
-                        border: "none",
-                        flexShrink: 0,
-                        boxShadow: "0 3px 10px rgba(210,125,107,0.38)",
-                        cursor: "pointer"
-                      }}
-                      className="flex items-center gap-1.5 active:scale-95 transition-all">
-                      <ClipboardList size={13} /> Pengamatan
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         )}
       </div>
