@@ -470,51 +470,68 @@ export function CompetitionScreen({
                       >
                         <p
                           style={{
-                            fontSize: 11.5,
-                            fontWeight: 700,
-                            color: "#2E3E35",
+                            fontSize: 13,
+                            fontWeight: 800,
+                            color: "#1B2E24",
                             fontFamily: PJS,
-                            marginBottom: 8,
+                            marginBottom: 10,
                           }}
                         >
                           Siswa yang Direkomendasikan:
                         </p>
 
                         {matchedStudents.length === 0 ? (
-                          <p className="text-xs" style={{ color: MUTED }}>
+                          <p className="text-sm" style={{ color: MUTED }}>
                             Belum ada siswa yang cocok dengan kriteria lomba ini.
                           </p>
                         ) : (
-                          <div className="space-y-2.5">
+                          <div className="space-y-3">
                             {matchedStudents.map((m) => (
                               <div
                                 key={m.id}
                                 style={{
                                   background: "#FFFFFF",
-                                  border: "1px solid #E2ECE5",
-                                  borderRadius: 14,
-                                  padding: "10px 12px",
+                                  border: "1.5px solid #E2ECE5",
+                                  borderRadius: 16,
+                                  padding: "12px 14px",
                                 }}
-                                className="flex items-start gap-2.5"
+                                className="flex items-start gap-3 shadow-xs"
                               >
-                                <span className="text-xl leading-none mt-0.5">{m.student.emoji}</span>
+                                <span className="text-2xl leading-none mt-0.5">{m.student.emoji}</span>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center justify-between">
-                                    <p className="font-bold text-xs truncate" style={{ color: TEXT, fontFamily: PJS }}>
+                                    <p
+                                      style={{
+                                        color: TEXT,
+                                        fontFamily: PJS,
+                                        fontSize: 14.5,
+                                        fontWeight: 800,
+                                      }}
+                                      className="truncate"
+                                    >
                                       {m.student.name}
                                     </p>
-                                    <SBadge s={m.status} />
                                   </div>
-                                  <p className="text-[10.5px] mt-0.5" style={{ color: MUTED }}>
-                                    Cabang: <span className="font-semibold text-[#1F2937]">{m.cabang}</span> · {m.student.kelas}
+                                  <p className="text-[12.5px] mt-1" style={{ color: "#475569" }}>
+                                    Cabang: <span className="font-bold text-[#1E293B]">{m.cabang}</span> · {m.student.kelas}
                                   </p>
-                                  <div className="flex items-center gap-2 mt-1.5">
-                                    <div className="h-1.5 flex-1 rounded-full" style={{ background: "#E2E8F0" }}>
+                                  <div className="flex items-center gap-2.5 mt-2">
+                                    <div className="h-2 flex-1 rounded-full" style={{ background: "#E2E8F0" }}>
                                       <div className="h-full rounded-full" style={{ width: `${m.match}%`, background: "#5B7A68" }} />
                                     </div>
-                                    <span className="text-[10px] font-bold" style={{ color: "#5B7A68", fontFamily: DMM }}>{m.match}% cocok</span>
+                                    <span className="text-[11.5px] font-extrabold" style={{ color: "#2E3E35", fontFamily: DMM }}>{m.match}% cocok</span>
                                   </div>
-                                  <p className="text-[10.5px] leading-relaxed mt-1 text-[#475569] bg-[#F4F8F5] rounded-lg p-1.5">
+                                  <p
+                                    style={{
+                                      fontSize: 12,
+                                      lineHeight: 1.5,
+                                      marginTop: 8,
+                                      color: "#334155",
+                                      background: "#F4F8F5",
+                                      borderRadius: 10,
+                                      padding: "8px 10px",
+                                    }}
+                                  >
                                     💡 {m.alasan}
                                   </p>
                                 </div>
