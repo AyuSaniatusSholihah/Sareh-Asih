@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 
 // ─── Tokens ─────────────────────────────────────────────────────────
-export const T    = "#8BB098";   // Sage Green — primary
+export const T    = "#5B7A68";   // Primary Sage Green (#5B7A68)
 export const A    = "#D27D6B";   // Muted Terracotta — accent / CTA
 export const BG   = "#EBF3ED";   // Mint White — background
 export const CARD = "#FFFFFF";   // Card surface

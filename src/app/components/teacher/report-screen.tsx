@@ -4,9 +4,9 @@ import {
   School, Check, MessageCircle, Printer, X, Share2,
   ChevronRight, BarChart3, Clock, ArrowLeft, Search,
   Laptop, QrCode, Monitor, RefreshCw, Copy, LogOut,
-  Globe, ExternalLink, ShieldCheck, Smartphone, Sparkles,
+  Globe, ExternalLink, ShieldCheck, Smartphone, Sparkles, Settings,
 } from "lucide-react";
-import { CARD, TEXT, MUTED, SEC, T, A, DEEP, PJS, IPS, BG, BDR, DMM } from "../ui-kit";
+import { CARD, TEXT, MUTED, SEC, T, A, DEEP, PJS, IPS, BG, BDR, DMM, useUI } from "../ui-kit";
 import { useStudents, type Student } from "../data";
 import { exportSpreadsheet, exportLaporanPemetaan, printReportPDF } from "../export";
 
@@ -22,7 +22,8 @@ interface ConnectedDeviceInfo {
   lastActive: string;
 }
 
-export function ReportScreen({ namaSekolah }: { namaSekolah: string }) {
+export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; onProfile?: () => void }) {
+  const { openSearch, openSettings } = useUI();
   const students = useStudents();
   const [view, setView] = useState<ReportView>("main");
   const [overviewTab, setOverviewTab] = useState<OverviewTab>("kelas");
@@ -621,33 +622,79 @@ export function ReportScreen({ namaSekolah }: { namaSekolah: string }) {
   // ─── 3. MAIN VIEW (Laporan Utama) ─────────────────────────────────────────
   return (
     <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, background: BG }}>
-      {/* Header Laporan Utama */}
-      <div style={{ background: "#FFFFFF", padding: "14px 20px 12px", borderBottom: "1px solid rgba(91,122,104,0.10)", position: "sticky", top: 0, zIndex: 15 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>Laporan</h1>
-            <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: "2px 0 0" }}>Rekap data siswa & pemetaan bakat</p>
+      {/* Header Laporan Utama (Sesuai header lainnya: Search, Profile, Settings) */}
+      <div style={{ background: "#FFFFFF", padding: "14px 20px 10px", borderBottom: "1px solid rgba(91,122,104,0.10)", position: "sticky", top: 0, zIndex: 15 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+              Laporan
+            </h1>
+            <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "4px 0 0", fontWeight: 500 }}>
+              Rekap data siswa & pemetaan bakat
+            </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setView("detail")}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              background: "linear-gradient(135deg, #1B382B, #2D543E)",
-              color: "#FFFFFF",
-              padding: "8px 14px",
-              borderRadius: 12,
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 2px 8px rgba(27,56,43,0.20)",
-            }}
-            className="active:scale-95 transition-transform"
-          >
-            <Share2 size={14} strokeWidth={2.5} />
-            <span style={{ fontFamily: PJS, fontSize: 12, fontWeight: 800 }}>Bagikan</span>
-          </button>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
+            <button
+              type="button"
+              onClick={openSearch}
+              style={{
+                width: 38,
+                height: 38,
+                background: "rgba(139,176,152,0.14)",
+                borderRadius: 12,
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              className="active:scale-95 transition-transform"
+              title="Cari"
+            >
+              <Search size={17} style={{ color: "#1B2E24" }} />
+            </button>
+
+            <button
+              type="button"
+              onClick={onProfile}
+              style={{
+                width: 38,
+                height: 38,
+                background: "rgba(139,176,152,0.14)",
+                borderRadius: 12,
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              className="active:scale-95 transition-transform"
+              title="Profil"
+            >
+              <User size={17} style={{ color: "#1B2E24" }} />
+            </button>
+
+            <button
+              type="button"
+              onClick={openSettings}
+              style={{
+                width: 38,
+                height: 38,
+                background: "rgba(139,176,152,0.14)",
+                borderRadius: 12,
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              className="active:scale-95 transition-transform"
+              title="Pengaturan"
+            >
+              <Settings size={17} style={{ color: "#1B2E24" }} />
+            </button>
+          </div>
         </div>
       </div>
 

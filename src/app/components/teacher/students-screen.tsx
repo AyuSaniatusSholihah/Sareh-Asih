@@ -66,7 +66,7 @@ export function StudentsScreen({
   const students = useStudents();
   const { openSearch, openSettings } = useUI();
   const [kelasList, setKelasList] = useState<KelasCardData[]>(DEFAULT_KELAS_CARDS);
-  const [selectedClassId, setSelectedClassId] = useState<string | null>("viii-a");
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [isAddingKelas, setIsAddingKelas] = useState(false);
   const [schoolName, setSchoolName] = useState(guru?.sekolah || "SLB N Surakarta");
   const [newNama, setNewNama] = useState("");
@@ -747,33 +747,40 @@ export function StudentsScreen({
               )}
             </div>
 
-            {/* Floating Action Button: + Tambah Siswa */}
-            <button
-              onClick={onAddStudent}
-              style={{
-                position: "absolute",
-                bottom: 82,
-                right: 20,
-                background: "#D26E5B",
-                color: "#FFFFFF",
-                fontFamily: PJS,
-                fontWeight: 700,
-                fontSize: 13.5,
-                borderRadius: 18,
-                padding: "12px 18px",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 6px 18px rgba(210,110,91,0.45)",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                zIndex: 40,
-              }}
-              className="active:scale-95 transition-all hover:brightness-105"
-            >
-              <Plus size={16} strokeWidth={2.5} />
-              <span>Tambah Siswa</span>
-            </button>
+            {/* ── Sticky Floating Button "+ Tambah Siswa" ── */}
+            <div style={{
+              position: "sticky",
+              bottom: 20,
+              display: "flex",
+              justifyContent: "flex-end",
+              paddingRight: 16,
+              pointerEvents: "none",
+              marginTop: -70,
+              zIndex: 40
+            }}>
+              <button
+                onClick={onAddStudent}
+                style={{
+                  background: "#D27D6B",
+                  color: "#FFFFFF",
+                  fontFamily: PJS,
+                  fontWeight: 800,
+                  fontSize: 13,
+                  padding: "12px 20px",
+                  borderRadius: 24,
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  boxShadow: "0 6px 20px rgba(210,125,107,0.40)",
+                  pointerEvents: "auto"
+                }}
+                className="active:scale-95 transition-transform"
+              >
+                <Plus size={16} strokeWidth={2.6} /> Tambah Siswa
+              </button>
+            </div>
 
       </div>
     );
