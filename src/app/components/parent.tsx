@@ -1,8 +1,9 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   Bell, Users, MessageSquare, Sparkles, Lock, Info, Heart, Star,
   Key, Hash, XCircle, ChevronRight, ChevronLeft, MapPin, Phone,
   Clock, Wallet, CalendarDays, CheckCircle, Search, FileText, ChevronDown, X,
+  Palette, Target, BookOpen, Settings,
 } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -16,7 +17,7 @@ import {
   type AgendaEvent, type EventKind,
 } from "./data";
 
-// ─── Modal: masukkan kode akses dari dalam aplikasi ───────────────────
+// â”€â”€â”€ Modal: masukkan kode akses dari dalam aplikasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function LinkCodeModal({onClose,onLinked,students}:{onClose:()=>void;onLinked:(s:Student)=>void;students:Student[]}) {
   const [kode, setKode] = useState("");
   const [err,  setErr]  = useState("");
@@ -82,154 +83,241 @@ export function LinkCodeModal({onClose,onLinked,students}:{onClose:()=>void;onLi
   );
 }
 
-// ─── BERANDA ORANG TUA ────────────────────────────────────────────────
-export function ParentDashboard({go,child,namaOrtu,onOpenCode}:{
-  go:(s:Screen)=>void; child:Student|null; namaOrtu:string; onOpenCode:()=>void;
+// â”€â”€â”€ BERANDA ORANG TUA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function ChildAvatar({ name }: { name: string }) {
+  return (
+    <div style={{
+      width: 52, height: 52, borderRadius: "50%",
+      background: "linear-gradient(145deg, #FFE8D6 0%, #F5D5B8 100%)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      flexShrink: 0, position: "relative", overflow: "hidden",
+      border: "2.5px solid #FFD6B8",
+    }}>
+      <svg viewBox="0 0 52 52" width={52} height={52} style={{ position: "absolute", inset: 0 }}>
+        {/* Hair */}
+        <ellipse cx={26} cy={15} rx={13} ry={9} fill="#6B4E3D" opacity={0.7} />
+        {/* Face */}
+        <circle cx={26} cy={22} r={10} fill="#E8C4A0" />
+        {/* Eyes */}
+        <circle cx={22} cy={21} r={1.3} fill="#3D2E1F" />
+        <circle cx={30} cy={21} r={1.3} fill="#3D2E1F" />
+        {/* Cheeks */}
+        <circle cx={19} cy={24} r={2} fill="#F0B8A0" opacity={0.5} />
+        <circle cx={33} cy={24} r={2} fill="#F0B8A0" opacity={0.5} />
+        {/* Smile */}
+        <path d="M23 26 Q26 29 29 26" stroke="#3D2E1F" strokeWidth={0.9} fill="none" strokeLinecap="round" />
+        {/* Body/shirt */}
+        <ellipse cx={26} cy={42} rx={15} ry={11} fill="#8BB098" opacity={0.7} />
+      </svg>
+    </div>
+  );
+}
+
+export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] }: {
+  go: (s: Screen) => void; child: Student | null; namaOrtu: string; onOpenCode: () => void;
+  laporan: LaporanKirim[];
 }) {
-  // Agenda sekolah bersifat privat — hanya tampil bila sudah terhubung kode akses
-  const upcoming = AGENDA.filter(e=>e.kind!=="sekolah"||!!child).slice(0,2);
+  const upcoming = AGENDA.filter(e => e.kind !== "sekolah" || !!child).slice(0, 1);
+  const latestLaporan = laporan.length > 0 ? laporan[laporan.length - 1] : null;
+  const ibuName = namaOrtu.split(" ")[0];
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
-      <div style={{background:CARD}} className="px-4 pt-2 pb-4 flex items-center justify-between">
-        <div>
-          <p className="text-xs" style={{color:MUTED}}>Selamat datang,</p>
-          <h1 className="font-bold text-xl" style={{fontFamily:PJS,color:TEXT}}>{namaOrtu.split(" ")[0]} 👋</h1>
+    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+      {/* â”€â”€ Header â”€â”€ */}
+      <div style={{ background: "#FFFFFF", padding: "14px 20px 12px", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontFamily: IPS, fontSize: 12.5, color: MUTED, margin: 0, fontWeight: 500 }}>
+              Selamat pagi, {ibuName} ðŸ‘‹
+            </p>
+            <h1 style={{ fontFamily: PJS, fontSize: 22, fontWeight: 800, color: TEXT, margin: "2px 0 0", lineHeight: 1.15 }}>
+              Beranda
+            </h1>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
+            <button
+              style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform" title="Cari">
+              <Search size={16} style={{ color: DEEP }} />
+            </button>
+            <button
+              style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
+              className="active:scale-95 transition-transform" title="Notifikasi">
+              <Bell size={16} style={{ color: DEEP }} />
+              <span style={{ position: "absolute", top: 6, right: 6, width: 7, height: 7, borderRadius: "50%", background: A, border: "1.5px solid #fff" }} />
+            </button>
+            <button
+              onClick={() => go("parent-training")}
+              style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform" title="Pengaturan">
+              <Settings size={16} style={{ color: DEEP }} />
+            </button>
+          </div>
         </div>
-        <button style={{width:44,height:44,background:SEC}} className="rounded-2xl flex items-center justify-center relative">
-          <Bell size={19} style={{color:T}}/>
-          {child && <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full" style={{background:A}}/>}
-        </button>
       </div>
 
-      <div className="px-4 pt-4 pb-6 space-y-4">
-        {/* ── Belum terhubung: kartu masukkan kode ── */}
+      <div style={{ padding: "16px 16px 90px", display: "flex", flexDirection: "column", gap: 14 }}>
+
+        {/* â”€â”€ Belum terhubung â”€â”€ */}
         {!child && (
-          <div style={{background:T}} className="rounded-3xl p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Key size={16} style={{color:"#fff"}}/>
-              <p className="font-bold text-base text-white" style={{fontFamily:PJS}}>Hubungkan dengan Anak Anda</p>
+          <div style={{ background: CARD, border: `1.5px dashed ${BDR}`, borderRadius: 20, padding: "24px 18px", textAlign: "center" }}>
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: SEC, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+              <Key size={24} style={{ color: DEEP }} />
             </div>
-            <p className="text-sm leading-relaxed mb-4" style={{color:"rgba(255,255,255,0.82)"}}>
-              Masukkan kode akses dari guru pendamping untuk membuka perkembangan bakat, laporan, dan saran belajar di rumah.
+            <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: "0 0 6px" }}>Hubungkan dengan Anak Anda</p>
+            <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.5, margin: "0 0 16px" }}>
+              Masukkan kode akses dari guru pendamping untuk melihat perkembangan anak.
             </p>
             <button onClick={onOpenCode}
-              style={{width:"100%",background:"#fff",color:DEEP,fontFamily:IPS,minHeight:50}}
+              style={{ width: "100%", background: A, color: "#fff", fontFamily: IPS, minHeight: 48, border: "none", cursor: "pointer" }}
               className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
-              <Hash size={15}/>Masukkan Kode Akses
+              <Hash size={15} />Masukkan Kode Akses
             </button>
-            <p className="text-xs text-center mt-2.5" style={{color:"rgba(255,255,255,0.6)"}}>
-              Belum punya kode? Hubungi wali kelas anak Anda.
-            </p>
           </div>
         )}
 
-        {/* ── Sudah terhubung: kartu anak ── */}
+        {/* â”€â”€ Sudah terhubung â”€â”€ */}
         {child && (
           <>
-            <div style={{background:T}} className="rounded-3xl p-5">
-              <div className="flex items-center gap-3 mb-4">
-                <div style={{width:52,height:52,background:"rgba(255,255,255,0.2)",flexShrink:0}} className="rounded-2xl flex items-center justify-center text-2xl">{child.emoji}</div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-base text-white" style={{fontFamily:PJS}}>{child.name}</p>
-                  <p className="text-xs" style={{color:"rgba(255,255,255,0.7)"}}>Kelas {child.kelas} · {child.teacher} · {child.abk}</p>
+            {/* â”€â”€ Kartu Profil Anak â”€â”€ */}
+            <div style={{ background: CARD, borderRadius: 20, padding: "18px 16px 16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
+              {/* Profile row */}
+              <div className="flex items-center gap-3" style={{ marginBottom: 14 }}>
+                <ChildAvatar name={child.name} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.25 }}>{child.name}</p>
+                  <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: "3px 0 0", lineHeight: 1.3 }}>
+                    Kelas {child.kelas} Â· SLB Negeri 1
+                  </p>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  {l:"Potensi Utama",v:child.talent||"Belum ada"},
-                  {l:"Progress",v:child.talentScore?`${child.talentScore}%`:"—"},
-                  {l:"Target Lomba",v:child.comps[0]??"—"},
-                ].map(s=>(
-                  <div key={s.l} style={{background:"rgba(255,255,255,0.15)"}} className="rounded-xl p-2.5 text-center">
-                    <p className="text-xs font-bold text-white leading-snug">{s.v}</p>
-                    <p className="text-xs mt-0.5" style={{color:"rgba(255,255,255,0.65)"}}>{s.l}</p>
+
+              {/* Three info boxes */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                {/* Potensi Utama */}
+                <div style={{ background: BG, borderRadius: 14, padding: "10px 8px", border: `1px solid ${BDR}` }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: "#E8F5E9", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>
+                    <Palette size={14} style={{ color: DEEP }} />
                   </div>
-                ))}
+                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Potensi Utama</p>
+                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "2px 0 0", textAlign: "center", lineHeight: 1.2 }}>
+                    {child.talent || "â€”"}
+                  </p>
+                </div>
+
+                {/* Fokus Minggu Ini */}
+                <div style={{ background: BG, borderRadius: 14, padding: "10px 8px", border: `1px solid ${BDR}` }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: "#EDE7F6", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>
+                    <BookOpen size={14} style={{ color: "#7C3AED" }} />
+                  </div>
+                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Fokus Minggu Ini</p>
+                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "2px 0 0", textAlign: "center", lineHeight: 1.2 }}>
+                    {child.talent ? `Latihan ${child.talent.split(" ")[0]}` : "â€”"}
+                  </p>
+                </div>
+
+                {/* Target Terdekat */}
+                <div style={{ background: BG, borderRadius: 14, padding: "10px 8px", border: `1px solid ${BDR}` }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: "#E3F2FD", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>
+                    <Target size={14} style={{ color: "#0369A1" }} />
+                  </div>
+                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Target Terdekat</p>
+                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "2px 0 0", textAlign: "center", lineHeight: 1.2 }}>
+                    {child.comps[0] ? child.comps[0].replace("-PDBK", "") : "â€”"}
+                  </p>
+                  {child.comps[0] && <p style={{ fontFamily: IPS, fontSize: 8, color: MUTED, margin: "1px 0 0", textAlign: "center" }}>Lomba</p>}
+                </div>
               </div>
             </div>
 
-            <button onClick={()=>go("parent-detail")}
-              style={{background:A,color:"#fff",fontFamily:IPS,minHeight:54,width:"100%"}}
-              className="rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-              <Users size={17}/>Cek Perkembangan {child.name.split(" ")[0]}
+            {/* â”€â”€ CTA Button â”€â”€ */}
+            <button onClick={() => go("parent-detail")}
+              style={{ background: A, color: "#fff", fontFamily: IPS, minHeight: 50, width: "100%", border: "none", cursor: "pointer" }}
+              className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+              Cek Perkembangan {child.name.split(" ")[0]} <ChevronRight size={16} />
             </button>
 
-            <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2"><MessageSquare size={14} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Laporan Terbaru dari Guru</p></div>
-                <span className="text-xs" style={{color:MUTED,fontFamily:DMM}}>14 Jul 2026</span>
+            {/* â”€â”€ Laporan Terbaru dari Guru â”€â”€ */}
+            {latestLaporan && (
+              <div style={{ background: CARD, borderRadius: 20, padding: "16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
+                <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
+                  <div className="flex items-center gap-2">
+                    <div style={{ width: 32, height: 32, borderRadius: 10, background: "#FFF0EB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <span style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: A, lineHeight: 1 }}>â</span>
+                    </div>
+                    <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0 }}>Laporan Terbaru dari Guru</p>
+                  </div>
+                  <span style={{ fontFamily: DMM, fontSize: 10, color: MUTED, flexShrink: 0 }}>{latestLaporan.dikirimPada}</span>
+                </div>
+                <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 4px", lineHeight: 1.3 }}>
+                  {latestLaporan.judul}
+                </p>
+                <p style={{ fontFamily: IPS, fontSize: 12, color: MUTED, lineHeight: 1.5, margin: "0 0 10px" }}>
+                  {latestLaporan.isi.length > 100 ? latestLaporan.isi.slice(0, 100) + "â€¦" : latestLaporan.isi}
+                </p>
+                <div className="flex items-center justify-between" style={{ paddingTop: 10, borderTop: `1px solid ${BDR}` }}>
+                  <div className="flex items-center gap-1.5">
+                    <div style={{ width: 20, height: 20, borderRadius: "50%", background: SEC, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Users size={10} style={{ color: DEEP }} />
+                    </div>
+                    <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>{child.teacher}, Guru Pendamping</p>
+                  </div>
+                  <ChevronRight size={14} style={{ color: MUTED, flexShrink: 0 }} />
+                </div>
               </div>
-              <p className="text-sm italic leading-relaxed" style={{color:TEXT}}>
-                "{child.name.split(" ")[0]} menunjukkan perkembangan positif pada kemampuan {child.talent||"belajarnya"}. Direkomendasikan untuk melanjutkan latihan rutin di rumah."
-              </p>
-              <p className="text-xs mt-2" style={{color:MUTED}}>— {child.teacher}, Guru Pendamping</p>
+            )}
+
+            {/* â”€â”€ Dua kartu info side-by-side â”€â”€ */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {/* Agenda Terdekat */}
+              <button onClick={() => go("parent-calendar")}
+                style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 16, padding: "14px 12px", textAlign: "left", cursor: "pointer", width: "100%", boxShadow: "0 1px 6px rgba(91,122,104,0.04)" }}
+                className="flex flex-col gap-2 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-1.5">
+                  <CalendarDays size={13} style={{ color: DEEP }} />
+                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>Agenda Terdekat</p>
+                </div>
+                {upcoming.length > 0 ? (
+                  <>
+                    <p style={{ fontFamily: IPS, fontSize: 10.5, color: TEXT, margin: 0, fontWeight: 600, lineHeight: 1.3 }}>
+                      {upcoming[0].title.length > 24 ? upcoming[0].title.slice(0, 24) + "â€¦" : upcoming[0].title}
+                    </p>
+                    <p style={{ fontFamily: DMM, fontSize: 9.5, color: MUTED, margin: 0 }}>
+                      {new Date(upcoming[0].date + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })} Â· {upcoming[0].jam.split("â€“")[0].trim()}
+                    </p>
+                  </>
+                ) : (
+                  <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0 }}>Belum ada agenda</p>
+                )}
+                <p style={{ fontFamily: IPS, fontSize: 10.5, color: T, margin: "4px 0 0", fontWeight: 700 }}>Lihat Kalender â†’</p>
+              </button>
+
+              {/* Rekomendasi Pelatihan */}
+              <button onClick={() => go("parent-training")}
+                style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 16, padding: "14px 12px", textAlign: "left", cursor: "pointer", width: "100%", boxShadow: "0 1px 6px rgba(91,122,104,0.04)" }}
+                className="flex flex-col gap-2 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles size={13} style={{ color: "#7C3AED" }} />
+                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>Rekomendasi Pelatihan</p>
+                </div>
+                <p style={{ fontFamily: IPS, fontSize: 10.5, color: TEXT, margin: 0, fontWeight: 600, lineHeight: 1.3 }}>
+                  Kelas Seni Visual
+                </p>
+                <p style={{ fontFamily: IPS, fontSize: 9.5, color: MUTED, margin: 0 }}>
+                  Sesuai minat {child.name.split(" ")[0]}
+                </p>
+                <p style={{ fontFamily: IPS, fontSize: 10.5, color: T, margin: "4px 0 0", fontWeight: 700 }}>Lihat â†’</p>
+              </button>
             </div>
           </>
-        )}
-
-        {/* ── Agenda terdekat (selalu tampil) ── */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <CalendarDays size={14} style={{color:T}}/>
-              <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Agenda Terdekat</p>
-            </div>
-            <button onClick={()=>go("parent-calendar")} className="text-xs font-semibold" style={{color:T}}>Lihat kalender →</button>
-          </div>
-          <div className="space-y-2">
-            {upcoming.map(e=><AgendaRow key={e.id} e={e} onClick={()=>go("parent-calendar")}/>)}
-          </div>
-        </div>
-
-        {/* ── Pelatihan & terapi ── */}
-        <button onClick={()=>go("parent-training")}
-          style={{background:CARD,border:`1px solid ${BDR}`,width:"100%",textAlign:"left"}}
-          className="rounded-2xl p-4 flex items-center gap-3">
-          <div style={{width:46,height:46,background:SEC,flexShrink:0,fontSize:22}} className="rounded-2xl flex items-center justify-center">🩺</div>
-          <div className="flex-1 min-w-0">
-            <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Pelatihan & Terapi Terdekat</p>
-            <p className="text-xs" style={{color:MUTED}}>{LAYANAN.filter(l=>l.terbuka).length} program terbuka & {LAYANAN.filter(l=>!l.terbuka).length} layanan di sekitar Anda</p>
-          </div>
-          <ChevronRight size={16} style={{color:MUTED,flexShrink:0}}/>
-        </button>
-
-        {/* ── Kartu kode akses saat sudah terhubung ── */}
-        {child && (
-          <div style={{background:BG,border:`1.5px dashed ${BDR}`}} className="rounded-2xl px-4 py-3 flex items-center gap-3">
-            <CheckCircle size={16} style={{color:T,flexShrink:0}}/>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold" style={{color:TEXT}}>Terhubung dengan {child.teacher}</p>
-              <p className="text-xs" style={{color:MUTED,fontFamily:DMM}}>{child.kodeOrtu}</p>
-            </div>
-            <button onClick={onOpenCode} className="text-xs font-semibold" style={{color:T}}>Ganti kode</button>
-          </div>
         )}
       </div>
     </div>
   );
 }
 
-function AgendaRow({e,onClick}:{e:AgendaEvent;onClick?:()=>void}) {
-  const meta = KIND_META[e.kind];
-  const d = new Date(e.date+"T00:00:00");
-  return (
-    <button onClick={onClick} style={{background:CARD,border:`1px solid ${BDR}`,width:"100%",textAlign:"left"}}
-      className="rounded-2xl px-3.5 py-3 flex items-center gap-3">
-      <div style={{width:46,background:meta.bg,flexShrink:0,paddingTop:6,paddingBottom:6}} className="rounded-xl flex flex-col items-center justify-center">
-        <span className="text-xs font-bold" style={{color:meta.color,fontFamily:DMM}}>{d.toLocaleDateString("id-ID",{month:"short"})}</span>
-        <span className="font-bold" style={{color:meta.color,fontFamily:PJS,fontSize:17,lineHeight:1}}>{d.getDate()}</span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm leading-snug" style={{color:TEXT,fontFamily:IPS}}>{e.title}</p>
-        <p className="text-xs truncate" style={{color:MUTED}}>{e.jam} · {e.lokasi}</p>
-      </div>
-      <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{background:meta.bg,color:meta.color}}>{meta.icon} {meta.label}</span>
-    </button>
-  );
-}
 
-// ─── KALENDER EVENT & LOMBA ABK ───────────────────────────────────────
+// â”€â”€â”€ KALENDER EVENT & LOMBA ABK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const HARI = ["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
 const BULAN = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
@@ -284,13 +372,13 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode}:{
         <div style={{background:SEC,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl p-3.5 flex items-start gap-2.5">
           <Info size={14} style={{color:T,flexShrink:0,marginTop:1}}/>
           <p className="text-xs leading-relaxed" style={{color:T}}>
-            Kalender hanya memuat <strong>kegiatan yang berlaku untuk umum</strong> — lomba resmi, pelatihan terbuka, dan layanan gratis. Jadwal terapi pribadi tidak ditampilkan karena berbeda untuk setiap anak dan diatur langsung dengan penyedia.
+            Kalender hanya memuat <strong>kegiatan yang berlaku untuk umum</strong> â€” lomba resmi, pelatihan terbuka, dan layanan gratis. Jadwal terapi pribadi tidak ditampilkan karena berbeda untuk setiap anak dan diatur langsung dengan penyedia.
           </p>
         </div>
 
         {/* Filter */}
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {([["semua","Semua","📋"],...Object.entries(KIND_META).map(([k,v])=>[k,v.label,v.icon])] as [string,string,string][]).map(([k,l,ic])=>{
+          {([["semua","Semua","ðŸ“‹"],...Object.entries(KIND_META).map(([k,v])=>[k,v.label,v.icon])] as [string,string,string][]).map(([k,l,ic])=>{
             const on = filter===k;
             const locked = k==="sekolah" && !linked;
             return (
@@ -335,7 +423,7 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode}:{
           <div style={{background:"#F0FDF4",border:`1px solid #15803D22`}} className="rounded-2xl px-4 py-3 flex items-center gap-2.5">
             <CheckCircle size={14} style={{color:"#15803D",flexShrink:0}}/>
             <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
-              Filter <strong>Agenda Sekolah</strong> aktif — Anda menerima agenda dari <strong>{sekolah}</strong>.
+              Filter <strong>Agenda Sekolah</strong> aktif â€” Anda menerima agenda dari <strong>{sekolah}</strong>.
             </p>
           </div>
         )}
@@ -417,7 +505,7 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode}:{
         <div>
           <p className="font-bold text-sm mb-2" style={{fontFamily:PJS,color:TEXT}}>
             Semua Agenda {BULAN[cursor.m]}
-            <span className="font-normal" style={{color:MUTED}}> · {monthEvents.length} kegiatan</span>
+            <span className="font-normal" style={{color:MUTED}}> Â· {monthEvents.length} kegiatan</span>
           </p>
           {monthEvents.length===0 ? (
             <div style={{background:CARD,border:`1.5px dashed ${BDR}`}} className="rounded-2xl px-4 py-6 text-center">
@@ -462,7 +550,7 @@ function EventCard({e}:{e:AgendaEvent}) {
           {e.sekolah && (
             <div style={{background:meta.bg}} className="rounded-xl px-3 py-2.5 flex items-start gap-2">
               <Lock size={12} style={{color:meta.color,flexShrink:0,marginTop:2}}/>
-              <p className="text-xs leading-relaxed" style={{color:meta.color}}><strong>Agenda internal {e.sekolah}</strong> — hanya terlihat oleh orang tua yang terhubung.</p>
+              <p className="text-xs leading-relaxed" style={{color:meta.color}}><strong>Agenda internal {e.sekolah}</strong> â€” hanya terlihat oleh orang tua yang terhubung.</p>
             </div>
           )}
           {e.pendaftaran && (
@@ -477,7 +565,7 @@ function EventCard({e}:{e:AgendaEvent}) {
   );
 }
 
-// ─── PELATIHAN & TERAPI TERDEKAT ──────────────────────────────────────
+// â”€â”€â”€ PELATIHAN & TERAPI TERDEKAT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
   const [tab,setTab] = useState<"terbuka"|"layanan">("terbuka");
   const [q,setQ] = useState("");
@@ -511,7 +599,7 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
           ] as const).map(t=>(
             <button key={t.k} onClick={()=>setTab(t.k)}
               style={{flex:1,background:tab===t.k?T:CARD,color:tab===t.k?"#fff":MUTED,fontFamily:IPS,minHeight:44}}
-              className="text-xs font-bold">{t.l} · {t.n}</button>
+              className="text-xs font-bold">{t.l} Â· {t.n}</button>
           ))}
         </div>
 
@@ -519,7 +607,7 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
           <div style={{background:SEC,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl p-3.5 flex items-start gap-2.5">
             <Sparkles size={14} style={{color:T,flexShrink:0,marginTop:1}}/>
             <p className="text-xs leading-relaxed" style={{color:T}}>
-              Program yang <strong>terbuka untuk siapa saja</strong> dengan jadwal pasti — terapi gratis, skrining, kelas terbuka. Jadwalnya sama untuk semua peserta, jadi ikut muncul di{" "}
+              Program yang <strong>terbuka untuk siapa saja</strong> dengan jadwal pasti â€” terapi gratis, skrining, kelas terbuka. Jadwalnya sama untuk semua peserta, jadi ikut muncul di{" "}
               <button onClick={()=>go("parent-calendar")} className="font-bold underline" style={{color:T}}>Kalender</button>.
             </p>
           </div>
@@ -527,7 +615,7 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
           <div style={{background:"#FEF9EC",border:`1px solid rgba(210,125,107,0.22)`}} className="rounded-2xl p-3.5 flex items-start gap-2.5">
             <Info size={14} style={{color:A,flexShrink:0,marginTop:1}}/>
             <p className="text-xs leading-relaxed" style={{color:A}}>
-              Terapi personal <strong>tidak dijadwalkan lewat aplikasi</strong> — jadwal setiap anak berbeda dan diatur langsung dengan penyedia. Di sini hanya ditampilkan info umum: lokasi, jam operasional, perkiraan biaya, dan kontak.
+              Terapi personal <strong>tidak dijadwalkan lewat aplikasi</strong> â€” jadwal setiap anak berbeda dan diatur langsung dengan penyedia. Di sini hanya ditampilkan info umum: lokasi, jam operasional, perkiraan biaya, dan kontak.
             </p>
           </div>
         )}
@@ -551,7 +639,7 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
                     : <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{background:BG,color:MUTED}}>Perlu janji temu</span>
                   }
                   <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{background:SEC,color:DEEP}}>{l.jenis}</span>
-                  {l.jarak!=="—" && (
+                  {l.jarak!=="â€”" && (
                     <span className="text-xs font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1" style={{background:"#FEF9EC",color:"#92400E"}}>
                       <MapPin size={9}/>{l.jarak}
                     </span>
@@ -611,7 +699,7 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
   );
 }
 
-// ─── DETAIL PERKEMBANGAN ANAK ─────────────────────────────────────────
+// â”€â”€â”€ DETAIL PERKEMBANGAN ANAK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
   onBack:()=>void; child:Student|null; onOpenCode:()=>void;
   laporan:LaporanKirim[]; onBaca:(id:number)=>void;
@@ -641,7 +729,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
 
   return (
     <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
-      <TBar title="Detail Perkembangan" sub={`${child.name} — Hanya baca`} onBack={onBack}/>
+      <TBar title="Detail Perkembangan" sub={`${child.name} â€” Hanya baca`} onBack={onBack}/>
       <div className="px-4 pt-4 pb-6 space-y-3">
         <LaporanGuruSection laporan={laporan} onBaca={onBaca} namaAnak={nama}/>
 
@@ -728,10 +816,10 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
             <Lock size={12} style={{color:MUTED}}/>
           </div>
           {[
-            {i:"🎨",t:`Beri ${nama} waktu berlatih bebas minimal 20 menit setiap hari.`},
-            {i:"🧰",t:"Siapkan alat sederhana yang mudah dijangkau anak."},
-            {i:"👏",t:"Apresiasi setiap usaha, bukan hanya hasil akhirnya."},
-            {i:"🕒",t:`Jaga rutinitas yang sama setiap hari — ${nama} lebih tenang dengan jadwal yang dapat ditebak.`},
+            {i:"ðŸŽ¨",t:`Beri ${nama} waktu berlatih bebas minimal 20 menit setiap hari.`},
+            {i:"ðŸ§°",t:"Siapkan alat sederhana yang mudah dijangkau anak."},
+            {i:"ðŸ‘",t:"Apresiasi setiap usaha, bukan hanya hasil akhirnya."},
+            {i:"ðŸ•’",t:`Jaga rutinitas yang sama setiap hari â€” ${nama} lebih tenang dengan jadwal yang dapat ditebak.`},
           ].map(s=>(
             <div key={s.t} className="flex items-start gap-2.5 py-2.5" style={{borderBottom:`1px solid ${BDR}`}}>
               <span className="text-lg flex-shrink-0">{s.i}</span>
@@ -744,7 +832,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
   );
 }
 
-/* ── Laporan dari guru (hanya baca, tidak bisa dibalas) ─────────────── */
+/* â”€â”€ Laporan dari guru (hanya baca, tidak bisa dibalas) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function LaporanGuruSection({laporan,onBaca,namaAnak}:{
   laporan:LaporanKirim[]; onBaca:(id:number)=>void; namaAnak:string;
 }) {
@@ -769,7 +857,7 @@ function LaporanGuruSection({laporan,onBaca,namaAnak}:{
         )}
       </div>
       <p className="text-xs leading-relaxed mb-3" style={{color:MUTED}}>
-        Guru mengirim laporan perkembangan {namaAnak} dari waktu ke waktu. Laporan bersifat satu arah — silakan hubungi guru langsung bila ingin berdiskusi.
+        Guru mengirim laporan perkembangan {namaAnak} dari waktu ke waktu. Laporan bersifat satu arah â€” silakan hubungi guru langsung bila ingin berdiskusi.
       </p>
 
       {urut.length===0 ? (
@@ -798,7 +886,7 @@ function LaporanGuruSection({laporan,onBaca,namaAnak}:{
                     <div className="flex items-center gap-1.5 mt-2.5 pt-2.5" style={{borderTop:`1px solid ${BDR}`}}>
                       <CheckCircle size={11} style={{color:"#15803D"}}/>
                       <p className="text-xs" style={{color:"#15803D"}}>
-                        Ditandai sudah dibaca — guru akan melihat status ini.
+                        Ditandai sudah dibaca â€” guru akan melihat status ini.
                       </p>
                     </div>
                   </div>

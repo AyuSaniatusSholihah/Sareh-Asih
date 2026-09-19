@@ -225,7 +225,7 @@ export default function App() {
       case "talent-map": return ["Peta Bakat", guru.sekolah];
       case "competition": return ["Agenda", "Agenda & Rekomendasi Lomba"];
       case "report": return ["Laporan", "Rekap data siswa & pemetaan bakat"];
-      case "parent-dashboard": return ["Beranda", child ? `Orang Tua · ${child.name}` : "Orang Tua · belum terhubung"];
+      case "parent-dashboard": return ["Beranda ♡", child ? `Orang Tua · ${child.name}` : "Orang Tua · belum terhubung"];
       case "parent-detail": return ["Perkembangan Anak", child ? child.name : "Belum terhubung"];
       case "parent-calendar": return ["Kalender", child ? `Umum + agenda ${guru.sekolah}` : "Kegiatan terbuka untuk umum"];
       case "parent-training": return ["Pelatihan & Terapi", "Info umum layanan terdekat"];
@@ -298,7 +298,7 @@ export default function App() {
         />
       );
 
-      case "parent-dashboard": return <ParentDashboard go={go} child={child} namaOrtu={namaOrtu} onOpenCode={() => setShowLinkCode(true)} />;
+      case "parent-dashboard": return <ParentDashboard go={go} child={child} namaOrtu={namaOrtu} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} />;
       case "parent-detail": return <ParentDetailScreen onBack={goBack} child={child} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} onBaca={tandaiDibaca} />;
       case "parent-calendar": return <ParentCalendarScreen linked={!!child} sekolah={guru.sekolah} onOpenCode={() => setShowLinkCode(true)} />;
       case "parent-training": return <ParentTrainingScreen go={go} />;
@@ -358,8 +358,8 @@ export default function App() {
                 </div>
               )}
               {/* Content */}
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: BG, position: "relative", fontSize: `${fontSize}rem` }}>
-                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: BG, position: "relative", zoom: fontSize }}>
+                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && screen !== "parent-dashboard" && (
                   <GlobalHeader
                     title={title}
                     sub={sub}
