@@ -205,9 +205,9 @@ export function DashboardGuru({
           </div>
         )}
 
-        {/* ── Aksi Cepat ── */}
+        {/* ── Akses Cepat ── */}
         <div>
-          <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, marginBottom: 10 }}>Aksi Cepat</p>
+          <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, marginBottom: 10 }}>Akses Cepat</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             {quickActions.map((a, i) => (
               <button key={i} onClick={a.onClick}
@@ -272,15 +272,6 @@ export function DashboardGuru({
           </div>
         </div>
 
-        {/* ── Sorotan Bakat (Konstelasi) ── */}
-        <TalentConstellation
-          students={constellationStudents}
-          onSelectStudent={() => go("talent-map")}
-        />
-
-        {/* ── Kartu kode akses orang tua (dipakai ulang dari KodeAksesCard) ── */}
-        {students.length > 0 && <KodeAksesCard onOpen={() => go("kode-akses")} />}
-
         {/* ── Aktivitas Terbaru ── */}
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
@@ -303,6 +294,15 @@ export function DashboardGuru({
             ))}
           </div>
         </div>
+
+        {/* ── Sorotan Bakat (Konstelasi) ── */}
+        <TalentConstellation
+          students={constellationStudents}
+          onSelectStudent={() => go("talent-map")}
+        />
+
+        {/* ── Kartu kode akses orang tua (dipakai ulang dari KodeAksesCard) ── */}
+        {students.length > 0 && <KodeAksesCard onOpen={() => go("kode-akses")} />}
       </div>
     </div>
   );
