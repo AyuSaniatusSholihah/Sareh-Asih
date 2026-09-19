@@ -147,7 +147,7 @@ export function CompetitionScreen({
             <button key={m} onClick={() => setMainTab(m)}
               style={{
                 background: mainTab === m ? "#FFFFFF" : "transparent",
-                color: mainTab === m ? "#1B2E24" : "#4D6B58",
+                color: mainTab === m ? "#1B2E24" : "#5B7A68",
                 fontFamily: mainTab === m ? PJS : IPS,
                 fontWeight: mainTab === m ? 800 : 700,
                 fontSize: 13,
@@ -291,11 +291,11 @@ export function CompetitionScreen({
                     key={f.id}
                     onClick={() => setLombaCategory(f.id as any)}
                     style={{
-                      background: isActive ? "#4D6B58" : "#FFFFFF",
+                      background: isActive ? "#5B7A68" : "#FFFFFF",
                       color: isActive ? "#FFFFFF" : "#334155",
                       border: isActive ? "none" : "1.5px solid #E2E8F0",
                       borderRadius: 16,
-                      boxShadow: isActive ? "0 2px 8px rgba(77,107,88,0.22)" : "0 1px 3px rgba(0,0,0,0.02)",
+                      boxShadow: isActive ? "0 2px 8px rgba(91,122,104,0.3)" : "0 1px 3px rgba(0,0,0,0.02)",
                       fontFamily: PJS,
                       fontWeight: isActive ? 700 : 600,
                       fontSize: 12.5,
