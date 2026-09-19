@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { School, Search, XCircle, CheckCircle, Building2, Plus, MapPin, ChevronRight } from "lucide-react";
+import { School, Search, XCircle, CheckCircle, Building2, MapPin, ChevronRight } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, IPS } from "../ui-kit";
 import { cariSLB, DATABASE_SLB_INDONESIA } from "../data-slb";
 
@@ -14,7 +14,6 @@ export function SLBSearchInput({
 }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [activeTab, setActiveTab] = useState<"semua" | "jabar" | "jakarta" | "jateng" | "jatim" | "luarjawa">("semua");
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Deteksi sekolah terpilih di database
@@ -22,18 +21,8 @@ export function SLBSearchInput({
     s => s.nama.toLowerCase() === value.trim().toLowerCase()
   );
 
-  // Filter berdasarkan teks dan tab region jika dipilih
-  const getFilteredList = () => {
-    let list = cariSLB(value, 15);
-    if (activeTab === "jabar") list = list.filter(s => s.provinsi.includes("Jawa Barat"));
-    else if (activeTab === "jakarta") list = list.filter(s => s.provinsi.includes("Jakarta"));
-    else if (activeTab === "jateng") list = list.filter(s => s.provinsi.includes("Jawa Tengah") || s.provinsi.includes("Yogyakarta"));
-    else if (activeTab === "jatim") list = list.filter(s => s.provinsi.includes("Jawa Timur"));
-    else if (activeTab === "luarjawa") list = list.filter(s => !s.provinsi.includes("Jawa") && !s.provinsi.includes("Jakarta") && !s.provinsi.includes("Yogyakarta"));
-    return list.slice(0, 8);
-  };
-
-  const results = getFilteredList();
+  // Cari SLB sesuai input pencarian
+  const results = cariSLB(value, 12);
 
   // Tutup dropdown saat klik di luar
   useEffect(() => {
@@ -180,79 +169,6 @@ export function SLBSearchInput({
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: SEC, color: DEEP }}>
               {DATABASE_SLB_INDONESIA.length} SLB Terdaftar
             </span>
-          </div>
-
-          {/* OPSI INPUT LANGSUNG */}
-          {value.trim().length > 0 && !selectedMatch && (
-            <div
-              style={{ background: "#FEF3C7", borderBottom: "1.5px solid #FCD34D", padding: "8px 12px" }}
-              className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <div
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 8,
-                    background: "#F59E0B",
-                    color: "#fff",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}>
-                  <Plus size={15} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-amber-950 truncate" style={{ fontFamily: IPS }}>
-                    Inputkan Langsung: "{value.trim()}"
-                  </p>
-                  <p className="text-[10px] text-amber-800 leading-none mt-0.5" style={{ fontFamily: IPS }}>
-                    Tidak ada di database? Langsung gunakan nama ini
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  setShowDropdown(false);
-                }}
-                style={{
-                  background: "#D97706",
-                  color: "#fff",
-                  fontFamily: IPS,
-                  border: "none",
-                }}
-                className="px-3 py-1.5 rounded-xl text-xs font-bold flex-shrink-0 cursor-pointer shadow-sm hover:opacity-95 active:scale-95 transition-all">
-                Gunakan Ini ✓
-              </button>
-            </div>
-          )}
-
-          {/* Quick filter tabs */}
-          <div className="flex gap-1 p-1.5 border-b overflow-x-auto no-scrollbar" style={{ borderColor: BDR, background: "#FAFBFB" }}>
-            {[
-              { id: "semua", label: "Semua" },
-              { id: "jabar", label: "Jawa Barat" },
-              { id: "jakarta", label: "Jakarta" },
-              { id: "jateng", label: "Jateng & DIY" },
-              { id: "jatim", label: "Jawa Timur" },
-              { id: "luarjawa", label: "Luar Jawa" },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  setActiveTab(tab.id as any);
-                }}
-                className={`text-[10px] px-2 py-1 rounded-lg font-semibold whitespace-nowrap transition-colors ${
-                  activeTab === tab.id ? "text-white" : "text-gray-600 hover:bg-gray-100"
-                }`}
-                style={{ background: activeTab === tab.id ? T : "transparent", fontFamily: IPS }}>
-                {tab.label}
-              </button>
-            ))}
           </div>
 
           {/* Daftar SLB dari database */}
