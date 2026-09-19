@@ -35,6 +35,9 @@ import {
 
 import guruIcon from "@/imports/guru-icon.png";
 import ortuIcon from "@/imports/ortu-icon.png";
+import classActivityImg from "@/imports/class_activity.jpg";
+import classDrawingImg from "@/imports/class_drawing.jpg";
+import classGroupImg from "@/imports/class_group.jpg";
 
 const MAIN_SCREENS: Screen[] = [
   "dashboard", "students", "talent-map", "competition", "report",
@@ -63,8 +66,10 @@ export default function App() {
 
   // Data siswa
   const [agendas, setAgendas] = useState<any[]>([
-    { id: 1, type: "sekolah", title: "Pentas Seni Inklusif", date: "2026-08-15", desc: "Acara tahunan sekolah menampilkan bakat siswa." },
-    { id: 2, type: "lomba", title: "O2SN Diksus", date: "2026-09-10", desc: "Lomba olahraga bagi PDBK (Bocce, Lari, dll)." }
+    { id: 1, type: "sekolah", title: "Pentas Seni Inklusif", date: "2026-08-15", desc: "Acara tahunan sekolah menampilkan bakat & kreasi seni siswa.", img: classGroupImg },
+    { id: 2, type: "lomba", title: "O2SN Diksus Tingkat Kota", date: "2026-09-10", desc: "Ajang olahraga PDBK cabang Bocce, Lari, & Bulutangkis.", img: classActivityImg },
+    { id: 3, type: "sekolah", title: "Gelar Karya & Kewirausahaan", date: "2026-10-05", desc: "Pameran hasil karya keterampilan tata boga & kriya siswa.", img: classDrawingImg },
+    { id: 4, type: "lomba", title: "FLS2N Seni & Tari Daerah", date: "2026-11-12", desc: "Seleksi festival seni, menyanyi solo & tari kreasi daerah.", img: classGroupImg },
   ]);
 
   const [list, setList] = useState<Student[]>(seedStudents);

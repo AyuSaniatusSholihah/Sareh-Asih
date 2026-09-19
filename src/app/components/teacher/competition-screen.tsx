@@ -9,6 +9,28 @@ import {
   useStudents, LOMBA, studentCompDetail, type Student,
 } from "../data";
 
+import classActivityImg from "@/imports/class_activity.jpg";
+import classDrawingImg from "@/imports/class_drawing.jpg";
+import classGroupImg from "@/imports/class_group.jpg";
+
+export const AGENDA_PRESETS = [
+  { id: "group", label: "Pentas Seni", img: classGroupImg },
+  { id: "activity", label: "Olahraga", img: classActivityImg },
+  { id: "drawing", label: "Karya Seni", img: classDrawingImg },
+];
+
+function formatAgendaDate(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  } catch {
+    return dateStr;
+  }
+}
+
 export function CompetitionScreen({
   onStartObs,
   agendas,
@@ -22,13 +44,19 @@ export function CompetitionScreen({
   const withObs = students.filter(s => s.hasObs);
   const [mainTab, setMainTab] = useState<"agenda" | "lomba">("agenda");
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ type: "sekolah", title: "", date: "", desc: "" });
+  const [form, setForm] = useState({
+    type: "sekolah",
+    title: "",
+    date: "",
+    desc: "",
+    img: classGroupImg
+  });
 
   const handleSubmit = () => {
     if (!form.title || !form.date) return;
     onAddAgenda({ ...form, id: Date.now() });
     setShowAdd(false);
-    setForm({ type: "sekolah", title: "", date: "", desc: "" });
+    setForm({ type: "sekolah", title: "", date: "", desc: "", img: classGroupImg });
   };
 
   return (
@@ -63,23 +91,106 @@ export function CompetitionScreen({
               <Plus size={16} strokeWidth={2.5} /> Tambah Agenda
             </button>
 
-            <div className="space-y-3">
+            {/* ── 2 Kolom Grid Agenda Sekolah dengan Gambar ── */}
+            <div className="grid grid-cols-2 gap-3">
               {agendas.length === 0 ? (
-                <div style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 20, padding: 24, textAlign: "center" }}>
+                <div className="col-span-2" style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 20, padding: 24, textAlign: "center" }}>
                   <Calendar size={28} style={{ color: MUTED, margin: "0 auto 8px" }} />
                   <p className="text-sm font-semibold" style={{ color: MUTED }}>Belum ada agenda aktif.</p>
                 </div>
               ) : (
-                agendas.map(a => (
-                  <div key={a.id} style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 20, padding: 16, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }}>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide" style={{ background: a.type === "sekolah" ? "#E3F2FD" : "#FFF3E0", color: a.type === "sekolah" ? "#1565C0" : "#E65100" }}>{a.type}</span>
-                      <span className="text-xs font-semibold text-gray-500">{a.date}</span>
+                agendas.map((a, i) => {
+                  const cardImg = a.img || AGENDA_PRESETS[i % AGENDA_PRESETS.length].img;
+                  return (
+                    <div
+                      key={a.id}
+                      style={{
+                        background: CARD,
+                        border: `1.5px solid ${BDR}`,
+                        borderRadius: 20,
+                        overflow: "hidden",
+                        boxShadow: "0 2px 10px rgba(91,122,104,0.06)",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                      className="hover:shadow-md transition-shadow"
+                    >
+                      {/* Image with Category Badge */}
+                      <div style={{ position: "relative", width: "100%", height: 100, background: "#E2E8F0" }}>
+                        <img
+                          src={cardImg}
+                          alt={a.title}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: 8,
+                            left: 8,
+                            background: a.type === "sekolah" ? "#2563EB" : "#EA580C",
+                            color: "#FFFFFF",
+                            fontSize: 9,
+                            fontWeight: 800,
+                            fontFamily: PJS,
+                            padding: "3px 8px",
+                            borderRadius: 12,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.04em",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
+                          }}
+                        >
+                          {a.type === "sekolah" ? "Sekolah" : "Lomba"}
+                        </span>
+                      </div>
+
+                      {/* Content */}
+                      <div style={{ padding: "11px 11px 13px", display: "flex", flexDirection: "column", flex: 1 }}>
+                        <div className="flex items-center gap-1 mb-1" style={{ color: "#5B7A68" }}>
+                          <Calendar size={11} strokeWidth={2.2} style={{ flexShrink: 0 }} />
+                          <span style={{ fontSize: 10.5, fontWeight: 700, fontFamily: DMM, color: "#475569" }}>
+                            {formatAgendaDate(a.date)}
+                          </span>
+                        </div>
+
+                        <p
+                          style={{
+                            fontFamily: PJS,
+                            fontWeight: 800,
+                            fontSize: 12.5,
+                            color: TEXT,
+                            lineHeight: 1.3,
+                            marginBottom: 4,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                          title={a.title}
+                        >
+                          {a.title}
+                        </p>
+
+                        {a.desc && (
+                          <p
+                            style={{
+                              fontSize: 10.5,
+                              color: MUTED,
+                              lineHeight: 1.35,
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              marginTop: "auto",
+                              paddingTop: 3,
+                            }}
+                          >
+                            {a.desc}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <p className="font-bold text-sm leading-snug">{a.title}</p>
-                    {a.desc && <p className="text-xs text-gray-500 mt-2 leading-relaxed">{a.desc}</p>}
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
@@ -140,6 +251,30 @@ export function CompetitionScreen({
             <h3 className="font-bold text-lg">Tambah Agenda</h3>
 
             <div className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold block mb-1.5">Pilih Foto Kegiatan</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {AGENDA_PRESETS.map(p => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setForm({ ...form, img: p.img })}
+                      style={{
+                        border: form.img === p.img ? `2px solid ${T}` : "1.5px solid #E2E8F0",
+                        borderRadius: 12,
+                        overflow: "hidden",
+                        padding: 2,
+                        background: form.img === p.img ? SEC : "#fff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <img src={p.img} alt={p.label} style={{ width: "100%", height: 48, objectFit: "cover", borderRadius: 8 }} />
+                      <p style={{ fontSize: 9.5, fontWeight: 700, marginTop: 4, marginBottom: 2, color: form.img === p.img ? DEEP : MUTED, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.label}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label className="text-xs font-semibold block mb-1">Jenis</label>
                 <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} className="w-full border rounded-xl px-3 py-2 text-sm bg-gray-50 outline-none">
