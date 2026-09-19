@@ -495,46 +495,55 @@ export function CompetitionScreen({
                                   borderRadius: 16,
                                   padding: "12px 14px",
                                 }}
-                                className="flex items-start gap-3 shadow-xs"
+                                className="shadow-xs"
                               >
-                                <span className="text-2xl leading-none mt-0.5">{m.student.emoji}</span>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center justify-between">
-                                    <p
-                                      style={{
-                                        color: TEXT,
-                                        fontFamily: PJS,
-                                        fontSize: 14.5,
-                                        fontWeight: 800,
-                                      }}
-                                      className="truncate"
-                                    >
-                                      {m.student.name}
-                                    </p>
-                                  </div>
-                                  <p className="text-[12.5px] mt-1" style={{ color: "#475569" }}>
-                                    Cabang: <span className="font-bold text-[#1E293B]">{m.cabang}</span> · {m.student.kelas}
-                                  </p>
-                                  <div className="flex items-center gap-2.5 mt-2">
-                                    <div className="h-2 flex-1 rounded-full" style={{ background: "#E2E8F0" }}>
-                                      <div className="h-full rounded-full" style={{ width: `${m.match}%`, background: "#5B7A68" }} />
-                                    </div>
-                                    <span className="text-[11.5px] font-extrabold" style={{ color: "#2E3E35", fontFamily: DMM }}>{m.match}% cocok</span>
-                                  </div>
+                                {/* Header: Emoji + Nama + Kelas */}
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-xl leading-none">{m.student.emoji}</span>
                                   <p
                                     style={{
-                                      fontSize: 12,
-                                      lineHeight: 1.5,
-                                      marginTop: 8,
-                                      color: "#334155",
-                                      background: "#F4F8F5",
-                                      borderRadius: 10,
-                                      padding: "8px 10px",
+                                      color: TEXT,
+                                      fontFamily: PJS,
+                                      fontSize: 14.5,
+                                      fontWeight: 800,
                                     }}
+                                    className="truncate flex-1"
                                   >
-                                    💡 {m.alasan}
+                                    {m.student.name}
                                   </p>
+                                  <span className="text-[12px] font-semibold text-[#64748B]">
+                                    {m.student.kelas}
+                                  </span>
                                 </div>
+
+                                <p className="text-[12.5px] mb-2" style={{ color: "#475569" }}>
+                                  Cabang: <span className="font-bold text-[#1E293B]">{m.cabang}</span>
+                                </p>
+
+                                {/* Bilah Kecocokan Full Width ke Kiri */}
+                                <div className="flex items-center gap-2.5 mb-2.5">
+                                  <div className="h-2 flex-1 rounded-full" style={{ background: "#E2E8F0" }}>
+                                    <div className="h-full rounded-full" style={{ width: `${m.match}%`, background: "#5B7A68" }} />
+                                  </div>
+                                  <span className="text-[12px] font-extrabold flex-shrink-0" style={{ color: "#2E3E35", fontFamily: DMM }}>
+                                    {m.match}% cocok
+                                  </span>
+                                </div>
+
+                                {/* Kotak Alasan Full Width */}
+                                <p
+                                  style={{
+                                    fontSize: 12,
+                                    lineHeight: 1.5,
+                                    color: "#334155",
+                                    background: "#F4F8F5",
+                                    borderRadius: 10,
+                                    padding: "9px 12px",
+                                    margin: 0,
+                                  }}
+                                >
+                                  💡 {m.alasan}
+                                </p>
                               </div>
                             ))}
                           </div>
