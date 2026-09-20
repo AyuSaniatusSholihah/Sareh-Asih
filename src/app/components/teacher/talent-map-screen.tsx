@@ -568,10 +568,9 @@ export function TalentMapScreen({
                               {s.name}
                             </p>
 
-                            <div className="flex items-center gap-1.5 mt-0.5" style={{ color: MUTED, fontSize: 11 }}>
-                              <User size={11} style={{ flexShrink: 0 }} />
-                              <span className="truncate">{s.abk}</span>
-                            </div>
+                            <p style={{ color: MUTED, fontSize: 11, margin: "2px 0 0", fontFamily: IPS, fontWeight: 500 }} className="truncate">
+                              {s.abk}
+                            </p>
 
                             <div className="mt-1.5 flex items-center">
                               {s.hasObs ? (
