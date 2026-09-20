@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import {
   Users, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, ChevronRight,
-  Search, User, Settings, BarChart2, Play, School
+  Search, User, Settings, BarChart2, School
 } from "lucide-react";
 import {
   TEXT, MUTED, BDR, DEEP, A, PJS, IPS, DMM, useUI, BG,
@@ -637,7 +637,6 @@ export function TalentMapScreen({
                             }}
                             className="active:scale-95 hover:brightness-105"
                           >
-                            <Play size={12} style={{ color: "#FFFFFF", fill: "#FFFFFF", flexShrink: 0 }} />
                             <span style={{ fontSize: 11.5, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, whiteSpace: "nowrap" }}>
                               Mulai asesmen
                             </span>
