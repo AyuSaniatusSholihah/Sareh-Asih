@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell, LabelList
 } from "recharts";
 import {
   FUNGSIONAL_KATEGORI, FUNGSIONAL_META,
@@ -9,8 +9,8 @@ import {
   PROFIL_FUNGSIONAL, PROFIL_KECENDERUNGAN,
   FungsionalKategori, RiasecKategori
 } from "./data";
-import { CARD, BDR, TEXT, DEEP, PJS, DMM, MUTED } from "./ui-kit";
-import { Activity, Sparkles } from "lucide-react";
+import { CARD, BDR, TEXT, DEEP, PJS, IPS, DMM, MUTED, A } from "./ui-kit";
+import { Activity, Sparkles, Target } from "lucide-react";
 
 // --- Utility Functions for Scoring ---
 export function skorDomain(jawaban: Record<number, number|"TDD">, domain: FungsionalKategori): number | null {
@@ -106,7 +106,17 @@ export function getMockJawaban(studentId: number): Record<number, number> {
 
 // --- Shared Chart Components ---
 
-export function ProfilFungsionalRadar({ jawaban, readOnly = false }: { jawaban: Record<number, number|"TDD">; readOnly?: boolean }) {
+export function ProfilFungsionalRadar({
+  jawaban,
+  readOnly = false,
+  studentName,
+  studentId,
+}: {
+  jawaban: Record<number, number|"TDD">;
+  readOnly?: boolean;
+  studentName?: string;
+  studentId?: number;
+}) {
   const data = FUNGSIONAL_KATEGORI.map(domain => ({
     subject: domain,
     icon: FUNGSIONAL_META[domain].icon,
@@ -125,6 +135,28 @@ export function ProfilFungsionalRadar({ jawaban, readOnly = false }: { jawaban: 
   // Use 0 for chart display if null, but keep original value for logic
   const chartData = data.map(d => ({ ...d, A: d.A ?? 0 }));
 
+  // Hitung rata-rata kemandirian
+  const validScores = chartData.map(d => d.A);
+  const avgKemandirian = validScores.length > 0
+    ? Math.round(validScores.reduce((acc, curr) => acc + curr, 0) / validScores.length)
+    : 0;
+
+  // Nama dan teks kesimpulan kemandirian
+  const name = studentName || (studentId === 1 ? "Rafi" : studentId === 2 ? "Nisa" : studentId === 3 ? "Arga" : "Siswa");
+  let keteranganKemandirian = "";
+  if (studentId === 1 || name === "Rafi") {
+    keteranganKemandirian = `${name} memiliki tingkat kemandirian sangat baik pada Perawatan Diri & Mobilitas, namun memerlukan pendampingan berkala pada tugas kognisi dan pemahaman instruksi bertahap.`;
+  } else if (studentId === 2 || name === "Nisa") {
+    keteranganKemandirian = `${name} menunjukkan kemandirian dan fokus yang tinggi dalam Kognisi dan Interaksi Sosial, dengan dukungan arahan visual yang konsisten untuk aktivitas harian.`;
+  } else if (studentId === 3 || name === "Arga") {
+    keteranganKemandirian = `${name} memiliki kemampuan kognisi dan penalaran yang sangat unggul, namun membutuhkan penyesuaian lingkungan dan alat bantu pada mobilitas fisik.`;
+  } else {
+    const sorted = [...chartData].sort((a, b) => b.A - a.A);
+    const highest = sorted[0];
+    const lowest = sorted[sorted.length - 1];
+    keteranganKemandirian = `${name} menunjukkan kemandirian optimal pada aspek ${highest.subject} (${highest.A}%), serta memerlukan pendampingan berkelanjutan pada aspek ${lowest.subject} (${lowest.A}%).`;
+  }
+
   const RadarCustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const p = payload[0].payload;
@@ -140,18 +172,31 @@ export function ProfilFungsionalRadar({ jawaban, readOnly = false }: { jawaban: 
 
   return (
     <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 24, padding: "20px 16px", boxShadow: "0 2px 12px rgba(91,122,104,0.06)" }}>
-      <div className="flex items-start justify-between gap-2 mb-1 px-1">
-        <div className="flex items-center gap-2">
-          <Activity size={18} style={{ color: DEEP }} />
-          <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT }}>
-            Profil Fungsional
+      {/* Header with Title & Average Badge */}
+      <div className="flex items-center justify-between gap-2 mb-1 px-1">
+        <div className="flex items-center gap-2 min-w-0">
+          <Activity size={18} style={{ color: DEEP }} className="flex-shrink-0" />
+          <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, whiteSpace: "nowrap" }}>
+            Profil Kemandirian
           </h3>
+        </div>
+        <div
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full flex-shrink-0"
+          style={{
+            background: "#EBF4EE",
+            border: "1px solid rgba(45,84,62,0.22)",
+          }}
+        >
+          <span style={{ color: DEEP, fontFamily: PJS, fontWeight: 800, fontSize: 11, whiteSpace: "nowrap" }}>
+            Rata-rata: {avgKemandirian}%
+          </span>
         </div>
       </div>
       <p style={{ fontSize: 12, color: MUTED, marginBottom: 14, paddingLeft: 4, lineHeight: 1.4 }}>
-        Kapasitas fungsional di 6 domain kehidupan.
+        Kapasitas fungsional & kemandirian harian di 6 domain kehidupan (Skala 0–100%).
       </p>
 
+      {/* Radar Chart */}
       <div style={{ width: '100%', height: 230 }}>
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart cx="50%" cy="50%" outerRadius="68%" data={chartData}>
@@ -163,18 +208,152 @@ export function ProfilFungsionalRadar({ jawaban, readOnly = false }: { jawaban: 
           </RadarChart>
         </ResponsiveContainer>
       </div>
+
+      {/* Breakdown Persentase Setiap Domain */}
+      <div className="mt-3 pt-3 border-t border-slate-100">
+        <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: TEXT, marginBottom: 8, paddingLeft: 2 }}>
+          Rincian Persentase Kemandirian:
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {chartData.map((item) => {
+            const isHigh = item.A >= 70;
+            const isMid = item.A >= 50;
+            const badgeBg = isHigh ? "#ECFDF5" : isMid ? "#FEF3C7" : "#FEE2E2";
+            const badgeColor = isHigh ? "#065F46" : isMid ? "#92400E" : "#991B1B";
+            const barColor = isHigh ? "#10B981" : isMid ? "#F59E0B" : "#EF4444";
+            const statusText = isHigh ? "Mandiri" : isMid ? "Sebagian" : "Perlu Bantuan";
+
+            return (
+              <div
+                key={item.subject}
+                style={{
+                  background: "#F8FAFC",
+                  border: `1px solid ${BDR}`,
+                  borderRadius: 14,
+                  padding: "8px 10px",
+                }}
+                className="flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between gap-1 mb-1">
+                  <div className="flex items-center gap-1 min-w-0">
+                    <span className="text-xs flex-shrink-0">{item.icon}</span>
+                    <span
+                      className="text-[11px] font-bold truncate"
+                      style={{ color: TEXT, fontFamily: PJS }}
+                    >
+                      {item.subject}
+                    </span>
+                  </div>
+                  <span
+                    className="text-xs font-extrabold flex-shrink-0"
+                    style={{ color: barColor, fontFamily: DMM }}
+                  >
+                    {item.A}%
+                  </span>
+                </div>
+
+                {/* Progress bar visual */}
+                <div
+                  className="w-full rounded-full overflow-hidden mb-1"
+                  style={{ height: 5, background: "#E2E8F0" }}
+                >
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ width: `${item.A}%`, background: barColor }}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center text-[9.5px]">
+                  <span
+                    className="font-bold px-1.5 py-0.2 rounded"
+                    style={{ background: badgeBg, color: badgeColor }}
+                  >
+                    {statusText}
+                  </span>
+                  <span style={{ color: MUTED }}>
+                    {item.A}/100
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Keterangan Tulisannya Singkat di Bawahnya */}
+      <div
+        style={{
+          marginTop: 14,
+          background: "#F0F7F4",
+          border: `1.5px solid rgba(45, 84, 62, 0.20)`,
+          borderRadius: 16,
+          padding: "12px 14px",
+        }}
+        className="flex items-start gap-2.5"
+      >
+        <div
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 8,
+            background: "rgba(45, 84, 62, 0.12)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            marginTop: 1,
+          }}
+        >
+          <Sparkles size={15} style={{ color: DEEP }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p
+            style={{
+              fontFamily: PJS,
+              fontWeight: 800,
+              fontSize: 12,
+              color: DEEP,
+              marginBottom: 3,
+            }}
+          >
+            Kesimpulan Kemandirian:
+          </p>
+          <p
+            style={{
+              fontFamily: IPS,
+              fontSize: 11.5,
+              color: TEXT,
+              lineHeight: 1.45,
+              margin: 0,
+            }}
+          >
+            {keteranganKemandirian}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
 
-export function ProfilKecenderunganBar({ jawaban, readOnly = false }: { jawaban: Record<number, number|"TDD">; readOnly?: boolean }) {
+export function ProfilKecenderunganBar({
+  jawaban,
+  readOnly = false,
+  studentName,
+  studentId,
+}: {
+  jawaban: Record<number, number|"TDD">;
+  readOnly?: boolean;
+  studentName?: string;
+  studentId?: number;
+}) {
   const data = RIASEC_KATEGORI.map(tipe => ({
     tipe,
     label: RIASEC_META[tipe].letter,
     skor: skorTipe(jawaban, tipe),
     color: RIASEC_META[tipe].color,
     icon: RIASEC_META[tipe].icon,
-    fullName: tipe
+    fullName: tipe,
+    desc: RIASEC_META[tipe].desc,
   }));
 
   const validDataCount = data.filter(d => d.skor !== null).length;
@@ -187,6 +366,25 @@ export function ProfilKecenderunganBar({ jawaban, readOnly = false }: { jawaban:
   }
 
   const chartData = data.map(d => ({ ...d, skor: d.skor ?? 0 }));
+
+  // Temukan kategori dominan
+  const sortedRiasec = [...chartData].sort((a, b) => b.skor - a.skor);
+  const dominant = sortedRiasec[0] || { label: "A", fullName: "Artistic", skor: 85, color: "#9D174D", desc: "Mengekspresikan diri lewat seni" };
+
+  // Nama dan teks kesimpulan minat
+  const name = studentName || (studentId === 1 ? "Rafi" : studentId === 2 ? "Nisa" : studentId === 3 ? "Arga" : "Siswa");
+  let kesimpulanMinat = "";
+  if (studentId === 1 || name === "Rafi") {
+    kesimpulanMinat = `Menunjukkan minat tertinggi pada tipe Artistic (Seni & Kreativitas) dan Investigative (Eksplorasi). ${name} sangat antusias mengekspresikan ide melalui bunyi audio, musik ritmik, dan kreasi taktil.`;
+  } else if (studentId === 2 || name === "Nisa") {
+    kesimpulanMinat = `Memiliki potensi dan minat kuat pada tipe Artistic dan Realistic. ${name} unggul dalam kepekaan visual, seni rupa, keterampilan tangan, dan tugas yang membutuhkan ketelitian motorik tinggi.`;
+  } else if (studentId === 3 || name === "Arga") {
+    kesimpulanMinat = `Sangat unggul pada tipe Investigative (Analitis) dan Conventional (Keteraturan). ${name} memiliki daya nalar logis tajam, menyukai sains, teknologi, serta pemecahan masalah sistematis.`;
+  } else {
+    const top1 = sortedRiasec[0];
+    const top2 = sortedRiasec[1] || sortedRiasec[0];
+    kesimpulanMinat = `${name} memiliki kecenderungan minat tertinggi pada aktivitas bertipe ${top1.fullName} (${top1.skor}%) dan ${top2.fullName} (${top2.skor}%). Disarankan diberikan ruang eksplorasi dan pembinaan proyek yang selaras dengan bakat ini.`;
+  }
 
   const BarCustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -205,19 +403,34 @@ export function ProfilKecenderunganBar({ jawaban, readOnly = false }: { jawaban:
 
   return (
     <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 24, padding: "20px 16px", boxShadow: "0 2px 12px rgba(91,122,104,0.06)" }}>
-      <div className="flex items-center gap-2 mb-2 px-1">
-        <Sparkles size={18} style={{ color: "#7C3AED" }} />
-        <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT }}>
-          Kecenderungan Aktivitas (RIASEC)
-        </h3>
+      {/* Header with Title & Dominant Talent Badge */}
+      <div className="flex items-center justify-between gap-2 mb-1 px-1">
+        <div className="flex items-center gap-2 min-w-0">
+          <Target size={18} style={{ color: A }} className="flex-shrink-0" />
+          <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, whiteSpace: "nowrap" }}>
+            Kecenderungan Minat
+          </h3>
+        </div>
+        <div
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full flex-shrink-0"
+          style={{
+            background: "#FFF7ED",
+            border: "1px solid #FFEDD5",
+          }}
+        >
+          <span style={{ color: "#C2410C", fontFamily: PJS, fontWeight: 800, fontSize: 11, whiteSpace: "nowrap" }}>
+            Dominan: {dominant.label} ({dominant.skor}%)
+          </span>
+        </div>
       </div>
-      <p style={{ fontSize: 12, color: MUTED, marginBottom: 14, paddingLeft: 4, lineHeight: 1.4 }}>
-        Minat dan preferensi berbasis aktivitas.
+      <p style={{ fontSize: 12, color: MUTED, marginBottom: 16, paddingLeft: 4, lineHeight: 1.4 }}>
+        Tingkat ketertarikan anak berdasarkan model RIASEC. Nilai dominan menandai bakat utama.
       </p>
 
-      <div style={{ width: '100%', height: 230 }}>
+      {/* Bar Chart */}
+      <div style={{ width: '100%', height: 210 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+          <BarChart data={chartData} margin={{ top: 20, right: 10, left: -25, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
             <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontFamily: DMM, fontSize: 12, fontWeight: 700, fill: TEXT }} />
             <YAxis axisLine={false} tickLine={false} tick={{ fontFamily: DMM, fontSize: 10, fill: MUTED }} domain={[0, 100]} />
@@ -226,9 +439,81 @@ export function ProfilKecenderunganBar({ jawaban, readOnly = false }: { jawaban:
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
+              <LabelList dataKey="skor" position="top" fill={TEXT} fontSize={10} fontFamily={DMM} fontWeight={700} formatter={(v: number) => `${v}%`} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Quick Category Chips */}
+      <div className="flex flex-wrap items-center justify-between gap-1 mt-3 pt-3 border-t border-slate-100">
+        {chartData.map((item) => (
+          <div
+            key={item.label}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10.5px]"
+            style={{
+              background: item.label === dominant.label ? "#FFF7ED" : "#F8FAFC",
+              border: item.label === dominant.label ? "1px solid #FDBA74" : `1px solid ${BDR}`,
+              fontWeight: item.label === dominant.label ? 800 : 600,
+              color: item.label === dominant.label ? "#C2410C" : MUTED,
+            }}
+          >
+            <span style={{ fontFamily: DMM }}>{item.label}:</span>
+            <span style={{ color: item.color }}>{item.skor}%</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Keterangan Kesimpulan Ringkas Minat */}
+      <div
+        style={{
+          marginTop: 14,
+          background: "#FFF9F5",
+          border: `1.5px solid rgba(210, 110, 91, 0.22)`,
+          borderRadius: 16,
+          padding: "12px 14px",
+        }}
+        className="flex items-start gap-2.5"
+      >
+        <div
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 8,
+            background: "rgba(210, 110, 91, 0.12)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            marginTop: 1,
+          }}
+        >
+          <Target size={15} style={{ color: A }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p
+            style={{
+              fontFamily: PJS,
+              fontWeight: 800,
+              fontSize: 12,
+              color: "#C2410C",
+              marginBottom: 3,
+            }}
+          >
+            Kesimpulan Minat & Bakat:
+          </p>
+          <p
+            style={{
+              fontFamily: IPS,
+              fontSize: 11.5,
+              color: TEXT,
+              lineHeight: 1.45,
+              margin: 0,
+            }}
+          >
+            {kesimpulanMinat}
+          </p>
+        </div>
       </div>
     </div>
   );

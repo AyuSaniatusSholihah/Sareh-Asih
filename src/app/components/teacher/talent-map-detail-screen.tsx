@@ -77,8 +77,8 @@ export function TalentMapDetailScreen({
       <TBar title="AI Talent Mapping" sub={`${s.name} · ${s.abk}`} onBack={onBack} />
       
       <div className="px-4 pt-4 pb-8 space-y-5">
-        <ProfilFungsionalRadar jawaban={jawaban} />
-        <ProfilKecenderunganBar jawaban={jawaban} />
+        <ProfilFungsionalRadar jawaban={jawaban} studentName={s.name.split(" ")[0]} studentId={studentId} />
+        <ProfilKecenderunganBar jawaban={jawaban} studentName={s.name.split(" ")[0]} studentId={studentId} />
         <SuggestedCompetitions studentId={studentId} go={go} />
       </div>
     </div>
