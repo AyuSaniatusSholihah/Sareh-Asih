@@ -45,13 +45,16 @@ export const seedStudents: Student[] = [
 export interface LaporanKirim {
   id:number;
   studentId:number;
+  judul:string;
   isi:string;
   dikirimPada:string;   // contoh "3 Jun 2026"
   dibaca:boolean;
   dibacaPada?:string;
 }
 
-export const seedLaporan: LaporanKirim[] = [];
+export const seedLaporan: LaporanKirim[] = [
+  { id:1, studentId:1, judul:"Catatan Latihan Gambar", isi:"Rafi mulai ikut latihan persiapan FLS2N cabang menggambar setiap Rabu. Mohon dukungan agar tetap semangat!", dikirimPada:"18 Jun 2026", dibaca:false },
+];
 
 // ─── Students store (guru dapat menambah siswa sendiri) ──────────────
 interface StudentsStore { list:Student[]; add:(s:Omit<Student,"id">)=>Student; }
