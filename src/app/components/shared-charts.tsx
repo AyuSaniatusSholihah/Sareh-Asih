@@ -11,6 +11,7 @@ import {
 } from "./data";
 import { CARD, BDR, TEXT, DEEP, PJS, IPS, DMM, MUTED, A } from "./ui-kit";
 import { Activity, Sparkles, Target } from "lucide-react";
+import riasecInfographicImg from "@/imports/riasec-infographic.jpg";
 
 // --- Utility Functions for Scoring ---
 export function skorDomain(jawaban: Record<number, number|"TDD">, domain: FungsionalKategori): number | null {
@@ -439,7 +440,7 @@ export function ProfilKecenderunganBar({
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
-              <LabelList dataKey="skor" position="top" fill={TEXT} fontSize={10} fontFamily={DMM} fontWeight={700} formatter={(v: number) => `${v}%`} />
+              <LabelList dataKey="skor" position="top" fill={TEXT} fontSize={10} fontFamily={DMM} fontWeight={700} formatter={(v: any) => (v != null ? `${v}%` : "")} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
@@ -464,10 +465,41 @@ export function ProfilKecenderunganBar({
         ))}
       </div>
 
-      {/* Keterangan Kesimpulan Ringkas Minat */}
+      {/* Panduan Visual 6 Tipe RIASEC (Gambar Ilustrasi) */}
       <div
         style={{
           marginTop: 14,
+          borderRadius: 16,
+          overflow: "hidden",
+          border: "1.5px solid rgba(210, 110, 91, 0.22)",
+          boxShadow: "0 4px 14px rgba(210, 110, 91, 0.08)",
+          background: "#FFFFFF",
+        }}
+      >
+        <div style={{ padding: "10px 14px 8px", background: "#FFF9F5", borderBottom: "1px solid rgba(210, 110, 91, 0.15)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12, color: "#C2410C" }}>
+            🎨 Panduan Visual 6 Tipe RIASEC
+          </span>
+          <span style={{ fontSize: 10, fontWeight: 700, background: "#FFEDD5", color: "#C2410C", padding: "2px 7px", borderRadius: 8, fontFamily: PJS }}>
+            Model Minat
+          </span>
+        </div>
+        <img
+          src={riasecInfographicImg}
+          alt="Panduan Visual 6 Tipe RIASEC"
+          style={{
+            width: "100%",
+            height: "auto",
+            display: "block",
+            objectFit: "cover",
+          }}
+        />
+      </div>
+
+      {/* Keterangan Kesimpulan Ringkas Minat */}
+      <div
+        style={{
+          marginTop: 12,
           background: "#FFF9F5",
           border: `1.5px solid rgba(210, 110, 91, 0.22)`,
           borderRadius: 16,

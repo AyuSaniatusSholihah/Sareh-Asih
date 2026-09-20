@@ -67,7 +67,7 @@ export function TalentMapDetailScreen({
   go: (s: Screen) => void;
 }) {
   const students = useStudents();
-  const s = students.find(x => x.id === studentId);
+  const s = students.find(x => x.id === Number(studentId)) || students.find(x => x.hasObs) || students[0];
   if (!s) return null;
 
   const jawaban = getMockJawaban(studentId);
