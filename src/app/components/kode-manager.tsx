@@ -214,32 +214,34 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
               <span>{semuaTampilTerpilih ? "Batal Pilih Semua" : "Pilih Semua"}</span>
             </button>
 
-            {/* Tombol Generate Kode di pojok kanan (dekat dengan daftar siswa, bukan di header) */}
-            <button
-              type="button"
-              onClick={handleGenerateKode}
-              style={{
-                background: `linear-gradient(135deg, ${A} 0%, #C45F4B 100%)`,
-                color: "#FFFFFF",
-                border: "none",
-                borderRadius: 12,
-                padding: "6px 12px",
-                fontFamily: PJS,
-                fontSize: 11.5,
-                fontWeight: 800,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 5,
-                boxShadow: "0 2px 8px rgba(210, 110, 91, 0.28)",
-                flexShrink: 0,
-              }}
-              className="active:scale-95 transition-all hover:brightness-105"
-              title="Generate Kode Akses"
-            >
-              <Key size={13} strokeWidth={2.5} />
-              <span>Generate Kode</span>
-            </button>
+            {/* Tombol Generate Kode di pojok kanan (hanya untuk menu belum ada kode) */}
+            {filter === "belum" && (
+              <button
+                type="button"
+                onClick={handleGenerateKode}
+                style={{
+                  background: `linear-gradient(135deg, ${A} 0%, #C45F4B 100%)`,
+                  color: "#FFFFFF",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "6px 12px",
+                  fontFamily: PJS,
+                  fontSize: 11.5,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  boxShadow: "0 2px 8px rgba(210, 110, 91, 0.28)",
+                  flexShrink: 0,
+                }}
+                className="active:scale-95 transition-all hover:brightness-105"
+                title="Generate Kode Akses"
+              >
+                <Key size={13} strokeWidth={2.5} />
+                <span>Generate Kode</span>
+              </button>
+            )}
           </div>
 
           {/* Daftar siswa */}
