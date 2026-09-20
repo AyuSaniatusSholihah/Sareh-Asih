@@ -138,19 +138,32 @@ export function StudentsScreen({
         {/* Scrollable Form Content */}
         <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
           {/* Top Header */}
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "16px 20px 14px", background: BG }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 20px 12px", background: "#FFFFFF", borderBottom: `1px solid ${BDR}`, flexShrink: 0 }}>
             <button
               onClick={() => setIsAddingKelas(false)}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 0 0", display: "flex", alignItems: "center", color: "#1B2E24" }}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 12,
+                background: "rgba(139,176,152,0.14)",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#1B2E24",
+                flexShrink: 0,
+              }}
+              className="active:scale-95 transition-transform"
               title="Kembali"
             >
-              <ArrowLeft size={22} strokeWidth={2.4} />
+              <ArrowLeft size={18} />
             </button>
-            <div>
-              <h1 style={{ fontFamily: PJS, fontSize: 19, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
                 Tambah Kelas
               </h1>
-              <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#6B7280", margin: 0, marginTop: 3, fontWeight: 500 }}>
+              <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
                 Lengkapi informasi kelas yang akan ditambahkan
               </p>
             </div>
