@@ -72,10 +72,9 @@ export function AsesmenPendingScreen({
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {siswaList.map(s => (
-                    <div key={s.id} style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 18, padding: 12, boxShadow: "0 2px 10px rgba(91,122,104,0.07)", display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 26, flexShrink: 0 }}>{s.emoji}</span>
+                    <div key={s.id} style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 18, padding: "14px 16px", boxShadow: "0 2px 10px rgba(91,122,104,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                       <div className="flex-1 min-w-0">
-                        <p style={{ fontWeight: 700, fontSize: 13.5, color: TEXT, fontFamily: PJS, lineHeight: 1.1 }}>{s.name}</p>
+                        <p style={{ fontWeight: 700, fontSize: 14, color: TEXT, fontFamily: PJS, lineHeight: 1.2 }}>{s.name}</p>
                         <div className="flex gap-1.5 mt-1 flex-wrap">
                           <span style={{ fontSize: 10, fontWeight: 700, color: A, background: "rgba(210,125,107,0.12)", border: "1px solid rgba(210,125,107,0.35)", padding: "2px 7px", borderRadius: 8 }}>Belum diamati</span>
                           <span style={{ fontSize: 10, fontWeight: 700, color: T, background: SEC, border: `1px solid ${BDR}`, padding: "2px 7px", borderRadius: 8 }}>{s.abk}</span>
