@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Briefcase, Phone, CheckCircle, ArrowLeft } from "lucide-react";
+import { Briefcase, CheckCircle, ArrowLeft } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, Field } from "../ui-kit";
 import { ModalShell } from "./modal-shell";
 import { GoogleMark } from "./illustrations";
@@ -37,7 +37,7 @@ export function AkunGuruModal({
 
   const JABATAN_OPTIONS = [
     "Guru Kelas", "Guru Mata Pelajaran", "Guru Pendamping Khusus (GPK)",
-    "Kepala Sekolah", "Wali Kelas", "Terapis", "Konselor",
+    "Wali Kelas", "Terapis", "Konselor",
   ];
 
   return (
@@ -96,18 +96,6 @@ export function AkunGuruModal({
           </div>
         </div>
 
-        {/* No HP — opsional (SRS-F-002) */}
-        <div>
-          <label className="text-xs font-semibold block mb-1" style={{ color: TEXT, fontFamily: IPS }}>
-            <Phone size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
-            Nomor HP <span style={{ color: MUTED, fontWeight: 400 }}>(opsional)</span>
-          </label>
-          <input
-            type="tel" value={noHp} onChange={e => setNoHp(e.target.value)}
-            placeholder="08xxxxxxxxxx"
-            style={{ width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 12, padding: "10px 12px", fontSize: 14, color: TEXT, fontFamily: IPS, background: BG, outline: "none", minHeight: 44 }}
-          />
-        </div>
       </div>
 
       <div className="flex gap-2.5 mt-4">
