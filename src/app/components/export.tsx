@@ -53,6 +53,50 @@ export function exportSpreadsheet(list:Student[], namaSekolah:string) {
   unduh(`data-siswa-${stempel()}.csv`, judul + [header,...baris].join("\n"), "text/csv");
 }
 
+export async function shareSpreadsheet(list:Student[], namaSekolah:string): Promise<{success:boolean; message:string}> {
+  const judul = [
+    `Data Siswa ABK - ${namaSekolah}`,
+    `Diekspor ${tanggal()} - ${list.length} siswa`,
+    "",
+  ].join("\n");
+  const header = KOLOM.map(k=>csvSel(k.h)).join(";");
+  const baris  = list.map(s=>KOLOM.map(k=>csvSel(k.get(s))).join(";"));
+  const csvContent = "\uFEFF" + judul + [header, ...baris].join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+  const filename = `data-kode-akses-${stempel()}.csv`;
+  const file = new File([blob], filename, { type: "text/csv" });
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        title: `Daftar Kode Akses Siswa - ${namaSekolah}`,
+        text: `Berikut berkas rekap data kode akses orang tua (${list.length} siswa) dari ${namaSekolah}.`,
+        files: [file],
+      });
+      return { success: true, message: "Berkas spreadsheet berhasil dibagikan." };
+    } catch {
+      return { success: false, message: "Berbagi berkas dibatalkan." };
+    }
+  } else if (navigator.share) {
+    try {
+      const teksRingkas = list
+        .map(s => `• ${s.name} (${s.kelas}): ${s.kodeOrtu || "Belum ada"}`)
+        .join("\n");
+      await navigator.share({
+        title: `Daftar Kode Akses Siswa - ${namaSekolah}`,
+        text: `Rekap Kode Akses Orang Tua (${namaSekolah}) - ${list.length} Siswa:\n\n${teksRingkas}`,
+      });
+      return { success: true, message: "Daftar kode berhasil dibagikan." };
+    } catch {
+      return { success: false, message: "Berbagi dibatalkan." };
+    }
+  } else {
+    // Fallback: langsung unduh
+    unduh(filename, csvContent, "text/csv");
+    return { success: true, message: "Spreadsheet berhasil diunduh ke perangkat." };
+  }
+}
+
 /* ── 2. Ekspor laporan dokumen pemetaan (.doc, dibuka Word/Docs) ───── */
 const esc = (v:string) => v.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {
   Key, CheckSquare, Square, Copy, RefreshCw, Trash2, FileSpreadsheet,
-  FileText, CheckCircle, Info, Search, AlertTriangle,
+  FileText, CheckCircle, Info, Search, AlertTriangle, Share2, Download, X,
 } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar,
 } from "./ui-kit";
 import { useStudents, type Student } from "./data";
-import { exportSpreadsheet, exportLaporanPemetaan } from "./export";
+import { exportSpreadsheet, shareSpreadsheet, exportLaporanPemetaan } from "./export";
 
 /* ── Kartu ringkas di Beranda guru ─────────────────────────────────── */
 export function KodeAksesCard({onOpen}:{onOpen:()=>void}) {
@@ -75,14 +75,17 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
   const students = useStudents();
   const [pilih,setPilih] = useState<Set<number>>(new Set());
   const [q,setQ] = useState("");
-  const [filter,setFilter] = useState<"semua"|"punya"|"belum">("semua");
+  // Filter hanya: "belum" (Belum Ada Kode) atau "punya" (Sudah Ada Kode)
+  const [filter,setFilter] = useState<"belum"|"punya">("belum");
   const [toast,setToast] = useState("");
   const [konfirmasiHapus,setKonfirmasiHapus] = useState(false);
+  // State untuk siswa yang dipilih saat klik di tab "Sudah Ada Kode" -> memicu navbar bawah share
+  const [studentToShare, setStudentToShare] = useState<Student | null>(null);
 
   const beritahu = (t:string) => { setToast(t); setTimeout(()=>setToast(""),2400); };
 
   const tampil = students
-    .filter(s=>filter==="semua" || (filter==="punya" ? !!s.kodeOrtu : !s.kodeOrtu))
+    .filter(s=>filter==="punya" ? !!s.kodeOrtu : !s.kodeOrtu)
     .filter(s=>s.name.toLowerCase().includes(q.toLowerCase())||s.kelas.toLowerCase().includes(q.toLowerCase()));
 
   const terpilih = students.filter(s=>pilih.has(s.id));
@@ -96,7 +99,6 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
     semuaTampilTerpilih ? tampil.forEach(s=>n.delete(s.id)) : tampil.forEach(s=>n.add(s.id));
     return n;
   });
-  const pilihBelumPunya = () => setPilih(new Set(students.filter(s=>!s.kodeOrtu).map(s=>s.id)));
   const bersihkan = () => setPilih(new Set());
 
   const terpilihBelum = terpilih.filter(s=>!s.kodeOrtu);
@@ -135,166 +137,406 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
     beritahu(`${target.length} kode akses berhasil di-generate! ✨`);
   };
 
+  // Format teks untuk share kode per siswa (bukan Excel, tulisan kode share teks)
+  const formatPesanShare = (s: Student) => {
+    return `Halo Bapak/Ibu Wali Murid dari ${s.name},\n\nBerikut Kode Akses Orang Tua untuk memantau perkembangan bakat, minat, dan asesmen ananda melalui aplikasi Sareh Asih:\n\n👤 Nama Siswa: ${s.name}\n🏫 Kelas: ${s.kelas}\n🔑 Kode Akses: ${s.kodeOrtu}\n\nSilakan masukkan kode ini pada menu Masuk Orang Tua di aplikasi Sareh Asih. Terima kasih! 🙏`;
+  };
+
+  const handleShareKode = async (s: Student) => {
+    const pesan = formatPesanShare(s);
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Kode Akses Sareh Asih - ${s.name}`,
+          text: pesan,
+        });
+        beritahu("Kode berhasil dibagikan.");
+      } catch {
+        // dibatalkan pengguna
+      }
+    } else {
+      const urlWA = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`;
+      window.open(urlWA, "_blank");
+      beritahu("Membuka WhatsApp...");
+    }
+  };
+
+  const handleSalinTeksKode = (s: Student) => {
+    const pesan = formatPesanShare(s);
+    navigator.clipboard?.writeText(pesan).catch(()=>{});
+    beritahu(`Teks kode akses ${s.name} berhasil disalin!`);
+  };
+
   const sasaranEkspor = terpilih.length ? terpilih : students;
+  const listPunyaSemua = students.filter(s => !!s.kodeOrtu);
 
   return (
-    <div className="flex-1 overflow-y-auto relative" style={{fontFamily:IPS,background:BG}}>
-      <TBar
-        title="Kode Akses Orang Tua"
-        sub={`${students.filter(s=>!!s.kodeOrtu).length} dari ${students.length} siswa sudah punya kode`}
-        onBack={onBack}
-        right={
-          <button
-            type="button"
-            onClick={handleGenerateKode}
-            style={{
-              background: `linear-gradient(135deg, ${A} 0%, #C45F4B 100%)`,
-              color: "#FFFFFF",
-              border: "none",
-              borderRadius: 14,
-              padding: "8px 12px",
-              fontFamily: PJS,
-              fontSize: 11.5,
-              fontWeight: 800,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 5,
-              boxShadow: "0 3px 10px rgba(210, 110, 91, 0.32)",
-              flexShrink: 0,
-              whiteSpace: "nowrap",
-            }}
-            className="active:scale-95 transition-all hover:brightness-105"
-            title="Generate Kode Akses"
-          >
-            <Key size={13} strokeWidth={2.5} />
-            <span>Generate Kode</span>
-          </button>
-        }
-      />
-
-      <div className="px-4 pt-4 pb-6 space-y-3">
-        <div style={{background:SEC,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl p-3.5 flex items-start gap-2.5">
-          <Info size={14} style={{color:T,flexShrink:0,marginTop:1}}/>
-          <p className="text-xs leading-relaxed" style={{color:T}}>
-            Guru yang membuat dan membagikan kode akses. Pilih beberapa siswa sekaligus untuk membuat, menyalin, menghapus, atau mengekspor datanya.
-          </p>
-        </div>
-
-        {/* Cari + filter */}
-        <div className="relative">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{color:MUTED}}/>
-          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Cari nama atau kelas..."
-            style={{width:"100%",border:`1.5px solid ${BDR}`,borderRadius:14,padding:"11px 14px 11px 38px",fontSize:15,color:TEXT,fontFamily:IPS,background:CARD,outline:"none",minHeight:48}}/>
-        </div>
-
-        <div className="flex gap-2">
-          {([
-            {k:"semua", l:"Semua",           n:students.length},
-            {k:"belum", l:"Belum Ada Kode",  n:students.filter(s=>!s.kodeOrtu).length},
-            {k:"punya", l:"Sudah Ada",       n:students.filter(s=>!!s.kodeOrtu).length},
-          ] as const).map(f=>{
-            const on = filter===f.k;
-            return (
-              <button key={f.k} onClick={()=>setFilter(f.k)}
-                style={{flex:1,background:on?T:CARD,color:on?"#fff":MUTED,border:on?"none":`1px solid ${BDR}`,fontFamily:IPS,minHeight:40}}
-                className="rounded-xl text-xs font-bold">{f.l} · {f.n}</button>
-            );
-          })}
-        </div>
-
-        {/* Aksi seleksi */}
-        <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-3">
-          <div className="flex items-center gap-2 mb-2">
-            <button onClick={pilihSemuaTampil}
-              style={{flex:1,background:semuaTampilTerpilih?SEC:BG,border:`1px solid ${semuaTampilTerpilih?T:BDR}`,color:semuaTampilTerpilih?DEEP:TEXT,fontFamily:IPS,minHeight:42}}
-              className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5">
-              {semuaTampilTerpilih ? <CheckSquare size={13}/> : <Square size={13}/>}
-              {semuaTampilTerpilih ? "Batal Pilih Semua" : "Pilih Semua"}
+    <div className="flex-1 overflow-y-auto relative flex flex-col justify-between" style={{fontFamily:IPS,background:BG}}>
+      <div>
+        <TBar
+          title="Kode Akses Orang Tua"
+          sub={`${students.filter(s=>!!s.kodeOrtu).length} dari ${students.length} siswa sudah punya kode`}
+          onBack={onBack}
+          right={
+            <button
+              type="button"
+              onClick={handleGenerateKode}
+              style={{
+                background: `linear-gradient(135deg, ${A} 0%, #C45F4B 100%)`,
+                color: "#FFFFFF",
+                border: "none",
+                borderRadius: 14,
+                padding: "8px 12px",
+                fontFamily: PJS,
+                fontSize: 11.5,
+                fontWeight: 800,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+                boxShadow: "0 3px 10px rgba(210, 110, 91, 0.32)",
+                flexShrink: 0,
+                whiteSpace: "nowrap",
+              }}
+              className="active:scale-95 transition-all hover:brightness-105"
+              title="Generate Kode Akses"
+            >
+              <Key size={13} strokeWidth={2.5} />
+              <span>Generate Kode</span>
             </button>
-            <button onClick={pilihBelumPunya}
-              style={{flex:1,background:BG,border:`1px solid ${BDR}`,color:TEXT,fontFamily:IPS,minHeight:42}}
-              className="rounded-xl text-xs font-bold">Pilih yang Belum Ada</button>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs" style={{color:MUTED}}>
-              {terpilih.length ? <><strong style={{color:TEXT}}>{terpilih.length} siswa</strong> terpilih</> : "Belum ada yang dipilih"}
-            </span>
-            {terpilih.length>0 && (
-              <button onClick={bersihkan} className="text-xs font-semibold" style={{color:A}}>Kosongkan pilihan</button>
-            )}
-          </div>
-        </div>
+          }
+        />
 
-        {/* Daftar siswa */}
-        {tampil.length===0 ? (
-          <div style={{background:CARD,border:`1.5px dashed ${BDR}`}} className="rounded-2xl px-4 py-8 text-center">
-            <p className="text-sm font-semibold" style={{color:MUTED}}>Tidak ada siswa pada filter ini.</p>
+        <div className="px-4 pt-4 pb-28 space-y-3">
+          <div style={{background:SEC,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl p-3.5 flex items-start gap-2.5">
+            <Info size={14} style={{color:T,flexShrink:0,marginTop:1}}/>
+            <p className="text-xs leading-relaxed" style={{color:T}}>
+              Guru membuat dan membagikan kode akses. {filter === "punya" ? "Klik salah satu siswa di bawah untuk membagikan kode ke orang tua, atau unduh keseluruhan kode dalam bentuk Spreadsheet Excel." : "Pilih siswa dan tekan tombol Generate Kode untuk membuat kode akses."}
+            </p>
           </div>
-        ) : (
-          <div className="space-y-2">
-            {tampil.map(s=>{
-              const on = pilih.has(s.id);
+
+          {/* Cari input */}
+          <div className="relative">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{color:MUTED}}/>
+            <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Cari nama atau kelas..."
+              style={{width:"100%",border:`1.5px solid ${BDR}`,borderRadius:14,padding:"11px 14px 11px 38px",fontSize:15,color:TEXT,fontFamily:IPS,background:CARD,outline:"none",minHeight:48}}/>
+          </div>
+
+          {/* Filter Tab: Hanya Belum Ada Kode & Sudah Ada Kode */}
+          <div className="flex gap-2">
+            {([
+              {k:"belum", l:"Belum Ada Kode",  n:students.filter(s=>!s.kodeOrtu).length},
+              {k:"punya", l:"Sudah Ada Kode",  n:students.filter(s=>!!s.kodeOrtu).length},
+            ] as const).map(f=>{
+              const on = filter===f.k;
               return (
-                <button key={s.id} onClick={()=>toggle(s.id)}
-                  style={{background:on?SEC:CARD,border:`1.5px solid ${on?T:BDR}`,width:"100%",textAlign:"left",minHeight:68}}
-                  className="rounded-2xl px-3.5 py-3 flex items-center gap-3 transition-all">
-                  {on ? <CheckSquare size={20} style={{color:T,flexShrink:0}}/> : <Square size={20} style={{color:"#C4CBC6",flexShrink:0}}/>}
-                  <span style={{fontSize:20,flexShrink:0}}>{s.emoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate" style={{color:TEXT,fontFamily:IPS}}>{s.name}</p>
-                    <p className="text-xs" style={{color:MUTED}}>Kelas {s.kelas} · {s.abk}</p>
-                    {s.kodeOrtu
-                      ? <p className="text-xs font-bold mt-0.5" style={{color:DEEP,fontFamily:DMM}}>{s.kodeOrtu}</p>
-                      : <span className="text-xs font-semibold mt-0.5 inline-block px-2 py-0.5 rounded-full" style={{background:"#FEF9EC",color:"#92400E"}}>Belum ada kode</span>}
-                  </div>
-                </button>
+                <button key={f.k} onClick={()=>{ setFilter(f.k); setStudentToShare(null); }}
+                  style={{flex:1,background:on?T:CARD,color:on?"#fff":MUTED,border:on?"none":`1px solid ${BDR}`,fontFamily:IPS,minHeight:42}}
+                  className="rounded-xl text-xs font-bold transition-all shadow-sm">{f.l} · {f.n}</button>
               );
             })}
           </div>
-        )}
 
-        {/* Tindakan pada yang terpilih */}
-        <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-          <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tindakan</p>
-          <p className="text-xs mb-3" style={{color:MUTED}}>
-            {terpilih.length ? `Berlaku untuk ${terpilih.length} siswa terpilih.` : "Pilih siswa terlebih dahulu untuk mengaktifkan tindakan."}
-          </p>
+          {/* Aksi seleksi & Generate Kode */}
+          <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <button onClick={pilihSemuaTampil}
+                style={{flex:1,background:semuaTampilTerpilih?SEC:BG,border:`1px solid ${semuaTampilTerpilih?T:BDR}`,color:semuaTampilTerpilih?DEEP:TEXT,fontFamily:IPS,minHeight:42}}
+                className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5">
+                {semuaTampilTerpilih ? <CheckSquare size={13}/> : <Square size={13}/>}
+                {semuaTampilTerpilih ? "Batal Pilih Semua" : "Pilih Semua"}
+              </button>
+              <button onClick={handleGenerateKode}
+                style={{
+                  flex: 1,
+                  background: `linear-gradient(135deg, ${A} 0%, #C45F4B 100%)`,
+                  border: "none",
+                  color: "#fff",
+                  fontFamily: IPS,
+                  minHeight: 42,
+                  boxShadow: "0 3px 10px rgba(210,110,91,0.25)"
+                }}
+                className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                <Key size={13}/>Generate Kode
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs" style={{color:MUTED}}>
+                {terpilih.length ? <><strong style={{color:TEXT}}>{terpilih.length} siswa</strong> terpilih</> : "Belum ada yang dipilih"}
+              </span>
+              {terpilih.length>0 && (
+                <button onClick={bersihkan} className="text-xs font-semibold" style={{color:A}}>Kosongkan pilihan</button>
+              )}
+            </div>
+          </div>
 
-          <button onClick={buatKode} disabled={!terpilih.length}
-            style={{width:"100%",background:terpilih.length?A:"#E5E7EB",color:terpilih.length?"#fff":"#9CA3AF",fontFamily:IPS,minHeight:48,marginBottom:8}}
-            className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
-            <RefreshCw size={15}/>
-            {terpilihBelum.length===terpilih.length && terpilih.length
-              ? `Generate Kode untuk ${terpilih.length} Siswa`
-              : `Generate / Perbarui Kode (${terpilih.length})`}
-          </button>
+          {/* Banner Spreadsheet Keseluruhan Kode (Hanya di tab "Sudah Ada Kode") */}
+          {filter === "punya" && (
+            <div style={{background:CARD,border:`1.5px solid ${BDR}`,boxShadow:"0 2px 10px rgba(0,0,0,0.03)"}} className="rounded-2xl p-3.5">
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <div style={{width:34,height:34,borderRadius:10,background:"#ECFDF5",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <FileSpreadsheet size={19} style={{color:"#059669"}}/>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-xs" style={{fontFamily:PJS,color:TEXT}}>Rekap Spreadsheet Keseluruhan Kode</p>
+                  <p className="text-[11px]" style={{color:MUTED}}>Format Excel (.csv) berisi {listPunyaSemua.length} siswa yang sudah ada kode</p>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!listPunyaSemua.length) { beritahu("Belum ada siswa yang memiliki kode."); return; }
+                    exportSpreadsheet(listPunyaSemua, namaSekolah);
+                    beritahu(`Spreadsheet Excel ${listPunyaSemua.length} siswa berhasil diunduh.`);
+                  }}
+                  style={{
+                    flex: 1,
+                    background: "#15803D",
+                    color: "#fff",
+                    fontFamily: IPS,
+                    minHeight: 42,
+                    border: "none",
+                    boxShadow: "0 2px 8px rgba(21,128,61,0.22)"
+                  }}
+                  className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                  <Download size={14}/>
+                  Download Excel
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!listPunyaSemua.length) { beritahu("Belum ada siswa yang memiliki kode."); return; }
+                    const res = await shareSpreadsheet(listPunyaSemua, namaSekolah);
+                    beritahu(res.message);
+                  }}
+                  style={{
+                    flex: 1,
+                    background: BG,
+                    color: TEXT,
+                    border: `1px solid ${BDR}`,
+                    fontFamily: IPS,
+                    minHeight: 42,
+                  }}
+                  className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all hover:bg-[#EDE9E3]">
+                  <Share2 size={14} style={{color:T}}/>
+                  Share Spreadsheet
+                </button>
+              </div>
+            </div>
+          )}
 
-          <div className="flex gap-2">
-            <button onClick={salinTerpilih} disabled={!terpilih.length}
-              style={{flex:1,background:CARD,border:`1.5px solid ${terpilih.length?T:BDR}`,color:terpilih.length?T:"#C4CBC6",fontFamily:IPS,minHeight:46}}
-              className="rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5">
-              <Copy size={13}/>Salin Daftar
+          {/* Petunjuk share jika di tab "Sudah Ada Kode" */}
+          {filter === "punya" && (
+            <div className="flex items-center gap-1.5 px-1">
+              <span className="w-1.5 h-1.5 rounded-full" style={{background:T}}/>
+              <p className="text-[11.5px] font-semibold" style={{color:MUTED}}>
+                Klik salah satu kartu siswa untuk membagikan kode secara langsung:
+              </p>
+            </div>
+          )}
+
+          {/* Daftar siswa */}
+          {tampil.length===0 ? (
+            <div style={{background:CARD,border:`1.5px dashed ${BDR}`}} className="rounded-2xl px-4 py-8 text-center">
+              <p className="text-sm font-semibold" style={{color:MUTED}}>
+                {filter === "belum" ? "Semua siswa sudah memiliki kode akses! 🎉" : "Belum ada siswa yang memiliki kode akses."}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {tampil.map(s=>{
+                const on = pilih.has(s.id);
+                const isSelectedForShare = filter === "punya" && studentToShare?.id === s.id;
+                return (
+                  <div
+                    key={s.id}
+                    onClick={() => {
+                      if (filter === "punya") {
+                        setStudentToShare(prev => prev?.id === s.id ? null : s);
+                      } else {
+                        toggle(s.id);
+                      }
+                    }}
+                    style={{
+                      background: isSelectedForShare ? "#F0F5F2" : (on ? SEC : CARD),
+                      border: `1.5px solid ${isSelectedForShare ? T : (on ? T : BDR)}`,
+                      width: "100%",
+                      minHeight: 68,
+                      cursor: "pointer"
+                    }}
+                    className={`rounded-2xl px-3.5 py-3 flex items-center gap-3 transition-all ${isSelectedForShare ? "ring-2 ring-offset-1 ring-[#5B7A68]" : ""}`}>
+                    
+                    {/* Checkbox */}
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggle(s.id);
+                      }}
+                      className="p-1 -m-1 cursor-pointer"
+                    >
+                      {on ? <CheckSquare size={20} style={{color:T,flexShrink:0}}/> : <Square size={20} style={{color:"#C4CBC6",flexShrink:0}}/>}
+                    </div>
+
+                    <span style={{fontSize:20,flexShrink:0}}>{s.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <p className="font-semibold text-sm truncate" style={{color:TEXT,fontFamily:IPS}}>{s.name}</p>
+                        {filter === "punya" && (
+                          <span
+                            className="text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 flex-shrink-0"
+                            style={{
+                              background: isSelectedForShare ? T : BG,
+                              color: isSelectedForShare ? "#fff" : T,
+                              border: `1px solid ${isSelectedForShare ? T : BDR}`
+                            }}
+                          >
+                            <Share2 size={10}/>
+                            {isSelectedForShare ? "Dipilih" : "Share"}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs" style={{color:MUTED}}>Kelas {s.kelas} · {s.abk}</p>
+                      {s.kodeOrtu
+                        ? <p className="text-xs font-bold mt-0.5" style={{color:DEEP,fontFamily:DMM}}>Kode: {s.kodeOrtu}</p>
+                        : <span className="text-xs font-semibold mt-0.5 inline-block px-2 py-0.5 rounded-full" style={{background:"#FEF9EC",color:"#92400E"}}>Belum ada kode</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Tindakan pada yang terpilih */}
+          <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+            <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tindakan Siswa Terpilih</p>
+            <p className="text-xs mb-3" style={{color:MUTED}}>
+              {terpilih.length ? `Berlaku untuk ${terpilih.length} siswa terpilih.` : "Centang siswa terlebih dahulu untuk mengaktifkan tindakan massal."}
+            </p>
+
+            <button onClick={buatKode} disabled={!terpilih.length}
+              style={{width:"100%",background:terpilih.length?A:"#E5E7EB",color:terpilih.length?"#fff":"#9CA3AF",fontFamily:IPS,minHeight:48,marginBottom:8}}
+              className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
+              <RefreshCw size={15}/>
+              {terpilihBelum.length===terpilih.length && terpilih.length
+                ? `Generate Kode untuk ${terpilih.length} Siswa`
+                : `Generate / Perbarui Kode (${terpilih.length})`}
             </button>
-            <button onClick={()=>terpilihPunya.length && setKonfirmasiHapus(true)} disabled={!terpilihPunya.length}
-              style={{flex:1,background:CARD,border:`1.5px solid ${terpilihPunya.length?"#FCA5A5":BDR}`,color:terpilihPunya.length?"#B91C1C":"#C4CBC6",fontFamily:IPS,minHeight:46}}
-              className="rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5">
-              <Trash2 size={13}/>Hapus Kode
+
+            <div className="flex gap-2">
+              <button onClick={salinTerpilih} disabled={!terpilih.length}
+                style={{flex:1,background:CARD,border:`1.5px solid ${terpilih.length?T:BDR}`,color:terpilih.length?T:"#C4CBC6",fontFamily:IPS,minHeight:46}}
+                className="rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5">
+                <Copy size={13}/>Salin Daftar
+              </button>
+              <button onClick={()=>terpilihPunya.length && setKonfirmasiHapus(true)} disabled={!terpilihPunya.length}
+                style={{flex:1,background:CARD,border:`1.5px solid ${terpilihPunya.length?"#FCA5A5":BDR}`,color:terpilihPunya.length?"#B91C1C":"#C4CBC6",fontFamily:IPS,minHeight:46}}
+                className="rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5">
+                <Trash2 size={13}/>Hapus Kode
+              </button>
+            </div>
+
+            {terpilihPunya.length>0 && (
+              <p className="text-xs mt-2 leading-relaxed" style={{color:MUTED}}>
+                Membuat ulang atau menghapus kode akan memutus akses orang tua yang memakai kode lama.
+              </p>
+            )}
+          </div>
+
+          {/* Ekspor Laporan & Dokumen */}
+          <ExportPanel list={sasaranEkspor} adaSeleksi={terpilih.length>0} namaSekolah={namaSekolah} onDone={beritahu}/>
+        </div>
+      </div>
+
+      {/* NAVBAR BAWAH: Tombol Share per Siswa (Tulisan teks kode share, bukan Excel) */}
+      {filter === "punya" && studentToShare && (
+        <div
+          style={{
+            position: "sticky",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 60,
+            background: "#FFFFFF",
+            borderTop: `1.5px solid ${BDR}`,
+            boxShadow: "0 -8px 24px rgba(0,0,0,0.12)",
+            padding: "12px 16px 16px",
+          }}
+          className="transition-all"
+        >
+          {/* Header Navbar Bawah */}
+          <div className="flex items-center justify-between mb-2.5 pb-2" style={{borderBottom:`1px dashed ${BDR}`}}>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span style={{fontSize: 22}}>{studentToShare.emoji}</span>
+              <div className="min-w-0">
+                <p className="font-bold text-xs truncate" style={{color: TEXT, fontFamily: PJS}}>{studentToShare.name}</p>
+                <p className="text-[11px]" style={{color: MUTED}}>
+                  Kelas {studentToShare.kelas} • Kode: <strong style={{color: DEEP, fontFamily: DMM}}>{studentToShare.kodeOrtu}</strong>
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setStudentToShare(null)}
+              style={{background: BG, border: `1px solid ${BDR}`, color: MUTED, borderRadius: 10, width: 28, height: 28}}
+              className="flex items-center justify-center active:scale-95"
+              title="Tutup"
+            >
+              <X size={15}/>
             </button>
           </div>
 
-          {terpilihPunya.length>0 && (
-            <p className="text-xs mt-2 leading-relaxed" style={{color:MUTED}}>
-              Membuat ulang atau menghapus kode akan memutus akses orang tua yang memakai kode lama.
+          {/* Tampilan teks format share */}
+          <div style={{background: BG, borderRadius: 12, padding: "8px 10px", marginBottom: 10, border: `1px solid ${BDR}`}}>
+            <p className="text-[11px] leading-relaxed" style={{color: TEXT}}>
+              🔑 <span className="font-semibold">Format Share:</span> <em>Kode Akses {studentToShare.kodeOrtu} untuk wali murid {studentToShare.name} ({studentToShare.kelas})</em>
             </p>
-          )}
+          </div>
+
+          {/* Tombol Share & Salin Teks */}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => handleShareKode(studentToShare)}
+              style={{
+                flex: 1.3,
+                background: `linear-gradient(135deg, ${T} 0%, #466253 100%)`,
+                color: "#fff",
+                border: "none",
+                borderRadius: 14,
+                fontFamily: IPS,
+                fontSize: 12.5,
+                fontWeight: 700,
+                minHeight: 44,
+                boxShadow: "0 3px 10px rgba(91,122,104,0.25)"
+              }}
+              className="flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+              <Share2 size={15}/>
+              Bagikan Kode
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSalinTeksKode(studentToShare)}
+              style={{
+                flex: 1,
+                background: CARD,
+                color: TEXT,
+                border: `1.5px solid ${BDR}`,
+                borderRadius: 14,
+                fontFamily: IPS,
+                fontSize: 12.5,
+                fontWeight: 600,
+                minHeight: 44
+              }}
+              className="flex items-center justify-center gap-1.5 active:scale-95 transition-all hover:bg-neutral-50">
+              <Copy size={14}/>
+              Salin Teks
+            </button>
+          </div>
         </div>
+      )}
 
-        {/* Ekspor */}
-        <ExportPanel list={sasaranEkspor} adaSeleksi={terpilih.length>0} namaSekolah={namaSekolah} onDone={beritahu}/>
-      </div>
-
-      {/* Konfirmasi hapus */}
+      {/* Konfirmasi hapus modal */}
       {konfirmasiHapus && (
         <div style={{position:"absolute",inset:0,zIndex:70,display:"flex",alignItems:"center",justifyContent:"center",padding:20,background:"rgba(46,62,53,0.5)"}}
           onClick={()=>setKonfirmasiHapus(false)}>
@@ -318,8 +560,9 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
         </div>
       )}
 
+      {/* Toast notifikasi */}
       {toast && (
-        <div style={{position:"absolute",left:16,right:16,bottom:16,zIndex:75,background:"#2E3E35",borderRadius:16,padding:"12px 16px",display:"flex",alignItems:"center",gap:9,boxShadow:"0 10px 28px rgba(0,0,0,0.28)"}}>
+        <div style={{position:"fixed",left:20,right:20,bottom:studentToShare && filter === "punya" ? 120 : 20,zIndex:75,background:"#2E3E35",borderRadius:16,padding:"12px 16px",display:"flex",alignItems:"center",gap:9,boxShadow:"0 10px 28px rgba(0,0,0,0.28)"}}>
           <CheckCircle size={15} style={{color:"#8BB098",flexShrink:0}}/>
           <p className="text-xs font-semibold" style={{color:"#fff",fontFamily:IPS}}>{toast}</p>
         </div>
