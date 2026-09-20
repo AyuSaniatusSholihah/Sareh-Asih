@@ -1,10 +1,10 @@
 import { useState } from "react";
 import {
   Calendar, LayoutGrid, Palette, GraduationCap,
-  Lightbulb, MapPin, Tag, Users, ChevronRight, ChevronDown,
+  Lightbulb, MapPin, Tag, Users, ChevronRight, ChevronDown, User, UserCheck, Sparkles,
 } from "lucide-react";
 import {
-  CARD, TEXT, MUTED, BDR, PJS, IPS, DMM, BG,
+  CARD, TEXT, MUTED, BDR, PJS, IPS, DMM, BG, DEEP, A,
 } from "../ui-kit";
 import {
   useStudents, LOMBA, studentCompDetail, type Student,
@@ -289,17 +289,32 @@ export function CompetitionScreen({
                       }}
                       onClick={e => e.stopPropagation()}
                     >
-                      <p
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 800,
-                          color: "#1B2E24",
-                          fontFamily: PJS,
-                          marginBottom: 10,
-                        }}
-                      >
-                        Siswa yang Direkomendasikan:
-                      </p>
+                      <div className="flex items-center gap-2 mb-2.5">
+                        <div
+                          style={{
+                            width: 26,
+                            height: 26,
+                            borderRadius: 8,
+                            background: "#E8F2EC",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <UserCheck size={15} style={{ color: DEEP }} />
+                        </div>
+                        <p
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 800,
+                            color: "#1B2E24",
+                            fontFamily: PJS,
+                            margin: 0,
+                          }}
+                        >
+                          Siswa yang Direkomendasikan:
+                        </p>
+                      </div>
 
                       {matchedStudents.length === 0 ? (
                         <p className="text-sm" style={{ color: MUTED }}>
@@ -318,14 +333,28 @@ export function CompetitionScreen({
                               }}
                               className="shadow-xs"
                             >
-                              {/* Header: Emoji + Nama + Kelas */}
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xl leading-none">{m.student.emoji}</span>
+                              {/* Header: Profile Icon + Nama + Kelas */}
+                              <div className="flex items-center gap-2.5 mb-1.5">
+                                <div
+                                  style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: "50%",
+                                    background: m.student.hasObs ? "#EBF4EE" : "#FBF1EF",
+                                    border: `1.5px solid ${m.student.hasObs ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  <User size={16} style={{ color: m.student.hasObs ? DEEP : A }} />
+                                </div>
                                 <p
                                   style={{
                                     color: TEXT,
                                     fontFamily: PJS,
-                                    fontSize: 14.5,
+                                    fontSize: 14,
                                     fontWeight: 800,
                                   }}
                                   className="truncate flex-1"
