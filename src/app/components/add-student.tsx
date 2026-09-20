@@ -58,8 +58,8 @@ export function AddStudentSheet({
   const [extraInput, setExtraInput] = useState("");
 
   // State untuk Database Sekolah
-  const [selectedDBKelas, setSelectedDBKelas] = useState<Set<string>>(new Set(["VII A – Autisme"]));
-  const [expandedDBKelas, setExpandedDBKelas] = useState<string | null>("VII A – Autisme");
+  const [selectedDBKelas, setSelectedDBKelas] = useState<Set<string>>(new Set(["VII A – Tunanetra"]));
+  const [expandedDBKelas, setExpandedDBKelas] = useState<string | null>("VII A – Tunanetra");
 
   // State untuk Upload File
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,7 +97,7 @@ export function AddStudentSheet({
       : form.jenis_abk;
     onSave({
       name: form.nama.trim(),
-      abk: allAbk || "Autism Spectrum Disorder",
+      abk: allAbk || "Tunanetra",
       kelas: form.kelas || kelasOptions[0],
       age: Number(form.umur) || 0,
       emoji: form.emoji,
@@ -131,10 +131,10 @@ export function AddStudentSheet({
     e.preventDefault();
     const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(
       "Nama Lengkap,Jenis Hambatan,TTL\n" +
-      "Rafi Pratama,Autism Spectrum Disorder,Bandung 12 Maret 2014\n" +
+      "Rafi Pratama,Tunanetra,Bandung 12 Maret 2014\n" +
       "Nisa Aulia,Tunarungu,Jakarta 05 Juli 2013\n" +
       "Arga Saputra,Tunadaksa,Depok 20 Nov 2015\n" +
-      "Siti Nurhaliza,Tunagrahita Ringan,Surakarta 18 Agu 2014\n"
+      "Siti Nurhaliza,Tunanetra,Surakarta 18 Agu 2014\n"
     );
     const link = document.createElement("a");
     link.setAttribute("href", csvContent);
@@ -151,7 +151,7 @@ export function AddStudentSheet({
     return lines.slice(start).filter(l => l.trim()).map(line => {
       const cols = line.split(/[,;\t]/).map(c => c.trim().replace(/^"|"$/g, ""));
       const nama = cols[0] || "";
-      const abk = cols[1] || "Autism Spectrum Disorder";
+      const abk = cols[1] || "Tunanetra";
       const ttl = cols[2] || "";
       return { nama, abk, ttl, valid: nama.trim() !== "" };
     });
@@ -182,10 +182,10 @@ export function AddStudentSheet({
     } else {
       // Mock parsing for Excel/Image
       const sampleMockRows: SiswaCSVRow[] = [
-        { nama: "Rafi Pratama", abk: "Autism Spectrum Disorder", ttl: "Bandung, 12 Maret 2014", valid: true },
+        { nama: "Rafi Pratama", abk: "Tunanetra", ttl: "Bandung, 12 Maret 2014", valid: true },
         { nama: "Nisa Aulia", abk: "Tunarungu", ttl: "Jakarta, 05 Juli 2013", valid: true },
         { nama: "Arga Saputra", abk: "Tunadaksa", ttl: "Depok, 20 Nov 2015", valid: true },
-        { nama: "Siti Nurhaliza", abk: "Tunagrahita Ringan", ttl: "Surakarta, 18 Agu 2014", valid: true },
+        { nama: "Siti Nurhaliza", abk: "Tunanetra", ttl: "Surakarta, 18 Agu 2014", valid: true },
       ];
       setUploadedRows(sampleMockRows);
     }
@@ -195,7 +195,7 @@ export function AddStudentSheet({
     const valid = uploadedRows.filter(r => r.valid);
     if (!valid.length || !selectedUploadKelas) return;
     const targetKelas = selectedUploadKelas;
-    const defaultAbk = kelasAbkMap[targetKelas] || "Autism Spectrum Disorder";
+    const defaultAbk = kelasAbkMap[targetKelas] || "Tunanetra";
     valid.forEach((s, idx) => {
       const emoji = ["👦", "👧", "🧑"][idx % 3];
       onSave({
@@ -247,7 +247,7 @@ export function AddStudentSheet({
       const emoji = ["👦", "👧", "🧑"][idx % 3];
       onSave({
         name: s.nama,
-        abk: s.abk || "Autism Spectrum Disorder",
+        abk: s.abk || "Tunanetra",
         kelas: s.kelasName,
         age: 13,
         emoji,

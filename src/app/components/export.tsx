@@ -21,7 +21,7 @@ const KOLOM: {h:string; get:(s:Student)=>string}[] = [
   {h:"Umur",             get:s=>s.age?String(s.age):""},
   {h:"Jenis ABK",        get:s=>s.abk},
   {h:"Guru Pendamping",  get:s=>s.teacher},
-  {h:"Status Pengamatan", get:s=>s.hasObs?"Sudah didampingi":"Belum didampingi"},
+  {h:"Status Asesmen", get:s=>s.hasObs?"Sudah didampingi":"Belum didampingi"},
   {h:"Cara Belajar",     get:s=>s.caraBelajar||""},
   {h:"Bakat Dominan",    get:s=>s.talent||""},
   {h:"Skor Bakat",       get:s=>s.talentScore?String(s.talentScore):""},
@@ -83,7 +83,7 @@ function bagianSiswa(s:Student, index:number, total:number) {
 
     <h3>B. Hasil Pemetaan Bakat</h3>
     ${!s.hasObs
-      ? `<p class="kosong">Belum ada data pengamatan. Pemetaan bakat akan tersedia setelah pengamatan pertama diselesaikan.</p>`
+      ? `<p class="kosong">Belum ada data asesmen. Pemetaan bakat akan tersedia setelah asesmen pertama diselesaikan.</p>`
       : `<table>
           ${baris("Bakat Dominan", s.talent||"")}
           ${baris("Skor Bakat", s.talentScore?`${s.talentScore} / 100`:"")}
@@ -159,7 +159,7 @@ export function buildLaporanHTML(list:Student[], namaSekolah:string) {
   </div>
   ${satu ? "" : `<p class="meta">Daftar siswa: ${list.map(s=>esc(s.name)).join(", ")}</p>`}
   ${list.map((s,i)=>bagianSiswa(s,i,list.length)).join("")}
-  <p class="catatan">Laporan ini dihasilkan Sareh Asih dari data pengamatan dan asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen tenaga ahli.</p>
+  <p class="catatan">Laporan ini dihasilkan Sareh Asih dari data asesmen dan asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen tenaga ahli.</p>
 </body></html>`;
 }
 

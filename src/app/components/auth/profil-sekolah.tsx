@@ -34,7 +34,7 @@ export function ProfilSekolahModal({
   const [detailGanda, setDetailGanda] = useState<string>("");
   // Input manual jenis kelas jika pilih "Lainnya" (misal: Inklusi, ADHD, Slow Learner)
   const [customJenisInput, setCustomJenisInput] = useState<string>("");
-  const [customAbkInput, setCustomAbkInput] = useState<string>("Autism Spectrum Disorder");
+  const [customAbkInput, setCustomAbkInput] = useState<string>("Tunanetra");
   const [rombelParalel, setRombelParalel] = useState<string>("");
 
   // 2. State Vokasional (SMPLB & SMALB)
@@ -52,9 +52,9 @@ export function ProfilSekolahModal({
   const KEKHUSUSAN_LIST = [
     { kode: "A", nama: "Kelas Tunanetra (A)", ringkas: "Tunanetra", abk: "Tunanetra", desc: "Hambatan penglihatan" },
     { kode: "B", nama: "Kelas Tunarungu (B)", ringkas: "Tunarungu", abk: "Tunarungu", desc: "Hambatan pendengaran/wicara" },
-    { kode: "C", nama: "Kelas Tunagrahita (C)", ringkas: "Tunagrahita", abk: "Tunagrahita Ringan", desc: "Hambatan intelektual (ringan–sedang)" },
+    { kode: "C", nama: "Kelas Tunanetra (C)", ringkas: "Tunanetra", abk: "Tunanetra", desc: "Hambatan intelektual (ringan–sedang)" },
     { kode: "D", nama: "Kelas Tunadaksa (D)", ringkas: "Tunadaksa", abk: "Tunadaksa", desc: "Hambatan fisik/motorik" },
-    { kode: "Autis", nama: "Kelas Spektrum Autis", ringkas: "Autis", abk: "Autism Spectrum Disorder", desc: "Penanganan & kurikulum adaptif" },
+    { kode: "Tunanetra", nama: "Kelas Spektrum Tunanetra", ringkas: "Tunanetra", abk: "Tunanetra", desc: "Penanganan & kurikulum adaptif" },
     { kode: "Ganda", nama: "Kelas Disabilitas Ganda", ringkas: "Disabilitas Ganda", abk: "Disabilitas Ganda", desc: "Memiliki lebih dari satu ragam disabilitas" },
     { kode: "Lainnya", nama: "Lainnya (Input Sendiri)", ringkas: "Lainnya", abk: "Lainnya", desc: "Ketikkan kelas / layanan khusus jika tidak ada di daftar" },
   ];
@@ -62,9 +62,9 @@ export function ProfilSekolahModal({
   // Presets kombinasi disabilitas ganda
   const PRESET_GANDA = [
     "Tunanetra + Tunarungu (Deafblind)",
-    "Tunarungu + Tunagrahita",
-    "Tunadaksa + Tunagrahita (Cerebral Palsy)",
-    "Autis + Tunagrahita",
+    "Tunarungu + Tunanetra",
+    "Tunadaksa + Tunanetra (Cerebral Palsy)",
+    "Tunanetra + Tunarungu",
     "Tunanetra + Tunadaksa",
   ];
 
@@ -443,7 +443,7 @@ export function ProfilSekolahModal({
                                   fontSize: 10,
                                   fontWeight: 800,
                                 }}>
-                                {k.kode === "Autis" ? "★" : k.kode === "Ganda" ? "∞" : k.kode}
+                                {k.kode === "Tunanetra" ? "★" : k.kode === "Ganda" ? "∞" : k.kode}
                               </span>
                               <p
                                 className="text-xs font-bold leading-tight"
@@ -579,11 +579,11 @@ export function ProfilSekolahModal({
                           outline: "none",
                           boxSizing: "border-box"
                         }}>
-                        <option value="Autism Spectrum Disorder">Autism Spectrum Disorder (ASD)</option>
+                        <option value="Tunanetra">Tunanetra (ASD)</option>
                         <option value="Tunarungu">Tunarungu / Wicara</option>
                         <option value="Tunadaksa">Tunadaksa (Fisik/Motorik)</option>
-                        <option value="Tunagrahita Ringan">Tunagrahita Ringan</option>
-                        <option value="Tunagrahita Sedang">Tunagrahita Sedang</option>
+                        <option value="Tunanetra">Tunanetra</option>
+                        <option value="Tunarungu">Tunarungu</option>
                         <option value="Tunanetra">Tunanetra</option>
                         <option value="Tunalaras">Tunalaras</option>
                         <option value="Disabilitas Ganda">Disabilitas Ganda</option>

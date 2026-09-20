@@ -10,13 +10,13 @@ interface TambahKelasFormProps {
 export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }: TambahKelasFormProps) {
   const [namaSekolah, setNamaSekolah] = useState(defaultSekolah);
   const [namaKelas, setNamaKelas] = useState('');
-  const [selectedTag, setSelectedTag] = useState('Autism Spectrum Disorder');
+  const [selectedTag, setSelectedTag] = useState('Tunanetra');
   const [showModal, setShowModal] = useState(false);
 
   const tags = [
-    'Autism Spectrum Disorder',
+    'Tunanetra',
     'Tunarungu',
-    'Tunagrahita',
+    'Tunanetra',
     'Tunadaksa',
     'Lainnya',
   ];

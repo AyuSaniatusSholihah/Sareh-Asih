@@ -347,7 +347,7 @@ export function StudentPicker({pilih,setPilih}:{pilih:Set<number>;setPilih:(s:Se
               <span style={{fontSize:16,flexShrink:0}}>{s.emoji}</span>
               <span className="text-xs font-semibold flex-1 min-w-0 truncate" style={{color:TEXT}}>{s.name}</span>
               <span className="text-xs flex-shrink-0" style={{color:MUTED}}>{s.kelas}</span>
-              {!s.hasObs && <span className="text-xs flex-shrink-0" style={{color:"#92400E"}}>belum pengamatan</span>}
+              {!s.hasObs && <span className="text-xs flex-shrink-0" style={{color:"#92400E"}}>belum asesmen</span>}
             </button>
           );
         })}

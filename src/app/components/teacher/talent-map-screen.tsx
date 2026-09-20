@@ -45,7 +45,7 @@ export function TalentMapScreen({
               Peta Bakat Siswa
             </h1>
             <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "4px 0 0", fontWeight: 500 }}>
-              Semua siswa · Berdasarkan observasi AI
+              Semua siswa · Berdasarkan asesmen AI
             </p>
           </div>
 
@@ -198,7 +198,7 @@ export function TalentMapScreen({
             </p>
           </div>
 
-          {/* Card 2: Belum observasi */}
+          {/* Card 2: Belum asesmen */}
           <div
             style={{
               background: "#FFFFFF",
@@ -213,7 +213,7 @@ export function TalentMapScreen({
               {noObsCount}
             </p>
             <p style={{ fontFamily: IPS, fontSize: 12, fontWeight: 500, color: "#5A6E63", marginTop: 6, margin: "6px 0 0", lineHeight: 1.25 }}>
-              Belum observasi
+              Belum asesmen
             </p>
           </div>
 
@@ -288,15 +288,6 @@ export function TalentMapScreen({
                             <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "#E4EFE7", color: "#2D543E" }}>
                               {s.talent || "Menunggu analisis"}
                             </span>
-                            <div className="flex gap-0.5">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star key={i} size={10} style={{ color: i < s.stars ? "#E5A83B" : "#E2E8F0", fill: i < s.stars ? "#E5A83B" : "#E2E8F0" }} />
-                              ))}
-                            </div>
-                            <span className="text-xs font-bold" style={{ color: "#2D543E", fontFamily: DMM }}>{s.talentScore}</span>
-                          </div>
-                          <div className="mt-1.5 h-1.5 rounded-full" style={{ background: "#E8EFEA" }}>
-                            <div className="h-full rounded-full" style={{ width: `${s.talentScore}%`, background: "#749680" }} />
                           </div>
                         </div>
                         <ChevronRight size={15} style={{ color: "#94A3B8", flexShrink: 0 }} />
@@ -318,7 +309,7 @@ export function TalentMapScreen({
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-sm" style={{ color: "#5A6E63" }}>{s.name}</p>
                           <p className="text-xs" style={{ color: "#8E9E94" }}>{s.abk}</p>
-                          <p className="text-xs mt-1" style={{ color: "#8E9E94" }}>Belum ada data observasi</p>
+                          <p className="text-xs mt-1" style={{ color: "#8E9E94" }}>Belum ada data asesmen</p>
                         </div>
                         <button
                           onClick={() => onStartObs(s.id)}

@@ -46,13 +46,13 @@ export function DashboardGuru({
     [students],
   );
 
-  // ── Aktivitas terbaru (feed guru: pengamatan + laporan terkirim) ──
+  // ── Aktivitas terbaru (feed guru: asesmen + laporan terkirim) ──
   const aktivitas = [
     ...pendingObs.slice(0, 1).map(s => ({
       id: `p${s.id}`,
       I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: A }} />,
       bg: "rgba(210,125,107,0.12)",
-      judul: "Pengamatan belum tuntas",
+      judul: "Asesmen belum tuntas",
       ket: `${s.name.split(" ")[0]} · ${s.talent}`,
       waktu: "Perlu aksi", tint: A,
     })),
@@ -60,7 +60,7 @@ export function DashboardGuru({
       id: `o${s.id}`,
       I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: "#059669" }} />,
       bg: "#ECFDF5",
-      judul: "Pengamatan selesai",
+      judul: "Asesmen selesai",
       ket: `${s.name.split(" ")[0]} · ${s.talent}`,
       waktu: ["Baru saja", "Hari ini"][i] ?? "Hari ini", tint: "#059669",
     })),
@@ -159,7 +159,7 @@ export function DashboardGuru({
       <div style={{ padding: "14px 16px 90px", display: "flex", flexDirection: "column", gap: 16 }}>
         {/* ── Alert Banner ── */}
         {pendingObs.length > 0 && (
-          <div onClick={() => go("pengamatan-pending")}
+          <div onClick={() => go("asesmen-pending")}
             style={{
               background: `linear-gradient(135deg, ${A} 0%, #C46F5F 100%)`,
               borderRadius: 22,
@@ -178,11 +178,11 @@ export function DashboardGuru({
                 <Bell size={20} style={{ color: "#FFFFFF" }} />
               </div>
               <div style={{ minWidth: 0 }}>
-                <p style={{ fontSize: 13.5, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, lineHeight: 1.2 }}>{pendingObs.length} pengamatan perlu diperiksa</p>
-                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.88)", marginTop: 2, lineHeight: 1.3 }}>Tap untuk lengkapi pengamatan siswa</p>
+                <p style={{ fontSize: 13.5, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, lineHeight: 1.2 }}>{pendingObs.length} asesmen perlu diperiksa</p>
+                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.88)", marginTop: 2, lineHeight: 1.3 }}>Tap untuk lengkapi asesmen siswa</p>
               </div>
             </div>
-            <button onClick={() => go("pengamatan-pending")}
+            <button onClick={() => go("asesmen-pending")}
               style={{
                 background: "#FFFFFF",
                 color: A,

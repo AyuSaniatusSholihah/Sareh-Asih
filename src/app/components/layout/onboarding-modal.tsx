@@ -12,13 +12,13 @@ export type OStep = {
 export const OBS_STEPS: OStep[] = [
   {
     targetScreen: "dashboard", ring: { x: 16, y: 128, w: 358, h: 108, r: 18 }, cardPlacement: "top",
-    icon: "⚠️", title: "Pengingat Pengamatan Hari Ini",
+    icon: "⚠️", title: "Pengingat Asesmen Hari Ini",
     desc: "Banner ini menampilkan jumlah siswa yang belum didampingi. Tap 'Lihat Jadwal' untuk langsung ke daftar siswa yang perlu ditangani.",
     badge: "Banner Beranda",
   },
   {
     targetScreen: "dashboard", ring: { x: 155, y: 252, w: 219, h: 52, r: 0 }, cardPlacement: "top",
-    icon: "👆", title: "Pengamatan Pending",
+    icon: "👆", title: "Asesmen Pending",
     desc: "Tap baris ini untuk membuka daftar siswa yang belum didampingi — AI sudah menyiapkan indikator sesuai profil ABK masing-masing siswa.",
     badge: "Stats Card",
   },
@@ -31,7 +31,7 @@ export const OBS_STEPS: OStep[] = [
   {
     targetScreen: "talent-map", ring: { x: 156, y: 788, w: 78, h: 56, r: 0 }, cardPlacement: "top",
     icon: "✨", title: "Menu Bakat",
-    desc: "AI mengelompokkan seluruh siswa berdasarkan gaya belajar dan domain bakat dari hasil pengamatan. Guru langsung tahu siapa bisa diajar bersama.",
+    desc: "AI mengelompokkan seluruh siswa berdasarkan gaya belajar dan domain bakat dari hasil asesmen. Guru langsung tahu siapa bisa diajar bersama.",
     badge: "Nav Bakat",
   },
   {

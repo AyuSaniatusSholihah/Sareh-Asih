@@ -737,7 +737,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
           <div style={{background:"#FEF9EC",border:`1px solid rgba(217,142,30,0.25)`}} className="rounded-2xl px-4 py-3 flex items-start gap-2.5">
             <Info size={14} style={{color:A,flexShrink:0,marginTop:1}}/>
             <p className="text-xs leading-relaxed" style={{color:A}}>
-              Guru belum menyelesaikan pengamatan pertama untuk {nama}. Hasil pemetaan bakat akan muncul di sini setelah pengamatan selesai.
+              Guru belum menyelesaikan asesmen pertama untuk {nama}. Hasil pemetaan bakat akan muncul di sini setelah asesmen selesai.
             </p>
           </div>
         )}

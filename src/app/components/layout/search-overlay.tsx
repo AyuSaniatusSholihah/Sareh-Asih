@@ -41,7 +41,7 @@ export function SearchOverlay({ onClose }: { onClose: () => void }) {
         )}
         {q.length === 0 && (
           <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {["Rafi Pratama", "Pengamatan", "Talent Map", "Lomba FLS2N", "Laporan"].map(t => (
+            {["Rafi Pratama", "Asesmen", "Talent Map", "Lomba FLS2N", "Laporan"].map(t => (
               <span key={t} onClick={() => setQ(t)} style={{ fontSize: 11, fontFamily: IPS, background: SEC, color: DEEP, padding: "5px 10px", borderRadius: 20, cursor: "pointer", fontWeight: 600 }}>{t}</span>
             ))}
           </div>
