@@ -177,34 +177,6 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
           title="Kode Akses Orang Tua"
           sub={`${students.filter(s=>!!s.kodeOrtu).length} dari ${students.length} siswa sudah punya kode`}
           onBack={onBack}
-          right={
-            <button
-              type="button"
-              onClick={handleGenerateKode}
-              style={{
-                background: `linear-gradient(135deg, ${A} 0%, #C45F4B 100%)`,
-                color: "#FFFFFF",
-                border: "none",
-                borderRadius: 14,
-                padding: "8px 12px",
-                fontFamily: PJS,
-                fontSize: 11.5,
-                fontWeight: 800,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 5,
-                boxShadow: "0 3px 10px rgba(210, 110, 91, 0.32)",
-                flexShrink: 0,
-                whiteSpace: "nowrap",
-              }}
-              className="active:scale-95 transition-all hover:brightness-105"
-              title="Generate Kode Akses"
-            >
-              <Key size={13} strokeWidth={2.5} />
-              <span>Generate Kode</span>
-            </button>
-          }
         />
 
         <div className="px-4 pt-4 pb-28 space-y-3">
@@ -230,88 +202,21 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
             })}
           </div>
 
-          {/* Banner Spreadsheet Keseluruhan Kode (Hanya di tab "Sudah Ada Kode") */}
-          {filter === "punya" && (
-            <div style={{background:CARD,border:`1.5px solid ${BDR}`,boxShadow:"0 2px 10px rgba(0,0,0,0.03)"}} className="rounded-2xl p-3.5">
-              <div className="flex items-center gap-2.5 mb-1.5">
-                <div style={{width:34,height:34,borderRadius:10,background:"#ECFDF5",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                  <FileSpreadsheet size={19} style={{color:"#059669"}}/>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-xs" style={{fontFamily:PJS,color:TEXT}}>Rekap Spreadsheet Keseluruhan Kode</p>
-                  <p className="text-[11px]" style={{color:MUTED}}>Format Excel (.csv) berisi {listPunyaSemua.length} siswa yang sudah ada kode</p>
-                </div>
-              </div>
-              <div className="flex gap-2 mt-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!listPunyaSemua.length) { beritahu("Belum ada siswa yang memiliki kode."); return; }
-                    exportSpreadsheet(listPunyaSemua, namaSekolah);
-                    beritahu(`Spreadsheet Excel ${listPunyaSemua.length} siswa berhasil diunduh.`);
-                  }}
-                  style={{
-                    flex: 1,
-                    background: "#15803D",
-                    color: "#fff",
-                    fontFamily: IPS,
-                    minHeight: 40,
-                    border: "none",
-                    boxShadow: "0 2px 8px rgba(21,128,61,0.22)"
-                  }}
-                  className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
-                  <Download size={14}/>
-                  Download Excel
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (!listPunyaSemua.length) { beritahu("Belum ada siswa yang memiliki kode."); return; }
-                    const res = await shareSpreadsheet(listPunyaSemua, namaSekolah);
-                    beritahu(res.message);
-                  }}
-                  style={{
-                    flex: 1,
-                    background: BG,
-                    color: TEXT,
-                    border: `1px solid ${BDR}`,
-                    fontFamily: IPS,
-                    minHeight: 40,
-                  }}
-                  className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all hover:bg-[#EDE9E3]">
-                  <Share2 size={14} style={{color:T}}/>
-                  Share Spreadsheet
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Tombol Pilih Semua kecil dekat di atas nama siswa (tanpa kotak) */}
+          {/* Baris Kontrol: Pilih Semua di kiri & Generate Kode di pojok kanan (bukan di header) */}
           <div className="flex items-center justify-between px-1 pt-1 pb-0.5">
-            <button
-              type="button"
-              onClick={pilihSemuaTampil}
-              className="text-xs font-semibold flex items-center gap-1.5 active:opacity-75 transition-opacity"
-              style={{ color: T, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
-            >
-              {semuaTampilTerpilih ? <CheckSquare size={15} style={{ color: T }} /> : <Square size={15} style={{ color: "#9CA3AF" }} />}
-              <span>{semuaTampilTerpilih ? "Batal Pilih Semua" : "Pilih Semua"}</span>
-              <span className="text-[11px] font-normal" style={{ color: MUTED }}>({tampil.length} siswa)</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={pilihSemuaTampil}
+                className="text-xs font-semibold flex items-center gap-1.5 active:opacity-75 transition-opacity"
+                style={{ color: T, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+              >
+                {semuaTampilTerpilih ? <CheckSquare size={15} style={{ color: T }} /> : <Square size={15} style={{ color: "#9CA3AF" }} />}
+                <span>{semuaTampilTerpilih ? "Batal Pilih Semua" : "Pilih Semua"}</span>
+                <span className="text-[11px] font-normal" style={{ color: MUTED }}>({tampil.length} siswa)</span>
+              </button>
 
-            {terpilih.length > 0 && (
-              <div className="flex items-center gap-2.5">
-                {filter === "punya" && terpilihPunya.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setKonfirmasiHapus(true)}
-                    className="text-xs font-semibold flex items-center gap-1 active:opacity-75"
-                    style={{ color: "#B91C1C", background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
-                    title="Hapus kode terpilih"
-                  >
-                    <Trash2 size={12} /> Hapus ({terpilihPunya.length})
-                  </button>
-                )}
+              {terpilih.length > 0 && (
                 <button
                   type="button"
                   onClick={bersihkan}
@@ -320,8 +225,35 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
                 >
                   Kosongkan ({terpilih.length})
                 </button>
-              </div>
-            )}
+              )}
+            </div>
+
+            {/* Tombol Generate Kode di pojok kanan (dekat dengan daftar siswa, bukan di header) */}
+            <button
+              type="button"
+              onClick={handleGenerateKode}
+              style={{
+                background: `linear-gradient(135deg, ${A} 0%, #C45F4B 100%)`,
+                color: "#FFFFFF",
+                border: "none",
+                borderRadius: 12,
+                padding: "6px 12px",
+                fontFamily: PJS,
+                fontSize: 11.5,
+                fontWeight: 800,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+                boxShadow: "0 2px 8px rgba(210, 110, 91, 0.28)",
+                flexShrink: 0,
+              }}
+              className="active:scale-95 transition-all hover:brightness-105"
+              title="Generate Kode Akses"
+            >
+              <Key size={13} strokeWidth={2.5} />
+              <span>Generate Kode</span>
+            </button>
           </div>
 
           {/* Daftar siswa */}
@@ -375,8 +307,61 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
             </div>
           )}
 
-          {/* Ekspor Laporan & Dokumen */}
-          <ExportPanel list={sasaranEkspor} adaSeleksi={terpilih.length>0} namaSekolah={namaSekolah} onDone={beritahu}/>
+          {/* Banner Spreadsheet Keseluruhan Kode ditaruh di bawah (menggantikan hasil pemetaan) */}
+          {filter === "punya" && (
+            <div style={{background:CARD,border:`1.5px solid ${BDR}`,boxShadow:"0 2px 10px rgba(0,0,0,0.03)"}} className="rounded-2xl p-3.5 mt-2">
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <div style={{width:34,height:34,borderRadius:10,background:"#ECFDF5",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <FileSpreadsheet size={19} style={{color:"#059669"}}/>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-xs" style={{fontFamily:PJS,color:TEXT}}>Rekap Spreadsheet Keseluruhan Kode</p>
+                  <p className="text-[11px]" style={{color:MUTED}}>Format Excel (.csv) berisi {listPunyaSemua.length} siswa yang sudah ada kode</p>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!listPunyaSemua.length) { beritahu("Belum ada siswa yang memiliki kode."); return; }
+                    exportSpreadsheet(listPunyaSemua, namaSekolah);
+                    beritahu(`Spreadsheet Excel ${listPunyaSemua.length} siswa berhasil diunduh.`);
+                  }}
+                  style={{
+                    flex: 1,
+                    background: "#15803D",
+                    color: "#fff",
+                    fontFamily: IPS,
+                    minHeight: 40,
+                    border: "none",
+                    boxShadow: "0 2px 8px rgba(21,128,61,0.22)"
+                  }}
+                  className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                  <Download size={14}/>
+                  Download Excel
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!listPunyaSemua.length) { beritahu("Belum ada siswa yang memiliki kode."); return; }
+                    const res = await shareSpreadsheet(listPunyaSemua, namaSekolah);
+                    beritahu(res.message);
+                  }}
+                  style={{
+                    flex: 1,
+                    background: BG,
+                    color: TEXT,
+                    border: `1px solid ${BDR}`,
+                    fontFamily: IPS,
+                    minHeight: 40,
+                  }}
+                  className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all hover:bg-[#EDE9E3]">
+                  <Share2 size={14} style={{color:T}}/>
+                  Share Spreadsheet
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
