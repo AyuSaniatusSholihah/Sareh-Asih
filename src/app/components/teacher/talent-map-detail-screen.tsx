@@ -5,50 +5,253 @@ import {
 import {
   A, CARD, TEXT, MUTED, DEEP, PJS, IPS, DMM, TBar, BDR
 } from "../ui-kit";
-import { useStudents, studentTalentDetail, type Screen } from "../data";
+import { useStudents, type Screen } from "../data";
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, LabelList
 } from "recharts";
 
-export function FungsionalRadarChart({ studentId }: { studentId: number }) {
-  // Mock data for WHODAS fungsional profile
-  const data = studentId === 2 ? [
-    { subject: 'Kognisi', A: 90, fullMark: 100 },
-    { subject: 'Mobilitas', A: 40, fullMark: 100 },
-    { subject: 'Perawatan Diri', A: 50, fullMark: 100 },
-    { subject: 'Interaksi', A: 85, fullMark: 100 },
-    { subject: 'Aktivitas', A: 70, fullMark: 100 },
-    { subject: 'Partisipasi', A: 65, fullMark: 100 },
-  ] : [
-    { subject: 'Kognisi', A: 60, fullMark: 100 },
-    { subject: 'Mobilitas', A: 80, fullMark: 100 },
-    { subject: 'Perawatan Diri', A: 90, fullMark: 100 },
-    { subject: 'Interaksi', A: 40, fullMark: 100 },
-    { subject: 'Aktivitas', A: 50, fullMark: 100 },
-    { subject: 'Partisipasi', A: 50, fullMark: 100 },
-  ];
+interface FungsionalDomainItem {
+  subject: string;
+  icon: string;
+  A: number;
+  fullMark: number;
+}
+
+export function getStudentFungsionalData(studentId: number, studentName = "Siswa"): {
+  data: FungsionalDomainItem[];
+  avg: number;
+  statusLabel: string;
+  keterangan: string;
+} {
+  let domains: FungsionalDomainItem[] = [];
+  let customKeterangan = "";
+
+  if (studentId === 2) {
+    // Nisa Aulia (Tunarungu)
+    domains = [
+      { subject: 'Kognisi', icon: '🧠', A: 90, fullMark: 100 },
+      { subject: 'Interaksi', icon: '🤝', A: 85, fullMark: 100 },
+      { subject: 'Aktivitas', icon: '📅', A: 70, fullMark: 100 },
+      { subject: 'Partisipasi', icon: '🙋', A: 65, fullMark: 100 },
+      { subject: 'Perawatan Diri', icon: '🧍', A: 50, fullMark: 100 },
+      { subject: 'Mobilitas', icon: '🏃', A: 40, fullMark: 100 },
+    ];
+    customKeterangan = `${studentName} memiliki kemandirian tinggi dalam Kognisi (90%) dan Interaksi (85%). Memerlukan pendampingan bertahap pada orientasi Mobilitas (40%) dan Perawatan Diri (50%).`;
+  } else if (studentId === 3) {
+    // Arga Saputra (Tunadaksa)
+    domains = [
+      { subject: 'Kognisi', icon: '🧠', A: 85, fullMark: 100 },
+      { subject: 'Interaksi', icon: '🤝', A: 80, fullMark: 100 },
+      { subject: 'Partisipasi', icon: '🙋', A: 70, fullMark: 100 },
+      { subject: 'Aktivitas', icon: '📅', A: 65, fullMark: 100 },
+      { subject: 'Perawatan Diri', icon: '🧍', A: 55, fullMark: 100 },
+      { subject: 'Mobilitas', icon: '🏃', A: 40, fullMark: 100 },
+    ];
+    customKeterangan = `${studentName} mandiri dan berinisiatif dalam Kognisi (85%) serta Interaksi (80%). Memerlukan akomodasi fisik berkala pada Mobilitas (40%) dan Perawatan Diri (55%).`;
+  } else {
+    // Rafi Pratama (Tunanetra) & default
+    domains = [
+      { subject: 'Perawatan Diri', icon: '🧍', A: 90, fullMark: 100 },
+      { subject: 'Mobilitas', icon: '🏃', A: 80, fullMark: 100 },
+      { subject: 'Kognisi', icon: '🧠', A: 60, fullMark: 100 },
+      { subject: 'Aktivitas', icon: '📅', A: 50, fullMark: 100 },
+      { subject: 'Partisipasi', icon: '🙋', A: 50, fullMark: 100 },
+      { subject: 'Interaksi', icon: '🤝', A: 40, fullMark: 100 },
+    ];
+    customKeterangan = `${studentName} sangat mandiri dalam Perawatan Diri (90%) dan Mobilitas (80%). Butuh stimulasi terarah pada Interaksi Sosial (40%) dan Aktivitas Mandiri (50%).`;
+  }
+
+  const avg = Math.round(domains.reduce((sum, d) => sum + d.A, 0) / domains.length);
+  const statusLabel = avg >= 80 ? "Mandiri Penuh" : avg >= 65 ? "Mandiri Baik" : avg >= 50 ? "Mandiri Sebagian" : "Perlu Bantuan";
+
+  return {
+    data: domains,
+    avg,
+    statusLabel,
+    keterangan: customKeterangan,
+  };
+}
+
+export function FungsionalRadarChart({ studentId, studentName = "Siswa" }: { studentId: number; studentName?: string }) {
+  const { data, avg, statusLabel, keterangan } = getStudentFungsionalData(studentId, studentName);
+
+  const RadarCustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const p = payload[0].payload;
+      return (
+        <div style={{ background: CARD, border: `1px solid ${BDR}`, padding: "8px 12px", borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
+          <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 12, color: TEXT }}>{p.icon} {p.subject}</p>
+          <p style={{ fontFamily: DMM, fontWeight: 700, fontSize: 14, color: DEEP }}>{p.A}%</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
-    <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 24, padding: "20px 14px", boxShadow: "0 2px 12px rgba(91,122,104,0.06)" }}>
-      <div className="flex items-center gap-2 mb-2 px-2">
-        <Activity size={18} style={{ color: DEEP }} />
-        <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT }}>
-          Profil Fungsional
-        </h3>
+    <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 24, padding: "20px 16px", boxShadow: "0 2px 12px rgba(91,122,104,0.06)" }}>
+      {/* Header with Title & Overall Percentage Badge */}
+      <div className="flex items-start justify-between gap-2 mb-1 px-1">
+        <div className="flex items-center gap-2">
+          <Activity size={18} style={{ color: DEEP }} />
+          <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT }}>
+            Kemandirian Siswa
+          </h3>
+        </div>
+        <div
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full flex-shrink-0"
+          style={{
+            background: avg >= 65 ? "#ECFDF5" : "#FFFBEB",
+            border: `1px solid ${avg >= 65 ? "#A7F3D0" : "#FDE68A"}`,
+          }}
+        >
+          <span style={{ color: avg >= 65 ? "#065F46" : "#92400E", fontFamily: DMM, fontWeight: 800, fontSize: 12 }}>
+            {avg}%
+          </span>
+          <span style={{ color: avg >= 65 ? "#059669" : "#B45309", fontFamily: PJS, fontWeight: 700, fontSize: 10 }}>
+            · {statusLabel}
+          </span>
+        </div>
       </div>
-      <p style={{ fontSize: 12, color: MUTED, marginBottom: 16, paddingLeft: 8, lineHeight: 1.4 }}>
-        Kapasitas fungsional anak di berbagai domain kehidupan sehari-hari (Skala 0-100).
+      <p style={{ fontSize: 12, color: MUTED, marginBottom: 14, paddingLeft: 4, lineHeight: 1.4 }}>
+        Kapasitas fungsional & kemandirian harian di 6 domain kehidupan (Skala 0–100%).
       </p>
-      <div style={{ width: '100%', height: 260 }}>
+
+      {/* Radar Chart */}
+      <div style={{ width: '100%', height: 230 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={data}>
+          <RadarChart cx="50%" cy="50%" outerRadius="68%" data={data}>
             <PolarGrid stroke="#E2E8F0" />
             <PolarAngleAxis dataKey="subject" tick={{ fill: TEXT, fontSize: 11, fontFamily: DMM, fontWeight: 600 }} />
             <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-            <Radar name="Profil" dataKey="A" stroke={DEEP} fill={DEEP} fillOpacity={0.25} strokeWidth={2} />
+            <Tooltip content={<RadarCustomTooltip />} />
+            <Radar name="Kemandirian" dataKey="A" stroke={DEEP} fill={DEEP} fillOpacity={0.25} strokeWidth={2.5} />
           </RadarChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Breakdown Persentase Setiap Domain */}
+      <div className="mt-3 pt-3 border-t border-slate-100">
+        <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: TEXT, marginBottom: 8, paddingLeft: 2 }}>
+          Rincian Persentase Kemandirian:
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {data.map((item) => {
+            const isHigh = item.A >= 70;
+            const isMid = item.A >= 50;
+            const badgeBg = isHigh ? "#ECFDF5" : isMid ? "#FEF3C7" : "#FEE2E2";
+            const badgeColor = isHigh ? "#065F46" : isMid ? "#92400E" : "#991B1B";
+            const barColor = isHigh ? "#10B981" : isMid ? "#F59E0B" : "#EF4444";
+            const statusText = isHigh ? "Mandiri" : isMid ? "Sebagian" : "Perlu Bantuan";
+
+            return (
+              <div
+                key={item.subject}
+                style={{
+                  background: "#F8FAFC",
+                  border: `1px solid ${BDR}`,
+                  borderRadius: 14,
+                  padding: "8px 10px",
+                }}
+                className="flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between gap-1 mb-1">
+                  <div className="flex items-center gap-1 min-w-0">
+                    <span className="text-xs flex-shrink-0">{item.icon}</span>
+                    <span
+                      className="text-[11px] font-bold truncate"
+                      style={{ color: TEXT, fontFamily: PJS }}
+                    >
+                      {item.subject}
+                    </span>
+                  </div>
+                  <span
+                    className="text-xs font-extrabold flex-shrink-0"
+                    style={{ color: barColor, fontFamily: DMM }}
+                  >
+                    {item.A}%
+                  </span>
+                </div>
+
+                {/* Progress bar visual */}
+                <div
+                  className="w-full rounded-full overflow-hidden mb-1"
+                  style={{ height: 5, background: "#E2E8F0" }}
+                >
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ width: `${item.A}%`, background: barColor }}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center text-[9.5px]">
+                  <span
+                    className="font-bold px-1.5 py-0.2 rounded"
+                    style={{ background: badgeBg, color: badgeColor }}
+                  >
+                    {statusText}
+                  </span>
+                  <span style={{ color: MUTED }}>
+                    {item.A}/100
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Keterangan Tulisannya Singkat di Bawahnya */}
+      <div
+        style={{
+          marginTop: 14,
+          background: "#F0F7F4",
+          border: `1.5px solid rgba(45, 84, 62, 0.20)`,
+          borderRadius: 16,
+          padding: "12px 14px",
+        }}
+        className="flex items-start gap-2.5"
+      >
+        <div
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 8,
+            background: "rgba(45, 84, 62, 0.12)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            marginTop: 1,
+          }}
+        >
+          <Sparkles size={15} style={{ color: DEEP }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p
+            style={{
+              fontFamily: PJS,
+              fontWeight: 800,
+              fontSize: 12,
+              color: DEEP,
+              marginBottom: 3,
+            }}
+          >
+            Keterangan Kemandirian:
+          </p>
+          <p
+            style={{
+              fontFamily: IPS,
+              fontSize: 11.5,
+              color: TEXT,
+              lineHeight: 1.45,
+              margin: 0,
+            }}
+          >
+            {keterangan}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -116,7 +319,7 @@ export function RiasecBarChart({ studentId }: { studentId: number }) {
   );
 }
 
-export function SuggestedCompetitions({ studentId }: { studentId: number }) {
+export function SuggestedCompetitions({ studentId, go }: { studentId: number; go?: (s: Screen) => void }) {
   const comps = studentId === 2 ? [
     { title: "FLS2N Menyanyi Solo", type: "Seni & Suara", level: "Kabupaten", match: 95 },
     { title: "Lomba Cipta Puisi", type: "Literasi", level: "Provinsi", match: 88 },
@@ -154,7 +357,11 @@ export function SuggestedCompetitions({ studentId }: { studentId: number }) {
           </div>
         ))}
       </div>
-      <button style={{ width: '100%', marginTop: 12, padding: "10px 0", background: A, color: "#fff", borderRadius: 12, fontFamily: PJS, fontWeight: 700, fontSize: 13, border: "none", cursor: "pointer" }} className="flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+      <button
+        onClick={() => go?.("competition")}
+        style={{ width: '100%', marginTop: 12, padding: "10px 0", background: A, color: "#fff", borderRadius: 12, fontFamily: PJS, fontWeight: 700, fontSize: 13, border: "none", cursor: "pointer" }}
+        className="flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
+      >
         Lihat Semua Lomba <ChevronRight size={14} />
       </button>
     </div>
@@ -172,7 +379,6 @@ export function TalentMapDetailScreen({
 }) {
   const students = useStudents();
   const s = students.find(x => x.id === studentId);
-  const data = studentTalentDetail[studentId];
   if (!s) return null;
 
   return (
@@ -181,14 +387,14 @@ export function TalentMapDetailScreen({
       
       <div className="px-4 pt-4 pb-8 space-y-5">
 
-        {/* Profil Fungsional (Radar Chart) */}
-        <FungsionalRadarChart studentId={studentId} />
+        {/* Profil Kemandirian & Fungsional (Radar Chart + Persentase Domain + Keterangan Singkat) */}
+        <FungsionalRadarChart studentId={studentId} studentName={s.name.split(" ")[0]} />
 
         {/* Profil Kecenderungan (Bar Chart) */}
         <RiasecBarChart studentId={studentId} />
 
         {/* Lomba yang disarankan */}
-        <SuggestedCompetitions studentId={studentId} />
+        <SuggestedCompetitions studentId={studentId} go={go} />
 
       </div>
     </div>

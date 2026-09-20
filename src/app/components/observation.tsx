@@ -38,7 +38,7 @@ export function ObservationScreen({
   if (!student) {
     return (
       <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS }}>
-        <TBar title="Asesmen & Asesmen" sub="Pilih Siswa" onBack={onBack} />
+        <TBar title="Asesmen Siswa" sub="Pilih Siswa" onBack={onBack} />
         <div className="p-8 text-center">
           <p className="text-sm font-semibold mb-4" style={{ color: MUTED }}>Belum ada siswa yang dipilih atau tersedia untuk diamati.</p>
           <button onClick={onBack} className="px-5 py-2.5 rounded-xl text-xs font-bold" style={{ background: A, color: "#fff", fontFamily: PJS }}>
@@ -119,7 +119,7 @@ export function ObservationScreen({
           height: "100%",
         }}
       >
-        <TBar title="Asesmen & Asesmen" sub={student.name} onBack={onBack} />
+        <TBar title="Asesmen Siswa" sub={student.name} onBack={onBack} />
 
         {/* Identitas + stepper + progress (terkunci saat scroll) */}
         <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#F7F5F0", boxShadow: "0 4px 12px rgba(91,122,104,0.08)" }}>
@@ -516,7 +516,7 @@ export function ObservationScreen({
               <div className="flex gap-2.5">
                 <button
                   type="button"
-                  onClick={() => setTahap("asesmen")}
+                  onClick={() => setTahap("kecenderungan")}
                   style={{
                     flex: 1,
                     border: `1.5px solid ${BDR}`,

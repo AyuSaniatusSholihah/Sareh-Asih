@@ -159,7 +159,7 @@ export function buildLaporanHTML(list:Student[], namaSekolah:string) {
   </div>
   ${satu ? "" : `<p class="meta">Daftar siswa: ${list.map(s=>esc(s.name)).join(", ")}</p>`}
   ${list.map((s,i)=>bagianSiswa(s,i,list.length)).join("")}
-  <p class="catatan">Laporan ini dihasilkan Sareh Asih dari data asesmen dan asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen tenaga ahli.</p>
+  <p class="catatan">Laporan ini dihasilkan Sareh Asih dari data asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen tenaga ahli.</p>
 </body></html>`;
 }
 
