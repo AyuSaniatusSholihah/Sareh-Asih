@@ -257,31 +257,79 @@ export function FungsionalRadarChart({ studentId, studentName = "Siswa" }: { stu
   );
 }
 
-export function RiasecBarChart({ studentId }: { studentId: number }) {
-  // Mock data for RIASEC profile
-  const data = studentId === 2 ? [
-    { name: 'R', label: 'Realistic', value: 30, color: '#94A3B8' },
-    { name: 'I', label: 'Investigative', value: 45, color: '#94A3B8' },
-    { name: 'A', label: 'Artistic', value: 85, color: '#FF5B8A' },
-    { name: 'S', label: 'Social', value: 90, color: '#F59E0B' },
-    { name: 'E', label: 'Enterprising', value: 75, color: '#10B981' },
-    { name: 'C', label: 'Conventional', value: 40, color: '#94A3B8' },
-  ] : [
-    { name: 'R', label: 'Realistic', value: 85, color: '#3B82F6' },
-    { name: 'I', label: 'Investigative', value: 70, color: '#10B981' },
-    { name: 'A', label: 'Artistic', value: 40, color: '#94A3B8' },
-    { name: 'S', label: 'Social', value: 35, color: '#94A3B8' },
-    { name: 'E', label: 'Enterprising', value: 50, color: '#94A3B8' },
-    { name: 'C', label: 'Conventional', value: 90, color: '#8B5CF6' },
-  ];
+interface RiasecItem {
+  name: string;
+  label: string;
+  value: number;
+  color: string;
+}
+
+export function getStudentRiasecData(studentId: number, studentName = "Siswa"): {
+  data: RiasecItem[];
+  dominant: RiasecItem;
+  secondary: RiasecItem;
+  kesimpulan: string;
+} {
+  let list: RiasecItem[] = [];
+  let customKesimpulan = "";
+
+  if (studentId === 2) {
+    // Nisa Aulia (Tunarungu) - Dominan Realistic & Artistic
+    list = [
+      { name: 'R', label: 'Realistic', value: 88, color: '#B45309' },
+      { name: 'I', label: 'Investigative', value: 75, color: '#1D4ED8' },
+      { name: 'A', label: 'Artistic', value: 85, color: '#E11D48' },
+      { name: 'S', label: 'Social', value: 70, color: '#10B981' },
+      { name: 'E', label: 'Enterprising', value: 55, color: '#94A3B8' },
+      { name: 'C', label: 'Conventional', value: 40, color: '#94A3B8' },
+    ];
+    customKesimpulan = `${studentName} menunjukkan kecenderungan paling dominan pada tipe Realistic (88%) dan Artistic (85%). Sangat terampil pada aktivitas ritmik, gerak tubuh, dan kreasi seni terapan.`;
+  } else if (studentId === 3) {
+    // Arga Saputra (Tunadaksa) - Dominan Investigative & Conventional
+    list = [
+      { name: 'R', label: 'Realistic', value: 45, color: '#94A3B8' },
+      { name: 'I', label: 'Investigative', value: 85, color: '#1D4ED8' },
+      { name: 'A', label: 'Artistic', value: 55, color: '#94A3B8' },
+      { name: 'S', label: 'Social', value: 65, color: '#94A3B8' },
+      { name: 'E', label: 'Enterprising', value: 50, color: '#94A3B8' },
+      { name: 'C', label: 'Conventional', value: 80, color: '#7C3AED' },
+    ];
+    customKesimpulan = `${studentName} unggul pada tipe Investigative (85%) dan Conventional (80%). Ideal diarahkan pada pemecahan masalah terstruktur, logika penalaran, dan literasi digital.`;
+  } else {
+    // Rafi Pratama (Tunanetra) & default - Dominan Artistic & Investigative
+    list = [
+      { name: 'R', label: 'Realistic', value: 70, color: '#B45309' },
+      { name: 'I', label: 'Investigative', value: 85, color: '#1D4ED8' },
+      { name: 'A', label: 'Artistic', value: 90, color: '#E11D48' },
+      { name: 'S', label: 'Social', value: 40, color: '#94A3B8' },
+      { name: 'E', label: 'Enterprising', value: 50, color: '#94A3B8' },
+      { name: 'C', label: 'Conventional', value: 60, color: '#94A3B8' },
+    ];
+    customKesimpulan = `${studentName} memiliki potensi bakat utama pada tipe Artistic (90%) didukung Investigative (85%). Menandai kepekaan estetika tinggi, daya cipta bentuk, dan fokus mendalam pada bidang seni.`;
+  }
+
+  const sorted = [...list].sort((a, b) => b.value - a.value);
+  const dominant = sorted[0];
+  const secondary = sorted[1];
+
+  return {
+    data: list,
+    dominant,
+    secondary,
+    kesimpulan: customKesimpulan,
+  };
+}
+
+export function RiasecBarChart({ studentId, studentName = "Siswa" }: { studentId: number; studentName?: string }) {
+  const { data, dominant, secondary, kesimpulan } = getStudentRiasecData(studentId, studentName);
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
+      const p = payload[0].payload;
       return (
         <div style={{ background: CARD, border: `1px solid ${BDR}`, padding: "8px 12px", borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
-          <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 12, color: TEXT }}>{data.label}</p>
-          <p style={{ fontFamily: DMM, fontWeight: 700, fontSize: 14, color: data.color }}>{data.value}%</p>
+          <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 12, color: TEXT }}>{p.label} ({p.name})</p>
+          <p style={{ fontFamily: DMM, fontWeight: 700, fontSize: 14, color: p.color }}>{p.value}%</p>
         </div>
       );
     }
@@ -289,17 +337,33 @@ export function RiasecBarChart({ studentId }: { studentId: number }) {
   };
 
   return (
-    <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 24, padding: "20px 14px", boxShadow: "0 2px 12px rgba(91,122,104,0.06)" }}>
-      <div className="flex items-center gap-2 mb-2 px-2">
-        <Target size={18} style={{ color: A }} />
-        <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT }}>
-          Profil Kecenderungan Aktivitas
-        </h3>
+    <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 24, padding: "20px 16px", boxShadow: "0 2px 12px rgba(91,122,104,0.06)" }}>
+      {/* Header with Title & Dominant Talent Badge */}
+      <div className="flex items-start justify-between gap-2 mb-1 px-1">
+        <div className="flex items-center gap-2">
+          <Target size={18} style={{ color: A }} />
+          <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT }}>
+            Profil Kecenderungan Aktivitas
+          </h3>
+        </div>
+        <div
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full flex-shrink-0"
+          style={{
+            background: "#FFF7ED",
+            border: "1px solid #FFEDD5",
+          }}
+        >
+          <span style={{ color: "#C2410C", fontFamily: PJS, fontWeight: 800, fontSize: 11 }}>
+            Dominan: {dominant.label} ({dominant.value}%)
+          </span>
+        </div>
       </div>
-      <p style={{ fontSize: 12, color: MUTED, marginBottom: 16, paddingLeft: 8, lineHeight: 1.4 }}>
+      <p style={{ fontSize: 12, color: MUTED, marginBottom: 16, paddingLeft: 4, lineHeight: 1.4 }}>
         Tingkat ketertarikan anak berdasarkan model RIASEC. Nilai dominan menandai bakat utama.
       </p>
-      <div style={{ width: '100%', height: 220 }}>
+
+      {/* Bar Chart */}
+      <div style={{ width: '100%', height: 210 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 20, right: 10, left: -25, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
@@ -314,6 +378,77 @@ export function RiasecBarChart({ studentId }: { studentId: number }) {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Quick Category Chips */}
+      <div className="flex flex-wrap items-center justify-between gap-1 mt-3 pt-3 border-t border-slate-100">
+        {data.map((item) => (
+          <div
+            key={item.name}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10.5px]"
+            style={{
+              background: item.name === dominant.name ? "#FFF7ED" : "#F8FAFC",
+              border: item.name === dominant.name ? "1px solid #FDBA74" : `1px solid ${BDR}`,
+              fontWeight: item.name === dominant.name ? 800 : 600,
+              color: item.name === dominant.name ? "#C2410C" : MUTED,
+            }}
+          >
+            <span style={{ fontFamily: DMM }}>{item.name}:</span>
+            <span style={{ color: item.color }}>{item.value}%</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Keterangan Kesimpulan Ringkas */}
+      <div
+        style={{
+          marginTop: 14,
+          background: "#FFF9F5",
+          border: `1.5px solid rgba(210, 110, 91, 0.22)`,
+          borderRadius: 16,
+          padding: "12px 14px",
+        }}
+        className="flex items-start gap-2.5"
+      >
+        <div
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 8,
+            background: "rgba(210, 110, 91, 0.12)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            marginTop: 1,
+          }}
+        >
+          <Target size={15} style={{ color: A }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p
+            style={{
+              fontFamily: PJS,
+              fontWeight: 800,
+              fontSize: 12,
+              color: "#C2410C",
+              marginBottom: 3,
+            }}
+          >
+            Kesimpulan Minat & Bakat:
+          </p>
+          <p
+            style={{
+              fontFamily: IPS,
+              fontSize: 11.5,
+              color: TEXT,
+              lineHeight: 1.45,
+              margin: 0,
+            }}
+          >
+            {kesimpulan}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -391,7 +526,7 @@ export function TalentMapDetailScreen({
         <FungsionalRadarChart studentId={studentId} studentName={s.name.split(" ")[0]} />
 
         {/* Profil Kecenderungan (Bar Chart) */}
-        <RiasecBarChart studentId={studentId} />
+        <RiasecBarChart studentId={studentId} studentName={s.name.split(" ")[0]} />
 
         {/* Lomba yang disarankan */}
         <SuggestedCompetitions studentId={studentId} go={go} />
