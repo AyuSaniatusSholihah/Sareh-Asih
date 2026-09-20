@@ -204,29 +204,15 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
 
           {/* Baris Kontrol: Pilih Semua di kiri & Generate Kode di pojok kanan (bukan di header) */}
           <div className="flex items-center justify-between px-1 pt-1 pb-0.5">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={pilihSemuaTampil}
-                className="text-xs font-semibold flex items-center gap-1.5 active:opacity-75 transition-opacity"
-                style={{ color: T, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
-              >
-                {semuaTampilTerpilih ? <CheckSquare size={15} style={{ color: T }} /> : <Square size={15} style={{ color: "#9CA3AF" }} />}
-                <span>{semuaTampilTerpilih ? "Batal Pilih Semua" : "Pilih Semua"}</span>
-                <span className="text-[11px] font-normal" style={{ color: MUTED }}>({tampil.length} siswa)</span>
-              </button>
-
-              {terpilih.length > 0 && (
-                <button
-                  type="button"
-                  onClick={bersihkan}
-                  className="text-xs font-semibold active:opacity-75"
-                  style={{ color: A, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
-                >
-                  Kosongkan ({terpilih.length})
-                </button>
-              )}
-            </div>
+            <button
+              type="button"
+              onClick={pilihSemuaTampil}
+              className="text-xs font-semibold flex items-center gap-1.5 active:opacity-75 transition-opacity"
+              style={{ color: T, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+            >
+              {semuaTampilTerpilih ? <CheckSquare size={15} style={{ color: T }} /> : <Square size={15} style={{ color: "#9CA3AF" }} />}
+              <span>{semuaTampilTerpilih ? "Batal Pilih Semua" : "Pilih Semua"}</span>
+            </button>
 
             {/* Tombol Generate Kode di pojok kanan (dekat dengan daftar siswa, bukan di header) */}
             <button
