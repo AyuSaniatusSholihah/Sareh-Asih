@@ -59,21 +59,6 @@ export function TalentMapScreen({
     setCollapsedClasses(prev => ({ ...prev, [k]: !prev[k] }));
   };
 
-  // Avatar helper
-  const getAvatarUrl = (s: Student) => {
-    const avatarMap: Record<number, string> = {
-      1: "https://images.unsplash.com/photo-1543332164-6e82f355badc?w=160&auto=format&fit=crop&q=80",
-      2: "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=160&auto=format&fit=crop&q=80",
-      3: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=160&auto=format&fit=crop&q=80",
-      4: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=160&auto=format&fit=crop&q=80",
-      5: "https://images.unsplash.com/photo-1471286174890-9c112ffca56a?w=160&auto=format&fit=crop&q=80",
-      6: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=160&auto=format&fit=crop&q=80",
-      7: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80",
-      8: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=160&auto=format&fit=crop&q=80",
-    };
-    return avatarMap[s.id] || `https://api.dicebear.com/7.x/open-peeps/svg?seed=${s.name}`;
-  };
-
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       {/* ── Top Header Bar (Dikembalikan ke Desain Asli Tanpa Icon Bunga) ── */}
@@ -525,10 +510,9 @@ export function TalentMapScreen({
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                           <div
                             style={{
-                              width: 44,
-                              height: 44,
+                              width: 42,
+                              height: 42,
                               borderRadius: "50%",
-                              overflow: "hidden",
                               background: s.hasObs ? "#EBF4EE" : "#FBF1EF",
                               border: `1.5px solid ${s.hasObs ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
                               display: "flex",
@@ -537,20 +521,7 @@ export function TalentMapScreen({
                               flexShrink: 0,
                             }}
                           >
-                            <img
-                              src={getAvatarUrl(s)}
-                              alt={s.name}
-                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                              onError={(e) => {
-                                (e.currentTarget as HTMLElement).style.display = "none";
-                                if (e.currentTarget.parentElement) {
-                                  e.currentTarget.parentElement.innerText = s.name.charAt(0);
-                                  e.currentTarget.parentElement.style.fontWeight = "800";
-                                  e.currentTarget.parentElement.style.fontSize = "16px";
-                                  e.currentTarget.parentElement.style.color = TEXT;
-                                }
-                              }}
-                            />
+                            <User size={20} style={{ color: s.hasObs ? DEEP : A }} />
                           </div>
 
                           <div className="min-w-0 flex-1">
