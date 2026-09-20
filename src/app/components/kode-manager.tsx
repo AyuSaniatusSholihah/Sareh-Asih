@@ -79,8 +79,6 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
   const [filter,setFilter] = useState<"belum"|"punya">("belum");
   const [toast,setToast] = useState("");
   const [konfirmasiHapus,setKonfirmasiHapus] = useState(false);
-  // State untuk siswa yang dipilih saat klik di tab "Sudah Ada Kode" -> memicu navbar bawah share
-  const [studentToShare, setStudentToShare] = useState<Student | null>(null);
 
   const beritahu = (t:string) => { setToast(t); setTimeout(()=>setToast(""),2400); };
 
@@ -104,28 +102,18 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
   const terpilihBelum = terpilih.filter(s=>!s.kodeOrtu);
   const terpilihPunya = terpilih.filter(s=>!!s.kodeOrtu);
 
-  const buatKode = () => {
-    if (!terpilih.length) return;
-    onBuat(terpilih.map(s=>s.id));
-    beritahu(`${terpilih.length} kode akses berhasil dibuat.`);
-  };
   const hapusKode = () => {
     onHapus(terpilihPunya.map(s=>s.id));
     setKonfirmasiHapus(false);
+    bersihkan();
     beritahu(`${terpilihPunya.length} kode akses dihapus.`);
-  };
-  const salinTerpilih = () => {
-    const teks = terpilih.filter(s=>s.kodeOrtu).map(s=>`${s.name} (${s.kelas}): ${s.kodeOrtu}`).join("\n");
-    if (!teks) { beritahu("Tidak ada kode untuk disalin."); return; }
-    navigator.clipboard?.writeText(teks).catch(()=>{});
-    beritahu("Daftar kode disalin ke papan klip.");
   };
 
   const belumPunya = students.filter(s=>!s.kodeOrtu);
 
   const handleGenerateKode = () => {
-    const target = terpilih.length > 0 
-      ? terpilih 
+    const target = terpilihBelum.length > 0 
+      ? terpilihBelum 
       : (belumPunya.length > 0 ? belumPunya : students);
 
     if (target.length === 0) {
@@ -134,20 +122,31 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
     }
 
     onBuat(target.map(s => s.id));
+    bersihkan();
     beritahu(`${target.length} kode akses berhasil di-generate! ✨`);
   };
 
-  // Format teks untuk share kode per siswa (bukan Excel, tulisan kode share teks)
-  const formatPesanShare = (s: Student) => {
-    return `Halo Bapak/Ibu Wali Murid dari ${s.name},\n\nBerikut Kode Akses Orang Tua untuk memantau perkembangan bakat, minat, dan asesmen ananda melalui aplikasi Sareh Asih:\n\n👤 Nama Siswa: ${s.name}\n🏫 Kelas: ${s.kelas}\n🔑 Kode Akses: ${s.kodeOrtu}\n\nSilakan masukkan kode ini pada menu Masuk Orang Tua di aplikasi Sareh Asih. Terima kasih! 🙏`;
+  // Format teks untuk share kode (bisa 1 siswa atau banyak siswa)
+  const buatTeksShareMulti = (daftar: Student[]) => {
+    if (daftar.length === 1) {
+      const s = daftar[0];
+      return `Halo Bapak/Ibu Wali Murid dari *${s.name}* (Kelas ${s.kelas}),\n\nBerikut Kode Akses Orang Tua di aplikasi Sareh Asih:\n🔑 *Kode Akses:* ${s.kodeOrtu}\n\nSilakan masukkan kode ini pada menu Masuk Orang Tua untuk memantau perkembangan bakat, minat, dan asesmen ananda. Terima kasih! 🙏`;
+    }
+
+    const baris = daftar
+      .map((s, i) => `${i + 1}. *${s.name}* (Kelas ${s.kelas}): ${s.kodeOrtu}`)
+      .join("\n");
+
+    return `*Daftar Kode Akses Orang Tua - Sareh Asih*\nSekolah: ${namaSekolah}\n\n${baris}\n\nSilakan masukkan kode masing-masing pada menu Masuk Orang Tua di aplikasi Sareh Asih. Terima kasih! 🙏`;
   };
 
-  const handleShareKode = async (s: Student) => {
-    const pesan = formatPesanShare(s);
+  const handleShareKode = async (daftar: Student[]) => {
+    if (!daftar.length) return;
+    const pesan = buatTeksShareMulti(daftar);
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Kode Akses Sareh Asih - ${s.name}`,
+          title: daftar.length === 1 ? `Kode Akses Sareh Asih - ${daftar[0].name}` : `Kode Akses Orang Tua (${daftar.length} Siswa)`,
           text: pesan,
         });
         beritahu("Kode berhasil dibagikan.");
@@ -161,10 +160,11 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
     }
   };
 
-  const handleSalinTeksKode = (s: Student) => {
-    const pesan = formatPesanShare(s);
+  const handleSalinTeksKode = (daftar: Student[]) => {
+    if (!daftar.length) return;
+    const pesan = buatTeksShareMulti(daftar);
     navigator.clipboard?.writeText(pesan).catch(()=>{});
-    beritahu(`Teks kode akses ${s.name} berhasil disalin!`);
+    beritahu(daftar.length === 1 ? `Kode akses ${daftar[0].name} disalin!` : `${daftar.length} kode akses disalin ke papan klip!`);
   };
 
   const sasaranEkspor = terpilih.length ? terpilih : students;
@@ -208,13 +208,6 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
         />
 
         <div className="px-4 pt-4 pb-28 space-y-3">
-          <div style={{background:SEC,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl p-3.5 flex items-start gap-2.5">
-            <Info size={14} style={{color:T,flexShrink:0,marginTop:1}}/>
-            <p className="text-xs leading-relaxed" style={{color:T}}>
-              Guru membuat dan membagikan kode akses. {filter === "punya" ? "Klik salah satu siswa di bawah untuk membagikan kode ke orang tua, atau unduh keseluruhan kode dalam bentuk Spreadsheet Excel." : "Pilih siswa dan tekan tombol Generate Kode untuk membuat kode akses."}
-            </p>
-          </div>
-
           {/* Cari input */}
           <div className="relative">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{color:MUTED}}/>
@@ -230,44 +223,11 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
             ] as const).map(f=>{
               const on = filter===f.k;
               return (
-                <button key={f.k} onClick={()=>{ setFilter(f.k); setStudentToShare(null); }}
+                <button key={f.k} onClick={()=>{ setFilter(f.k); bersihkan(); }}
                   style={{flex:1,background:on?T:CARD,color:on?"#fff":MUTED,border:on?"none":`1px solid ${BDR}`,fontFamily:IPS,minHeight:42}}
                   className="rounded-xl text-xs font-bold transition-all shadow-sm">{f.l} · {f.n}</button>
               );
             })}
-          </div>
-
-          {/* Aksi seleksi & Generate Kode */}
-          <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <button onClick={pilihSemuaTampil}
-                style={{flex:1,background:semuaTampilTerpilih?SEC:BG,border:`1px solid ${semuaTampilTerpilih?T:BDR}`,color:semuaTampilTerpilih?DEEP:TEXT,fontFamily:IPS,minHeight:42}}
-                className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5">
-                {semuaTampilTerpilih ? <CheckSquare size={13}/> : <Square size={13}/>}
-                {semuaTampilTerpilih ? "Batal Pilih Semua" : "Pilih Semua"}
-              </button>
-              <button onClick={handleGenerateKode}
-                style={{
-                  flex: 1,
-                  background: `linear-gradient(135deg, ${A} 0%, #C45F4B 100%)`,
-                  border: "none",
-                  color: "#fff",
-                  fontFamily: IPS,
-                  minHeight: 42,
-                  boxShadow: "0 3px 10px rgba(210,110,91,0.25)"
-                }}
-                className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
-                <Key size={13}/>Generate Kode
-              </button>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs" style={{color:MUTED}}>
-                {terpilih.length ? <><strong style={{color:TEXT}}>{terpilih.length} siswa</strong> terpilih</> : "Belum ada yang dipilih"}
-              </span>
-              {terpilih.length>0 && (
-                <button onClick={bersihkan} className="text-xs font-semibold" style={{color:A}}>Kosongkan pilihan</button>
-              )}
-            </div>
           </div>
 
           {/* Banner Spreadsheet Keseluruhan Kode (Hanya di tab "Sudah Ada Kode") */}
@@ -295,7 +255,7 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
                     background: "#15803D",
                     color: "#fff",
                     fontFamily: IPS,
-                    minHeight: 42,
+                    minHeight: 40,
                     border: "none",
                     boxShadow: "0 2px 8px rgba(21,128,61,0.22)"
                   }}
@@ -316,7 +276,7 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
                     color: TEXT,
                     border: `1px solid ${BDR}`,
                     fontFamily: IPS,
-                    minHeight: 42,
+                    minHeight: 40,
                   }}
                   className="rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all hover:bg-[#EDE9E3]">
                   <Share2 size={14} style={{color:T}}/>
@@ -326,15 +286,43 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
             </div>
           )}
 
-          {/* Petunjuk share jika di tab "Sudah Ada Kode" */}
-          {filter === "punya" && (
-            <div className="flex items-center gap-1.5 px-1">
-              <span className="w-1.5 h-1.5 rounded-full" style={{background:T}}/>
-              <p className="text-[11.5px] font-semibold" style={{color:MUTED}}>
-                Klik salah satu kartu siswa untuk membagikan kode secara langsung:
-              </p>
-            </div>
-          )}
+          {/* Tombol Pilih Semua kecil dekat di atas nama siswa (tanpa kotak) */}
+          <div className="flex items-center justify-between px-1 pt-1 pb-0.5">
+            <button
+              type="button"
+              onClick={pilihSemuaTampil}
+              className="text-xs font-semibold flex items-center gap-1.5 active:opacity-75 transition-opacity"
+              style={{ color: T, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+            >
+              {semuaTampilTerpilih ? <CheckSquare size={15} style={{ color: T }} /> : <Square size={15} style={{ color: "#9CA3AF" }} />}
+              <span>{semuaTampilTerpilih ? "Batal Pilih Semua" : "Pilih Semua"}</span>
+              <span className="text-[11px] font-normal" style={{ color: MUTED }}>({tampil.length} siswa)</span>
+            </button>
+
+            {terpilih.length > 0 && (
+              <div className="flex items-center gap-2.5">
+                {filter === "punya" && terpilihPunya.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setKonfirmasiHapus(true)}
+                    className="text-xs font-semibold flex items-center gap-1 active:opacity-75"
+                    style={{ color: "#B91C1C", background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+                    title="Hapus kode terpilih"
+                  >
+                    <Trash2 size={12} /> Hapus ({terpilihPunya.length})
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={bersihkan}
+                  className="text-xs font-semibold active:opacity-75"
+                  style={{ color: A, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+                >
+                  Kosongkan ({terpilih.length})
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Daftar siswa */}
           {tampil.length===0 ? (
@@ -347,59 +335,39 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
             <div className="space-y-2">
               {tampil.map(s=>{
                 const on = pilih.has(s.id);
-                const isSelectedForShare = filter === "punya" && studentToShare?.id === s.id;
                 return (
                   <div
                     key={s.id}
-                    onClick={() => {
-                      if (filter === "punya") {
-                        setStudentToShare(prev => prev?.id === s.id ? null : s);
-                      } else {
-                        toggle(s.id);
-                      }
-                    }}
+                    onClick={() => toggle(s.id)}
                     style={{
-                      background: isSelectedForShare ? "#F0F5F2" : (on ? SEC : CARD),
-                      border: `1.5px solid ${isSelectedForShare ? T : (on ? T : BDR)}`,
+                      background: on ? SEC : CARD,
+                      border: `1.5px solid ${on ? T : BDR}`,
                       width: "100%",
-                      minHeight: 68,
+                      minHeight: 64,
                       cursor: "pointer"
                     }}
-                    className={`rounded-2xl px-3.5 py-3 flex items-center gap-3 transition-all ${isSelectedForShare ? "ring-2 ring-offset-1 ring-[#5B7A68]" : ""}`}>
+                    className={`rounded-2xl px-3.5 py-2.5 flex items-center gap-3 transition-all ${on ? "shadow-sm" : ""}`}>
                     
                     {/* Checkbox */}
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggle(s.id);
-                      }}
-                      className="p-1 -m-1 cursor-pointer"
-                    >
-                      {on ? <CheckSquare size={20} style={{color:T,flexShrink:0}}/> : <Square size={20} style={{color:"#C4CBC6",flexShrink:0}}/>}
+                    <div className="p-1 -m-1">
+                      {on ? <CheckSquare size={19} style={{color:T,flexShrink:0}}/> : <Square size={19} style={{color:"#C4CBC6",flexShrink:0}}/>}
                     </div>
 
                     <span style={{fontSize:20,flexShrink:0}}>{s.emoji}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <p className="font-semibold text-sm truncate" style={{color:TEXT,fontFamily:IPS}}>{s.name}</p>
-                        {filter === "punya" && (
-                          <span
-                            className="text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 flex-shrink-0"
-                            style={{
-                              background: isSelectedForShare ? T : BG,
-                              color: isSelectedForShare ? "#fff" : T,
-                              border: `1px solid ${isSelectedForShare ? T : BDR}`
-                            }}
-                          >
-                            <Share2 size={10}/>
-                            {isSelectedForShare ? "Dipilih" : "Share"}
+                        {s.kodeOrtu ? (
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-lg" style={{background:"#F0FDF4",color:"#15803D",fontFamily:DMM}}>
+                            {s.kodeOrtu}
+                          </span>
+                        ) : (
+                          <span className="text-[10.5px] font-semibold px-2 py-0.5 rounded-full" style={{background:"#FEF9EC",color:"#92400E"}}>
+                            Belum ada
                           </span>
                         )}
                       </div>
                       <p className="text-xs" style={{color:MUTED}}>Kelas {s.kelas} · {s.abk}</p>
-                      {s.kodeOrtu
-                        ? <p className="text-xs font-bold mt-0.5" style={{color:DEEP,fontFamily:DMM}}>Kode: {s.kodeOrtu}</p>
-                        : <span className="text-xs font-semibold mt-0.5 inline-block px-2 py-0.5 rounded-full" style={{background:"#FEF9EC",color:"#92400E"}}>Belum ada kode</span>}
                     </div>
                   </div>
                 );
@@ -407,49 +375,13 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
             </div>
           )}
 
-          {/* Tindakan pada yang terpilih */}
-          <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-            <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tindakan Siswa Terpilih</p>
-            <p className="text-xs mb-3" style={{color:MUTED}}>
-              {terpilih.length ? `Berlaku untuk ${terpilih.length} siswa terpilih.` : "Centang siswa terlebih dahulu untuk mengaktifkan tindakan massal."}
-            </p>
-
-            <button onClick={buatKode} disabled={!terpilih.length}
-              style={{width:"100%",background:terpilih.length?A:"#E5E7EB",color:terpilih.length?"#fff":"#9CA3AF",fontFamily:IPS,minHeight:48,marginBottom:8}}
-              className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
-              <RefreshCw size={15}/>
-              {terpilihBelum.length===terpilih.length && terpilih.length
-                ? `Generate Kode untuk ${terpilih.length} Siswa`
-                : `Generate / Perbarui Kode (${terpilih.length})`}
-            </button>
-
-            <div className="flex gap-2">
-              <button onClick={salinTerpilih} disabled={!terpilih.length}
-                style={{flex:1,background:CARD,border:`1.5px solid ${terpilih.length?T:BDR}`,color:terpilih.length?T:"#C4CBC6",fontFamily:IPS,minHeight:46}}
-                className="rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5">
-                <Copy size={13}/>Salin Daftar
-              </button>
-              <button onClick={()=>terpilihPunya.length && setKonfirmasiHapus(true)} disabled={!terpilihPunya.length}
-                style={{flex:1,background:CARD,border:`1.5px solid ${terpilihPunya.length?"#FCA5A5":BDR}`,color:terpilihPunya.length?"#B91C1C":"#C4CBC6",fontFamily:IPS,minHeight:46}}
-                className="rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5">
-                <Trash2 size={13}/>Hapus Kode
-              </button>
-            </div>
-
-            {terpilihPunya.length>0 && (
-              <p className="text-xs mt-2 leading-relaxed" style={{color:MUTED}}>
-                Membuat ulang atau menghapus kode akan memutus akses orang tua yang memakai kode lama.
-              </p>
-            )}
-          </div>
-
           {/* Ekspor Laporan & Dokumen */}
           <ExportPanel list={sasaranEkspor} adaSeleksi={terpilih.length>0} namaSekolah={namaSekolah} onDone={beritahu}/>
         </div>
       </div>
 
-      {/* NAVBAR BAWAH: Tombol Share per Siswa (Tulisan teks kode share, bukan Excel) */}
-      {filter === "punya" && studentToShare && (
+      {/* NAVBAR BAWAH: Tombol Share (Bisa 1 atau banyak siswa, bersih & ringkas) */}
+      {filter === "punya" && terpilihPunya.length > 0 && (
         <div
           style={{
             position: "sticky",
@@ -459,78 +391,75 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
             zIndex: 60,
             background: "#FFFFFF",
             borderTop: `1.5px solid ${BDR}`,
-            boxShadow: "0 -8px 24px rgba(0,0,0,0.12)",
-            padding: "12px 16px 16px",
+            boxShadow: "0 -6px 20px rgba(0,0,0,0.1)",
+            padding: "10px 16px 14px",
           }}
-          className="transition-all"
+          className="transition-all flex items-center justify-between gap-3"
         >
-          {/* Header Navbar Bawah */}
-          <div className="flex items-center justify-between mb-2.5 pb-2" style={{borderBottom:`1px dashed ${BDR}`}}>
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span style={{fontSize: 22}}>{studentToShare.emoji}</span>
-              <div className="min-w-0">
-                <p className="font-bold text-xs truncate" style={{color: TEXT, fontFamily: PJS}}>{studentToShare.name}</p>
-                <p className="text-[11px]" style={{color: MUTED}}>
-                  Kelas {studentToShare.kelas} • Kode: <strong style={{color: DEEP, fontFamily: DMM}}>{studentToShare.kodeOrtu}</strong>
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setStudentToShare(null)}
-              style={{background: BG, border: `1px solid ${BDR}`, color: MUTED, borderRadius: 10, width: 28, height: 28}}
-              className="flex items-center justify-center active:scale-95"
-              title="Tutup"
-            >
-              <X size={15}/>
-            </button>
-          </div>
-
-          {/* Tampilan teks format share */}
-          <div style={{background: BG, borderRadius: 12, padding: "8px 10px", marginBottom: 10, border: `1px solid ${BDR}`}}>
-            <p className="text-[11px] leading-relaxed" style={{color: TEXT}}>
-              🔑 <span className="font-semibold">Format Share:</span> <em>Kode Akses {studentToShare.kodeOrtu} untuk wali murid {studentToShare.name} ({studentToShare.kelas})</em>
+          <div className="min-w-0 flex-1">
+            <p className="font-bold text-xs truncate" style={{ color: TEXT, fontFamily: PJS }}>
+              {terpilihPunya.length === 1
+                ? `${terpilihPunya[0].name} (${terpilihPunya[0].kodeOrtu})`
+                : `${terpilihPunya.length} Siswa Terpilih`}
+            </p>
+            <p className="text-[11px]" style={{ color: MUTED }}>
+              Teks kode siap dibagikan
             </p>
           </div>
 
-          {/* Tombol Share & Salin Teks */}
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button
               type="button"
-              onClick={() => handleShareKode(studentToShare)}
+              onClick={() => handleShareKode(terpilihPunya)}
               style={{
-                flex: 1.3,
                 background: `linear-gradient(135deg, ${T} 0%, #466253 100%)`,
                 color: "#fff",
                 border: "none",
-                borderRadius: 14,
+                borderRadius: 12,
                 fontFamily: IPS,
-                fontSize: 12.5,
+                fontSize: 12,
                 fontWeight: 700,
-                minHeight: 44,
-                boxShadow: "0 3px 10px rgba(91,122,104,0.25)"
+                padding: "9px 14px",
+                boxShadow: "0 2px 8px rgba(91,122,104,0.25)",
               }}
-              className="flex items-center justify-center gap-1.5 active:scale-95 transition-all">
-              <Share2 size={15}/>
-              Bagikan Kode
+              className="flex items-center gap-1.5 active:scale-95 transition-all"
+            >
+              <Share2 size={14} />
+              <span>Bagikan Kode</span>
             </button>
             <button
               type="button"
-              onClick={() => handleSalinTeksKode(studentToShare)}
+              onClick={() => handleSalinTeksKode(terpilihPunya)}
               style={{
-                flex: 1,
-                background: CARD,
+                background: BG,
                 color: TEXT,
-                border: `1.5px solid ${BDR}`,
-                borderRadius: 14,
+                border: `1px solid ${BDR}`,
+                borderRadius: 12,
                 fontFamily: IPS,
-                fontSize: 12.5,
+                fontSize: 12,
                 fontWeight: 600,
-                minHeight: 44
+                padding: "9px 12px",
               }}
-              className="flex items-center justify-center gap-1.5 active:scale-95 transition-all hover:bg-neutral-50">
-              <Copy size={14}/>
-              Salin Teks
+              className="flex items-center gap-1 active:scale-95 transition-all hover:bg-neutral-100"
+              title="Salin Teks"
+            >
+              <Copy size={13} />
+              <span>Salin</span>
+            </button>
+            <button
+              type="button"
+              onClick={bersihkan}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: MUTED,
+                padding: "6px",
+                cursor: "pointer",
+              }}
+              className="flex items-center justify-center active:scale-90"
+              title="Batal"
+            >
+              <X size={16} />
             </button>
           </div>
         </div>
@@ -562,7 +491,7 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
 
       {/* Toast notifikasi */}
       {toast && (
-        <div style={{position:"fixed",left:20,right:20,bottom:studentToShare && filter === "punya" ? 120 : 20,zIndex:75,background:"#2E3E35",borderRadius:16,padding:"12px 16px",display:"flex",alignItems:"center",gap:9,boxShadow:"0 10px 28px rgba(0,0,0,0.28)"}}>
+        <div style={{position:"fixed",left:20,right:20,bottom:filter === "punya" && terpilihPunya.length > 0 ? 80 : 20,zIndex:75,background:"#2E3E35",borderRadius:16,padding:"12px 16px",display:"flex",alignItems:"center",gap:9,boxShadow:"0 10px 28px rgba(0,0,0,0.28)"}}>
           <CheckCircle size={15} style={{color:"#8BB098",flexShrink:0}}/>
           <p className="text-xs font-semibold" style={{color:"#fff",fontFamily:IPS}}>{toast}</p>
         </div>
