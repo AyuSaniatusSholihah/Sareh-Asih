@@ -421,12 +421,6 @@ export function ProfileScreen({
 
         {tab === "jurnal" && <JurnalTab s={s} laporan={laporan} onKirim={onKirim} />}
 
-        {/* Unduh laporan pemetaan untuk anak ini saja */}
-        <button onClick={() => exportLaporanPemetaan([s], namaSekolah)}
-          style={{ width: "100%", background: CARD, border: `1.5px solid ${DEEP}`, color: DEEP, fontFamily: PJS, fontWeight: 800, minHeight: 48, borderRadius: 16, cursor: "pointer", boxShadow: "0 2px 8px rgba(91,122,104,0.08)" }}
-          className="text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
-          <FileText size={15} />Unduh Laporan Pemetaan {s.name.split(" ")[0]}
-        </button>
         <div className="flex gap-2 pt-2">
           <button onClick={() => go("talent-map-detail")} style={{ flex: 1, background: DEEP, color: "#FFFFFF", fontFamily: PJS, fontWeight: 800, minHeight: 46, borderRadius: 16, border: "none", cursor: "pointer", boxShadow: "0 4px 12px rgba(91,122,104,0.25)" }} className="text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><Sparkles size={14} />Talent Map</button>
           <button onClick={() => go("learning-rec")} style={{ flex: 1, background: A, color: "#FFFFFF", fontFamily: PJS, fontWeight: 800, minHeight: 46, borderRadius: 16, border: "none", cursor: "pointer", boxShadow: "0 4px 12px rgba(210,125,107,0.35)" }} className="text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><Brain size={14} />Rekomendasi</button>

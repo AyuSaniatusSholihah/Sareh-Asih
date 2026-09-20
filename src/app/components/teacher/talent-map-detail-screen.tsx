@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  Trophy, ChevronRight
+  Trophy, ChevronRight, FileText, Share2, CheckCircle
 } from "lucide-react";
 import {
-  A, CARD, TEXT, MUTED, PJS, IPS, DMM, TBar, BDR
+  A, CARD, TEXT, MUTED, PJS, IPS, DMM, TBar, BDR, DEEP
 } from "../ui-kit";
 import { useStudents, type Screen } from "../data";
-import { ProfilFungsionalRadar, ProfilKecenderunganBar, getMockJawaban } from "../shared-charts";
+import { ProfilFungsionalRadar, ProfilKecenderunganBar, getMockJawaban, kodeTigaHuruf, skorKetekunan } from "../shared-charts";
+import { exportLaporanPemetaan } from "../export";
 
 export function SuggestedCompetitions({ studentId, go }: { studentId: number; go?: (s: Screen) => void }) {
   const comps = studentId === 2 ? [
@@ -61,26 +62,129 @@ export function TalentMapDetailScreen({
   onBack,
   studentId,
   go,
+  namaSekolah = "SLB Negeri 1 Surabaya",
 }: {
   onBack: () => void;
   studentId: number;
   go: (s: Screen) => void;
+  namaSekolah?: string;
 }) {
   const students = useStudents();
   const s = students.find(x => x.id === Number(studentId)) || students.find(x => x.hasObs) || students[0];
+  const [toast, setToast] = useState("");
   if (!s) return null;
 
+  const beritahu = (t: string) => { setToast(t); setTimeout(() => setToast(""), 2400); };
   const jawaban = getMockJawaban(studentId);
+  const firstName = s.name.split(" ")[0];
+
+  const handleShareLaporan = async () => {
+    const riasec = s.hasObs ? kodeTigaHuruf(jawaban) : "—";
+    const kemandirian = s.hasObs ? skorKetekunan(jawaban) : "—";
+    const textShare = `*Laporan Pemetaan Bakat Siswa (AI Talent Mapping)*\n\n👤 *Nama Siswa:* ${s.name}\n🏫 *Kelas:* ${s.kelas} (${s.abk})\n🏫 *Sekolah:* ${namaSekolah}\n\n✨ *Hasil Analisis AI:*\n• Potensi Dominan (RIASEC): *${riasec}*\n• Skor Kemandirian: *${kemandirian}*\n• Gaya Belajar: *${s.caraBelajar || "Visual & Kinestetik"}*\n• Rekomendasi Lomba: *${s.comps && s.comps.length ? s.comps.join(", ") : "LKSN Kriya Kayu"}*\n\nDokumen resmi laporan pemetaan bakat dapat diunduh melalui aplikasi Sareh Asih.`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Laporan Pemetaan Bakat - ${s.name}`,
+          text: textShare,
+        });
+        beritahu("Laporan pemetaan berhasil dibagikan.");
+      } catch {
+        // dibatalkan
+      }
+    } else {
+      const urlWA = `https://api.whatsapp.com/send?text=${encodeURIComponent(textShare)}`;
+      window.open(urlWA, "_blank");
+      beritahu("Membuka WhatsApp untuk membagikan laporan...");
+    }
+  };
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, backgroundColor: "#F7F5F0" }}>
-      <TBar title="AI Talent Mapping" sub={`${s.name} · ${s.abk}`} onBack={onBack} />
+    <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, backgroundColor: "#F7F5F0" }}>
+      <TBar
+        title="AI Talent Mapping"
+        sub={`${s.name} · ${s.abk}`}
+        onBack={onBack}
+        right={
+          <button
+            type="button"
+            onClick={handleShareLaporan}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: DEEP,
+              padding: "6px",
+              cursor: "pointer",
+            }}
+            className="flex items-center justify-center active:scale-90"
+            title="Bagikan Hasil Pemetaan"
+          >
+            <Share2 size={18} />
+          </button>
+        }
+      />
       
-      <div className="px-4 pt-4 pb-8 space-y-5">
-        <ProfilFungsionalRadar jawaban={jawaban} studentName={s.name.split(" ")[0]} studentId={studentId} />
-        <ProfilKecenderunganBar jawaban={jawaban} studentName={s.name.split(" ")[0]} studentId={studentId} />
+      <div className="px-4 pt-4 pb-8 space-y-4">
+        {/* Tombol Unduh & Bagikan Laporan Pemetaan Siswa */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              exportLaporanPemetaan([s], namaSekolah);
+              beritahu(`Laporan pemetaan ${firstName} berhasil diunduh.`);
+            }}
+            style={{
+              flex: 1.3,
+              background: CARD,
+              border: `1.5px solid ${DEEP}`,
+              color: DEEP,
+              fontFamily: PJS,
+              fontWeight: 800,
+              minHeight: 48,
+              borderRadius: 16,
+              cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(91,122,104,0.08)",
+            }}
+            className="text-xs flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          >
+            <FileText size={15} />
+            <span>Unduh Laporan Pemetaan {firstName}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleShareLaporan}
+            style={{
+              flex: 0.85,
+              background: `linear-gradient(135deg, ${DEEP} 0%, #466253 100%)`,
+              border: "none",
+              color: "#FFFFFF",
+              fontFamily: PJS,
+              fontWeight: 800,
+              minHeight: 48,
+              borderRadius: 16,
+              cursor: "pointer",
+              boxShadow: "0 3px 10px rgba(91,122,104,0.22)",
+            }}
+            className="text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
+          >
+            <Share2 size={14} />
+            <span>Bagikan</span>
+          </button>
+        </div>
+
+        <ProfilFungsionalRadar jawaban={jawaban} studentName={firstName} studentId={studentId} />
+        <ProfilKecenderunganBar jawaban={jawaban} studentName={firstName} studentId={studentId} />
         <SuggestedCompetitions studentId={studentId} go={go} />
       </div>
+
+      {toast && (
+        <div style={{ position: "fixed", left: 20, right: 20, bottom: 20, zIndex: 75, background: "#2E3E35", borderRadius: 16, padding: "12px 16px", display: "flex", alignItems: "center", gap: 9, boxShaodw: "0 10px 28px rgba(0,0,0,0.28)" }}>
+          <CheckCircle size={15} style={{ color: "#8BB098", flexShrink: 0 }} />
+          <p className="text-xs font-semibold" style={{ color: "#fff", fontFamily: IPS }}>{toast}</p>
+        </div>
+      )}
     </div>
   );
 }

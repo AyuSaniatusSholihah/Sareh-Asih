@@ -265,7 +265,7 @@ export default function App() {
         />
       );
       case "talent-map": return <TalentMapScreen go={go} onStartObs={startObs} onSelect={setSelectedStudentId} />;
-      case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} />;
+      case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} namaSekolah={guru.sekolah} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
       case "competition": return <CompetitionScreen onStartObs={startObs} />;
       case "report": return (
