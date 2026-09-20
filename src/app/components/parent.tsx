@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Bell, Users, MessageSquare, Sparkles, Lock, Info, Heart, Star,
   Key, Hash, XCircle, ChevronRight, ChevronLeft, MapPin, Phone,
@@ -16,6 +16,7 @@ import {
   type LaporanKirim,
   type AgendaEvent, type EventKind,
 } from "./data";
+import { ProfilFungsionalRadar, ProfilKecenderunganBar, getMockJawaban, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
 
 // â”€â”€â”€ Modal: masukkan kode akses dari dalam aplikasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function LinkCodeModal({onClose,onLinked,students}:{onClose:()=>void;onLinked:(s:Student)=>void;students:Student[]}) {
@@ -179,7 +180,7 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
         {/* â”€â”€ Sudah terhubung â”€â”€ */}
         {child && (
           <>
-            {/* â”€â”€ Kartu Profil Anak â”€â”€ */}
+            {/* ── Kartu Profil Anak ── */}
             <div style={{ background: CARD, borderRadius: 20, padding: "18px 16px 16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
               {/* Profile row */}
               <div className="flex items-center gap-3" style={{ marginBottom: 14 }}>
@@ -187,32 +188,32 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.25 }}>{child.name}</p>
                   <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: "3px 0 0", lineHeight: 1.3 }}>
-                    Kelas {child.kelas} Â· SLB Negeri 1
+                    Kelas {child.kelas} · SLB Negeri 1
                   </p>
                 </div>
               </div>
 
               {/* Three info boxes */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-                {/* Potensi Utama */}
+                {/* Potensi Utama (RIASEC) */}
                 <div style={{ background: BG, borderRadius: 14, padding: "10px 8px", border: `1px solid ${BDR}` }}>
                   <div style={{ width: 28, height: 28, borderRadius: 8, background: "#E8F5E9", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>
                     <Palette size={14} style={{ color: DEEP }} />
                   </div>
-                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Potensi Utama</p>
+                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Potensi (RIASEC)</p>
                   <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "2px 0 0", textAlign: "center", lineHeight: 1.2 }}>
-                    {child.talent || "â€”"}
+                    {child.hasObs ? kodeTigaHuruf(getMockJawaban(child.id)) : "Belum ada"}
                   </p>
                 </div>
 
-                {/* Fokus Minggu Ini */}
+                {/* Kemandirian */}
                 <div style={{ background: BG, borderRadius: 14, padding: "10px 8px", border: `1px solid ${BDR}` }}>
                   <div style={{ width: 28, height: 28, borderRadius: 8, background: "#EDE7F6", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>
                     <BookOpen size={14} style={{ color: "#7C3AED" }} />
                   </div>
-                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Fokus Minggu Ini</p>
+                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Kemandirian</p>
                   <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "2px 0 0", textAlign: "center", lineHeight: 1.2 }}>
-                    {child.talent ? `Latihan ${child.talent.split(" ")[0]}` : "â€”"}
+                    {child.hasObs ? skorKetekunan(getMockJawaban(child.id)) : "Belum ada"}
                   </p>
                 </div>
 
@@ -700,9 +701,9 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
 }
 
 // â”€â”€â”€ DETAIL PERKEMBANGAN ANAK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
+export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLihatRiwayat}:{
   onBack:()=>void; child:Student|null; onOpenCode:()=>void;
-  laporan:LaporanKirim[]; onBaca:(id:number)=>void;
+  laporan:LaporanKirim[]; onBaca:(id:number)=>void; onLihatRiwayat?:()=>void;
 }) {
   if (!child) {
     return (
@@ -731,7 +732,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
     <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
       <TBar title="Detail Perkembangan" sub={`${child.name} â€” Hanya baca`} onBack={onBack}/>
       <div className="px-4 pt-4 pb-6 space-y-3">
-        <LaporanGuruSection laporan={laporan} onBaca={onBaca} namaAnak={nama}/>
+        <LaporanGuruSection laporan={laporan} onBaca={onBaca} namaAnak={nama} onLihatRiwayat={onLihatRiwayat}/>
 
         {!child.hasObs && (
           <div style={{background:"#FEF9EC",border:`1px solid rgba(217,142,30,0.25)`}} className="rounded-2xl px-4 py-3 flex items-start gap-2.5">
@@ -744,28 +745,21 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
 
         {child.hasObs && (
           <>
-            <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2"><Sparkles size={14} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Hasil Talent Mapping</p></div>
-                <Lock size={12} style={{color:MUTED}}/>
-              </div>
-              {[
-                {t:child.talent,st:child.stars,r:`${nama} menunjukkan kekuatan konsisten pada ${child.talent.toLowerCase()}. Ini potensi utama yang perlu terus didukung di rumah.`},
-                {t:"Cara Belajar Dominan",st:4,r:`${nama} paling mudah menyerap materi dengan pendekatan ${child.caraBelajar.toLowerCase()}. Sesuaikan cara mendampingi belajar di rumah.`},
-              ].map(x=>(
-                <div key={x.t} className="mb-3 last:mb-0 pb-3 last:pb-0" style={{borderBottom:`1px solid ${BDR}`}}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <p className="font-semibold text-sm" style={{color:TEXT}}>{x.t}</p>
-                    <div className="flex gap-0.5">{Array.from({length:5}).map((_,i)=><Star key={i} size={12} style={{color:i<x.st?A:"#E5E7EB",fill:i<x.st?A:"#E5E7EB"}}/>)}</div>
-                  </div>
-                  <div style={{background:SEC}} className="rounded-xl px-3 py-2 flex items-start gap-1.5">
-                    <Info size={11} style={{color:T,flexShrink:0,marginTop:2}}/><p className="text-xs leading-relaxed" style={{color:TEXT}}>{x.r}</p>
-                  </div>
-                </div>
-              ))}
+            <p className="text-xs font-bold uppercase tracking-wide mt-5 mb-2 px-1" 
+               style={{color:MUTED, fontFamily:PJS, letterSpacing:"0.05em"}}>
+              Peta Potensi Anak
+            </p>
+            <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} readOnly={true} />
+            <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} readOnly={true} />
+            
+            <div style={{background:"#F0FDF4",border:`1px solid #BBF7D0`}} className="rounded-xl px-4 py-3 flex items-start gap-2.5 mt-2">
+              <Info size={14} style={{color:"#15803D",flexShrink:0,marginTop:1}}/>
+              <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
+                Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
+              </p>
             </div>
 
-            <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+            <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4 mt-2">
               <div className="flex items-center justify-between mb-3">
                 <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Progress per Semester</p>
                 <Lock size={12} style={{color:MUTED}}/>
@@ -787,24 +781,6 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
                 {[{l:"Bakat Utama",c:T},{l:"Komunikasi",c:A},{l:"Motorik",c:"#7C3AED"}].map(x=>(
                   <div key={x.l} className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{background:x.c}}/><span className="text-xs" style={{color:MUTED}}>{x.l}</span></div>
                 ))}
-              </div>
-            </div>
-
-            <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Program Pengembangan Aktif</p>
-                <Lock size={12} style={{color:MUTED}}/>
-              </div>
-              <div style={{background:SEC}} className="rounded-xl px-3 py-2.5 mb-3">
-                <p className="text-xs font-bold" style={{color:T}}>Target Semester Ganjil 2026</p>
-                <p className="font-bold text-sm mt-0.5" style={{color:TEXT}}>Mengembangkan {child.talent}</p>
-              </div>
-              <div className="flex justify-between text-xs mb-1.5">
-                <span style={{color:MUTED}}>Progress</span>
-                <span className="font-bold" style={{color:T,fontFamily:DMM}}>{child.talentScore}%</span>
-              </div>
-              <div className="h-2 rounded-full" style={{background:"#EDE9E3"}}>
-                <div className="h-full rounded-full" style={{width:`${child.talentScore}%`,background:T}}/>
               </div>
             </div>
           </>
@@ -832,70 +808,83 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca}:{
   );
 }
 
-/* â”€â”€ Laporan dari guru (hanya baca, tidak bisa dibalas) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-function LaporanGuruSection({laporan,onBaca,namaAnak}:{
-  laporan:LaporanKirim[]; onBaca:(id:number)=>void; namaAnak:string;
+/* ── Laporan dari guru (hanya baca, tidak bisa dibalas) ─────────────── */
+function LaporanGuruSection({laporan,onBaca,namaAnak,onLihatRiwayat}:{
+  laporan:LaporanKirim[]; onBaca:(id:number)=>void; namaAnak:string; onLihatRiwayat?:()=>void;
 }) {
-  const [buka,setBuka] = useState<number|null>(null);
-  const urut = laporan.slice().reverse();
-  const belum = urut.filter(l=>!l.dibaca).length;
+  const terbaru = laporan.slice().sort((a,b)=> 
+    new Date(b.dikirimPada).getTime() - new Date(a.dikirimPada).getTime()
+  )[0];
 
-  const bukaLaporan = (id:number) => {
-    setBuka(b=>b===id?null:id);
-    onBaca(id);
-  };
+  useEffect(() => {
+    if (terbaru && !terbaru.dibaca) onBaca(terbaru.id);
+  }, [terbaru?.id]);
 
   return (
-    <div style={{background:CARD,border:`1.5px solid ${belum?A:BDR}`}} className="rounded-2xl p-4">
+    <div style={{background:CARD, border:`1.5px solid ${terbaru && !terbaru.dibaca ? A : BDR}`}} 
+         className="rounded-2xl p-4">
       <div className="flex items-center gap-2 mb-1">
         <FileText size={15} style={{color:T}}/>
         <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Laporan dari Guru</p>
-        {belum>0 && (
-          <span className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full" style={{background:A,color:"#fff"}}>
-            {belum} baru
-          </span>
+        {terbaru && !terbaru.dibaca && (
+          <span className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full" 
+                style={{background:A,color:"#fff"}}>Baru</span>
         )}
       </div>
       <p className="text-xs leading-relaxed mb-3" style={{color:MUTED}}>
-        Guru mengirim laporan perkembangan {namaAnak} dari waktu ke waktu. Laporan bersifat satu arah â€” silakan hubungi guru langsung bila ingin berdiskusi.
+        Laporan terbaru dari guru tentang {namaAnak}. Bersifat satu arah — 
+        silakan hubungi guru langsung bila ingin berdiskusi.
       </p>
-
-      {urut.length===0 ? (
+      
+      {!terbaru ? (
         <div style={{background:BG,border:`1px dashed ${BDR}`}} className="rounded-xl px-3 py-5 text-center">
           <p className="text-xs" style={{color:MUTED}}>Belum ada laporan yang dikirim guru.</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {urut.map(l=>{
-            const terbuka = buka===l.id;
-            return (
-              <div key={l.id} style={{background:l.dibaca?BG:"#FEF9EC",border:`1px solid ${l.dibaca?BDR:"rgba(210,125,107,0.28)"}`}} className="rounded-xl overflow-hidden">
-                <button onClick={()=>bukaLaporan(l.id)}
-                  style={{width:"100%",textAlign:"left",minHeight:56,background:"transparent"}}
-                  className="px-3 py-2.5 flex items-center gap-2.5">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate" style={{color:TEXT}}>{l.judul}</p>
-                    <p className="text-xs" style={{color:MUTED,fontFamily:DMM}}>{l.dikirimPada}</p>
-                  </div>
-                  {!l.dibaca && <span style={{width:8,height:8,borderRadius:"50%",background:A,flexShrink:0}}/>}
-                  <ChevronDown size={15} style={{color:MUTED,flexShrink:0,transform:terbuka?"rotate(180deg)":"none",transition:"transform .2s"}}/>
-                </button>
-                {terbuka && (
-                  <div className="px-3 pb-3">
-                    <p className="text-sm leading-relaxed" style={{color:TEXT}}>{l.isi}</p>
-                    <div className="flex items-center gap-1.5 mt-2.5 pt-2.5" style={{borderTop:`1px solid ${BDR}`}}>
-                      <CheckCircle size={11} style={{color:"#15803D"}}/>
-                      <p className="text-xs" style={{color:"#15803D"}}>
-                        Ditandai sudah dibaca â€” guru akan melihat status ini.
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        <>
+          <div style={{background:BG,border:`1px solid ${BDR}`}} className="rounded-xl px-3 py-3">
+            <p className="text-xs mb-2 font-semibold" style={{color:MUTED,fontFamily:DMM}}>{terbaru.dikirimPada}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{color:TEXT}}>{terbaru.isi}</p>
+          </div>
+          {laporan.length > 1 && onLihatRiwayat && (
+            <button 
+              onClick={onLihatRiwayat}
+              className="w-full flex items-center justify-between mt-3 cursor-pointer"
+              style={{color:T, background:"transparent", border:"none"}}
+            >
+              <span className="text-xs font-semibold">
+                Lihat riwayat laporan ({laporan.length - 1})
+              </span>
+              <ChevronRight size={14} style={{color:T}}/>
+            </button>
+          )}
+        </>
       )}
+    </div>
+  );
+}
+
+export function RiwayatLaporanScreen({
+  onBack, laporan, namaAnak,
+}: {
+  onBack: () => void; laporan: LaporanKirim[]; namaAnak: string;
+}) {
+  const urut = laporan.slice().sort((a,b)=>
+    new Date(b.dikirimPada).getTime() - new Date(a.dikirimPada).getTime()
+  );
+
+  return (
+    <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
+      <TBar title="Riwayat Laporan" sub={namaAnak} onBack={onBack}/>
+      <div className="px-4 pt-4 pb-6 space-y-3">
+        {urut.map(l=>(
+          <div key={l.id} style={{background:CARD,border:`1px solid ${BDR}`}} 
+               className="rounded-2xl p-4">
+            <p className="text-xs mb-2 font-semibold" style={{color:MUTED,fontFamily:DMM}}>{l.dikirimPada}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{color:TEXT}}>{l.isi}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

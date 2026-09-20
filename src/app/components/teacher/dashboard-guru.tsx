@@ -12,6 +12,7 @@ import {
 import { type GuruProfile } from "../auth";
 import { KodeAksesCard } from "../kode-manager";
 import { TalentConstellation, type ConstellationStudent } from "./talent-constellation";
+import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
 
 export function DashboardGuru({
   go,
@@ -35,12 +36,12 @@ export function DashboardGuru({
   const constellationStudents: ConstellationStudent[] = useMemo(
     () =>
       students
-        .filter(s => !!s.talent)
+        .filter(s => s.hasObs)
         .map(s => ({
           id: String(s.id),
           name: s.name,
-          domain: s.talent,
-          progress: s.talentScore || 0,
+          domain: kodeTigaHuruf(getMockJawaban(s.id)),
+          progress: 80, // Mock progress for visual demo
           needsAttention: !s.hasObs,
         })),
     [students],
@@ -53,7 +54,7 @@ export function DashboardGuru({
       I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: A }} />,
       bg: "rgba(210,125,107,0.12)",
       judul: "Asesmen belum tuntas",
-      ket: `${s.name.split(" ")[0]} · ${s.talent}`,
+      ket: `${s.name.split(" ")[0]} · Belum dipetakan`,
       waktu: "Perlu aksi", tint: A,
     })),
     ...students.filter(s => s.hasObs).slice(0, 2).map((s, i) => ({
@@ -61,7 +62,7 @@ export function DashboardGuru({
       I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: "#059669" }} />,
       bg: "#ECFDF5",
       judul: "Asesmen selesai",
-      ket: `${s.name.split(" ")[0]} · ${s.talent}`,
+      ket: `${s.name.split(" ")[0]} · ${s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)) : ""}`,
       waktu: ["Baru saja", "Hari ini"][i] ?? "Hari ini", tint: "#059669",
     })),
     ...laporan.slice().reverse().slice(0, 3).map(l => {
@@ -71,7 +72,7 @@ export function DashboardGuru({
         I: <FileText size={16} strokeWidth={2.3} style={{ color: DEEP }} />,
         bg: "rgba(91,122,104,0.12)",
         judul: "Laporan dikirim ke orang tua",
-        ket: `${s?.name.split(" ")[0] ?? "Siswa"} · ${l.judul}`,
+        ket: `${s?.name.split(" ")[0] ?? "Siswa"} · ${l.isi.substring(0, 30)}...`,
         waktu: l.dikirimPada, tint: DEEP,
       };
     }),

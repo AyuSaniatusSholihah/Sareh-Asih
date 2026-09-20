@@ -13,12 +13,12 @@ export type Screen =
   | "competition"
   | "report"
   | "parent-dashboard" | "parent-detail"
-  | "parent-calendar" | "parent-training";
+  | "parent-calendar" | "parent-training"
+  | "riwayat-laporan";
 
 export interface Student {
   id:number; name:string; abk:string; kelas:string; age:number; emoji:string;
-  talent:string; talentScore:number; stars:number; teacher:string;
-  hasObs:boolean; comps:string[]; caraBelajar:string;
+  teacher:string; hasObs:boolean; comps:string[]; caraBelajar:string;
   tingkatDukungan?:string; komunikasi?:string; motorik?:string;
   sensorik?:string; rentang?:string; minat?:string; terapi?:string;
   kodeOrtu?:string;
@@ -26,14 +26,14 @@ export interface Student {
 
 // ─── Seed data ───────────────────────────────────────────────────────
 export const seedStudents: Student[] = [
-  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", talent:"Artistic",       talentScore:90, stars:5, teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
-  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",                kelas:"VIII B", age:14, emoji:"👧", talent:"Realistic",      talentScore:84, stars:4, teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA" },
-  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",                kelas:"VII A",  age:12, emoji:"👦", talent:"Investigative",  talentScore:76, stars:4, teacher:"Pak Budi", hasObs:true,  comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
-  { id:4, name:"Dina Maharani",  abk:"Tunanetra",        kelas:"IX C",   age:15, emoji:"👧", talent:"Social",         talentScore:71, stars:4, teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
-  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",kelas:"VII A",  age:13, emoji:"👦", talent:"Enterprising",   talentScore:82, stars:4, teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
-  { id:6, name:"Maya Dewi",      abk:"Tunarungu",kelas:"VIII B", age:14, emoji:"👧", talent:"Conventional",   talentScore:68, stars:3, teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
-  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",                kelas:"IX A",   age:15, emoji:"👦", talent:"Realistic",      talentScore:79, stars:4, teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI" },
-  { id:8, name:"Sari Indah",     abk:"Tunarungu",                kelas:"VIII A", age:13, emoji:"👧", talent:"Artistic",       talentScore:73, stars:4, teacher:"Bu Rina",  hasObs:true,  comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
+  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
+  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",                kelas:"VIII B", age:14, emoji:"👧", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA" },
+  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",                kelas:"VII A",  age:12, emoji:"👦", teacher:"Pak Budi", hasObs:true,  comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
+  { id:4, name:"Dina Maharani",  abk:"Tunanetra",        kelas:"IX C",   age:15, emoji:"👧", teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
+  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",kelas:"VII A",  age:13, emoji:"👦", teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
+  { id:6, name:"Maya Dewi",      abk:"Tunarungu",kelas:"VIII B", age:14, emoji:"👧", teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
+  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",                kelas:"IX A",   age:15, emoji:"👦", teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI" },
+  { id:8, name:"Sari Indah",     abk:"Tunarungu",                kelas:"VIII A", age:13, emoji:"👧", teacher:"Bu Rina",  hasObs:true,  comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
 ];
 
 // ─── Laporan ke orang tua ────────────────────────────────────────────
@@ -45,19 +45,13 @@ export const seedStudents: Student[] = [
 export interface LaporanKirim {
   id:number;
   studentId:number;
-  judul:string;
   isi:string;
   dikirimPada:string;   // contoh "3 Jun 2026"
   dibaca:boolean;
   dibacaPada?:string;
 }
 
-export const seedLaporan: LaporanKirim[] = [
-  { id:1, studentId:1, judul:"Perkembangan Bulan Mei", dikirimPada:"3 Jun 2026", dibaca:true, dibacaPada:"3 Jun 2026, 19.20",
-    isi:"Rafi semakin fokus saat kegiatan menggambar dan mulai mau menunjukkan hasil karyanya ke teman. Mohon dilanjutkan latihan menggambar 20 menit di rumah." },
-  { id:2, studentId:1, judul:"Catatan Latihan Lomba", dikirimPada:"18 Jun 2026", dibaca:false,
-    isi:"Rafi mulai ikut latihan persiapan FLS2N cabang menggambar setiap Rabu. Mohon dukungan agar tetap semangat dan istirahat cukup." },
-];
+export const seedLaporan: LaporanKirim[] = [];
 
 // ─── Students store (guru dapat menambah siswa sendiri) ──────────────
 interface StudentsStore { list:Student[]; add:(s:Omit<Student,"id">)=>Student; }

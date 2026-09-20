@@ -1,4 +1,5 @@
 import { GAYA_META, studentCompDetail, studentTalentDetail, type Student } from "./data";
+import { getMockJawaban, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
 
 /* ── Util unduh berkas ────────────────────────────────────────────── */
 function unduh(nama:string, isi:string, mime:string) {
@@ -23,8 +24,8 @@ const KOLOM: {h:string; get:(s:Student)=>string}[] = [
   {h:"Guru Pendamping",  get:s=>s.teacher},
   {h:"Status Asesmen", get:s=>s.hasObs?"Sudah didampingi":"Belum didampingi"},
   {h:"Cara Belajar",     get:s=>s.caraBelajar||""},
-  {h:"Bakat Dominan",    get:s=>s.talent||""},
-  {h:"Skor Bakat",       get:s=>s.talentScore?String(s.talentScore):""},
+  {h:"Potensi (RIASEC)", get:s=>s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)) : ""},
+  {h:"Kemandirian",    get:s=>s.hasObs ? skorKetekunan(getMockJawaban(s.id)) : ""},
   {h:"Rekomendasi Lomba",get:s=>s.comps.join(", ")},
   {h:"Tingkat Dukungan", get:s=>s.tingkatDukungan||""},
   {h:"Komunikasi",       get:s=>s.komunikasi||""},
@@ -85,9 +86,8 @@ function bagianSiswa(s:Student, index:number, total:number) {
     ${!s.hasObs
       ? `<p class="kosong">Belum ada data asesmen. Pemetaan bakat akan tersedia setelah asesmen pertama diselesaikan.</p>`
       : `<table>
-          ${baris("Bakat Dominan", s.talent||"")}
-          ${baris("Skor Bakat", s.talentScore?`${s.talentScore} / 100`:"")}
-          ${baris("Tingkat Penguasaan", "★".repeat(s.stars) + "☆".repeat(Math.max(0,5-s.stars)))}
+          ${baris("Potensi (RIASEC)", s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)) : "")}
+          ${baris("Kemandirian", s.hasObs ? skorKetekunan(getMockJawaban(s.id)) : "")}
           ${baris("Gaya Belajar Dominan", s.caraBelajar||"")}
         </table>
         ${talent ? `<table class="rinci">
