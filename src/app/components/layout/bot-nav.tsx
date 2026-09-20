@@ -9,7 +9,7 @@ export const GURU_NAV = [
   { k: "dashboard", l: "Beranda", I: Home },
   { k: "students", l: "Kelas", I: Users },
   { k: "talent-map", l: "Bakat", I: Star },
-  { k: "competition", l: "Agenda", I: Calendar },
+  { k: "competition", l: "Lomba", I: Calendar },
   { k: "report", l: "Laporan", I: FileText },
 ];
 

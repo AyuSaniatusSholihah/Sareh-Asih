@@ -35,9 +35,6 @@ import {
 
 import guruIcon from "@/imports/guru-icon.png";
 import ortuIcon from "@/imports/ortu-icon.png";
-import classActivityImg from "@/imports/class_activity.jpg";
-import classDrawingImg from "@/imports/class_drawing.jpg";
-import classGroupImg from "@/imports/class_group.jpg";
 
 const MAIN_SCREENS: Screen[] = [
   "dashboard", "students", "talent-map", "competition", "report",
@@ -63,14 +60,6 @@ export default function App() {
   const [pendingRole, setPending] = useState<Role>("guru");
   const [screen, setScreen] = useState<Screen>("landing");
   const [tab, setTab] = useState<Screen>("dashboard");
-
-  // Data siswa
-  const [agendas, setAgendas] = useState<any[]>([
-    { id: 1, type: "sekolah", title: "Pentas Seni Inklusif", date: "2026-08-15", desc: "Acara tahunan sekolah menampilkan bakat & kreasi seni siswa.", img: classGroupImg },
-    { id: 2, type: "lomba", title: "O2SN Diksus Tingkat Kota", date: "2026-09-10", desc: "Ajang olahraga PDBK cabang Bocce, Lari, & Bulutangkis.", img: classActivityImg },
-    { id: 3, type: "sekolah", title: "Gelar Karya & Kewirausahaan", date: "2026-10-05", desc: "Pameran hasil karya keterampilan tata boga & kriya siswa.", img: classDrawingImg },
-    { id: 4, type: "lomba", title: "FLS2N Seni & Tari Daerah", date: "2026-11-12", desc: "Seleksi festival seni, menyanyi solo & tari kreasi daerah.", img: classGroupImg },
-  ]);
 
   const [list, setList] = useState<Student[]>(seedStudents);
   const addStudent = (s: Omit<Student, "id">) => {
@@ -223,7 +212,7 @@ export default function App() {
       case "asesmen-pending": return ["Asesmen Perlu Diperiksa", "Daftar siswa yang belum dinilai"];
       case "students": return ["Kelas Saya", "Kelola Kelas dengan Mudah"];
       case "talent-map": return ["Peta Bakat", guru.sekolah];
-      case "competition": return ["Agenda", "Agenda & Rekomendasi Lomba"];
+      case "competition": return ["Rekomendasi Lomba", "Daftar rekomendasi kegiatan & lomba"];
       case "report": return ["Laporan", "Rekap data siswa & pemetaan bakat"];
       case "parent-dashboard": return ["Beranda ♡", child ? `Orang Tua · ${child.name}` : "Orang Tua · belum terhubung"];
       case "parent-detail": return ["Perkembangan Anak", child ? child.name : "Belum terhubung"];
@@ -285,7 +274,7 @@ export default function App() {
       case "talent-map": return <TalentMapScreen go={go} onStartObs={startObs} onSelect={setSelectedStudentId} />;
       case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
-      case "competition": return <CompetitionScreen onStartObs={startObs} agendas={agendas} onAddAgenda={(a) => setAgendas([...agendas, a])} />;
+      case "competition": return <CompetitionScreen onStartObs={startObs} />;
       case "report": return (
         <ReportScreen
           namaSekolah={guru.sekolah}
