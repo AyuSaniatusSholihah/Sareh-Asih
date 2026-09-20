@@ -124,11 +124,10 @@ export function ObservationScreen({
         {/* Identitas + stepper + progress (terkunci saat scroll) */}
         <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#F7F5F0", boxShadow: "0 4px 12px rgba(91,122,104,0.08)" }}>
           <div style={{ background: CARD }} className="px-4 pt-2 pb-3">
-            <div className="flex items-center gap-3 mb-3">
-              <span style={{ fontSize: 28 }}>{student.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>{student.name}</p>
-                <div className="flex gap-1.5 mt-0.5 flex-wrap">
+            <div className="mb-3">
+              <div className="min-w-0">
+                <p className="font-bold text-base" style={{ fontFamily: PJS, color: TEXT }}>{student.name}</p>
+                <div className="flex gap-1.5 mt-1 flex-wrap">
                   <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#F3EFFF", color: "#6D28D9" }}>{student.abk}</span>
                   <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: SEC, color: T }}>Kelas {student.kelas}</span>
                 </div>

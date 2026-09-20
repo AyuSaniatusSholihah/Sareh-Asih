@@ -25,7 +25,7 @@ export function KodeOrtuCard({ s, onRegen }: { s: Student; onRegen: (id: number)
         <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>Kode Akses Orang Tua</p>
       </div>
       <p className="text-xs leading-relaxed mb-3" style={{ color: MUTED }}>
-        Bagikan kode ini kepada orang tua {s.name.split(" ")[0]} agar mereka bisa memantau perkembangan anak dan menerima agenda sekolah.
+        Bagikan kode ini kepada orang tua {s.name.split(" ")[0]} agar mereka bisa memantau perkembangan bakat dan asesmen anak.
       </p>
       <div style={{ background: SEC, border: `1px dashed ${T}` }} className="rounded-xl px-3 py-3 text-center mb-3">
         <p className="font-bold" style={{ fontFamily: DMM, fontSize: 17, color: DEEP, letterSpacing: "0.1em" }}>{s.kodeOrtu ?? "—"}</p>
@@ -381,12 +381,11 @@ export function ProfileScreen({
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS }}>
       <TBar title="Profil Siswa" sub={s.name} onBack={onBack}
         right={<button onClick={() => onStartObs(s.id)} style={{ background: A, color: "#fff", fontFamily: PJS, fontWeight: 800, minHeight: 42, borderRadius: 14, padding: "0 16px", boxShadow: "0 4px 14px rgba(210,125,107,0.42)", border: "none", cursor: "pointer" }} className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"><ClipboardList size={14} strokeWidth={2.2} />Asesmen</button>} />
-      <div style={{ background: CARD, borderBottom: `1px solid ${BDR}` }} className="px-4 py-3 flex items-center gap-3">
-        <div style={{ width: 52, height: 52, background: SEC, border: `1.5px solid rgba(91,122,104,0.25)`, flexShrink: 0 }} className="rounded-2xl flex items-center justify-center text-2xl">{s.emoji}</div>
-        <div className="flex-1">
-          <p className="font-bold text-base" style={{ fontFamily: PJS, color: TEXT }}>{s.name}</p>
+      <div style={{ background: CARD, borderBottom: `1px solid ${BDR}` }} className="px-5 py-3.5">
+        <div>
+          <p className="font-bold text-lg" style={{ fontFamily: PJS, color: TEXT }}>{s.name}</p>
           <p className="text-xs" style={{ color: MUTED }}>Kelas {s.kelas}{s.age ? ` · ${s.age} tahun` : ""} · {s.teacher}</p>
-          <div className="flex gap-1.5 mt-1"><Chip label={s.abk} color="purple" /><SBadge s={s.hasObs ? "Berjalan" : "Belum Dibaca"} /></div>
+          <div className="flex gap-1.5 mt-1.5"><Chip label={s.abk} color="purple" /><SBadge s={s.hasObs ? "Berjalan" : "Belum Dibaca"} /></div>
         </div>
       </div>
       <div className="flex" style={{ background: CARD, borderBottom: `1px solid ${BDR}` }}>

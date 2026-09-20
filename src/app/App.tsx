@@ -212,7 +212,7 @@ export default function App() {
       case "report": return ["Laporan", "Rekap data siswa & pemetaan bakat"];
       case "parent-dashboard": return ["Beranda ♡", child ? `Orang Tua · ${child.name}` : "Orang Tua · belum terhubung"];
       case "parent-detail": return ["Perkembangan Anak", child ? child.name : "Belum terhubung"];
-      case "parent-calendar": return ["Kalender", child ? `Umum + agenda ${guru.sekolah}` : "Kegiatan terbuka untuk umum"];
+      case "parent-calendar": return ["Kalender", "Kegiatan terbuka untuk umum"];
       case "parent-training": return ["Pelatihan & Terapi", "Info umum layanan terdekat"];
       default: return ["", ""];
     }

@@ -622,35 +622,7 @@ export function StudentsScreen({
                     }}
                     className="active:scale-[0.99] transition-all hover:shadow-md"
                   >
-                    {/* Student Photo */}
-                    <div
-                      style={{
-                        width: 52,
-                        height: 52,
-                        borderRadius: "50%",
-                        overflow: "hidden",
-                        flexShrink: 0,
-                        background: "#E2E8F0",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <img
-                        src={STUDENT_AVATARS[s.id] || `https://api.dicebear.com/7.x/bottts/svg?seed=${s.name}`}
-                        alt={s.name}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        onError={(e) => {
-                          (e.currentTarget as HTMLElement).style.display = "none";
-                          if (e.currentTarget.parentElement) {
-                            e.currentTarget.parentElement.innerText = s.emoji || "👤";
-                            e.currentTarget.parentElement.style.fontSize = "24px";
-                          }
-                        }}
-                      />
-                    </div>
-
-                    {/* Middle: Student Details */}
+                    {/* Student Details (shifted to left) */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <h3
                         style={{

@@ -67,7 +67,7 @@ export function TalentMapDetailScreen({
   go: (s: Screen) => void;
 }) {
   const students = useStudents();
-  const s = students.find(x => x.id === studentId);
+  const s = students.find(x => x.id === Number(studentId)) || students.find(x => x.hasObs) || students[0];
   if (!s) return null;
 
   const jawaban = getMockJawaban(studentId);
@@ -77,8 +77,8 @@ export function TalentMapDetailScreen({
       <TBar title="AI Talent Mapping" sub={`${s.name} · ${s.abk}`} onBack={onBack} />
       
       <div className="px-4 pt-4 pb-8 space-y-5">
-        <ProfilFungsionalRadar jawaban={jawaban} />
-        <ProfilKecenderunganBar jawaban={jawaban} />
+        <ProfilFungsionalRadar jawaban={jawaban} studentName={s.name.split(" ")[0]} studentId={studentId} />
+        <ProfilKecenderunganBar jawaban={jawaban} studentName={s.name.split(" ")[0]} studentId={studentId} />
         <SuggestedCompetitions studentId={studentId} go={go} />
       </div>
     </div>
