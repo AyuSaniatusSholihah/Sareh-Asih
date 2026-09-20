@@ -256,7 +256,7 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
             </div>
             <p className="font-bold text-base text-center mb-1" style={{fontFamily:PJS,color:TEXT}}>Hapus {terpilihPunya.length} Kode Akses?</p>
             <p className="text-xs text-center leading-relaxed mb-4" style={{color:MUTED}}>
-              Orang tua yang sedang memakai kode ini akan langsung kehilangan akses ke perkembangan anak dan agenda sekolah.
+              Orang tua yang sedang memakai kode ini akan langsung kehilangan akses ke data perkembangan anak.
             </p>
             <div className="flex gap-2">
               <button onClick={()=>setKonfirmasiHapus(false)}

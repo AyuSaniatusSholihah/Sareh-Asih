@@ -25,7 +25,7 @@ export function KodeOrtuCard({ s, onRegen }: { s: Student; onRegen: (id: number)
         <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>Kode Akses Orang Tua</p>
       </div>
       <p className="text-xs leading-relaxed mb-3" style={{ color: MUTED }}>
-        Bagikan kode ini kepada orang tua {s.name.split(" ")[0]} agar mereka bisa memantau perkembangan anak dan menerima agenda sekolah.
+        Bagikan kode ini kepada orang tua {s.name.split(" ")[0]} agar mereka bisa memantau perkembangan bakat dan asesmen anak.
       </p>
       <div style={{ background: SEC, border: `1px dashed ${T}` }} className="rounded-xl px-3 py-3 text-center mb-3">
         <p className="font-bold" style={{ fontFamily: DMM, fontSize: 17, color: DEEP, letterSpacing: "0.1em" }}>{s.kodeOrtu ?? "—"}</p>

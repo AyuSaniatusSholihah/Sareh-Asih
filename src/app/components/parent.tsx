@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Bell, Users, MessageSquare, Sparkles, Lock, Info, Heart, Star,
   Key, Hash, XCircle, ChevronRight, ChevronLeft, MapPin, Phone,
@@ -118,7 +118,7 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
   go: (s: Screen) => void; child: Student | null; namaOrtu: string; onOpenCode: () => void;
   laporan: LaporanKirim[];
 }) {
-  const upcoming = AGENDA.filter(e => e.kind !== "sekolah" || !!child).slice(0, 1);
+  const upcoming = AGENDA.slice(0, 1);
   const latestLaporan = laporan.length > 0 ? laporan[laporan.length - 1] : null;
   const ibuName = namaOrtu.split(" ")[0];
 
@@ -330,11 +330,8 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
   const [selected,setSelected] = useState<string|null>(null);
   const [filter,setFilter] = useState<EventKind|"semua">("semua");
 
-  // Kalender hanya memuat kegiatan umum/terbuka. Agenda internal sekolah
-  // baru ikut tampil setelah orang tua memasukkan kode akses dari guru.
-  const visible = AGENDA.filter(e=>e.kind!=="sekolah"||linked);
-  const hiddenSekolah = AGENDA.filter(e=>e.kind==="sekolah").length;
-  const list = visible.filter(e=>filter==="semua"||e.kind===filter);
+  // Kalender memuat kegiatan umum/terbuka (lomba, terapi, pelatihan)
+  const list = AGENDA.filter(e=>filter==="semua"||e.kind===filter);
 
   const first = new Date(cursor.y, cursor.m, 1);
   const daysInMonth = new Date(cursor.y, cursor.m+1, 0).getDate();
@@ -368,7 +365,7 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
           <div style={{flex:1,minWidth:0}}>
             <h1 style={{fontFamily:PJS,fontSize:22,fontWeight:800,color:TEXT,margin:0,lineHeight:1.15}}>Kalender Kegiatan</h1>
-            <p style={{fontFamily:IPS,fontSize:12.5,color:MUTED,margin:"2px 0 0",fontWeight:500}}>Kegiatan umum & terbuka untuk anak ABK{linked?" + agenda sekolah":""}</p>
+            <p style={{fontFamily:IPS,fontSize:12.5,color:MUTED,margin:"2px 0 0",fontWeight:500}}>Kegiatan lomba, pelatihan & terapi terbuka untuk anak ABK</p>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0,marginTop:2}}>
             <button style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Cari">
@@ -390,43 +387,20 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
         <div className="flex gap-2 overflow-x-auto pb-1">
           {([["semua","Semua","📋"],...Object.entries(KIND_META).map(([k,v])=>[k,v.label,v.icon])] as [string,string,string][]).map(([k,l,ic])=>{
             const on = filter===k;
-            const locked = k==="sekolah" && !linked;
             return (
-              <button key={k} onClick={()=>locked?onOpenCode():setFilter(k as any)}
+              <button key={k} onClick={()=>setFilter(k as any)}
                 style={{
-                  background:on?T:locked?BG:CARD,
-                  color:on?"#fff":locked?"#A3B0A7":MUTED,
-                  border:on?"none":`1px solid ${locked?"rgba(91,122,104,0.12)":BDR}`,
+                  background:on?T:CARD,
+                  color:on?"#fff":MUTED,
+                  border:on?"none":`1px solid ${BDR}`,
                   fontFamily:IPS,minHeight:38,flexShrink:0,
                 }}
                 className="px-3.5 rounded-full text-xs font-semibold inline-flex items-center gap-1">
-                {locked ? <Lock size={10}/> : <span>{ic}</span>}{l}
+                <span>{ic}</span>{l}
               </button>
             );
           })}
         </div>
-
-        {/* Filter sekolah terkunci */}
-        {!linked && (
-          <div style={{background:CARD,border:`1.5px dashed ${BDR}`}} className="rounded-2xl p-4">
-            <div className="flex items-start gap-3">
-              <div style={{width:40,height:40,background:BG,flexShrink:0}} className="rounded-xl flex items-center justify-center">
-                <Lock size={17} style={{color:MUTED}}/>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Agenda Sekolah Terkunci</p>
-                <p className="text-xs leading-relaxed mt-0.5" style={{color:MUTED}}>
-                  {hiddenSekolah} agenda internal sekolah (rapat wali murid, pembagian rapor, pentas karya) hanya bisa dilihat orang tua yang sudah terhubung dengan guru pendamping.
-                </p>
-              </div>
-            </div>
-            <button onClick={onOpenCode}
-              style={{width:"100%",background:A,color:"#fff",fontFamily:IPS,minHeight:46,marginTop:12}}
-              className="rounded-2xl text-xs font-bold flex items-center justify-center gap-2">
-              <Hash size={13}/>Masukkan Kode Akses untuk Membuka
-            </button>
-          </div>
-        )}
 
         {/* Grid kalender */}
         <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
@@ -547,12 +521,7 @@ function EventCard({e}:{e:AgendaEvent}) {
           {e.biaya && (
             <div className="flex items-start gap-2"><Wallet size={13} style={{color:MUTED,flexShrink:0,marginTop:2}}/><p className="text-xs" style={{color:MUTED}}>{e.biaya}</p></div>
           )}
-          {e.sekolah && (
-            <div style={{background:meta.bg}} className="rounded-xl px-3 py-2.5 flex items-start gap-2">
-              <Lock size={12} style={{color:meta.color,flexShrink:0,marginTop:2}}/>
-              <p className="text-xs leading-relaxed" style={{color:meta.color}}><strong>Agenda internal {e.sekolah}</strong> — hanya terlihat oleh orang tua yang terhubung.</p>
-            </div>
-          )}
+
           {e.pendaftaran && (
             <div style={{background:meta.bg}} className="rounded-xl px-3 py-2.5 flex items-start gap-2">
               <Info size={12} style={{color:meta.color,flexShrink:0,marginTop:2}}/>

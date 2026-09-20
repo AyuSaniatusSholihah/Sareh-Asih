@@ -307,13 +307,11 @@ export const studentCompDetail: Record<string,{id:number;cabang:string;match:num
 };
 
 // ─── Kalender event & lomba khusus ABK (untuk orang tua) ─────────────
-export type EventKind = "lomba"|"terapi"|"pelatihan"|"sekolah";
+export type EventKind = "lomba"|"terapi"|"pelatihan";
 
 /**
- * Kalender HANYA memuat agenda yang bersifat umum/terbuka:
+ * Kalender memuat agenda yang bersifat umum/terbuka:
  * - lomba resmi, pelatihan terbuka, dan layanan gratis terbuka untuk umum.
- * - agenda "sekolah" bersifat privat: hanya tampil jika orang tua sudah
- *   memasukkan kode akses dari guru (lihat field `sekolah`).
  * Jadwal terapi personal TIDAK dimasukkan ke kalender karena bersifat
  * pribadi, berbayar, dan diatur langsung antara orang tua & penyedia.
  */
@@ -323,28 +321,22 @@ export interface AgendaEvent {
   title:string; kind:EventKind; lokasi:string; jam:string; desc:string;
   pendaftaran?:string;
   biaya?:string;
-  /** diisi hanya untuk agenda internal sekolah — butuh kode akses */
-  sekolah?:string;
 }
 
 export const AGENDA: AgendaEvent[] = [
   { id:1,  date:"2026-08-08", title:"Seleksi Kabupaten FLS2N-PDBK", kind:"lomba",     lokasi:"SLB Negeri 1 Bandung",       jam:"08.00 – 12.00", desc:"Seleksi tingkat kabupaten cabang Seni Lukis dan Seni Pertunjukan untuk peserta didik berkebutuhan khusus.", pendaftaran:"Melalui sekolah, paling lambat 5 Agustus", biaya:"Gratis" },
   { id:2,  date:"2026-08-12", title:"Skrining Tumbuh Kembang Gratis", kind:"terapi",  lokasi:"Puskesmas Cibeunying",       jam:"08.00 – 12.00", desc:"Skrining perkembangan anak dan konsultasi awal dengan terapis, terbuka untuk umum tanpa biaya.", pendaftaran:"Datang langsung, bawa KIA/BPJS", biaya:"Gratis · terbuka umum" },
   { id:3,  date:"2026-08-15", title:"Pelatihan Parenting ABK",      kind:"pelatihan", lokasi:"Aula SLB Harapan Bangsa",    jam:"09.00 – 12.00", desc:"Workshop terbuka untuk semua orang tua: strategi mendampingi anak belajar di rumah sesuai gaya belajarnya.", pendaftaran:"Daftar via tautan panitia", biaya:"Gratis · terbuka umum" },
-  { id:4,  date:"2026-08-19", title:"Pembagian Rapor Tengah Sem.",  kind:"sekolah",   lokasi:"SLB Harapan Bangsa",         jam:"08.00 – 11.00", desc:"Orang tua diundang untuk menerima laporan perkembangan dan berdiskusi dengan guru pendamping.", sekolah:"SLB Harapan Bangsa" },
   { id:5,  date:"2026-08-22", title:"O2SN Diksus — Cabang Boccia",  kind:"lomba",     lokasi:"GOR Pajajaran, Bandung",     jam:"07.30 – 15.00", desc:"Kompetisi Boccia tingkat provinsi untuk kategori tunadaksa dan tunagrahita.", pendaftaran:"Kuota 2 siswa per sekolah", biaya:"Gratis" },
   { id:6,  date:"2026-08-26", title:"Klinik Terapi Wicara Gratis",  kind:"terapi",    lokasi:"Balai RW 07 Cibeunying",     jam:"09.00 – 14.00", desc:"Layanan terapi wicara gratis hasil kerja sama Dinas Kesehatan. Terbuka untuk umum, kuota 40 anak.", pendaftaran:"Pendaftaran online dibuka 20 Agustus", biaya:"Gratis · kuota terbatas" },
-  { id:7,  date:"2026-08-28", title:"Rapat Wali Murid Kelas VII",   kind:"sekolah",   lokasi:"SLB Harapan Bangsa",         jam:"09.00 – 11.00", desc:"Pembahasan program pendampingan semester dan persiapan lomba tingkat kabupaten.", sekolah:"SLB Harapan Bangsa" },
   { id:8,  date:"2026-09-03", title:"LKS Diksus — Desain Grafis",   kind:"lomba",     lokasi:"SMKN 4 Bandung",             jam:"08.00 – 16.00", desc:"Lomba Kompetensi Siswa bidang desain grafis untuk peserta didik berkebutuhan khusus.", pendaftaran:"Pendaftaran dibuka 10 Agustus", biaya:"Gratis" },
   { id:9,  date:"2026-09-09", title:"Kelas Seni Inklusi Terbuka",   kind:"pelatihan", lokasi:"Rumah Kreatif Bandung",      jam:"14.00 – 16.00", desc:"Kelas melukis dan kriya terbuka untuk anak ABK, didampingi instruktur seni dan shadow teacher.", pendaftaran:"Daftar via WhatsApp panitia", biaya:"Gratis (subsidi Dinas Pendidikan)" },
-  { id:10, date:"2026-09-12", title:"Bazar & Pentas Karya Siswa",   kind:"sekolah",   lokasi:"SLB Harapan Bangsa",         jam:"08.00 – 13.00", desc:"Pameran karya siswa dan pentas seni. Orang tua diharapkan hadir mendampingi anak.", sekolah:"SLB Harapan Bangsa" },
 ];
 
 export const KIND_META: Record<EventKind,{label:string;color:string;bg:string;icon:string}> = {
   lomba:     {label:"Lomba",            color:"#B45309", bg:"#FEF3C7", icon:"🏆"},
   terapi:    {label:"Terapi Gratis",    color:"#0369A1", bg:"#E0F2FE", icon:"🩺"},
   pelatihan: {label:"Pelatihan Umum",   color:"#6D28D9", bg:"#EDE9FE", icon:"🎓"},
-  sekolah:   {label:"Agenda Sekolah",   color:"#15803D", bg:"#F0FDF4", icon:"🏫"},
 };
 
 // ─── Layanan terapi & pelatihan terdekat ─────────────────────────────
