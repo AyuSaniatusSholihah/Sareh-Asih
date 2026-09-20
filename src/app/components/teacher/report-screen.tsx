@@ -9,6 +9,7 @@ import {
 import { CARD, TEXT, MUTED, SEC, T, A, DEEP, PJS, IPS, BG, BDR, DMM, useUI } from "../ui-kit";
 import { useStudents, type Student } from "../data";
 import { exportSpreadsheet, exportLaporanPemetaan, printReportPDF } from "../export";
+import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
 
 type ReportView = "main" | "detail" | "web-connect";
 type FilterScope = "semua" | "kelas" | "anak";
@@ -111,7 +112,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
         `Kelas: ${student.kelas}`,
         `Kekhususan: ${student.abk}`,
         `Status: ${student.hasObs ? "Sudah dipetakan bakat" : "Belum diamati"}`,
-        student.talent ? `Bakat Dominan: ${student.talent}` : "",
+        student.hasObs ? `Potensi (RIASEC): ${kodeTigaHuruf(getMockJawaban(student.id))}` : "",
         "",
         "Dokumen laporan lengkap dalam format PDF telah disiapkan.",
         "Terima kasih atas perhatian dan kerja samanya.",
@@ -553,7 +554,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
                     <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0 }}>Kelas {s.kelas}</p>
                   </div>
                   {s.hasObs ? (
-                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 8, fontFamily: PJS, flexShrink: 0 }}>{s.talent || "Terpetakan"}</span>
+                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 8, fontFamily: PJS, flexShrink: 0 }}>{kodeTigaHuruf(getMockJawaban(s.id))}</span>
                   ) : (
                     <span style={{ background: "#FFFBEB", color: "#B45309", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 8, fontFamily: PJS, flexShrink: 0, display: "flex", alignItems: "center", gap: 3 }}>
                       <Clock size={9} />Belum
@@ -841,7 +842,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
                     <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>Kelas {s.kelas} · {s.abk}</p>
                   </div>
                   {s.hasObs ? (
-                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0 }}>{s.talent || "Terpetakan"}</span>
+                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0 }}>{kodeTigaHuruf(getMockJawaban(s.id))}</span>
                   ) : (
                     <span style={{ background: "#FFFBEB", color: "#B45309", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0, display: "flex", alignItems: "center", gap: 3 }}>
                       <Clock size={10} />Belum

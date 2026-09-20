@@ -8,7 +8,7 @@ import {
 } from "../ui-kit";
 import { useStudents, type Student, type LaporanKirim, type Screen } from "../data";
 import { exportLaporanPemetaan } from "../export";
-
+import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
 /** Kartu kode orang tua — guru yang membuat & membagikannya (peran admin ada di guru). */
 export function KodeOrtuCard({ s, onRegen }: { s: Student; onRegen: (id: number) => void }) {
   const [copied, setCopied] = useState(false);
@@ -79,7 +79,7 @@ export function JurnalTab({
   laporan: LaporanKirim[];
   onKirim: (studentId: number, isi: string) => void;
 }) {
-  const generated = `${s.name} menunjukkan perkembangan positif pada ${s.talent ? s.talent.toLowerCase() : "kegiatan belajarnya"} di Semester Genap 2026. Fokus dan kemandirian meningkat dibanding semester lalu.`;
+  const generated = `${s.name} menunjukkan perkembangan positif pada ${s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)).toLowerCase() : "kegiatan belajarnya"} di Semester Genap 2026. Fokus dan kemandirian meningkat dibanding semester lalu.`;
   const [draft, setDraft] = useState(generated);
   const [expanded, setExpanded] = useState(false);
   const [listening, setListening] = useState(false);

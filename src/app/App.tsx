@@ -17,7 +17,7 @@ import { ObservationScreen } from "./components/observation";
 import { KodeAksesScreen } from "./components/kode-manager";
 import {
   ParentDashboard, ParentDetailScreen, ParentCalendarScreen,
-  ParentTrainingScreen, LinkCodeModal,
+  ParentTrainingScreen, LinkCodeModal, RiwayatLaporanScreen,
 } from "./components/parent";
 
 // Layout components
@@ -144,9 +144,6 @@ export default function App() {
       ? {
         ...s,
         hasObs: true,
-        talent: s.talent || "Artistic",
-        talentScore: s.talentScore || 72,
-        stars: s.stars || 4,
         caraBelajar: s.caraBelajar || "Visual & Kinestetik"
       }
       : s));
@@ -169,7 +166,6 @@ export default function App() {
     {
       id: Math.max(0, ...prev.map(l => l.id)) + 1,
       studentId, isi,
-      judul: `Laporan ${new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" })}`,
       dikirimPada: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
       dibaca: false,
     },
@@ -261,9 +257,6 @@ export default function App() {
               ? {
                 ...s,
                 hasObs: true,
-                talent: s.talent || "Artistic",
-                talentScore: s.talentScore || 72,
-                stars: s.stars || 4,
                 caraBelajar: s.caraBelajar || "Visual & Kinestetik"
               }
               : s));
@@ -288,7 +281,8 @@ export default function App() {
       );
 
       case "parent-dashboard": return <ParentDashboard go={go} child={child} namaOrtu={namaOrtu} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} />;
-      case "parent-detail": return <ParentDetailScreen onBack={goBack} child={child} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} onBaca={tandaiDibaca} />;
+      case "parent-detail": return <ParentDetailScreen onBack={goBack} child={child} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} onBaca={tandaiDibaca} onLihatRiwayat={() => go("riwayat-laporan")} />;
+      case "riwayat-laporan": return <RiwayatLaporanScreen onBack={() => go("parent-detail")} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} namaAnak={child ? child.name.split(" ")[0] : ""} />;
       case "parent-calendar": return <ParentCalendarScreen linked={!!child} sekolah={guru.sekolah} onOpenCode={() => setShowLinkCode(true)} />;
       case "parent-training": return <ParentTrainingScreen go={go} />;
       default: return null;

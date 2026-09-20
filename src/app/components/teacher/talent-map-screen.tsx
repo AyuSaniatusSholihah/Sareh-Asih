@@ -4,6 +4,7 @@ import {
   T, A, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, useUI, BG,
 } from "../ui-kit";
 import { useStudents, type Screen } from "../data";
+import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
 
 export function TalentMapScreen({
   go,
@@ -286,7 +287,7 @@ export function TalentMapScreen({
                           <p className="text-xs" style={{ color: "#5A6E63" }}>{s.abk}</p>
                           <div className="flex items-center gap-2 mt-1.5">
                             <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "#E4EFE7", color: "#2D543E" }}>
-                              {s.talent || "Menunggu analisis"}
+                              {kodeTigaHuruf(getMockJawaban(s.id))}
                             </span>
                           </div>
                         </div>
