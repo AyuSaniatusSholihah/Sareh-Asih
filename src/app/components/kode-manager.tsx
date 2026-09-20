@@ -119,11 +119,59 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
     beritahu("Daftar kode disalin ke papan klip.");
   };
 
+  const belumPunya = students.filter(s=>!s.kodeOrtu);
+
+  const handleGenerateKode = () => {
+    const target = terpilih.length > 0 
+      ? terpilih 
+      : (belumPunya.length > 0 ? belumPunya : students);
+
+    if (target.length === 0) {
+      beritahu("Semua siswa sudah memiliki kode akses.");
+      return;
+    }
+
+    onBuat(target.map(s => s.id));
+    beritahu(`${target.length} kode akses berhasil di-generate! ✨`);
+  };
+
   const sasaranEkspor = terpilih.length ? terpilih : students;
 
   return (
-    <div className="flex-1 overflow-y-auto relative" style={{fontFamily:IPS}}>
-      <TBar title="Kode Akses Orang Tua" sub={`${students.filter(s=>!!s.kodeOrtu).length} dari ${students.length} siswa sudah punya kode`} onBack={onBack}/>
+    <div className="flex-1 overflow-y-auto relative" style={{fontFamily:IPS,background:BG}}>
+      <TBar
+        title="Kode Akses Orang Tua"
+        sub={`${students.filter(s=>!!s.kodeOrtu).length} dari ${students.length} siswa sudah punya kode`}
+        onBack={onBack}
+        right={
+          <button
+            type="button"
+            onClick={handleGenerateKode}
+            style={{
+              background: `linear-gradient(135deg, ${A} 0%, #C45F4B 100%)`,
+              color: "#FFFFFF",
+              border: "none",
+              borderRadius: 14,
+              padding: "8px 12px",
+              fontFamily: PJS,
+              fontSize: 11.5,
+              fontWeight: 800,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              boxShadow: "0 3px 10px rgba(210, 110, 91, 0.32)",
+              flexShrink: 0,
+              whiteSpace: "nowrap",
+            }}
+            className="active:scale-95 transition-all hover:brightness-105"
+            title="Generate Kode Akses"
+          >
+            <Key size={13} strokeWidth={2.5} />
+            <span>Generate Kode</span>
+          </button>
+        }
+      />
 
       <div className="px-4 pt-4 pb-6 space-y-3">
         <div style={{background:SEC,border:`1px solid rgba(91,122,104,0.2)`}} className="rounded-2xl p-3.5 flex items-start gap-2.5">
@@ -218,8 +266,8 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
             className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
             <RefreshCw size={15}/>
             {terpilihBelum.length===terpilih.length && terpilih.length
-              ? `Buat Kode untuk ${terpilih.length} Siswa`
-              : `Buat / Perbarui Kode (${terpilih.length})`}
+              ? `Generate Kode untuk ${terpilih.length} Siswa`
+              : `Generate / Perbarui Kode (${terpilih.length})`}
           </button>
 
           <div className="flex gap-2">
