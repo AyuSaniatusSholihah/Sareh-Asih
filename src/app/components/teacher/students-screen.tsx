@@ -514,7 +514,8 @@ export function StudentsScreen({
                 <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
                   {selectedClass.nama}
                 </h1>
-                <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "3px 0 0", fontWeight: 500 }}>
+                <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "3px 0 0", fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>
+                  <User size={13} style={{ color: "#5A6E63" }} />
                   {effectiveStudents.length} Siswa
                 </p>
               </div>
@@ -622,7 +623,24 @@ export function StudentsScreen({
                     }}
                     className="active:scale-[0.99] transition-all hover:shadow-md"
                   >
-                    {/* Student Details (shifted to left) */}
+                    {/* Person / Profile Icon */}
+                    <div
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: "50%",
+                        background: s.hasObs ? "#EBF4EE" : "#FBF1EF",
+                        border: `1.5px solid ${s.hasObs ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <User size={21} style={{ color: s.hasObs ? DEEP : A }} />
+                    </div>
+
+                    {/* Student Details */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <h3
                         style={{
@@ -1266,11 +1284,11 @@ export function StudentsScreen({
                   backdropFilter: "blur(4px)",
                   display: "flex",
                   alignItems: "center",
-                  gap: 3,
+                  gap: 3.5,
                   fontFamily: PJS,
                   boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
                 }}>
-                  <CheckCircle size={10} strokeWidth={2.5} /> {studentCount} Siswa
+                  <User size={11} strokeWidth={2.4} /> {studentCount} Siswa
                 </span>
               </div>
 
