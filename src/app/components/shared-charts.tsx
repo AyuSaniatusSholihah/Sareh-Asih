@@ -136,26 +136,24 @@ export function ProfilFungsionalRadar({
   // Use 0 for chart display if null, but keep original value for logic
   const chartData = data.map(d => ({ ...d, A: d.A ?? 0 }));
 
-  // Hitung rata-rata kemandirian
-  const validScores = chartData.map(d => d.A);
-  const avgKemandirian = validScores.length > 0
-    ? Math.round(validScores.reduce((acc, curr) => acc + curr, 0) / validScores.length)
-    : 0;
-
   // Nama dan teks kesimpulan kemandirian
   const name = studentName || (studentId === 1 ? "Rafi" : studentId === 2 ? "Nisa" : studentId === 3 ? "Arga" : "Siswa");
+  const tersedia = data.filter((d): d is typeof d & {A: number} => d.A !== null);
   let keteranganKemandirian = "";
-  if (studentId === 1 || name === "Rafi") {
-    keteranganKemandirian = `${name} memiliki tingkat kemandirian sangat baik pada Perawatan Diri & Mobilitas, namun memerlukan pendampingan berkala pada tugas kognisi dan pemahaman instruksi bertahap.`;
-  } else if (studentId === 2 || name === "Nisa") {
-    keteranganKemandirian = `${name} menunjukkan kemandirian dan fokus yang tinggi dalam Kognisi dan Interaksi Sosial, dengan dukungan arahan visual yang konsisten untuk aktivitas harian.`;
-  } else if (studentId === 3 || name === "Arga") {
-    keteranganKemandirian = `${name} memiliki kemampuan kognisi dan penalaran yang sangat unggul, namun membutuhkan penyesuaian lingkungan dan alat bantu pada mobilitas fisik.`;
+  
+  if (tersedia.length === 0) {
+    keteranganKemandirian = "Data belum cukup untuk menyimpulkan profil fungsional siswa.";
   } else {
-    const sorted = [...chartData].sort((a, b) => b.A - a.A);
-    const highest = sorted[0];
-    const lowest = sorted[sorted.length - 1];
-    keteranganKemandirian = `${name} menunjukkan kemandirian optimal pada aspek ${highest.subject} (${highest.A}%), serta memerlukan pendampingan berkelanjutan pada aspek ${lowest.subject} (${lowest.A}%).`;
+    const terurut = [...tersedia].sort((a, b) => b.A - a.A);
+    const tertinggi = terurut[0];
+    const terendah = terurut[terurut.length - 1];
+    const selisih = tertinggi.A - terendah.A;
+
+    if (selisih < 15 || tersedia.length < 2) {
+      keteranganKemandirian = `${name} menunjukkan kapasitas fungsional yang cukup merata di seluruh domain yang teramati, dengan ${tertinggi.subject} (${tertinggi.A}%) sedikit paling menonjol.`;
+    } else {
+      keteranganKemandirian = `${name} menunjukkan kapasitas fungsional paling menonjol pada aspek ${tertinggi.subject} (${tertinggi.A}%). Aspek ${terendah.subject} (${terendah.A}%) masih bisa terus dikembangkan lewat latihan bertahap dan dukungan rutin.`;
+    }
   }
 
   const RadarCustomTooltip = ({ active, payload }: any) => {
@@ -178,19 +176,8 @@ export function ProfilFungsionalRadar({
         <div className="flex items-center gap-2 min-w-0">
           <Activity size={18} style={{ color: DEEP }} className="flex-shrink-0" />
           <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, whiteSpace: "nowrap" }}>
-            Profil Kemandirian
+            Profil Fungsional
           </h3>
-        </div>
-        <div
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full flex-shrink-0"
-          style={{
-            background: "#EBF4EE",
-            border: "1px solid rgba(45,84,62,0.22)",
-          }}
-        >
-          <span style={{ color: DEEP, fontFamily: PJS, fontWeight: 800, fontSize: 11, whiteSpace: "nowrap" }}>
-            Rata-rata: {avgKemandirian}%
-          </span>
         </div>
       </div>
       <p style={{ fontSize: 12, color: MUTED, marginBottom: 14, paddingLeft: 4, lineHeight: 1.4 }}>
@@ -200,12 +187,12 @@ export function ProfilFungsionalRadar({
       {/* Radar Chart */}
       <div style={{ width: '100%', height: 230 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart cx="50%" cy="50%" outerRadius="68%" data={chartData}>
+          <RadarChart cx="50%" cy="50%" outerRadius="55%" data={chartData} margin={{ top: 10, right: 35, bottom: 10, left: 35 }}>
             <PolarGrid stroke="#E2E8F0" />
             <PolarAngleAxis dataKey="subject" tick={{ fill: TEXT, fontSize: 11, fontFamily: DMM, fontWeight: 600 }} />
             <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
             <Tooltip content={<RadarCustomTooltip />} />
-            <Radar name="Kemandirian" dataKey="A" stroke={DEEP} fill={DEEP} fillOpacity={0.25} strokeWidth={2.5} />
+            <Radar name="Fungsional" dataKey="A" stroke={DEEP} fill={DEEP} fillOpacity={0.25} strokeWidth={2.5} />
           </RadarChart>
         </ResponsiveContainer>
       </div>
@@ -246,7 +233,7 @@ export function ProfilFungsionalRadar({
               marginBottom: 3,
             }}
           >
-            Kesimpulan Kemandirian:
+            Kesimpulan Profil Fungsional:
           </p>
           <p
             style={{
@@ -340,17 +327,6 @@ export function ProfilKecenderunganBar({
           <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, whiteSpace: "nowrap" }}>
             Kecenderungan Minat
           </h3>
-        </div>
-        <div
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full flex-shrink-0"
-          style={{
-            background: "#FFF7ED",
-            border: "1px solid #FFEDD5",
-          }}
-        >
-          <span style={{ color: "#C2410C", fontFamily: PJS, fontWeight: 800, fontSize: 11, whiteSpace: "nowrap" }}>
-            Dominan: {dominant.label} ({dominant.skor}%)
-          </span>
         </div>
       </div>
       <p style={{ fontSize: 12, color: MUTED, marginBottom: 16, paddingLeft: 4, lineHeight: 1.4 }}>

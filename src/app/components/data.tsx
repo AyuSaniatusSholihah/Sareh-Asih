@@ -186,12 +186,27 @@ export const PROFIL_KECENDERUNGAN: RiasecItem[] = [
   {id:6003, kategori:"Conventional", text:"Lebih nyaman pada tugas dengan aturan dan langkah yang jelas."},
 ];
 
-export const progressData = [
-  { sem:"S1'23", seni:58, komunikasi:42, motorik:55 },
-  { sem:"S2'23", seni:67, komunikasi:50, motorik:60 },
-  { sem:"S1'24", seni:75, komunikasi:56, motorik:63 },
-  { sem:"S2'24", seni:85, komunikasi:64, motorik:70 },
-];
+export interface AsesmenPeriode {
+  periode: string;        // contoh "S1'24"
+  tanggal: string;        // contoh "3 Jun 2024"
+  skorFungsional: Record<FungsionalKategori, number | null>;  // null = data belum memadai
+  skorRiasec: Record<RiasecKategori, number | null>;
+}
+
+export const seedRiwayatAsesmen: Record<number, AsesmenPeriode[]> = {
+  // key = studentId
+  1: [
+    { periode:"S1'23", tanggal:"Des 2023", 
+      skorFungsional:{Kognisi:58,Mobilitas:70,"Perawatan Diri":62,"Interaksi dengan Orang Lain":40,"Aktivitas Sehari-hari":55,Partisipasi:48},
+      skorRiasec:{Realistic:30,Investigative:35,Artistic:70,Social:45,Enterprising:25,Conventional:40} },
+    { periode:"S2'23", tanggal:"Jun 2024",
+      skorFungsional:{Kognisi:62,Mobilitas:72,"Perawatan Diri":65,"Interaksi dengan Orang Lain":52,"Aktivitas Sehari-hari":58,Partisipasi:55},
+      skorRiasec:{Realistic:32,Investigative:38,Artistic:78,Social:50,Enterprising:28,Conventional:42} },
+    { periode:"S1'24", tanggal:"Des 2024",
+      skorFungsional:{Kognisi:65,Mobilitas:73,"Perawatan Diri":70,"Interaksi dengan Orang Lain":68,"Aktivitas Sehari-hari":60,Partisipasi:58},
+      skorRiasec:{Realistic:35,Investigative:42,Artistic:85,Social:65,Enterprising:30,Conventional:45} },
+  ],
+};
 
 // ─── Kelompok belajar ────────────────────────────────────────────────
 export const GAYA_META: Record<string,{icon:string;warna:string;strategi:string[];hindari:string[]}> = {

@@ -12,7 +12,8 @@ import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar,
 } from "./ui-kit";
 import {
-  progressData, AGENDA, KIND_META, LAYANAN, studentTalentDetail, RIASEC_META,
+  AGENDA, KIND_META, LAYANAN, studentTalentDetail, RIASEC_META, FUNGSIONAL_KATEGORI, RIASEC_KATEGORI,
+  seedRiwayatAsesmen, type AsesmenPeriode, type RiasecKategori,
   type Screen, type Student, type LaporanKirim,
   type AgendaEvent, type EventKind,
 } from "./data";
@@ -822,64 +823,43 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
 
         {child.hasObs && (
           <>
-            <p className="text-xs font-bold uppercase tracking-wide mt-5 mb-2 px-1" 
-               style={{color:MUTED, fontFamily:PJS, letterSpacing:"0.05em"}}>
-              Peta Potensi Anak
-            </p>
-            <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} readOnly={true} />
-            <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} readOnly={true} />
-            
-            <div style={{background:"#F0FDF4",border:`1px solid #BBF7D0`}} className="rounded-xl px-4 py-3 flex items-start gap-2.5 mt-2">
-              <Info size={14} style={{color:"#15803D",flexShrink:0,marginTop:1}}/>
-              <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
-                Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
-              </p>
-            </div>
+            <SeksiCollapsible judul="Peta Potensi Anak" defaultTerbuka={true}>
+              <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} readOnly={true} />
+              <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} readOnly={true} />
+              <div style={{background:"#F0FDF4",border:`1px solid #BBF7D0`}} className="rounded-xl px-4 py-3 flex items-start gap-2.5 mt-2">
+                <Info size={14} style={{color:"#15803D",flexShrink:0,marginTop:1}}/>
+                <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
+                  Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
+                </p>
+              </div>
+            </SeksiCollapsible>
 
-            <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4 mt-2">
-              <div className="flex items-center justify-between mb-3">
-                <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Progress per Semester</p>
-                <Lock size={12} style={{color:MUTED}}/>
-              </div>
-              <div style={{height:160}}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={progressData} margin={{top:4,right:4,left:-24,bottom:0}}>
-                    <CartesianGrid key="cg" strokeDasharray="3 3" stroke="#EDE9E3"/>
-                    <XAxis key="xa" dataKey="sem" tick={{fontSize:10,fill:MUTED,fontFamily:DMM}}/>
-                    <YAxis key="ya" tick={{fontSize:10,fill:MUTED,fontFamily:DMM}} domain={[0,100]}/>
-                    <Tooltip key="tt" contentStyle={{borderRadius:12,border:"none",fontSize:12,fontFamily:IPS}}/>
-                    <Line key="l1" type="monotone" dataKey="seni" stroke={T} strokeWidth={2.5} dot={{r:3}} name="Bakat Utama"/>
-                    <Line key="l2" type="monotone" dataKey="komunikasi" stroke={A} strokeWidth={2.5} dot={{r:3}} name="Komunikasi"/>
-                    <Line key="l3" type="monotone" dataKey="motorik" stroke="#7C3AED" strokeWidth={2.5} dot={{r:3}} name="Motorik"/>
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="flex gap-3 mt-2">
-                {[{l:"Bakat Utama",c:T},{l:"Komunikasi",c:A},{l:"Motorik",c:"#7C3AED"}].map(x=>(
-                  <div key={x.l} className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{background:x.c}}/><span className="text-xs" style={{color:MUTED}}>{x.l}</span></div>
-                ))}
-              </div>
-            </div>
+            <SeksiCollapsible judul="Tren & Perkembangan" defaultTerbuka={true}>
+              <TrenKecenderunganAktivitas riwayat={seedRiwayatAsesmen[child.id] ?? []} />
+              <PerkembanganKemandirian riwayat={seedRiwayatAsesmen[child.id] ?? []} />
+            </SeksiCollapsible>
           </>
         )}
 
-        <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2"><Heart size={13} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Saran Guru untuk di Rumah</p></div>
-            <Lock size={12} style={{color:MUTED}}/>
-          </div>
-          {[
-            {i:"🎨",t:`Beri ${nama} waktu berlatih bebas minimal 20 menit setiap hari.`},
-            {i:"🧰",t:"Siapkan alat sederhana yang mudah dijangkau anak."},
-            {i:"👏",t:"Apresiasi setiap usaha, bukan hanya hasil akhirnya."},
-            {i:"🕒",t:`Jaga rutinitas yang sama setiap hari — ${nama} lebih tenang dengan jadwal yang dapat ditebak.`},
-          ].map(s=>(
-            <div key={s.t} className="flex items-start gap-2.5 py-2.5" style={{borderBottom:`1px solid ${BDR}`}}>
-              <span className="text-lg flex-shrink-0">{s.i}</span>
-              <p className="text-sm leading-relaxed" style={{color:TEXT}}>{s.t}</p>
+        <SeksiCollapsible judul="Saran Guru untuk di Rumah" defaultTerbuka={true}>
+          <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2"><Heart size={13} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Saran Guru untuk di Rumah</p></div>
+              <Lock size={12} style={{color:MUTED}}/>
             </div>
-          ))}
-        </div>
+            {[
+              {i:"🎨",t:`Beri ${nama} waktu berlatih bebas minimal 20 menit setiap hari.`},
+              {i:"🧰",t:"Siapkan alat sederhana yang mudah dijangkau anak."},
+              {i:"👏",t:"Apresiasi setiap usaha, bukan hanya hasil akhirnya."},
+              {i:"🕒",t:`Jaga rutinitas yang sama setiap hari — ${nama} lebih tenang dengan jadwal yang dapat ditebak.`},
+            ].map(s=>(
+              <div key={s.t} className="flex items-start gap-2.5 py-2.5" style={{borderBottom:`1px solid ${BDR}`}}>
+                <span className="text-lg flex-shrink-0">{s.i}</span>
+                <p className="text-sm leading-relaxed" style={{color:TEXT}}>{s.t}</p>
+              </div>
+            ))}
+          </div>
+        </SeksiCollapsible>
       </div>
     </div>
   );
@@ -962,6 +942,137 @@ export function RiwayatLaporanScreen({
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function SeksiCollapsible({
+  judul, defaultTerbuka = true, children,
+}: { judul: string; defaultTerbuka?: boolean; children: React.ReactNode }) {
+  const [terbuka, setTerbuka] = useState(defaultTerbuka);
+  return (
+    <div className="mt-5">
+      <button
+        onClick={() => setTerbuka(!terbuka)}
+        className="w-full flex items-center justify-between px-1 mb-2"
+      >
+        <span
+          className="text-xs font-bold uppercase"
+          style={{ color: MUTED, fontFamily: PJS, letterSpacing: "0.05em" }}
+        >
+          {judul}
+        </span>
+        <ChevronDown
+          size={14}
+          style={{
+            color: MUTED,
+            transform: terbuka ? "rotate(0deg)" : "rotate(-90deg)",
+            transition: "transform 0.15s",
+          }}
+        />
+      </button>
+      {terbuka && <div className="space-y-3">{children}</div>}
+    </div>
+  );
+}
+
+function TrenKecenderunganAktivitas({ riwayat }: { riwayat: AsesmenPeriode[] }) {
+  if (riwayat.length < 2) {
+    return (
+      <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+        <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tren Kecenderungan Aktivitas</p>
+        <p className="text-xs" style={{color:MUTED}}>Ini asesmen pertama. Tren akan mulai terlihat mulai periode berikutnya.</p>
+      </div>
+    );
+  }
+
+  const chartData = riwayat.map(r => {
+    const row: any = { periode: r.periode };
+    RIASEC_KATEGORI.forEach(tipe => { row[tipe] = r.skorRiasec[tipe]; });
+    return row;
+  });
+
+  return (
+    <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+      <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tren Kecenderungan Aktivitas</p>
+      <p className="text-xs mb-3" style={{color:MUTED}}>Keenam tipe RIASEC, dari waktu ke waktu.</p>
+      <ResponsiveContainer width="100%" height={190}>
+        <LineChart data={chartData} margin={{top:4,right:4,left:-24,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke={BDR}/>
+          <XAxis dataKey="periode" tick={{fontSize:10}}/>
+          <YAxis domain={[0,100]} tick={{fontSize:10}}/>
+          <Tooltip/>
+          {RIASEC_KATEGORI.map(tipe => (
+            <Line key={tipe} type="monotone" dataKey={tipe} 
+                  stroke={RIASEC_META[tipe].color} strokeWidth={2} dot={{r:2.5}} 
+                  name={tipe}/>
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+      <div className="flex gap-2.5 mt-2 flex-wrap">
+        {RIASEC_KATEGORI.map(tipe => (
+          <div key={tipe} className="flex items-center gap-1.5 text-xs" style={{color:MUTED}}>
+            <span style={{width:8,height:8,borderRadius:99,background:RIASEC_META[tipe].color,display:"inline-block"}}/>
+            {tipe}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PerkembanganKemandirian({ riwayat }: { riwayat: AsesmenPeriode[] }) {
+  if (riwayat.length < 2) {
+    return (
+      <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+        <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Perkembangan Kemandirian</p>
+        <p className="text-xs" style={{color:MUTED}}>Ini asesmen pertama. Perbandingan akan muncul mulai periode berikutnya.</p>
+      </div>
+    );
+  }
+
+  const sebelum = riwayat[riwayat.length - 2].skorFungsional;
+  const sekarang = riwayat[riwayat.length - 1].skorFungsional;
+
+  const deltas = FUNGSIONAL_KATEGORI
+    .map(domain => ({
+      domain,
+      delta: (sekarang[domain] ?? 0) - (sebelum[domain] ?? 0),
+      tersedia: sekarang[domain] !== null && sebelum[domain] !== null,
+    }))
+    .filter(d => d.tersedia);
+
+  // Aturan: selisih <10 poin = "relatif stabil", bukan naik/turun
+  const berkembang = deltas.filter(d => d.delta >= 10).sort((a,b)=>b.delta-a.delta);
+  const stabil = deltas.filter(d => Math.abs(d.delta) < 10);
+
+  return (
+    <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+      <p className="font-bold text-sm mb-3" style={{fontFamily:PJS,color:TEXT}}>Perkembangan Kemandirian</p>
+      
+      {berkembang.length > 0 && (
+        <div className="mb-3">
+          <p className="text-xs font-semibold mb-1.5" style={{color:"#2E7A5C"}}>Yang berkembang sejak periode lalu</p>
+          {berkembang.map(d => (
+            <div key={d.domain} className="flex justify-between text-sm py-1">
+              <span style={{color:TEXT}}>↑ {d.domain}</span>
+              <span className="font-semibold" style={{color:"#2E7A5C"}}>+{d.delta} poin</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {stabil.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold mb-1.5" style={{color:MUTED}}>Yang masih perlu dipantau</p>
+          {stabil.map(d => (
+            <div key={d.domain} className="flex justify-between text-sm py-1">
+              <span style={{color:TEXT}}>→ {d.domain}</span>
+              <span style={{color:MUTED}}>relatif stabil</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
