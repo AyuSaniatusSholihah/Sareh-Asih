@@ -154,27 +154,27 @@ export function TalentMapScreen({
 
       {/* ── Main Body ── */}
       <div className="px-4 pt-4 pb-8 space-y-4">
-        {/* ── 3 Metric Cards (Konsisten Warna Sareh Asih) ── */}
-        <div className="grid grid-cols-3 gap-2.5">
+        {/* ── 3 Metric Cards (Konsisten Warna Sareh Asih - Versi Lebih Ramping & Kompak) ── */}
+        <div className="grid grid-cols-3 gap-2">
           {/* Card 1: Total Siswa */}
           <div
             onClick={() => setFilterStatus("semua")}
             style={{
               background: filterStatus === "semua" ? "#FFFFFF" : "rgba(255,255,255,0.7)",
-              borderRadius: 20,
-              padding: "14px 10px 12px",
+              borderRadius: 14,
+              padding: "10px 9px 9px",
               border: filterStatus === "semua" ? `1.5px solid ${DEEP}` : `1px solid ${BDR}`,
               cursor: "pointer",
-              boxShadow: "0 2px 8px rgba(91,122,104,0.06)",
+              boxShadow: "0 2px 6px rgba(91,122,104,0.05)",
               transition: "all 0.15s ease",
             }}
             className="active:scale-95 flex flex-col justify-between"
           >
             <div
               style={{
-                width: 32,
-                height: 32,
-                borderRadius: 10,
+                width: 26,
+                height: 26,
+                borderRadius: 8,
                 background: "rgba(91, 122, 104, 0.12)",
                 display: "flex",
                 alignItems: "center",
@@ -182,13 +182,13 @@ export function TalentMapScreen({
                 marginBottom: 8,
               }}
             >
-              <Users size={16} style={{ color: DEEP }} />
+              <Users size={14} style={{ color: DEEP }} />
             </div>
             <div>
-              <p style={{ fontFamily: PJS, fontSize: 24, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1 }}>
+              <p style={{ fontFamily: PJS, fontSize: 19, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1 }}>
                 {totalCount}
               </p>
-              <p style={{ fontFamily: IPS, fontSize: 11, fontWeight: 600, color: MUTED, margin: "4px 0 0", lineHeight: 1.2 }}>
+              <p style={{ fontFamily: IPS, fontSize: 10.5, fontWeight: 600, color: MUTED, margin: "3px 0 0", lineHeight: 1.2 }}>
                 Total siswa
               </p>
             </div>
@@ -199,36 +199,36 @@ export function TalentMapScreen({
             onClick={() => setFilterStatus("terpetakan")}
             style={{
               background: filterStatus === "terpetakan" ? "#E2EFE7" : "#EBF4EE",
-              borderRadius: 20,
-              padding: "14px 10px 12px",
+              borderRadius: 14,
+              padding: "10px 9px 9px",
               border: filterStatus === "terpetakan" ? `1.5px solid ${DEEP}` : "1px solid rgba(45, 84, 62, 0.18)",
               cursor: "pointer",
-              boxShadow: "0 2px 8px rgba(45, 84, 62, 0.08)",
+              boxShadow: "0 2px 6px rgba(45, 84, 62, 0.06)",
               transition: "all 0.15s ease",
             }}
             className="active:scale-95 flex flex-col justify-between relative"
           >
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-2">
               <div
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 10,
+                  width: 26,
+                  height: 26,
+                  borderRadius: 8,
                   background: "#D5E7DC",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <CheckCircle2 size={16} style={{ color: DEEP }} />
+                <CheckCircle2 size={14} style={{ color: DEEP }} />
               </div>
-              <ChevronRight size={14} style={{ color: DEEP }} />
+              <ChevronRight size={12} style={{ color: DEEP }} />
             </div>
             <div>
-              <p style={{ fontFamily: PJS, fontSize: 24, fontWeight: 800, color: DEEP, margin: 0, lineHeight: 1 }}>
+              <p style={{ fontFamily: PJS, fontSize: 19, fontWeight: 800, color: DEEP, margin: 0, lineHeight: 1 }}>
                 {mappedCount}
               </p>
-              <p style={{ fontFamily: IPS, fontSize: 11, fontWeight: 700, color: DEEP, margin: "4px 0 0", lineHeight: 1.2 }}>
+              <p style={{ fontFamily: IPS, fontSize: 10.5, fontWeight: 700, color: DEEP, margin: "3px 0 0", lineHeight: 1.2 }}>
                 Terpetakan
               </p>
             </div>
@@ -239,36 +239,36 @@ export function TalentMapScreen({
             onClick={() => setFilterStatus("perlu")}
             style={{
               background: filterStatus === "perlu" ? "#F8E6E2" : "#FBF1EF",
-              borderRadius: 20,
-              padding: "14px 10px 12px",
+              borderRadius: 14,
+              padding: "10px 9px 9px",
               border: filterStatus === "perlu" ? `1.5px solid ${A}` : "1px solid rgba(210, 110, 91, 0.22)",
               cursor: "pointer",
-              boxShadow: "0 2px 8px rgba(210, 110, 91, 0.08)",
+              boxShadow: "0 2px 6px rgba(210, 110, 91, 0.06)",
               transition: "all 0.15s ease",
             }}
             className="active:scale-95 flex flex-col justify-between relative"
           >
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-2">
               <div
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 10,
+                  width: 26,
+                  height: 26,
+                  borderRadius: 8,
                   background: "#F5DAD5",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <AlertCircle size={16} style={{ color: A }} />
+                <AlertCircle size={14} style={{ color: A }} />
               </div>
-              <ChevronRight size={14} style={{ color: A }} />
+              <ChevronRight size={12} style={{ color: A }} />
             </div>
             <div>
-              <p style={{ fontFamily: PJS, fontSize: 24, fontWeight: 800, color: A, margin: 0, lineHeight: 1 }}>
+              <p style={{ fontFamily: PJS, fontSize: 19, fontWeight: 800, color: A, margin: 0, lineHeight: 1 }}>
                 {unmappedCount}
               </p>
-              <p style={{ fontFamily: IPS, fontSize: 11, fontWeight: 700, color: A, margin: "4px 0 0", lineHeight: 1.2 }}>
+              <p style={{ fontFamily: IPS, fontSize: 10.5, fontWeight: 700, color: A, margin: "3px 0 0", lineHeight: 1.2 }}>
                 Perlu asesmen
               </p>
             </div>
