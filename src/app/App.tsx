@@ -61,7 +61,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("landing");
   const [tab, setTab] = useState<Screen>("dashboard");
 
-  const [list, setList] = useState<Student[]>(seedStudents);
+  const [list, setList] = useState<Student[]>(() => seedStudents.map(s => ({ ...s })));
   const addStudent = (s: Omit<Student, "id">) => {
     const created: Student = { ...s, id: Math.max(0, ...list.map(x => x.id)) + 1 };
     setList(prev => [...prev, created]);
@@ -265,7 +265,7 @@ export default function App() {
         />
       );
       case "talent-map": return <TalentMapScreen go={go} onStartObs={startObs} onSelect={setSelectedStudentId} />;
-      case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} />;
+      case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} namaSekolah={guru.sekolah} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
       case "competition": return <CompetitionScreen onStartObs={startObs} />;
       case "report": return (

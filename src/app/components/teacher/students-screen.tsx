@@ -138,19 +138,32 @@ export function StudentsScreen({
         {/* Scrollable Form Content */}
         <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
           {/* Top Header */}
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "16px 20px 14px", background: BG }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 20px 12px", background: "#FFFFFF", borderBottom: `1px solid ${BDR}`, flexShrink: 0 }}>
             <button
               onClick={() => setIsAddingKelas(false)}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 0 0", display: "flex", alignItems: "center", color: "#1B2E24" }}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 12,
+                background: "rgba(139,176,152,0.14)",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#1B2E24",
+                flexShrink: 0,
+              }}
+              className="active:scale-95 transition-transform"
               title="Kembali"
             >
-              <ArrowLeft size={22} strokeWidth={2.4} />
+              <ArrowLeft size={18} />
             </button>
-            <div>
-              <h1 style={{ fontFamily: PJS, fontSize: 19, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
                 Tambah Kelas
               </h1>
-              <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#6B7280", margin: 0, marginTop: 3, fontWeight: 500 }}>
+              <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
                 Lengkapi informasi kelas yang akan ditambahkan
               </p>
             </div>
@@ -514,7 +527,8 @@ export function StudentsScreen({
                 <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
                   {selectedClass.nama}
                 </h1>
-                <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "3px 0 0", fontWeight: 500 }}>
+                <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "3px 0 0", fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>
+                  <User size={13} style={{ color: "#5A6E63" }} />
                   {effectiveStudents.length} Siswa
                 </p>
               </div>
@@ -622,7 +636,24 @@ export function StudentsScreen({
                     }}
                     className="active:scale-[0.99] transition-all hover:shadow-md"
                   >
-                    {/* Student Details (shifted to left) */}
+                    {/* Person / Profile Icon */}
+                    <div
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: "50%",
+                        background: s.hasObs ? "#EBF4EE" : "#FBF1EF",
+                        border: `1.5px solid ${s.hasObs ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <User size={21} style={{ color: s.hasObs ? DEEP : A }} />
+                    </div>
+
+                    {/* Student Details */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <h3
                         style={{
@@ -1266,11 +1297,11 @@ export function StudentsScreen({
                   backdropFilter: "blur(4px)",
                   display: "flex",
                   alignItems: "center",
-                  gap: 3,
+                  gap: 3.5,
                   fontFamily: PJS,
                   boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
                 }}>
-                  <CheckCircle size={10} strokeWidth={2.5} /> {studentCount} Siswa
+                  <User size={11} strokeWidth={2.4} /> {studentCount} Siswa
                 </span>
               </div>
 

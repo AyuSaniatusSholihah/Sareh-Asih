@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import {
   Key, Copy, RefreshCw, CheckCircle, Mic, MicOff, Send,
-  ClipboardList, Edit3, FileText, Sparkles, Brain,
+  ClipboardList, Edit3, FileText, Sparkles, Brain, CalendarClock, RotateCcw,
 } from "lucide-react";
 import {
   T, A, CARD, TEXT, MUTED, SEC, BDR, DEEP, BG, PJS, IPS, DMM, TBar, Chip, SBadge,
@@ -366,6 +366,14 @@ export function ProfileScreen({
   const [tab, setTab] = useState<"abk" | "kode" | "jurnal">("abk");
   if (!s) return null;
 
+  // ── Semester helper ──
+  const now = new Date();
+  const yr = now.getFullYear();
+  const mo = now.getMonth() + 1;
+  const semNow = mo >= 7 ? 1 : 2;          // Sem.1 = Jul-Des, Sem.2 = Jan-Jun
+  const semNext = semNow === 1 ? 2 : 1;
+  const yrNext  = semNow === 1 ? yr : yr + 1;
+
   const rows: [string, string][] = [
     ["Jenis ABK", s.abk],
     ["Tingkat Dukungan", s.tingkatDukungan || "Belum diisi"],
@@ -377,10 +385,53 @@ export function ProfileScreen({
     ["Riwayat Terapi", s.terapi || "Belum diisi"],
   ];
 
+  // ── Tombol Asesmen di pojok kanan atas ──
+  const asesmenBtn = s.hasObs ? (
+    <button
+      onClick={() => onStartObs(s.id)}
+      style={{
+        background: DEEP,
+        border: "none",
+        color: "#FFFFFF",
+        fontFamily: PJS,
+        fontWeight: 800,
+        borderRadius: 14,
+        padding: "5px 13px",
+        cursor: "pointer",
+        boxShadow: "0 3px 10px rgba(91,122,104,0.32)",
+        textAlign: "center" as const,
+        lineHeight: 1.25,
+      }}
+      className="active:scale-95 transition-transform"
+    >
+      <p style={{ fontSize: 11 }}>Asesmen Lanjutan</p>
+      <p style={{ fontSize: 10, opacity: 0.8, fontWeight: 600 }}>Sem. {semNext} {yrNext}</p>
+    </button>
+  ) : (
+    <button
+      onClick={() => onStartObs(s.id)}
+      style={{
+        background: A,
+        border: "none",
+        color: "#FFFFFF",
+        fontFamily: PJS,
+        fontWeight: 800,
+        minHeight: 38,
+        borderRadius: 14,
+        padding: "0 14px",
+        cursor: "pointer",
+        boxShadow: "0 4px 14px rgba(210,125,107,0.42)",
+      }}
+      className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"
+    >
+      <ClipboardList size={13} strokeWidth={2.2} />
+      Mulai Asesmen
+    </button>
+  );
+
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS }}>
-      <TBar title="Profil Siswa" sub={s.name} onBack={onBack}
-        right={<button onClick={() => onStartObs(s.id)} style={{ background: A, color: "#fff", fontFamily: PJS, fontWeight: 800, minHeight: 42, borderRadius: 14, padding: "0 16px", boxShadow: "0 4px 14px rgba(210,125,107,0.42)", border: "none", cursor: "pointer" }} className="flex items-center gap-1.5 text-xs active:scale-95 transition-transform"><ClipboardList size={14} strokeWidth={2.2} />Asesmen</button>} />
+      <TBar title="Profil Siswa" sub={s.name} onBack={onBack} right={asesmenBtn} />
       <div style={{ background: CARD, borderBottom: `1px solid ${BDR}` }} className="px-5 py-3.5">
         <div>
           <p className="font-bold text-lg" style={{ fontFamily: PJS, color: TEXT }}>{s.name}</p>
@@ -414,23 +465,64 @@ export function ProfileScreen({
                 <p style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: l.includes("Kode") ? DMM : PJS, marginTop: 3 }}>{v}</p>
               </div>
             ))}
+
+            {/* ── Hasil Asesmen Semester 1 ── */}
+            {s.hasObs && (() => {
+              const yr = new Date().getFullYear();
+              const mo = new Date().getMonth() + 1;
+              const semNowLabel = mo >= 7 ? 1 : 2;
+              const yrLabel = mo >= 7 ? yr : yr;
+
+              return (
+                <div style={{
+                  background: CARD,
+                  border: `1.5px solid rgba(91,122,104,0.3)`,
+                  borderRadius: 18,
+                  overflow: "hidden",
+                  marginTop: 4,
+                  boxShadow: "0 2px 10px rgba(91,122,104,0.08)",
+                }}>
+                  {/* Header */}
+                  <div style={{ background: "linear-gradient(135deg, #2E3E35 0%, #466253 100%)", padding: "10px 14px" }} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CalendarClock size={14} style={{ color: "#8BB098" }} />
+                      <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12, color: "#FFFFFF" }}>
+                        Hasil Asesmen Sem. {semNowLabel} {yrLabel}
+                      </p>
+                    </div>
+                    <span style={{ fontSize: 10, fontWeight: 700, fontFamily: PJS, background: "#8BB098", color: "#FFFFFF", borderRadius: 20, padding: "2px 8px" }}>Selesai</span>
+                  </div>
+
+                  {/* CTA */}
+                  <div style={{ padding: "10px 12px" }}>
+                    <button
+                      onClick={() => go("talent-map-detail")}
+                      style={{
+                        width: "100%", background: "transparent",
+                        border: `1.5px solid ${DEEP}`, color: DEEP,
+                        fontFamily: PJS, fontWeight: 800, fontSize: 12,
+                        minHeight: 36, borderRadius: 10, cursor: "pointer",
+                      }}
+                      className="flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
+                    >
+                      <Sparkles size={12} />
+                      Lihat Laporan Lengkap AI Talent Mapping
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+
           </>
         )}
+
+
 
         {tab === "kode" && <KodeOrtuCard s={s} onRegen={onRegenKode} />}
 
         {tab === "jurnal" && <JurnalTab s={s} laporan={laporan} onKirim={onKirim} />}
 
-        {/* Unduh laporan pemetaan untuk anak ini saja */}
-        <button onClick={() => exportLaporanPemetaan([s], namaSekolah)}
-          style={{ width: "100%", background: CARD, border: `1.5px solid ${DEEP}`, color: DEEP, fontFamily: PJS, fontWeight: 800, minHeight: 48, borderRadius: 16, cursor: "pointer", boxShadow: "0 2px 8px rgba(91,122,104,0.08)" }}
-          className="text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
-          <FileText size={15} />Unduh Laporan Pemetaan {s.name.split(" ")[0]}
-        </button>
-        <div className="flex gap-2 pt-2">
-          <button onClick={() => go("talent-map-detail")} style={{ flex: 1, background: DEEP, color: "#FFFFFF", fontFamily: PJS, fontWeight: 800, minHeight: 46, borderRadius: 16, border: "none", cursor: "pointer", boxShadow: "0 4px 12px rgba(91,122,104,0.25)" }} className="text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><Sparkles size={14} />Talent Map</button>
-          <button onClick={() => go("learning-rec")} style={{ flex: 1, background: A, color: "#FFFFFF", fontFamily: PJS, fontWeight: 800, minHeight: 46, borderRadius: 16, border: "none", cursor: "pointer", boxShadow: "0 4px 12px rgba(210,125,107,0.35)" }} className="text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform"><Brain size={14} />Rekomendasi</button>
-        </div>
+
       </div>
     </div>
   );

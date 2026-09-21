@@ -279,38 +279,44 @@ export function AddStudentSheet({
     return (
       <div
         className="absolute inset-0 z-50 flex flex-col overflow-y-auto"
-        style={{ fontFamily: IPS, background: "#EAEFEA" }}
+        style={{ fontFamily: IPS, background: BG }}
       >
-        <div className="p-5 flex flex-col min-h-full">
-          {/* Header Halaman */}
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={onBack || onClose}
-                className="text-gray-900 hover:opacity-75 transition-opacity cursor-pointer p-1 -ml-1"
-                title="Kembali"
-              >
-                <ArrowLeft size={22} strokeWidth={2.5} />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-[#2C3531]" style={{ fontFamily: PJS, margin: 0 }}>
-                  Tambah Siswa
-                </h1>
-                <p className="text-[11px] text-gray-600 mt-0.5">
-                  Lengkapi informasi kelas yang akan ditambahkan
-                </p>
-              </div>
-            </div>
+        {/* ── Top Header Bar (Putih Senada Header Lainnya) ── */}
+        <div style={{ background: "#FFFFFF", padding: "14px 20px 12px", flexShrink: 0, borderBottom: `1px solid ${BDR}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               type="button"
-              onClick={onClose}
-              className="text-xs font-bold text-[#738B7B] hover:text-[#5B6E61] bg-[#EAF2EC] px-3 py-1.5 rounded-xl transition-colors cursor-pointer border-none shrink-0"
-              style={{ fontFamily: PJS }}
+              onClick={onBack || onClose}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 12,
+                background: "rgba(139,176,152,0.14)",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#1B2E24",
+                flexShrink: 0,
+              }}
+              className="active:scale-95 transition-transform"
+              title="Kembali"
             >
-              Upload Nanti →
+              <ArrowLeft size={18} />
             </button>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+                Tambah Siswa
+              </h1>
+              <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
+                Lengkapi informasi kelas yang akan ditambahkan
+              </p>
+            </div>
           </div>
+        </div>
+
+        <div className="p-4 flex flex-col min-h-full">
 
           {/* Judul Subseksi */}
           <h2 className="text-center text-sm font-bold text-[#2C3531] mb-4" style={{ fontFamily: PJS }}>
@@ -449,38 +455,44 @@ export function AddStudentSheet({
     return (
       <div
         className="absolute inset-0 z-50 flex flex-col overflow-y-auto"
-        style={{ fontFamily: IPS, background: "#EAEFEA" }}
+        style={{ fontFamily: IPS, background: BG }}
       >
-        <div className="p-5 flex flex-col min-h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setStep("choice")}
-                className="text-gray-900 hover:opacity-75 transition-opacity cursor-pointer p-1 -ml-1"
-                title="Kembali"
-              >
-                <ArrowLeft size={22} strokeWidth={2.5} />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-[#2C3531]" style={{ fontFamily: PJS, margin: 0 }}>
-                  Database Sekolah
-                </h1>
-                <p className="text-[11px] text-gray-600 mt-0.5">
-                  Pilih kelas & siswa yang ingin Anda import
-                </p>
-              </div>
-            </div>
+        {/* ── Top Header Bar (Putih Senada Header Lainnya) ── */}
+        <div style={{ background: "#FFFFFF", padding: "14px 20px 12px", flexShrink: 0, borderBottom: `1px solid ${BDR}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               type="button"
-              onClick={onClose}
-              className="text-xs font-bold text-[#2563EB] hover:text-[#1D4ED8] bg-[#EBF3FB] px-3 py-1.5 rounded-xl transition-colors cursor-pointer border-none shrink-0"
-              style={{ fontFamily: PJS }}
+              onClick={() => setStep("choice")}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 12,
+                background: "rgba(139,176,152,0.14)",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#1B2E24",
+                flexShrink: 0,
+              }}
+              className="active:scale-95 transition-transform"
+              title="Kembali"
             >
-              Upload Nanti →
+              <ArrowLeft size={18} />
             </button>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+                Database Sekolah
+              </h1>
+              <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
+                Pilih kelas & siswa yang ingin Anda import
+              </p>
+            </div>
           </div>
+        </div>
+
+        <div className="p-4 flex flex-col min-h-full">
 
           {/* Info Banner */}
           <div className="bg-[#EBF3FB] border border-[#BFDBFE] rounded-2xl p-3 mb-3 flex items-start gap-2.5">
@@ -609,38 +621,44 @@ export function AddStudentSheet({
     return (
       <div
         className="absolute inset-0 z-50 flex flex-col overflow-y-auto"
-        style={{ fontFamily: IPS, background: "#EAEFEA" }}
+        style={{ fontFamily: IPS, background: BG }}
       >
-        <div className="p-5 flex flex-col min-h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setStep("choice")}
-                className="text-gray-900 hover:opacity-75 transition-opacity cursor-pointer p-1 -ml-1"
-                title="Kembali"
-              >
-                <ArrowLeft size={22} strokeWidth={2.5} />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-[#2C3531]" style={{ fontFamily: PJS, margin: 0 }}>
-                  Upload Daftar Siswa
-                </h1>
-                <p className="text-[11px] text-gray-600 mt-0.5">
-                  Pilih file CSV, Excel, atau Foto Dokumen
-                </p>
-              </div>
-            </div>
+        {/* ── Top Header Bar (Putih Senada Header Lainnya) ── */}
+        <div style={{ background: "#FFFFFF", padding: "14px 20px 12px", flexShrink: 0, borderBottom: `1px solid ${BDR}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               type="button"
-              onClick={onClose}
-              className="text-xs font-bold text-[#738B7B] hover:text-[#5B6E61] bg-[#EAF2EC] px-3 py-1.5 rounded-xl transition-colors cursor-pointer border-none shrink-0"
-              style={{ fontFamily: PJS }}
+              onClick={() => setStep("choice")}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 12,
+                background: "rgba(139,176,152,0.14)",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#1B2E24",
+                flexShrink: 0,
+              }}
+              className="active:scale-95 transition-transform"
+              title="Kembali"
             >
-              Upload Nanti →
+              <ArrowLeft size={18} />
             </button>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+                Upload Daftar Siswa
+              </h1>
+              <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
+                Pilih file CSV, Excel, atau Foto Dokumen
+              </p>
+            </div>
           </div>
+        </div>
+
+        <div className="p-4 flex flex-col min-h-full">
 
           <div className="flex-1 flex flex-col gap-3">
             {/* ── STEP 1: PILIH KELAS DARI KELAS AWAL ── */}
