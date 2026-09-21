@@ -61,7 +61,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("landing");
   const [tab, setTab] = useState<Screen>("dashboard");
 
-  const [list, setList] = useState<Student[]>(seedStudents);
+  const [list, setList] = useState<Student[]>(() => seedStudents.map(s => ({ ...s })));
   const addStudent = (s: Omit<Student, "id">) => {
     const created: Student = { ...s, id: Math.max(0, ...list.map(x => x.id)) + 1 };
     setList(prev => [...prev, created]);

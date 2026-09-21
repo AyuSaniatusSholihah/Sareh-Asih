@@ -28,12 +28,12 @@ export interface Student {
 export const seedStudents: Student[] = [
   { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
   { id:2, name:"Nisa Aulia",     abk:"Tunarungu",                kelas:"VIII B", age:14, emoji:"👧", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA" },
-  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",                kelas:"VII A",  age:12, emoji:"👦", teacher:"Pak Budi", hasObs:true,  comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
+  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",                kelas:"VII A",  age:12, emoji:"👦", teacher:"Pak Budi", hasObs:false, comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
   { id:4, name:"Dina Maharani",  abk:"Tunanetra",        kelas:"IX C",   age:15, emoji:"👧", teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
   { id:5, name:"Budi Santoso",   abk:"Tunadaksa",kelas:"VII A",  age:13, emoji:"👦", teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
   { id:6, name:"Maya Dewi",      abk:"Tunarungu",kelas:"VIII B", age:14, emoji:"👧", teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
   { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",                kelas:"IX A",   age:15, emoji:"👦", teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI" },
-  { id:8, name:"Sari Indah",     abk:"Tunarungu",                kelas:"VIII A", age:13, emoji:"👧", teacher:"Bu Rina",  hasObs:true,  comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
+  { id:8, name:"Sari Indah",     abk:"Tunarungu",                kelas:"VIII A", age:13, emoji:"👧", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
 ];
 
 // ─── Laporan ke orang tua ────────────────────────────────────────────

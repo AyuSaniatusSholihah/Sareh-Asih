@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Trophy, ChevronRight, FileText, Share2, CheckCircle
+  Trophy, ChevronRight, FileText, Share2, CheckCircle, Brain
 } from "lucide-react";
 import {
   A, CARD, TEXT, MUTED, PJS, IPS, DMM, TBar, BDR, DEEP
@@ -177,6 +177,28 @@ export function TalentMapDetailScreen({
         <ProfilFungsionalRadar jawaban={jawaban} studentName={firstName} studentId={studentId} />
         <ProfilKecenderunganBar jawaban={jawaban} studentName={firstName} studentId={studentId} />
         <SuggestedCompetitions studentId={studentId} go={go} />
+
+        {/* Rekomendasi Pembelajaran */}
+        <button
+          type="button"
+          onClick={() => go("learning-rec")}
+          style={{
+            width: "100%",
+            background: `linear-gradient(135deg, ${A} 0%, #c96b55 100%)`,
+            border: "none",
+            color: "#FFFFFF",
+            fontFamily: PJS,
+            fontWeight: 800,
+            minHeight: 50,
+            borderRadius: 16,
+            cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(210,125,107,0.35)",
+          }}
+          className="text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
+        >
+          <Brain size={16} />
+          Rekomendasi Pembelajaran
+        </button>
       </div>
 
       {toast && (
