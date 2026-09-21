@@ -3,7 +3,7 @@ import {
   Bell, Users, MessageSquare, Sparkles, Lock, Info, Heart, Star,
   Key, Hash, XCircle, ChevronRight, ChevronLeft, MapPin, Phone,
   Clock, Wallet, CalendarDays, CheckCircle, Search, FileText, ChevronDown, X,
-  Palette, Target, BookOpen, Settings,
+  Palette, Target, BookOpen, Settings, TrendingUp,
 } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -12,8 +12,9 @@ import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar,
 } from "./ui-kit";
 import {
-  progressData, AGENDA, KIND_META, LAYANAN, type Screen, type Student,
-  type LaporanKirim,
+  AGENDA, KIND_META, LAYANAN, studentTalentDetail, RIASEC_META, FUNGSIONAL_KATEGORI, RIASEC_KATEGORI,
+  seedRiwayatAsesmen, type AsesmenPeriode, type RiasecKategori,
+  type Screen, type Student, type LaporanKirim,
   type AgendaEvent, type EventKind,
 } from "./data";
 import { ProfilFungsionalRadar, ProfilKecenderunganBar, getMockJawaban, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
@@ -178,7 +179,20 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
         )}
 
         {/* ── Sudah terhubung ── */}
-        {child && (
+        {child && (() => {
+          const talent = studentTalentDetail[child.id];
+          const domains = talent?.domains ?? [];
+          const utama = domains[0];
+          const pendukung = domains[1];
+          const nama = child.name.split(" ")[0];
+          const hariMenuju = (() => {
+            const target = new Date("2026-08-08T00:00:00");
+            const now = new Date();
+            const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            return diff > 0 ? diff : 0;
+          })();
+
+          return (
           <>
             {/* ── Kartu Profil Anak ── */}
             <div style={{ background: CARD, borderRadius: 20, padding: "18px 16px 16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
@@ -191,79 +205,103 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
                     Kelas {child.kelas} · SLB Negeri 1
                   </p>
                 </div>
-              </div>
-
-              {/* Three info boxes */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-                {/* Potensi Utama (RIASEC) */}
-                <div style={{ background: BG, borderRadius: 14, padding: "10px 8px", border: `1px solid ${BDR}` }}>
-                  <div style={{ width: 28, height: 28, borderRadius: 8, background: "#E8F5E9", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>
-                    <Palette size={14} style={{ color: DEEP }} />
+                <div style={{ flexShrink: 0, background: BG, borderRadius: 10, padding: "6px 10px", border: `1px solid ${BDR}` }}>
+                  <div className="flex items-center gap-1.5">
+                    <CalendarDays size={11} style={{ color: MUTED }} />
+                    <p style={{ fontFamily: DMM, fontSize: 9, color: MUTED, margin: 0, whiteSpace: "nowrap" }}>Terakhir diperbarui</p>
                   </div>
-                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Potensi (RIASEC)</p>
-                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "2px 0 0", textAlign: "center", lineHeight: 1.2 }}>
-                    {child.hasObs ? kodeTigaHuruf(getMockJawaban(child.id)) : "Belum ada"}
-                  </p>
-                </div>
-
-                {/* Kemandirian */}
-                <div style={{ background: BG, borderRadius: 14, padding: "10px 8px", border: `1px solid ${BDR}` }}>
-                  <div style={{ width: 28, height: 28, borderRadius: 8, background: "#EDE7F6", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>
-                    <BookOpen size={14} style={{ color: "#7C3AED" }} />
-                  </div>
-                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Kemandirian</p>
-                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "2px 0 0", textAlign: "center", lineHeight: 1.2 }}>
-                    {child.hasObs ? skorKetekunan(getMockJawaban(child.id)) : "Belum ada"}
-                  </p>
-                </div>
-
-                {/* Target Terdekat */}
-                <div style={{ background: BG, borderRadius: 14, padding: "10px 8px", border: `1px solid ${BDR}` }}>
-                  <div style={{ width: 28, height: 28, borderRadius: 8, background: "#E3F2FD", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>
-                    <Target size={14} style={{ color: "#0369A1" }} />
-                  </div>
-                  <p style={{ fontFamily: IPS, fontSize: 9, color: MUTED, margin: 0, textAlign: "center", fontWeight: 500, lineHeight: 1.2 }}>Target Terdekat</p>
-                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "2px 0 0", textAlign: "center", lineHeight: 1.2 }}>
-                    {child.comps[0] ? child.comps[0].replace("-PDBK", "") : "—"}
-                  </p>
-                  {child.comps[0] && <p style={{ fontFamily: IPS, fontSize: 8, color: MUTED, margin: "1px 0 0", textAlign: "center" }}>Lomba</p>}
+                  <p style={{ fontFamily: PJS, fontSize: 10.5, fontWeight: 700, color: TEXT, margin: "2px 0 0", whiteSpace: "nowrap" }}>18 Jun 2026</p>
                 </div>
               </div>
+
+              {/* Kecenderungan Aktivitas */}
+              {utama && (
+                <div style={{ marginBottom: 10 }}>
+                  <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: "0 0 8px", fontWeight: 600 }}>Kecenderungan Aktivitas</p>
+                  <div style={{ background: BG, borderRadius: 16, padding: "14px 14px", border: `1px solid ${BDR}` }}>
+                    <div className="flex items-center gap-3">
+                      <div style={{ width: 44, height: 44, borderRadius: 14, background: RIASEC_META[utama.t as keyof typeof RIASEC_META]?.bg ?? SEC, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>
+                        {RIASEC_META[utama.t as keyof typeof RIASEC_META]?.icon ?? "🎨"}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontFamily: PJS, fontSize: 14, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.3 }}>
+                          {utama.t === "Artistic" ? "Seni & Kreativitas" : utama.t}
+                        </p>
+                        <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: "3px 0 0", lineHeight: 1.35 }}>
+                          Menonjol dalam eksplorasi ide dan ekspresi diri
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Kecenderungan pendukung */}
+              {pendukung && (
+                <div className="flex items-center gap-2" style={{ flexWrap: "wrap" }}>
+                  <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0, fontWeight: 500 }}>Kecenderungan pendukung:</p>
+                  <span style={{
+                    background: RIASEC_META[pendukung.t as keyof typeof RIASEC_META]?.bg ?? SEC,
+                    color: RIASEC_META[pendukung.t as keyof typeof RIASEC_META]?.color ?? DEEP,
+                    border: `1px solid ${RIASEC_META[pendukung.t as keyof typeof RIASEC_META]?.color ?? DEEP}30`,
+                    fontFamily: PJS, fontWeight: 700, fontSize: 11,
+                  }} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full">
+                    <Search size={10} />
+                    {pendukung.t === "Investigative" ? "Investigasi" : pendukung.t}
+                  </span>
+                  <button onClick={() => go("parent-detail")} style={{ fontFamily: IPS, fontSize: 10.5, color: T, fontWeight: 700, background: "none", border: "none", cursor: "pointer", padding: 0, marginLeft: "auto" }}>
+                    Lihat profil &gt;
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* ── CTA Button ── */}
             <button onClick={() => go("parent-detail")}
-              style={{ background: A, color: "#fff", fontFamily: IPS, minHeight: 50, width: "100%", border: "none", cursor: "pointer" }}
-              className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-              Cek Perkembangan {child.name.split(" ")[0]} <ChevronRight size={16} />
+              style={{ background: "linear-gradient(135deg, #D27D6B 0%, #C4695A 100%)", color: "#fff", fontFamily: PJS, minHeight: 52, width: "100%", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 6px 18px rgba(210,125,107,0.4)" }}
+              className="rounded-2xl text-sm font-bold hover:opacity-95 active:scale-[0.98] transition-all">
+              <TrendingUp size={17} strokeWidth={2.5} />
+              Cek Perkembangan {nama} <ChevronRight size={17} strokeWidth={2.5} />
             </button>
 
             {/* ── Laporan Terbaru dari Guru ── */}
             {latestLaporan && (
               <div style={{ background: CARD, borderRadius: 20, padding: "16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
-                <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
-                  <div className="flex items-center gap-2">
-                    <div style={{ width: 32, height: 32, borderRadius: 10, background: "#FFF0EB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <span style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: A, lineHeight: 1 }}>❝</span>
+                <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
+                  <div className="flex items-center gap-2.5">
+                    <div style={{ width: 34, height: 34, borderRadius: 11, background: "linear-gradient(135deg, #FFE8E0 0%, #FFD5C8 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <FileText size={16} style={{ color: "#C4695A" }} strokeWidth={2.2} />
                     </div>
-                    <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0 }}>Laporan Terbaru dari Guru</p>
+                    <p style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>Laporan Terbaru dari Guru</p>
                   </div>
-                  <span style={{ fontFamily: DMM, fontSize: 10, color: MUTED, flexShrink: 0 }}>{latestLaporan.dikirimPada}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span style={{ fontFamily: DMM, fontSize: 10, color: MUTED }}>{latestLaporan.dikirimPada}</span>
+                    <ChevronRight size={14} style={{ color: MUTED }} />
+                  </div>
                 </div>
-                <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 4px", lineHeight: 1.3 }}>
-                  {latestLaporan.judul}
-                </p>
-                <p style={{ fontFamily: IPS, fontSize: 12, color: MUTED, lineHeight: 1.5, margin: "0 0 10px" }}>
+                <p style={{ fontFamily: IPS, fontSize: 12, color: "#8BA892", lineHeight: 1.55, margin: "0 0 12px" }}>
                   {latestLaporan.isi.length > 100 ? latestLaporan.isi.slice(0, 100) + "…" : latestLaporan.isi}
                 </p>
-                <div className="flex items-center justify-between" style={{ paddingTop: 10, borderTop: `1px solid ${BDR}` }}>
-                  <div className="flex items-center gap-1.5">
-                    <div style={{ width: 20, height: 20, borderRadius: "50%", background: SEC, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Users size={10} style={{ color: DEEP }} />
+
+                {/* Saran untuk orang tua */}
+                <div style={{ background: "linear-gradient(135deg, #FFF8F4 0%, #FFF2EC 100%)", border: `1px solid rgba(210,125,107,0.18)`, borderRadius: 14, padding: "12px 14px" }}>
+                  <div className="flex items-center gap-2" style={{ marginBottom: 5 }}>
+                    <span style={{ fontSize: 15, lineHeight: 1 }}>💡</span>
+                    <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 700, color: "#C4695A", margin: 0 }}>Saran untuk orang tua</p>
+                  </div>
+                  <p style={{ fontFamily: IPS, fontSize: 12, color: TEXT, margin: 0, lineHeight: 1.45 }}>
+                    Berikan waktu latihan menggambar secara rutin di rumah.
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between" style={{ paddingTop: 12, marginTop: 12, borderTop: `1px solid ${BDR}` }}>
+                  <div className="flex items-center gap-2">
+                    <div style={{ width: 22, height: 22, borderRadius: "50%", background: "linear-gradient(135deg, #D4E8DA 0%, #B8D8C0 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Users size={11} style={{ color: "#3D6B4F" }} />
                     </div>
                     <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>{child.teacher}, Guru Pendamping</p>
                   </div>
-                  <ChevronRight size={14} style={{ color: MUTED, flexShrink: 0 }} />
+                  <ChevronRight size={15} style={{ color: MUTED, flexShrink: 0 }} />
                 </div>
               </div>
             )}
@@ -272,46 +310,80 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               {/* Agenda Terdekat */}
               <button onClick={() => go("parent-calendar")}
-                style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 16, padding: "14px 12px", textAlign: "left", cursor: "pointer", width: "100%", boxShadow: "0 1px 6px rgba(91,122,104,0.04)" }}
-                className="flex flex-col gap-2 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-1.5">
-                  <CalendarDays size={13} style={{ color: DEEP }} />
-                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>Agenda Terdekat</p>
+                style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 18, padding: "14px 12px", textAlign: "left", cursor: "pointer", width: "100%", boxShadow: "0 1px 6px rgba(91,122,104,0.04)" }}
+                className="flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <div style={{ width: 22, height: 22, borderRadius: 7, background: "linear-gradient(135deg, #D4E8DA 0%, #B8D8C0 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <CalendarDays size={11} style={{ color: "#3D6B4F" }} />
+                    </div>
+                    <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>Agenda Terdekat</p>
+                  </div>
+                  <ChevronRight size={13} style={{ color: MUTED }} />
                 </div>
                 {upcoming.length > 0 ? (
                   <>
-                    <p style={{ fontFamily: IPS, fontSize: 10.5, color: TEXT, margin: 0, fontWeight: 600, lineHeight: 1.3 }}>
+                    <p style={{ fontFamily: PJS, fontSize: 11, color: TEXT, margin: "6px 0 0", fontWeight: 700, lineHeight: 1.3 }}>
                       {upcoming[0].title.length > 24 ? upcoming[0].title.slice(0, 24) + "…" : upcoming[0].title}
                     </p>
-                    <p style={{ fontFamily: DMM, fontSize: 9.5, color: MUTED, margin: 0 }}>
-                      {new Date(upcoming[0].date + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })} · {upcoming[0].jam.split("–")[0].trim()}
-                    </p>
+                    <div className="flex items-center gap-1.5" style={{ marginTop: 4 }}>
+                      <Clock size={10} style={{ color: "#8BA892" }} />
+                      <p style={{ fontFamily: DMM, fontSize: 9.5, color: "#8BA892", margin: 0 }}>
+                        {new Date(upcoming[0].date + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })} · {upcoming[0].jam.split("–")[0].trim()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <MapPin size={10} style={{ color: "#8BA892" }} />
+                      <p style={{ fontFamily: IPS, fontSize: 9.5, color: "#8BA892", margin: 0 }}>
+                        {upcoming[0].lokasi.length > 20 ? upcoming[0].lokasi.slice(0, 20) + "…" : upcoming[0].lokasi}
+                      </p>
+                    </div>
+                    {hariMenuju > 0 && (
+                      <span style={{ fontFamily: PJS, fontSize: 9.5, fontWeight: 700, color: "#15803D", background: "linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)", border: "1px solid #BBF7D0", borderRadius: 8, padding: "3px 8px", display: "inline-flex", alignItems: "center", width: "fit-content", marginTop: 4 }}>
+                        {hariMenuju} hari lagi
+                      </span>
+                    )}
                   </>
                 ) : (
-                  <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0 }}>Belum ada agenda</p>
+                  <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: "6px 0 0" }}>Belum ada agenda</p>
                 )}
-                <p style={{ fontFamily: IPS, fontSize: 10.5, color: T, margin: "4px 0 0", fontWeight: 700 }}>Lihat Kalender →</p>
+                <p style={{ fontFamily: PJS, fontSize: 10.5, color: T, margin: "6px 0 0", fontWeight: 700 }}>Lihat Kalender →</p>
               </button>
 
               {/* Rekomendasi Pelatihan */}
               <button onClick={() => go("parent-training")}
-                style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 16, padding: "14px 12px", textAlign: "left", cursor: "pointer", width: "100%", boxShadow: "0 1px 6px rgba(91,122,104,0.04)" }}
-                className="flex flex-col gap-2 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-1.5">
-                  <Sparkles size={13} style={{ color: "#7C3AED" }} />
-                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>Rekomendasi Pelatihan</p>
+                style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 18, padding: "14px 12px", textAlign: "left", cursor: "pointer", width: "100%", boxShadow: "0 1px 6px rgba(91,122,104,0.04)" }}
+                className="flex flex-col gap-1.5 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <div style={{ width: 22, height: 22, borderRadius: 7, background: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Sparkles size={11} style={{ color: "#7C3AED" }} />
+                    </div>
+                    <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>Rekomendasi Pelatihan</p>
+                  </div>
+                  <ChevronRight size={13} style={{ color: MUTED }} />
                 </div>
-                <p style={{ fontFamily: IPS, fontSize: 10.5, color: TEXT, margin: 0, fontWeight: 600, lineHeight: 1.3 }}>
+                <p style={{ fontFamily: PJS, fontSize: 11, color: TEXT, margin: "6px 0 0", fontWeight: 700, lineHeight: 1.3 }}>
                   Kelas Seni Visual
                 </p>
-                <p style={{ fontFamily: IPS, fontSize: 9.5, color: MUTED, margin: 0 }}>
-                  Sesuai minat {child.name.split(" ")[0]}
+                <p style={{ fontFamily: IPS, fontSize: 9.5, color: "#8BA892", margin: 0 }}>
+                  Sesuai minat {nama}
                 </p>
-                <p style={{ fontFamily: IPS, fontSize: 10.5, color: T, margin: "4px 0 0", fontWeight: 700 }}>Lihat →</p>
+                <div className="flex items-center gap-1.5" style={{ marginTop: 4 }}>
+                  <span style={{ fontFamily: PJS, fontSize: 9.5, fontWeight: 700, color: "#0369A1", background: "linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)", border: "1px solid #BAE6FD", borderRadius: 8, padding: "3px 8px", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0369A1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    Online
+                  </span>
+                </div>
+                <p style={{ fontFamily: IPS, fontSize: 9.5, color: "#8BA892", margin: "4px 0 0", lineHeight: 1.3 }}>
+                  Untuk kemandirian & kreativitas
+                </p>
+                <p style={{ fontFamily: PJS, fontSize: 10.5, color: T, margin: "6px 0 0", fontWeight: 700 }}>Lihat →</p>
               </button>
             </div>
           </>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
@@ -751,64 +823,43 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
 
         {child.hasObs && (
           <>
-            <p className="text-xs font-bold uppercase tracking-wide mt-5 mb-2 px-1" 
-               style={{color:MUTED, fontFamily:PJS, letterSpacing:"0.05em"}}>
-              Peta Potensi Anak
-            </p>
-            <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} readOnly={true} />
-            <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} readOnly={true} />
-            
-            <div style={{background:"#F0FDF4",border:`1px solid #BBF7D0`}} className="rounded-xl px-4 py-3 flex items-start gap-2.5 mt-2">
-              <Info size={14} style={{color:"#15803D",flexShrink:0,marginTop:1}}/>
-              <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
-                Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
-              </p>
-            </div>
+            <SeksiCollapsible judul="Peta Potensi Anak" defaultTerbuka={true}>
+              <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} readOnly={true} />
+              <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} readOnly={true} />
+              <div style={{background:"#F0FDF4",border:`1px solid #BBF7D0`}} className="rounded-xl px-4 py-3 flex items-start gap-2.5 mt-2">
+                <Info size={14} style={{color:"#15803D",flexShrink:0,marginTop:1}}/>
+                <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
+                  Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
+                </p>
+              </div>
+            </SeksiCollapsible>
 
-            <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4 mt-2">
-              <div className="flex items-center justify-between mb-3">
-                <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Progress per Semester</p>
-                <Lock size={12} style={{color:MUTED}}/>
-              </div>
-              <div style={{height:160}}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={progressData} margin={{top:4,right:4,left:-24,bottom:0}}>
-                    <CartesianGrid key="cg" strokeDasharray="3 3" stroke="#EDE9E3"/>
-                    <XAxis key="xa" dataKey="sem" tick={{fontSize:10,fill:MUTED,fontFamily:DMM}}/>
-                    <YAxis key="ya" tick={{fontSize:10,fill:MUTED,fontFamily:DMM}} domain={[0,100]}/>
-                    <Tooltip key="tt" contentStyle={{borderRadius:12,border:"none",fontSize:12,fontFamily:IPS}}/>
-                    <Line key="l1" type="monotone" dataKey="seni" stroke={T} strokeWidth={2.5} dot={{r:3}} name="Bakat Utama"/>
-                    <Line key="l2" type="monotone" dataKey="komunikasi" stroke={A} strokeWidth={2.5} dot={{r:3}} name="Komunikasi"/>
-                    <Line key="l3" type="monotone" dataKey="motorik" stroke="#7C3AED" strokeWidth={2.5} dot={{r:3}} name="Motorik"/>
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="flex gap-3 mt-2">
-                {[{l:"Bakat Utama",c:T},{l:"Komunikasi",c:A},{l:"Motorik",c:"#7C3AED"}].map(x=>(
-                  <div key={x.l} className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{background:x.c}}/><span className="text-xs" style={{color:MUTED}}>{x.l}</span></div>
-                ))}
-              </div>
-            </div>
+            <SeksiCollapsible judul="Tren & Perkembangan" defaultTerbuka={true}>
+              <TrenKecenderunganAktivitas riwayat={seedRiwayatAsesmen[child.id] ?? []} />
+              <PerkembanganKemandirian riwayat={seedRiwayatAsesmen[child.id] ?? []} />
+            </SeksiCollapsible>
           </>
         )}
 
-        <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2"><Heart size={13} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Saran Guru untuk di Rumah</p></div>
-            <Lock size={12} style={{color:MUTED}}/>
-          </div>
-          {[
-            {i:"🎨",t:`Beri ${nama} waktu berlatih bebas minimal 20 menit setiap hari.`},
-            {i:"🧰",t:"Siapkan alat sederhana yang mudah dijangkau anak."},
-            {i:"👏",t:"Apresiasi setiap usaha, bukan hanya hasil akhirnya."},
-            {i:"🕒",t:`Jaga rutinitas yang sama setiap hari — ${nama} lebih tenang dengan jadwal yang dapat ditebak.`},
-          ].map(s=>(
-            <div key={s.t} className="flex items-start gap-2.5 py-2.5" style={{borderBottom:`1px solid ${BDR}`}}>
-              <span className="text-lg flex-shrink-0">{s.i}</span>
-              <p className="text-sm leading-relaxed" style={{color:TEXT}}>{s.t}</p>
+        <SeksiCollapsible judul="Saran Guru untuk di Rumah" defaultTerbuka={true}>
+          <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2"><Heart size={13} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Saran Guru untuk di Rumah</p></div>
+              <Lock size={12} style={{color:MUTED}}/>
             </div>
-          ))}
-        </div>
+            {[
+              {i:"🎨",t:`Beri ${nama} waktu berlatih bebas minimal 20 menit setiap hari.`},
+              {i:"🧰",t:"Siapkan alat sederhana yang mudah dijangkau anak."},
+              {i:"👏",t:"Apresiasi setiap usaha, bukan hanya hasil akhirnya."},
+              {i:"🕒",t:`Jaga rutinitas yang sama setiap hari — ${nama} lebih tenang dengan jadwal yang dapat ditebak.`},
+            ].map(s=>(
+              <div key={s.t} className="flex items-start gap-2.5 py-2.5" style={{borderBottom:`1px solid ${BDR}`}}>
+                <span className="text-lg flex-shrink-0">{s.i}</span>
+                <p className="text-sm leading-relaxed" style={{color:TEXT}}>{s.t}</p>
+              </div>
+            ))}
+          </div>
+        </SeksiCollapsible>
       </div>
     </div>
   );
@@ -891,6 +942,137 @@ export function RiwayatLaporanScreen({
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function SeksiCollapsible({
+  judul, defaultTerbuka = true, children,
+}: { judul: string; defaultTerbuka?: boolean; children: React.ReactNode }) {
+  const [terbuka, setTerbuka] = useState(defaultTerbuka);
+  return (
+    <div className="mt-5">
+      <button
+        onClick={() => setTerbuka(!terbuka)}
+        className="w-full flex items-center justify-between px-1 mb-2"
+      >
+        <span
+          className="text-xs font-bold uppercase"
+          style={{ color: MUTED, fontFamily: PJS, letterSpacing: "0.05em" }}
+        >
+          {judul}
+        </span>
+        <ChevronDown
+          size={14}
+          style={{
+            color: MUTED,
+            transform: terbuka ? "rotate(0deg)" : "rotate(-90deg)",
+            transition: "transform 0.15s",
+          }}
+        />
+      </button>
+      {terbuka && <div className="space-y-3">{children}</div>}
+    </div>
+  );
+}
+
+function TrenKecenderunganAktivitas({ riwayat }: { riwayat: AsesmenPeriode[] }) {
+  if (riwayat.length < 2) {
+    return (
+      <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+        <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tren Kecenderungan Aktivitas</p>
+        <p className="text-xs" style={{color:MUTED}}>Ini asesmen pertama. Tren akan mulai terlihat mulai periode berikutnya.</p>
+      </div>
+    );
+  }
+
+  const chartData = riwayat.map(r => {
+    const row: any = { periode: r.periode };
+    RIASEC_KATEGORI.forEach(tipe => { row[tipe] = r.skorRiasec[tipe]; });
+    return row;
+  });
+
+  return (
+    <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+      <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tren Kecenderungan Aktivitas</p>
+      <p className="text-xs mb-3" style={{color:MUTED}}>Keenam tipe RIASEC, dari waktu ke waktu.</p>
+      <ResponsiveContainer width="100%" height={190}>
+        <LineChart data={chartData} margin={{top:4,right:4,left:-24,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke={BDR}/>
+          <XAxis dataKey="periode" tick={{fontSize:10}}/>
+          <YAxis domain={[0,100]} tick={{fontSize:10}}/>
+          <Tooltip/>
+          {RIASEC_KATEGORI.map(tipe => (
+            <Line key={tipe} type="monotone" dataKey={tipe} 
+                  stroke={RIASEC_META[tipe].color} strokeWidth={2} dot={{r:2.5}} 
+                  name={tipe}/>
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+      <div className="flex gap-2.5 mt-2 flex-wrap">
+        {RIASEC_KATEGORI.map(tipe => (
+          <div key={tipe} className="flex items-center gap-1.5 text-xs" style={{color:MUTED}}>
+            <span style={{width:8,height:8,borderRadius:99,background:RIASEC_META[tipe].color,display:"inline-block"}}/>
+            {tipe}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PerkembanganKemandirian({ riwayat }: { riwayat: AsesmenPeriode[] }) {
+  if (riwayat.length < 2) {
+    return (
+      <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+        <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Perkembangan Kemandirian</p>
+        <p className="text-xs" style={{color:MUTED}}>Ini asesmen pertama. Perbandingan akan muncul mulai periode berikutnya.</p>
+      </div>
+    );
+  }
+
+  const sebelum = riwayat[riwayat.length - 2].skorFungsional;
+  const sekarang = riwayat[riwayat.length - 1].skorFungsional;
+
+  const deltas = FUNGSIONAL_KATEGORI
+    .map(domain => ({
+      domain,
+      delta: (sekarang[domain] ?? 0) - (sebelum[domain] ?? 0),
+      tersedia: sekarang[domain] !== null && sebelum[domain] !== null,
+    }))
+    .filter(d => d.tersedia);
+
+  // Aturan: selisih <10 poin = "relatif stabil", bukan naik/turun
+  const berkembang = deltas.filter(d => d.delta >= 10).sort((a,b)=>b.delta-a.delta);
+  const stabil = deltas.filter(d => Math.abs(d.delta) < 10);
+
+  return (
+    <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+      <p className="font-bold text-sm mb-3" style={{fontFamily:PJS,color:TEXT}}>Perkembangan Kemandirian</p>
+      
+      {berkembang.length > 0 && (
+        <div className="mb-3">
+          <p className="text-xs font-semibold mb-1.5" style={{color:"#2E7A5C"}}>Yang berkembang sejak periode lalu</p>
+          {berkembang.map(d => (
+            <div key={d.domain} className="flex justify-between text-sm py-1">
+              <span style={{color:TEXT}}>↑ {d.domain}</span>
+              <span className="font-semibold" style={{color:"#2E7A5C"}}>+{d.delta} poin</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {stabil.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold mb-1.5" style={{color:MUTED}}>Yang masih perlu dipantau</p>
+          {stabil.map(d => (
+            <div key={d.domain} className="flex justify-between text-sm py-1">
+              <span style={{color:TEXT}}>→ {d.domain}</span>
+              <span style={{color:MUTED}}>relatif stabil</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
