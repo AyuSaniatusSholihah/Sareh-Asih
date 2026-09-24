@@ -1,5 +1,5 @@
 import { ArrowLeft, ChevronRight, ShieldCheck } from "lucide-react";
-import { T, A, TEXT, MUTED, DEEP, PJS, IPS } from "../ui-kit";
+import { TEXT, MUTED, DEEP, PJS, IPS } from "../ui-kit";
 import { type Role } from "../data";
 import guruIcon from "@/imports/guru-icon.png";
 import ortuIcon from "@/imports/ortu-icon.png";
@@ -11,18 +11,18 @@ export function RoleSelectScreen({ onPick, onBack }: { onPick: (r: Role) => void
       icon: guruIcon,
       title: "Guru Pendamping",
       tagline: "Kelola siswa & pantau perkembangan ABK",
-      accent: T,
+      accent: "#5F806F",
       accentLight: "#E8F0E9",
-      accentShadow: "rgba(139,176,152,0.3)",
+      accentShadow: "rgba(95,128,111,0.3)",
     },
     {
       r: "ortu" as Role,
       icon: ortuIcon,
       title: "Orang Tua",
       tagline: "Ikuti perkembangan & terima laporan anak",
-      accent: A,
+      accent: "#5F806F",
       accentLight: "#FFF0EC",
-      accentShadow: "rgba(210,125,107,0.3)",
+      accentShadow: "rgba(95,128,111,0.3)",
     },
   ];
 

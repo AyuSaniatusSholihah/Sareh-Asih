@@ -34,8 +34,7 @@ export function ProfilSekolahModal({
   const [detailGanda, setDetailGanda] = useState<string>("");
   // Input manual jenis kelas jika pilih "Lainnya" (misal: Inklusi, ADHD, Slow Learner)
   const [customJenisInput, setCustomJenisInput] = useState<string>("");
-  const [customAbkInput, setCustomAbkInput] = useState<string>("Tunanetra");
-  const [rombelParalel, setRombelParalel] = useState<string>("");
+  const [customAbkInput, setCustomAbkInput] = useState<string>("");
 
   // 2. State Vokasional (SMPLB & SMALB)
   const [vokasiJenjang, setVokasiJenjang] = useState<"SMPLB" | "SMALB">("SMALB");
@@ -115,8 +114,7 @@ export function ProfilSekolahModal({
     }
 
     const labelBagian = parts.length > 0 ? parts.join(" · ") : "Umum";
-    const paralel = rombelParalel.trim() ? ` ${rombelParalel.trim()}` : "";
-    return `Kelas ${tingkat}${paralel} (${labelBagian}) - ${jenjang}`;
+    return `Kelas ${tingkat} (${labelBagian}) - ${jenjang}`;
   };
 
   // Helper format nama kelas vokasional
@@ -143,7 +141,6 @@ export function ProfilSekolahModal({
     const finalAbk = abkItems.join(" · ") || "Kebutuhan Khusus";
     const namaKelas = getPreviewReguler();
     setKelasAbkMap(prev => ({ ...prev, [namaKelas]: finalAbk }));
-    setRombelParalel("");
   };
 
   // Handler tambah kelas vokasional
@@ -443,7 +440,7 @@ export function ProfilSekolahModal({
                                   fontSize: 10,
                                   fontWeight: 800,
                                 }}>
-                                {k.kode === "Tunanetra" ? "★" : k.kode === "Ganda" ? "∞" : k.kode}
+                                {k.kode === "Tunanetra" ? "★" : k.kode === "Ganda" ? "∞" : k.kode === "Lainnya" ? "" : k.kode}
                               </span>
                               <p
                                 className="text-xs font-bold leading-tight"
@@ -579,6 +576,7 @@ export function ProfilSekolahModal({
                           outline: "none",
                           boxSizing: "border-box"
                         }}>
+                        <option value="" disabled>-- Pilih Kebutuhan Khusus --</option>
                         <option value="Tunanetra">Tunanetra (ASD)</option>
                         <option value="Tunarungu">Tunarungu / Wicara</option>
                         <option value="Tunadaksa">Tunadaksa (Fisik/Motorik)</option>
@@ -592,26 +590,6 @@ export function ProfilSekolahModal({
                     </div>
                   </div>
                 )}
-
-                {/* Rombel paralel opsional */}
-                <div className="flex items-center gap-2">
-                  <input
-                    value={rombelParalel}
-                    onChange={e => setRombelParalel(e.target.value)}
-                    placeholder="Kode rombel paralel opsional (contoh: 1, 2, A, B)..."
-                    style={{
-                      flex: 1,
-                      border: `1.5px solid ${BDR}`,
-                      borderRadius: 10,
-                      padding: "8px 10px",
-                      fontSize: 12,
-                      color: TEXT,
-                      fontFamily: IPS,
-                      background: CARD,
-                      outline: "none",
-                    }}
-                  />
-                </div>
 
                 {/* Preview & Tombol Tambah */}
                 <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 14, padding: "10px 12px" }}>

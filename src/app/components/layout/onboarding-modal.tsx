@@ -55,7 +55,7 @@ export function OnboardingModal({ onClose, goTab }: { onClose: () => void; goTab
   const { ring } = s;
 
   const advance = () => {
-    if (isLast) { onClose(); return; }
+    if (isLast) { goTab("dashboard"); onClose(); return; }
     const next = OBS_STEPS[step + 1];
     if (next.targetScreen !== s.targetScreen) goTab(next.targetScreen);
     setStep(st => st + 1);

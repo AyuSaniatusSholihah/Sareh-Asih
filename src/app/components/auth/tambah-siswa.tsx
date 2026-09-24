@@ -1,9 +1,27 @@
-import { useState, useRef } from "react";
+import { useState, useRef, type MouseEvent } from "react";
 import { Users, Database, Upload, UserPlus, ChevronRight, AlertCircle, Trash2, CheckCircle } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS } from "../ui-kit";
+import { ABK_OPTIONS } from "../data";
 import { ModalShell } from "./modal-shell";
 
 export type SiswaImportData = { nama: string; abk: string; ttl: string; kelas?: string };
+
+const handleDownloadSample = (e: MouseEvent) => {
+  e.preventDefault();
+  const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(
+    "Nama Lengkap,Jenis Hambatan,TTL\n" +
+    "Rafi Pratama,Tunanetra,Bandung 12 Maret 2014\n" +
+    "Nisa Aulia,Tunarungu,Jakarta 05 Juli 2013\n" +
+    "Arga Saputra,Tunadaksa,Depok 20 Nov 2015\n" +
+    "Siti Nurhaliza,Tunanetra,Surakarta 18 Agu 2014\n"
+  );
+  const link = document.createElement("a");
+  link.setAttribute("href", csvContent);
+  link.setAttribute("download", "contoh_format_siswa_sareh_asih.csv");
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
 
 // ─── GURU: POP-UP 3 — Tambah Siswa (Database, Upload, Manual) ──
 export function TambahSiswaPromptModal({
@@ -46,23 +64,6 @@ export function TambahSiswaPromptModal({
     setManualEmoji("👦");
   };
 
-  const handleDownloadSample = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(
-      "Nama Lengkap,Jenis Hambatan,TTL\n" +
-      "Rafi Pratama,Tunanetra,Bandung 12 Maret 2014\n" +
-      "Nisa Aulia,Tunarungu,Jakarta 05 Juli 2013\n" +
-      "Arga Saputra,Tunadaksa,Depok 20 Nov 2015\n" +
-      "Siti Nurhaliza,Tunanetra,Surakarta 18 Agu 2014\n"
-    );
-    const link = document.createElement("a");
-    link.setAttribute("href", csvContent);
-    link.setAttribute("download", "contoh_format_siswa_sareh_asih.csv");
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  };
-
   if (mode === "upload")
     return (
       <UploadSiswaModal
@@ -96,7 +97,7 @@ export function TambahSiswaPromptModal({
   if (mode === "manual") {
     const canSave = manualNama.trim() !== "";
     return (
-      <ModalShell step={3} total={3} title="Tambah Siswa Manual" desc="Masukkan data siswa satu per satu" onSkip={onDone} skipLabel="Lewati, Nanti Saja →" onClose={onClose || onDone}>
+      <ModalShell step={3} total={3} title="Tambah Siswa Manual" desc="Masukkan data siswa satu per satu" onClose={onClose || onDone}>
         <div className="space-y-3.5 mb-4">
           <div>
             <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
@@ -166,16 +167,18 @@ export function TambahSiswaPromptModal({
             <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
               Jenis Kekhususan (ABK)
             </label>
-            <input
+            <select
               value={manualAbk}
               onChange={e => setManualAbk(e.target.value)}
-              placeholder="Contoh: Tunanetra"
               style={{
                 width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 14,
-                padding: "11px 14px", fontSize: 13, color: TEXT, outline: "none",
-                background: CARD, fontFamily: IPS, boxSizing: "border-box"
+                padding: "11px 12px", fontSize: 13, color: TEXT, outline: "none",
+                background: CARD, fontFamily: IPS, boxSizing: "border-box", cursor: "pointer"
               }}
-            />
+            >
+              {[...new Set(ABK_OPTIONS)].map(o => <option key={o} value={o}>{o}</option>)}
+              {!ABK_OPTIONS.includes(manualAbk) && manualAbk && <option value={manualAbk}>{manualAbk}</option>}
+            </select>
           </div>
         </div>
 
@@ -219,17 +222,6 @@ export function TambahSiswaPromptModal({
             Simpan Siswa
           </button>
         </div>
-        <button
-          type="button"
-          onClick={onDone}
-          style={{
-            width: "100%", background: "transparent", border: "none",
-            color: MUTED, fontFamily: IPS, fontSize: 12, fontWeight: 600,
-            cursor: "pointer", marginTop: 10, textAlign: "center"
-          }}
-        >
-          Lewati langkah ini, upload nanti →
-        </button>
       </ModalShell>
     );
   }
@@ -316,17 +308,6 @@ export function TambahSiswaPromptModal({
             Upload Daftar Siswa
           </button>
 
-          <div className="text-[10.5px] text-gray-500 flex items-center justify-center gap-1.5">
-            <span className="text-gray-600">📥</span>
-            <span>Belum punya format?</span>
-            <button
-              type="button"
-              onClick={handleDownloadSample}
-              className="text-[#738B7B] font-semibold underline hover:text-[#5B6E61] bg-transparent border-none p-0 cursor-pointer text-[10.5px]"
-            >
-              Download contoh format
-            </button>
-          </div>
         </div>
 
         {/* Kartu 3: Tambah Siswa Manual (Oranye/Merah Bata) */}
@@ -652,6 +633,18 @@ export function UploadSiswaModal({
               <div>Arga Saputra,Tunadaksa,Depok 20 Nov 2015</div>
             </div>
             <p style={{ fontSize: 11, color: MUTED, marginTop: 8, fontFamily: IPS }}>💡 Buka Excel → File → Save As → CSV (Comma delimited)</p>
+          </div>
+
+          <div style={{ fontSize: 11, color: MUTED, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 10 }}>
+            <span>📥</span>
+            <span>Belum punya format?</span>
+            <button
+              type="button"
+              onClick={handleDownloadSample}
+              className="text-[#738B7B] font-semibold underline hover:text-[#5B6E61] bg-transparent border-none p-0 cursor-pointer text-[11px]"
+            >
+              Download contoh format
+            </button>
           </div>
 
           <div style={{ display: "flex", gap: 8, marginTop: 14 }}>

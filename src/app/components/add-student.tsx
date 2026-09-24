@@ -376,18 +376,6 @@ export function AddStudentSheet({
                 <Upload size={15} />
                 Upload Daftar Siswa
               </button>
-
-              <div className="text-[10.5px] text-gray-500 flex items-center justify-center gap-1.5">
-                <Download size={12} className="text-gray-600" />
-                <span>Belum punya format?</span>
-                <button
-                  type="button"
-                  onClick={handleDownloadSample}
-                  className="text-[#738B7B] font-semibold underline hover:text-[#5B6E61] bg-transparent border-none p-0 cursor-pointer text-[10.5px]"
-                >
-                  Download contoh format
-                </button>
-              </div>
             </div>
 
             {/* ── KARTU 3: Tambah Siswa Manual (Terracotta) ── */}
@@ -848,6 +836,18 @@ export function AddStudentSheet({
               </button>
             </div>
 
+            <div className="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
+              <Download size={12} className="text-gray-600" />
+              <span>Belum punya format?</span>
+              <button
+                type="button"
+                onClick={handleDownloadSample}
+                className="text-[#738B7B] font-semibold underline hover:text-[#5B6E61] bg-transparent border-none p-0 cursor-pointer text-[11px]"
+              >
+                Download contoh format
+              </button>
+            </div>
+
             {/* Action Buttons */}
             <div className="mt-auto pt-2 flex flex-col gap-2">
               <div className="flex gap-3">
@@ -1092,14 +1092,6 @@ export function AddStudentSheet({
                   className="text-xs"
                 >
                   Simpan cepat tanpa profil detail
-                </button>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  style={{ width: "100%", color: MUTED, fontFamily: IPS, minHeight: 28, background: "transparent", border: "none", cursor: "pointer" }}
-                  className="text-xs hover:text-[#738B7B] transition-colors"
-                >
-                  Lewati langkah ini, upload nanti →
                 </button>
               </div>
             )}
