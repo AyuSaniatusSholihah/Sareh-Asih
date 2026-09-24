@@ -99,45 +99,47 @@ export function CompetitionScreen({
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       <div className="px-4 pt-4 pb-6 space-y-4">
         <div className="space-y-3.5">
-          {/* ── Filter Kategori Pills (Semua, Seni, Olahraga, Akademik) ── */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-            {[
-              { id: "Semua",        label: "Semua",        icon: <LayoutGrid    size={14} strokeWidth={2.2} /> },
-              { id: "Realistic",    label: "Realistic",    icon: <Wrench        size={14} strokeWidth={2.2} /> },
-              { id: "Investigative",label: "Investigative",icon: <Microscope    size={14} strokeWidth={2.2} /> },
-              { id: "Artistic",     label: "Artistic",     icon: <Palette       size={14} strokeWidth={2.2} /> },
-              { id: "Social",       label: "Social",       icon: <Heart         size={14} strokeWidth={2.2} /> },
-              { id: "Enterprising", label: "Enterprising", icon: <TrendingUp    size={14} strokeWidth={2.2} /> },
-              { id: "Conventional", label: "Conventional", icon: <BookOpen      size={14} strokeWidth={2.2} /> },
-            ].map(f => {
-              const isActive = lombaCategory === f.id;
-              return (
-                <button
-                  key={f.id}
-                  onClick={() => setLombaCategory(f.id as any)}
-                  style={{
-                    background: isActive ? "#5B7A68" : "#FFFFFF",
-                    color: isActive ? "#FFFFFF" : "#334155",
-                    border: isActive ? "none" : "1.5px solid #E2E8F0",
-                    borderRadius: 16,
-                    boxShadow: isActive ? "0 2px 8px rgba(91,122,104,0.3)" : "0 1px 3px rgba(0,0,0,0.02)",
-                    fontFamily: PJS,
-                    fontWeight: isActive ? 700 : 600,
-                    fontSize: 12.5,
-                    padding: "8px 14px",
-                    cursor: "pointer",
-                    transition: "all 0.15s ease",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    flexShrink: 0,
-                  }}
-                >
-                  {f.icon}
-                  <span>{f.label}</span>
-                </button>
-              );
-            })}
+          {/* ── Filter Kategori Pills (Sticky terkunci saat scroll) ── */}
+          <div style={{ position: "sticky", top: 0, zIndex: 20, background: BG, paddingTop: 12, paddingBottom: 10, marginTop: -16, marginBottom: 8, borderBottom: `1px solid ${BDR}40` }}>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar px-1">
+              {[
+                { id: "Semua",        label: "Semua",        icon: <LayoutGrid    size={14} strokeWidth={2.2} /> },
+                { id: "Realistic",    label: "Realistic",    icon: <Wrench        size={14} strokeWidth={2.2} /> },
+                { id: "Investigative",label: "Investigasi",  icon: <Microscope    size={14} strokeWidth={2.2} /> },
+                { id: "Artistic",     label: "Artistic",     icon: <Palette       size={14} strokeWidth={2.2} /> },
+                { id: "Social",       label: "Social",       icon: <Heart         size={14} strokeWidth={2.2} /> },
+                { id: "Enterprising", label: "Enterprising", icon: <TrendingUp    size={14} strokeWidth={2.2} /> },
+                { id: "Conventional", label: "Conventional", icon: <BookOpen      size={14} strokeWidth={2.2} /> },
+              ].map(f => {
+                const isActive = lombaCategory === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => setLombaCategory(f.id as any)}
+                    style={{
+                      background: isActive ? "#5B7A68" : "#FFFFFF",
+                      color: isActive ? "#FFFFFF" : "#334155",
+                      border: isActive ? "none" : "1.5px solid #E2E8F0",
+                      borderRadius: 16,
+                      boxShadow: isActive ? "0 2px 8px rgba(91,122,104,0.3)" : "0 1px 3px rgba(0,0,0,0.02)",
+                      fontFamily: PJS,
+                      fontWeight: isActive ? 700 : 600,
+                      fontSize: 12.5,
+                      padding: "8px 14px",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {f.icon}
+                    <span>{f.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* ── Subtitle / Tip Bar ── */}
