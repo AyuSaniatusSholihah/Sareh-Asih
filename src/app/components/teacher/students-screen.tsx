@@ -642,15 +642,15 @@ export function StudentsScreen({
                         width: 44,
                         height: 44,
                         borderRadius: "50%",
-                        background: s.hasObs ? "#EBF4EE" : "#FBF1EF",
-                        border: `1.5px solid ${s.hasObs ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
+                        background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF",
+                        border: `1.5px solid ${s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         flexShrink: 0,
                       }}
                     >
-                      <User size={21} style={{ color: s.hasObs ? DEEP : A }} />
+                      <User size={21} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
                     </div>
 
                     {/* Student Details */}

@@ -22,7 +22,7 @@ export function TambahSiswaPromptModal({
   kelasAbkMap?: Record<string, string>;
   teacher?: string;
   onBack?: () => void;
-  onSaveManual: (s: { name: string; abk: string; kelas: string; age: number; emoji: string }) => void;
+  onSaveManual: (s: { name: string; abk: string; kelas: string; age: number; emoji: string; gender: "L" | "P" }) => void;
   onImportSiswa: (siswa: SiswaImportData[]) => void;
   onDone: () => void;
   onClose?: () => void;
@@ -202,6 +202,7 @@ export function TambahSiswaPromptModal({
                   kelas: manualKelas,
                   age: 13,
                   emoji: manualEmoji,
+                  gender: manualEmoji === "👦" ? "L" : "P",
                 });
                 setSavedStudents(prev => [...prev, manualNama.trim()]);
                 resetManualForm();

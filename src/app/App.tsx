@@ -60,6 +60,7 @@ export default function App() {
   const [pendingRole, setPending] = useState<Role>("guru");
   const [screen, setScreen] = useState<Screen>("landing");
   const [tab, setTab] = useState<Screen>("dashboard");
+  const [screenHistory, setScreenHistory] = useState<Screen[]>([]);
 
   const [list, setList] = useState<Student[]>(() => seedStudents.map(s => ({ ...s })));
   const addStudent = (s: Omit<Student, "id">) => {
@@ -93,8 +94,15 @@ export default function App() {
     document.documentElement.style.setProperty('--font-size', `${fontSize * 16}px`);
   }, [fontSize]);
 
-  const go = (s: Screen) => setScreen(s);
-  const goTab = (s: Screen) => { setScreen(s); setTab(s); };
+  const go = (s: Screen) => {
+    setScreenHistory(prev => [...prev, screen]);
+    setScreen(s);
+  };
+  const goTab = (s: Screen) => {
+    setScreenHistory(prev => [...prev, screen]);
+    setScreen(s);
+    setTab(s);
+  };
 
   // ── Flow login ──
   const pickRole = (r: Role) => { setPending(r); go("google-login"); };
@@ -123,18 +131,20 @@ export default function App() {
     setScreen("landing");
     setGuruSetup(null);
     setShowSettings(false);
+    setScreenHistory([]);
   };
 
   // Demo switcher — lompat langsung tanpa mengulang setup
   const demoSwitch = (r: Role) => {
     setRole(r);
+    setScreenHistory([]);
     if (r === "guru") { setGuruSetup(null); setShowOnboarding(false); goTab("dashboard"); }
     else { setChildId(id => id ?? 1); goTab("parent-dashboard"); }
   };
 
   const logout = () => {
     setRole(null); setGuruSetup(null); setShowOnboarding(false);
-    setChildId(null); setScreen("landing");
+    setChildId(null); setScreen("landing"); setScreenHistory([]);
   };
 
   const startObs = (id: number) => { setSelectedStudentId(id); go("observation"); };
@@ -189,17 +199,16 @@ export default function App() {
   const showNav = !!role && isMain && !guruSetup;
 
   const goBack = () => {
-    if (screen === "kode-akses") goTab("dashboard");
-    else if (screen === "asesmen-pending") goTab("dashboard");
-    else if (screen === "profile") goTab("students");
-    else if (screen === "observation") go("profile");
-    else if (screen === "talent-map-detail") goTab("talent-map");
-    else if (screen === "learning-rec") go("profile");
-    else if (screen === "parent-detail") goTab("parent-dashboard");
-    else if (screen === "google-login") go("role-select");
-    else if (screen === "role-select") go("landing");
-    else if (screen === "parent-code") go("google-login");
-    else goTab(tab);
+    setScreenHistory(prev => {
+      if (prev.length === 0) return prev;
+      const history = [...prev];
+      const last = history.pop()!;
+      // Update screen tanpa menambah history baru
+      const isTabScreen = MAIN_SCREENS.includes(last);
+      setScreen(last);
+      if (isTabScreen) setTab(last);
+      return history;
+    });
   };
 
   const headerTitle = (): [string, string] => {
@@ -264,7 +273,7 @@ export default function App() {
           studentId={selectedStudentId}
         />
       );
-      case "talent-map": return <TalentMapScreen go={go} onStartObs={startObs} onSelect={setSelectedStudentId} />;
+      case "talent-map": return <TalentMapScreen go={go} onStartObs={startObs} onSelect={setSelectedStudentId} namaSekolah={guru.sekolah} onGoAsesmenPending={() => go("asesmen-pending")} />;
       case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} namaSekolah={guru.sekolah} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
       case "competition": return <CompetitionScreen onStartObs={startObs} />;
@@ -399,6 +408,7 @@ export default function App() {
                         kelas: s.kelas,
                         age: s.age,
                         emoji: s.emoji,
+                        gender: (s as any).gender ?? (s.emoji === "👦" ? "L" : "P"),
                         talent: "", talentScore: 0, stars: 0,
                         teacher: guru.nama,
                         hasObs: false, comps: [],
@@ -422,6 +432,7 @@ export default function App() {
                           kelas: targetKelas,
                           age: 0,
                           emoji,
+                          gender: emoji === "👧" ? "P" : "L",
                           talent: "", talentScore: 0, stars: 0,
                           teacher: guru.nama,
                           hasObs: false, comps: [],

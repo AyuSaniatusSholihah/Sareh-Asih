@@ -216,15 +216,15 @@ export function AsesmenPendingScreen({
                           width: 42,
                           height: 42,
                           borderRadius: "50%",
-                          background: "#FBF1EF",
-                          border: "1.5px solid rgba(210,110,91,0.28)",
+                          background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF",
+                          border: `1.5px solid ${s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           flexShrink: 0,
                         }}
                       >
-                        <User size={20} style={{ color: A }} />
+                        <User size={20} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
                       </div>
 
                       {/* Detail Siswa */}

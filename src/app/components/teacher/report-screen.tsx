@@ -66,7 +66,6 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
       if (selectedStudentIds.size === 0) return students;
       return students.filter(s => selectedStudentIds.has(s.id));
     }
-    return students;
   }, [students, filterScope, selectedClass, selectedStudentIds]);
 
   const searchedAnakList = useMemo(() => {
@@ -89,10 +88,29 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
     }
   };
 
+  const scopeBadgeText = useMemo(() => {
+    if (filterScope === "semua") return `Semua Kelas (${filteredList.length} Siswa)`;
+    if (filterScope === "kelas") return selectedClass === "Semua" ? `Semua Kelas (${filteredList.length} Siswa)` : `Kelas ${selectedClass} (${filteredList.length} Siswa)`;
+    if (filterScope === "anak") {
+      if (selectedStudentIds.size === 1) {
+        const student = filteredList[0];
+        return student ? `Siswa: ${student.name.split(" ")[0]}` : `1 Siswa`;
+      }
+      return `${selectedStudentIds.size} Siswa Dipilih`;
+    }
+    return `${filteredList.length} Siswa`;
+  }, [filterScope, selectedClass, selectedStudentIds, filteredList]);
+
+  const scopeShortText = useMemo(() => {
+    if (filterScope === "kelas") return selectedClass === "Semua" ? "Semua Kelas" : `Kelas ${selectedClass}`;
+    if (filterScope === "anak") return `${selectedStudentIds.size} Siswa`;
+    return "Semua Kelas";
+  }, [filterScope, selectedClass, selectedStudentIds]);
+
   const showToast = (msg: string) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 3200); };
-  const handleDownloadExcel = () => { exportSpreadsheet(filteredList, namaSekolah); showToast(`Rekap Excel ${filteredList.length} siswa berhasil diunduh!`); };
-  const handleDownloadWord = () => { exportLaporanPemetaan(filteredList, namaSekolah); showToast(`Laporan Rapor ${filteredList.length} siswa berhasil diunduh!`); };
-  const handleDownloadPDF = () => { printReportPDF(filteredList, namaSekolah); showToast(`Format PDF ${filteredList.length} siswa disiapkan untuk dicetak/disimpan!`); };
+  const handleDownloadExcel = () => { exportSpreadsheet(filteredList, namaSekolah); showToast(`Rekap Excel (${scopeShortText}) berhasil diunduh!`); };
+  const handleDownloadWord = () => { exportLaporanPemetaan(filteredList, namaSekolah); showToast(`Rapor ${scopeBadgeText} berhasil diunduh!`); };
+  const handleDownloadPDF = () => { printReportPDF(filteredList, namaSekolah); showToast(`Format PDF ${scopeShortText} disiapkan untuk dicetak/disimpan!`); };
 
   const handleShareWA = () => {
     // 1. Output dokumen PDF resmi secara otomatis
@@ -583,38 +601,69 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
         </div>
 
         {/* Action Bar Sticky Bottom */}
-        <div style={{ position: "sticky", bottom: 0, background: "#FFFFFF", borderTop: "1px solid rgba(91,122,104,0.12)", padding: "12px 16px 20px", display: "flex", flexDirection: "column", gap: 8, zIndex: 20 }}>
+        <div style={{ position: "sticky", bottom: 0, background: "#FFFFFF", borderTop: "1px solid rgba(91,122,104,0.12)", padding: "12px 16px 20px", display: "flex", gap: 10, zIndex: 20 }}>
           <button
-            type="button"
-            onClick={handleShareWA}
-            style={{
-              width: "100%",
-              padding: "13px",
-              borderRadius: 14,
-              border: "none",
-              background: "#25D366",
-              color: "#FFFFFF",
-              fontFamily: PJS,
-              fontWeight: 800,
-              fontSize: 13.5,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-              boxShadow: "0 4px 14px rgba(37,211,102,0.32)",
-            }}
-            className="active:scale-[0.98] transition-transform"
-          >
-            <MessageCircle size={17} strokeWidth={2.3} />
-            <span>Bagikan WA</span>
-            <span style={{ fontSize: 10.5, background: "rgba(255,255,255,0.24)", padding: "2px 7px", borderRadius: 6, fontWeight: 700, marginLeft: 2 }}>PDF</span>
-          </button>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button type="button" onClick={handleDownloadExcel} style={{ flex: 1, padding: "11px", borderRadius: 14, border: "1.5px solid rgba(16,124,65,0.30)", background: "#FFFFFF", color: "#107C41", fontFamily: PJS, fontWeight: 800, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} className="active:scale-[0.97] transition-transform"><FileSpreadsheet size={15} />Excel</button>
-            <button type="button" onClick={handleDownloadWord} style={{ flex: 1, padding: "11px", borderRadius: 14, border: "1.5px solid rgba(24,90,189,0.30)", background: "#FFFFFF", color: "#185ABD", fontFamily: PJS, fontWeight: 800, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} className="active:scale-[0.97] transition-transform"><FileText size={15} />Rapor</button>
-            <button type="button" onClick={handleDownloadPDF} style={{ flex: 1, padding: "11px", borderRadius: 14, border: "1.5px solid rgba(100,116,139,0.30)", background: "#FFFFFF", color: "#475569", fontFamily: PJS, fontWeight: 800, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} className="active:scale-[0.97] transition-transform"><Printer size={15} />PDF</button>
-          </div>
+              type="button"
+              onClick={handleDownloadWord}
+              style={{
+                flex: 1,
+                padding: "11px 8px",
+                borderRadius: 14,
+                border: "1.5px solid rgba(24,90,189,0.30)",
+                background: "#FFFFFF",
+                color: "#185ABD",
+                fontFamily: PJS,
+                fontWeight: 800,
+                fontSize: 12.5,
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 2,
+                boxShadow: "0 2px 8px rgba(24,90,189,0.10)",
+              }}
+              className="active:scale-[0.98] transition-transform"
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <FileText size={15} strokeWidth={2.2} />
+                <span>Download Rapor</span>
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 700, opacity: 0.85, fontFamily: IPS }}>
+                ({scopeShortText})
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={handleShareWA}
+              style={{
+                flex: 1,
+                padding: "11px 8px",
+                borderRadius: 14,
+                border: "none",
+                background: "#25D366",
+                color: "#FFFFFF",
+                fontFamily: PJS,
+                fontWeight: 800,
+                fontSize: 12.5,
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 2,
+                boxShadow: "0 4px 14px rgba(37,211,102,0.32)",
+              }}
+              className="active:scale-[0.98] transition-transform"
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <MessageCircle size={15} strokeWidth={2.3} />
+                <span>Bagikan via WA</span>
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 700, opacity: 0.9, fontFamily: IPS }}>
+                ({scopeShortText})
+              </span>
+            </button>
         </div>
       </div>
     );
