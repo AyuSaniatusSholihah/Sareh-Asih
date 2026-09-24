@@ -18,6 +18,7 @@ export type Screen =
 
 export interface Student {
   id:number; name:string; abk:string; kelas:string; age:number; emoji:string;
+  gender: "L" | "P";
   teacher:string; hasObs:boolean; comps:string[]; caraBelajar:string;
   tingkatDukungan?:string; komunikasi?:string; motorik?:string;
   sensorik?:string; rentang?:string; minat?:string; terapi?:string;
@@ -26,14 +27,14 @@ export interface Student {
 
 // ─── Seed data ───────────────────────────────────────────────────────
 export const seedStudents: Student[] = [
-  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
-  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",                kelas:"VIII B", age:14, emoji:"👧", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA" },
-  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",                kelas:"VII A",  age:12, emoji:"👦", teacher:"Pak Budi", hasObs:false, comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
-  { id:4, name:"Dina Maharani",  abk:"Tunanetra",        kelas:"IX C",   age:15, emoji:"👧", teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
-  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",kelas:"VII A",  age:13, emoji:"👦", teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
-  { id:6, name:"Maya Dewi",      abk:"Tunarungu",kelas:"VIII B", age:14, emoji:"👧", teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
-  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",                kelas:"IX A",   age:15, emoji:"👦", teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI" },
-  { id:8, name:"Sari Indah",     abk:"Tunarungu",                kelas:"VIII A", age:13, emoji:"👧", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
+  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
+  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA" },
+  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
+  { id:4, name:"Dina Maharani",  abk:"Tunanetra",   kelas:"IX C",   age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
+  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
+  { id:6, name:"Maya Dewi",      abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
+  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"IX A",   age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI" },
+  { id:8, name:"Sari Indah",     abk:"Tunarungu",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
 ];
 
 // ─── Laporan ke orang tua ────────────────────────────────────────────
@@ -252,7 +253,7 @@ export const studentTalentDetail: Record<number, { domains: {t:string;sc:number;
 export interface LombaItem {
   k: string;
   full: string;
-  category: "Seni" | "Olahraga" | "Akademik";
+  category: "Realistic" | "Investigative" | "Artistic" | "Social" | "Enterprising" | "Conventional";
   date: string;
   level: string;
   iconBg: string;
@@ -263,7 +264,7 @@ export const LOMBA: LombaItem[] = [
   {
     k: "FLS2N-PDBK",
     full: "Festival & Lomba Seni Siswa Nasional (PDBK)",
-    category: "Seni",
+    category: "Artistic",
     date: "12–15 Jul 2026",
     level: "Tingkat Nasional",
     iconBg: "#E6F4F1",
@@ -272,7 +273,7 @@ export const LOMBA: LombaItem[] = [
   {
     k: "O2SN Pendidikan Khusus",
     full: "Olimpiade Olahraga Siswa Nasional Pendidikan Khusus",
-    category: "Olahraga",
+    category: "Realistic",
     date: "20–24 Jul 2026",
     level: "Tingkat Nasional",
     iconBg: "#E1F0FE",
@@ -281,7 +282,7 @@ export const LOMBA: LombaItem[] = [
   {
     k: "Lomba Cerdas Cermat",
     full: "Pendidikan Khusus",
-    category: "Akademik",
+    category: "Investigative",
     date: "5 Agu 2026",
     level: "Tingkat Provinsi",
     iconBg: "#EFEAFF",
@@ -290,7 +291,7 @@ export const LOMBA: LombaItem[] = [
   {
     k: "Festival Seni Pertunjukan",
     full: "Siswa Berkebutuhan Khusus",
-    category: "Seni",
+    category: "Artistic",
     date: "10–12 Sep 2026",
     level: "Tingkat Kabupaten",
     iconBg: "#FEF0E6",

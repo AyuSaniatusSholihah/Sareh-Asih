@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Calendar, LayoutGrid, Palette, GraduationCap,
   Lightbulb, MapPin, Tag, Users, ChevronRight, ChevronDown, User, UserCheck, Sparkles,
+  Wrench, Microscope, Heart, TrendingUp, BookOpen,
 } from "lucide-react";
 import {
   CARD, TEXT, MUTED, BDR, PJS, IPS, DMM, BG, DEEP, A,
@@ -86,7 +87,7 @@ export function CompetitionScreen({
   onStartObs: (id: number) => void;
 }) {
   const students = useStudents();
-  const [lombaCategory, setLombaCategory] = useState<"Semua" | "Seni" | "Olahraga" | "Akademik">("Semua");
+  const [lombaCategory, setLombaCategory] = useState<"Semua" | "Realistic" | "Investigative" | "Artistic" | "Social" | "Enterprising" | "Conventional">("Semua");
   const [expandedLomba, setExpandedLomba] = useState<string | null>(null);
 
   const filteredLomba = LOMBA.filter(l => {
@@ -101,10 +102,13 @@ export function CompetitionScreen({
           {/* ── Filter Kategori Pills (Semua, Seni, Olahraga, Akademik) ── */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
             {[
-              { id: "Semua", label: "Semua", icon: <LayoutGrid size={15} strokeWidth={2.2} /> },
-              { id: "Seni", label: "Seni", icon: <Palette size={15} strokeWidth={2.2} /> },
-              { id: "Olahraga", label: "Olahraga", icon: <RunningManIcon size={15} /> },
-              { id: "Akademik", label: "Akademik", icon: <GraduationCap size={15} strokeWidth={2.2} /> },
+              { id: "Semua",        label: "Semua",        icon: <LayoutGrid    size={14} strokeWidth={2.2} /> },
+              { id: "Realistic",    label: "Realistic",    icon: <Wrench        size={14} strokeWidth={2.2} /> },
+              { id: "Investigative",label: "Investigative",icon: <Microscope    size={14} strokeWidth={2.2} /> },
+              { id: "Artistic",     label: "Artistic",     icon: <Palette       size={14} strokeWidth={2.2} /> },
+              { id: "Social",       label: "Social",       icon: <Heart         size={14} strokeWidth={2.2} /> },
+              { id: "Enterprising", label: "Enterprising", icon: <TrendingUp    size={14} strokeWidth={2.2} /> },
+              { id: "Conventional", label: "Conventional", icon: <BookOpen      size={14} strokeWidth={2.2} /> },
             ].map(f => {
               const isActive = lombaCategory === f.id;
               return (
@@ -340,15 +344,15 @@ export function CompetitionScreen({
                                     width: 32,
                                     height: 32,
                                     borderRadius: "50%",
-                                    background: m.student.hasObs ? "#EBF4EE" : "#FBF1EF",
-                                    border: `1.5px solid ${m.student.hasObs ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
+                                    background: m.student.gender === "L" ? "#EBF4EE" : "#FBF1EF",
+                                    border: `1.5px solid ${m.student.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
                                     flexShrink: 0,
                                   }}
                                 >
-                                  <User size={16} style={{ color: m.student.hasObs ? DEEP : A }} />
+                                  <User size={16} style={{ color: m.student.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
                                 </div>
                                 <p
                                   style={{
