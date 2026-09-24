@@ -190,9 +190,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                   </button>
                 )}
               </div>
-              <div style={{ background: "#D27D6B", color: "#FFF", borderRadius: 20, padding: "3px 12px", fontSize: 11, fontWeight: 700, fontFamily: PJS, letterSpacing: "0.03em" }}>
-                {step > 1 ? `0${step - 1} / 04` : ""}
-              </div>
+              <div style={{ width: 44 }} />
               <button onClick={skip} className="active:opacity-75 transition-opacity" style={{ fontSize: 12.5, fontWeight: 600, color: "#6B8070", fontFamily: IPS, border: "none", background: "transparent", cursor: "pointer" }}>
                 Lewati
               </button>
