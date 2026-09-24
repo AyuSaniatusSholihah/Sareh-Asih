@@ -34,6 +34,8 @@ export function ObservationScreen({
   const [catatan, setCatatan] = useState("");
   const [showResultModal, setShowResultModal] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [activeRiasecFilter, setActiveRiasecFilter] = useState<string>("Semua");
+  const [activeFungsionalFilter, setActiveFungsionalFilter] = useState<string>("Semua");
 
   if (!student) {
     return (
@@ -205,6 +207,122 @@ export function ObservationScreen({
               </div>
             )}
           </div>
+
+          {/* ── STICKY CATEGORY NAV PILLS BAR (Terkunci & tetap terlihat saat scroll) ── */}
+          {tahap === "fungsional" && (
+            <div style={{ background: "#F7F5F0", borderBottom: `1px solid ${BDR}`, paddingTop: 6, paddingBottom: 6 }} className="px-4 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <button
+                type="button"
+                onClick={() => setActiveFungsionalFilter("Semua")}
+                style={{
+                  background: activeFungsionalFilter === "Semua" ? DEEP : "#FFFFFF",
+                  color: activeFungsionalFilter === "Semua" ? "#FFFFFF" : TEXT,
+                  border: activeFungsionalFilter === "Semua" ? "none" : `1px solid ${BDR}`,
+                  borderRadius: 20,
+                  fontFamily: PJS,
+                  fontWeight: activeFungsionalFilter === "Semua" ? 700 : 600,
+                  fontSize: 11,
+                  padding: "5px 11px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0
+                }}
+              >
+                Semua Kategori
+              </button>
+              {FUNGSIONAL_KATEGORI.map(kat => {
+                const meta = FUNGSIONAL_META[kat];
+                const isActive = activeFungsionalFilter === kat;
+                const list = PROFIL_FUNGSIONAL.filter(a => a.kategori === kat);
+                const isi = list.filter(a => skorFungsional[a.id] !== undefined).length;
+                return (
+                  <button
+                    key={kat}
+                    type="button"
+                    onClick={() => setActiveFungsionalFilter(kat)}
+                    style={{
+                      background: isActive ? meta.color : CARD,
+                      color: isActive ? "#FFFFFF" : meta.color,
+                      border: isActive ? `1px solid ${meta.color}` : `1px solid ${meta.color}40`,
+                      borderRadius: 20,
+                      fontFamily: PJS,
+                      fontWeight: isActive ? 700 : 600,
+                      fontSize: 11,
+                      padding: "5px 11px",
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 4,
+                      whiteSpace: "nowrap",
+                      flexShrink: 0
+                    }}
+                  >
+                    <span>{meta.icon}</span>
+                    <span>{kat}</span>
+                    <span style={{ fontSize: 10, opacity: 0.9, background: isActive ? "rgba(255,255,255,0.25)" : meta.bg, padding: "1px 5px", borderRadius: 10, color: isActive ? "#FFFFFF" : meta.color }}>{isi}/{list.length}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {tahap === "kecenderungan" && (
+            <div style={{ background: "#F7F5F0", borderBottom: `1px solid ${BDR}`, paddingTop: 6, paddingBottom: 6 }} className="px-4 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <button
+                type="button"
+                onClick={() => setActiveRiasecFilter("Semua")}
+                style={{
+                  background: activeRiasecFilter === "Semua" ? DEEP : "#FFFFFF",
+                  color: activeRiasecFilter === "Semua" ? "#FFFFFF" : TEXT,
+                  border: activeRiasecFilter === "Semua" ? "none" : `1px solid ${BDR}`,
+                  borderRadius: 20,
+                  fontFamily: PJS,
+                  fontWeight: activeRiasecFilter === "Semua" ? 700 : 600,
+                  fontSize: 11,
+                  padding: "5px 11px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0
+                }}
+              >
+                Semua RIASEC
+              </button>
+              {RIASEC_KATEGORI.map(kat => {
+                const meta = RIASEC_META[kat];
+                const isActive = activeRiasecFilter === kat;
+                const list = PROFIL_KECENDERUNGAN.filter(a => a.kategori === kat);
+                const isi = list.filter(a => skorRiasec[a.id] !== undefined).length;
+                const katLabel = kat === "Investigative" ? "Investigasi" : kat;
+                return (
+                  <button
+                    key={kat}
+                    type="button"
+                    onClick={() => setActiveRiasecFilter(kat)}
+                    style={{
+                      background: isActive ? meta.color : CARD,
+                      color: isActive ? "#FFFFFF" : meta.color,
+                      border: isActive ? `1px solid ${meta.color}` : `1px solid ${meta.color}40`,
+                      borderRadius: 20,
+                      fontFamily: PJS,
+                      fontWeight: isActive ? 700 : 600,
+                      fontSize: 11,
+                      padding: "5px 11px",
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 4,
+                      whiteSpace: "nowrap",
+                      flexShrink: 0
+                    }}
+                  >
+                    <span>{meta.icon}</span>
+                    <span>{katLabel}</span>
+                    <span style={{ fontSize: 10, opacity: 0.9, background: isActive ? "rgba(255,255,255,0.25)" : meta.bg, padding: "1px 5px", borderRadius: 10, color: isActive ? "#FFFFFF" : meta.color }}>{isi}/{list.length}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* ── TAHAP 1: PROFIL FUNGSIONAL ── */}
@@ -223,14 +341,14 @@ export function ObservationScreen({
               </div>
             </div>
 
-            {FUNGSIONAL_KATEGORI.map(kat => {
+            {FUNGSIONAL_KATEGORI.filter(kat => activeFungsionalFilter === "Semua" || activeFungsionalFilter === kat).map(kat => {
               const meta = FUNGSIONAL_META[kat];
               const list = PROFIL_FUNGSIONAL.filter(a => a.kategori === kat);
               const rata = rataFungsional(kat);
               const isi = list.filter(a => skorFungsional[a.id] !== undefined).length;
               return (
                 <div key={kat} style={{ background: CARD, border: `1.5px solid ${meta.color}35`, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }} className="rounded-2xl p-4">
-                  <div className="flex items-center gap-3 mb-1">
+                  <div style={{ position: "sticky", top: 146, zIndex: 10, background: CARD, paddingTop: 4, paddingBottom: 8, marginTop: -4, borderBottom: `1px solid ${BDR}30` }} className="flex items-center gap-3 mb-1">
                     <div style={{ width: 42, height: 42, background: meta.bg, borderRadius: 12, border: `1px solid ${meta.color}40`, flexShrink: 0, fontSize: 20 }} className="flex items-center justify-center">{meta.icon}</div>
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>{kat}</p>
@@ -338,17 +456,19 @@ export function ObservationScreen({
               </div>
             </div>
 
-            {RIASEC_KATEGORI.map(kat => {
+            {RIASEC_KATEGORI.filter(kat => activeRiasecFilter === "Semua" || activeRiasecFilter === kat).map(kat => {
               const meta = RIASEC_META[kat];
               const list = PROFIL_KECENDERUNGAN.filter(a => a.kategori === kat);
               const rata = rataRiasec(kat);
               const isi = list.filter(a => skorRiasec[a.id] !== undefined).length;
               return (
                 <div key={kat} style={{ background: CARD, border: `1.5px solid ${meta.color}35`, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }} className="rounded-2xl p-4">
-                  <div className="flex items-center gap-3 mb-1">
+                  <div style={{ position: "sticky", top: 146, zIndex: 10, background: CARD, paddingTop: 4, paddingBottom: 8, marginTop: -4, borderBottom: `1px solid ${BDR}30` }} className="flex items-center gap-3 mb-1">
                     <div style={{ width: 42, height: 42, background: meta.bg, borderRadius: 12, border: `1px solid ${meta.color}40`, flexShrink: 0, fontSize: 20 }} className="flex items-center justify-center">{meta.icon}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>{kat}</p>
+                      <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>
+                        {kat === "Investigative" ? "Investigasi (Investigative)" : kat}
+                      </p>
                       <p className="text-xs" style={{ color: MUTED }}>{meta.desc}</p>
                     </div>
                     <span className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0" style={{ background: isi > 0 ? meta.bg : BG, color: isi > 0 ? meta.color : MUTED, border: `1px solid ${isi > 0 ? meta.color + "50" : BDR}`, fontFamily: DMM }}>{isi}/{list.length}</span>
