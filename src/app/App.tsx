@@ -470,7 +470,15 @@ export default function App() {
 
               {showNav && <BotNav role={role!} screen={screen} go={goTab} />}
 
-              {showOnboarding && <OnboardingModal onClose={() => setShowOnboarding(false)} goTab={goTab} />}
+              {showOnboarding && (
+                <OnboardingModal
+                  onClose={() => {
+                    setShowOnboarding(false);
+                    goTab("dashboard");
+                  }}
+                  goTab={goTab}
+                />
+              )}
             </div>
 
             <p className="text-xs font-semibold" style={{ color: T, fontFamily: IPS, opacity: 0.8 }}>Sareh Asih · GEMASTIK XVII · UX Design</p>

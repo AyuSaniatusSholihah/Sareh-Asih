@@ -1,9 +1,27 @@
-import { useState, useRef } from "react";
+import { useState, useRef, type MouseEvent } from "react";
 import { Users, Database, Upload, UserPlus, ChevronRight, AlertCircle, Trash2, CheckCircle } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS } from "../ui-kit";
+import { ABK_OPTIONS } from "../data";
 import { ModalShell } from "./modal-shell";
 
 export type SiswaImportData = { nama: string; abk: string; ttl: string; kelas?: string };
+
+const handleDownloadSample = (e: MouseEvent) => {
+  e.preventDefault();
+  const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(
+    "Nama Lengkap,Jenis Hambatan,TTL\n" +
+    "Rafi Pratama,Tunanetra,Bandung 12 Maret 2014\n" +
+    "Nisa Aulia,Tunarungu,Jakarta 05 Juli 2013\n" +
+    "Arga Saputra,Tunadaksa,Depok 20 Nov 2015\n" +
+    "Siti Nurhaliza,Tunanetra,Surakarta 18 Agu 2014\n"
+  );
+  const link = document.createElement("a");
+  link.setAttribute("href", csvContent);
+  link.setAttribute("download", "contoh_format_siswa_sareh_asih.csv");
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
 
 // ─── GURU: POP-UP 3 — Tambah Siswa (Database, Upload, Manual) ──
 export function TambahSiswaPromptModal({
@@ -36,31 +54,25 @@ export function TambahSiswaPromptModal({
   const kelasOptions = Object.keys(kelasAbkMap).length ? Object.keys(kelasAbkMap) : ["VII A", "VII B", "VIII A"];
   const [manualNama, setManualNama] = useState("");
   const [manualKelas, setManualKelas] = useState(kelasOptions[0] || "VII A");
-  const [manualAbk, setManualAbk] = useState(kelasAbkMap[kelasOptions[0]] || "Tunanetra");
+  const [manualAbkList, setManualAbkList] = useState<string[]>([kelasAbkMap[kelasOptions[0]] || "Tunanetra"]);
   const [manualEmoji, setManualEmoji] = useState("👦");
+
+  const toggleManualAbk = (opt: string) => {
+    setManualAbkList(prev => {
+      if (prev.includes(opt)) {
+        if (prev.length === 1) return prev;
+        return prev.filter(x => x !== opt);
+      } else {
+        return [...prev, opt];
+      }
+    });
+  };
 
   const resetManualForm = () => {
     setManualNama("");
     setManualKelas(kelasOptions[0] || "VII A");
-    setManualAbk(kelasAbkMap[kelasOptions[0]] || "Tunanetra");
+    setManualAbkList([kelasAbkMap[kelasOptions[0]] || "Tunanetra"]);
     setManualEmoji("👦");
-  };
-
-  const handleDownloadSample = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(
-      "Nama Lengkap,Jenis Hambatan,TTL\n" +
-      "Rafi Pratama,Tunanetra,Bandung 12 Maret 2014\n" +
-      "Nisa Aulia,Tunarungu,Jakarta 05 Juli 2013\n" +
-      "Arga Saputra,Tunadaksa,Depok 20 Nov 2015\n" +
-      "Siti Nurhaliza,Tunanetra,Surakarta 18 Agu 2014\n"
-    );
-    const link = document.createElement("a");
-    link.setAttribute("href", csvContent);
-    link.setAttribute("download", "contoh_format_siswa_sareh_asih.csv");
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
   };
 
   if (mode === "upload")
@@ -96,7 +108,7 @@ export function TambahSiswaPromptModal({
   if (mode === "manual") {
     const canSave = manualNama.trim() !== "";
     return (
-      <ModalShell step={3} total={3} title="Tambah Siswa Manual" desc="Masukkan data siswa satu per satu" onSkip={onDone} skipLabel="Lewati, Nanti Saja →" onClose={onClose || onDone}>
+      <ModalShell step={3} total={3} title="Tambah Siswa Manual" desc="Masukkan data siswa satu per satu" onClose={onClose || onDone}>
         <div className="space-y-3.5 mb-4">
           <div>
             <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
@@ -124,7 +136,7 @@ export function TambahSiswaPromptModal({
                 onChange={e => {
                   const k = e.target.value;
                   setManualKelas(k);
-                  if (kelasAbkMap[k]) setManualAbk(kelasAbkMap[k]);
+                  if (kelasAbkMap[k]) setManualAbkList([kelasAbkMap[k]]);
                 }}
                 style={{
                   width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 14,
@@ -163,19 +175,42 @@ export function TambahSiswaPromptModal({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
-              Jenis Kekhususan (ABK)
+            <label className="block text-xs font-bold text-gray-800 mb-2 flex items-center justify-between" style={{ fontFamily: PJS }}>
+              <span>Jenis Kekhususan (ABK)</span>
+              <span className="text-gray-400 font-normal text-[11px]">(bisa pilih lebih dari satu)</span>
             </label>
-            <input
-              value={manualAbk}
-              onChange={e => setManualAbk(e.target.value)}
-              placeholder="Contoh: Tunanetra"
-              style={{
-                width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 14,
-                padding: "11px 14px", fontSize: 13, color: TEXT, outline: "none",
-                background: CARD, fontFamily: IPS, boxSizing: "border-box"
-              }}
-            />
+            <div className="flex flex-wrap gap-2 pt-0.5">
+              {ABK_OPTIONS.map(o => {
+                const isSelected = manualAbkList.includes(o);
+                return (
+                  <button
+                    key={o}
+                    type="button"
+                    onClick={() => toggleManualAbk(o)}
+                    style={{
+                      fontFamily: PJS,
+                      fontSize: 12,
+                      fontWeight: isSelected ? 700 : 600,
+                      padding: "7px 14px",
+                      borderRadius: 20,
+                      border: `1.5px solid ${isSelected ? "#738B7B" : "#D5E0D5"}`,
+                      background: isSelected ? "#EAF2EC" : "#FFFFFF",
+                      color: isSelected ? "#1B2E24" : "#4B5563",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease-in-out",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 5
+                    }}
+                  >
+                    {isSelected && (
+                      <span style={{ fontSize: 11, fontWeight: 800, color: "#2E5537" }}>✓</span>
+                    )}
+                    {o}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -198,7 +233,7 @@ export function TambahSiswaPromptModal({
               if (canSave) {
                 onSaveManual({
                   name: manualNama.trim(),
-                  abk: manualAbk.trim() || "Tunanetra",
+                  abk: manualAbkList.join(", ") || "Tunanetra",
                   kelas: manualKelas,
                   age: 13,
                   emoji: manualEmoji,
@@ -219,17 +254,6 @@ export function TambahSiswaPromptModal({
             Simpan Siswa
           </button>
         </div>
-        <button
-          type="button"
-          onClick={onDone}
-          style={{
-            width: "100%", background: "transparent", border: "none",
-            color: MUTED, fontFamily: IPS, fontSize: 12, fontWeight: 600,
-            cursor: "pointer", marginTop: 10, textAlign: "center"
-          }}
-        >
-          Lewati langkah ini, upload nanti →
-        </button>
       </ModalShell>
     );
   }
@@ -316,17 +340,6 @@ export function TambahSiswaPromptModal({
             Upload Daftar Siswa
           </button>
 
-          <div className="text-[10.5px] text-gray-500 flex items-center justify-center gap-1.5">
-            <span className="text-gray-600">📥</span>
-            <span>Belum punya format?</span>
-            <button
-              type="button"
-              onClick={handleDownloadSample}
-              className="text-[#738B7B] font-semibold underline hover:text-[#5B6E61] bg-transparent border-none p-0 cursor-pointer text-[10.5px]"
-            >
-              Download contoh format
-            </button>
-          </div>
         </div>
 
         {/* Kartu 3: Tambah Siswa Manual (Oranye/Merah Bata) */}
