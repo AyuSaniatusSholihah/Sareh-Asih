@@ -54,13 +54,24 @@ export function TambahSiswaPromptModal({
   const kelasOptions = Object.keys(kelasAbkMap).length ? Object.keys(kelasAbkMap) : ["VII A", "VII B", "VIII A"];
   const [manualNama, setManualNama] = useState("");
   const [manualKelas, setManualKelas] = useState(kelasOptions[0] || "VII A");
-  const [manualAbk, setManualAbk] = useState(kelasAbkMap[kelasOptions[0]] || "Tunanetra");
+  const [manualAbkList, setManualAbkList] = useState<string[]>([kelasAbkMap[kelasOptions[0]] || "Tunanetra"]);
   const [manualEmoji, setManualEmoji] = useState("👦");
+
+  const toggleManualAbk = (opt: string) => {
+    setManualAbkList(prev => {
+      if (prev.includes(opt)) {
+        if (prev.length === 1) return prev;
+        return prev.filter(x => x !== opt);
+      } else {
+        return [...prev, opt];
+      }
+    });
+  };
 
   const resetManualForm = () => {
     setManualNama("");
     setManualKelas(kelasOptions[0] || "VII A");
-    setManualAbk(kelasAbkMap[kelasOptions[0]] || "Tunanetra");
+    setManualAbkList([kelasAbkMap[kelasOptions[0]] || "Tunanetra"]);
     setManualEmoji("👦");
   };
 
@@ -125,7 +136,7 @@ export function TambahSiswaPromptModal({
                 onChange={e => {
                   const k = e.target.value;
                   setManualKelas(k);
-                  if (kelasAbkMap[k]) setManualAbk(kelasAbkMap[k]);
+                  if (kelasAbkMap[k]) setManualAbkList([kelasAbkMap[k]]);
                 }}
                 style={{
                   width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 14,
@@ -164,21 +175,42 @@ export function TambahSiswaPromptModal({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
-              Jenis Kekhususan (ABK)
+            <label className="block text-xs font-bold text-gray-800 mb-2 flex items-center justify-between" style={{ fontFamily: PJS }}>
+              <span>Jenis Kekhususan (ABK)</span>
+              <span className="text-gray-400 font-normal text-[11px]">(bisa pilih lebih dari satu)</span>
             </label>
-            <select
-              value={manualAbk}
-              onChange={e => setManualAbk(e.target.value)}
-              style={{
-                width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 14,
-                padding: "11px 12px", fontSize: 13, color: TEXT, outline: "none",
-                background: CARD, fontFamily: IPS, boxSizing: "border-box", cursor: "pointer"
-              }}
-            >
-              {[...new Set(ABK_OPTIONS)].map(o => <option key={o} value={o}>{o}</option>)}
-              {!ABK_OPTIONS.includes(manualAbk) && manualAbk && <option value={manualAbk}>{manualAbk}</option>}
-            </select>
+            <div className="flex flex-wrap gap-2 pt-0.5">
+              {ABK_OPTIONS.map(o => {
+                const isSelected = manualAbkList.includes(o);
+                return (
+                  <button
+                    key={o}
+                    type="button"
+                    onClick={() => toggleManualAbk(o)}
+                    style={{
+                      fontFamily: PJS,
+                      fontSize: 12,
+                      fontWeight: isSelected ? 700 : 600,
+                      padding: "7px 14px",
+                      borderRadius: 20,
+                      border: `1.5px solid ${isSelected ? "#738B7B" : "#D5E0D5"}`,
+                      background: isSelected ? "#EAF2EC" : "#FFFFFF",
+                      color: isSelected ? "#1B2E24" : "#4B5563",
+                      cursor: "pointer",
+                      transition: "all 0.15s ease-in-out",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 5
+                    }}
+                  >
+                    {isSelected && (
+                      <span style={{ fontSize: 11, fontWeight: 800, color: "#2E5537" }}>✓</span>
+                    )}
+                    {o}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -201,7 +233,7 @@ export function TambahSiswaPromptModal({
               if (canSave) {
                 onSaveManual({
                   name: manualNama.trim(),
-                  abk: manualAbk.trim() || "Tunanetra",
+                  abk: manualAbkList.join(", ") || "Tunanetra",
                   kelas: manualKelas,
                   age: 13,
                   emoji: manualEmoji,
@@ -633,18 +665,6 @@ export function UploadSiswaModal({
               <div>Arga Saputra,Tunadaksa,Depok 20 Nov 2015</div>
             </div>
             <p style={{ fontSize: 11, color: MUTED, marginTop: 8, fontFamily: IPS }}>💡 Buka Excel → File → Save As → CSV (Comma delimited)</p>
-          </div>
-
-          <div style={{ fontSize: 11, color: MUTED, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 10 }}>
-            <span>📥</span>
-            <span>Belum punya format?</span>
-            <button
-              type="button"
-              onClick={handleDownloadSample}
-              className="text-[#738B7B] font-semibold underline hover:text-[#5B6E61] bg-transparent border-none p-0 cursor-pointer text-[11px]"
-            >
-              Download contoh format
-            </button>
           </div>
 
           <div style={{ display: "flex", gap: 8, marginTop: 14 }}>

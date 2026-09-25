@@ -65,8 +65,11 @@ export const useAddStudent = () => useContext(StudentsCtx).add;
 
 // ─── Pilihan form ────────────────────────────────────────────────────
 export const ABK_OPTIONS = [
-  "Tunanetra","Tunarungu","Tunadaksa",
-  "Tunanetra","Tunarungu","Tunanetra","Tunalaras",
+  "Tunanetra",
+  "Tunarungu/Wicara",
+  "Tunadaksa",
+  "Tunalaras",
+  "Inklusi/ADHD/lainnya",
 ];
 export const KELAS_OPTIONS = [
   "VII A","VII B","VIII A","VIII B","IX A","IX B","IX C",

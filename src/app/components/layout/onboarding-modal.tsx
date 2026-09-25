@@ -54,8 +54,16 @@ export function OnboardingModal({ onClose, goTab }: { onClose: () => void; goTab
   const isLast = step === OBS_STEPS.length - 1;
   const { ring } = s;
 
+  const handleFinish = () => {
+    goTab("dashboard");
+    onClose();
+  };
+
   const advance = () => {
-    if (isLast) { goTab("dashboard"); onClose(); return; }
+    if (isLast) {
+      handleFinish();
+      return;
+    }
     const next = OBS_STEPS[step + 1];
     if (next.targetScreen !== s.targetScreen) goTab(next.targetScreen);
     setStep(st => st + 1);
@@ -130,7 +138,7 @@ export function OnboardingModal({ onClose, goTab }: { onClose: () => void; goTab
 
           <div style={{ display: "flex", gap: 8 }}>
             {!isLast && (
-              <button onClick={onClose}
+              <button onClick={handleFinish}
                 style={{ flex: 1, border: `1.5px solid ${BDR}`, color: MUTED, fontFamily: IPS, minHeight: 40, borderRadius: 12, fontSize: 12, fontWeight: 600, background: CARD }}>
                 Lewati
               </button>

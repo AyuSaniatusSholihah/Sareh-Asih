@@ -836,17 +836,17 @@ export function AddStudentSheet({
               </button>
             </div>
 
-            <div className="text-[11px] text-gray-500 flex items-center justify-center gap-1.5">
-              <Download size={12} className="text-gray-600" />
-              <span>Belum punya format?</span>
-              <button
-                type="button"
-                onClick={handleDownloadSample}
-                className="text-[#738B7B] font-semibold underline hover:text-[#5B6E61] bg-transparent border-none p-0 cursor-pointer text-[11px]"
-              >
-                Download contoh format
-              </button>
-            </div>
+
+
+
+
+
+
+
+
+
+
+
 
             {/* Action Buttons */}
             <div className="mt-auto pt-2 flex flex-col gap-2">
@@ -956,49 +956,97 @@ export function AddStudentSheet({
                     <Field label="Umur" placeholder="13" value={form.umur} onChange={set("umur")} type="number" />
                   </div>
 
-                  {form.jenis_abk && (
-                    <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: IPS, marginBottom: 6 }}>
-                        Jenis ABK <span style={{ fontSize: 11, fontWeight: 400, color: MUTED }}>(default kelas, bisa diubah)</span>
-                      </p>
-                      <select
-                        value={form.jenis_abk}
-                        onChange={e => setForm(f => ({ ...f, jenis_abk: e.target.value }))}
-                        style={{ width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 12, padding: "9px 12px", fontSize: 13, color: TEXT, fontFamily: IPS, background: CARD, outline: "none", marginBottom: 8 }}
-                      >
-                        {ABK_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                        {!ABK_OPTIONS.includes(form.jenis_abk) && <option value={form.jenis_abk}>{form.jenis_abk}</option>}
-                      </select>
-
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
-                        {form.extra_abk.map(e => (
-                          <div key={e} style={{ display: "flex", alignItems: "center", gap: 5, background: BG, border: `1px solid ${BDR}`, borderRadius: 20, padding: "5px 10px 5px 12px" }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: TEXT, fontFamily: IPS }}>{e}</span>
-                            <button type="button" onClick={() => removeExtra(e)} style={{ display: "flex", alignItems: "center", background: "transparent", border: "none", cursor: "pointer", padding: 0 }}>
-                              <XCircle size={13} style={{ color: MUTED }} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-
-                      {extraOptions.length > 0 && (
-                        <div style={{ display: "flex", gap: 6 }}>
-                          <select
-                            value={extraInput}
-                            onChange={e => setExtraInput(e.target.value)}
-                            style={{ flex: 1, border: `1px solid ${BDR}`, borderRadius: 11, padding: "8px 10px", fontSize: 12, color: extraInput ? TEXT : MUTED, fontFamily: IPS, background: BG, outline: "none", minHeight: 38 }}
+                  <div>
+                    <label className="block text-xs font-bold mb-2 flex items-center justify-between" style={{ fontFamily: PJS, color: TEXT }}>
+                      <span>Jenis Kekhususan (ABK)</span>
+                      <span className="text-gray-400 font-normal text-[11px]">(bisa pilih lebih dari satu)</span>
+                    </label>
+                    <div className="flex flex-wrap gap-2 pt-0.5">
+                      {ABK_OPTIONS.map(o => {
+                        const selectedList = form.extra_abk.length ? form.extra_abk : (form.jenis_abk ? [form.jenis_abk] : ["Tunanetra"]);
+                        const isSelected = selectedList.includes(o);
+                        return (
+                          <button
+                            key={o}
+                            type="button"
+                            onClick={() => {
+                              const curr = form.extra_abk.length ? form.extra_abk : (form.jenis_abk ? [form.jenis_abk] : ["Tunanetra"]);
+                              let next: string[];
+                              if (curr.includes(o)) {
+                                if (curr.length === 1) return;
+                                next = curr.filter(x => x !== o);
+                              } else {
+                                next = [...curr, o];
+                              }
+                              setForm(f => ({ ...f, jenis_abk: next[0] || "", extra_abk: next }));
+                            }}
+                            style={{
+                              fontFamily: PJS,
+                              fontSize: 12,
+                              fontWeight: isSelected ? 700 : 600,
+                              padding: "7px 14px",
+                              borderRadius: 20,
+                              border: `1.5px solid ${isSelected ? T : BDR}`,
+                              background: isSelected ? SEC : CARD,
+                              color: isSelected ? DEEP : MUTED,
+                              cursor: "pointer",
+                              transition: "all 0.15s ease-in-out",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 5
+                            }}
                           >
-                            <option value="">+ Tambah jenis ABK lain (opsional)</option>
-                            {extraOptions.map(o => <option key={o} value={o}>{o}</option>)}
-                          </select>
-                          <button type="button" onClick={addExtra} disabled={!extraInput}
-                            style={{ width: 38, height: 38, borderRadius: 11, background: extraInput ? T : "#D1D5DB", border: "none", cursor: extraInput ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            <Plus size={15} style={{ color: "#fff" }} />
+                            {isSelected && (
+                              <span style={{ fontSize: 11, fontWeight: 800, color: DEEP }}>✓</span>
+                            )}
+                            {o}
                           </button>
-                        </div>
-                      )}
+                        );
+                      })}
                     </div>
-                  )}
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                   <div>
                     <label style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: IPS, display: "block", marginBottom: 8 }}>Jenis Kelamin</label>
@@ -1013,14 +1061,14 @@ export function AddStudentSheet({
                     </div>
                   </div>
 
-                  {!form.jenis_abk && (
-                    <div style={{ background: SEC, border: `1px solid rgba(91,122,104,0.2)` }} className="rounded-xl px-3 py-2.5 flex items-start gap-2">
-                      <Sparkles size={13} style={{ color: T, flexShrink: 0, marginTop: 1 }} />
-                      <p className="text-xs leading-relaxed" style={{ color: T, fontFamily: IPS }}>
-                        Pilih kelompok/kelas — jenis ABK akan terisi otomatis sesuai kelas yang sudah Anda buat.
-                      </p>
-                    </div>
-                  )}
+
+
+
+
+
+
+
+
                 </>
               )}
 
