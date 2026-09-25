@@ -75,7 +75,7 @@ export function TalentMapDetailScreen({
   if (!s) return null;
 
   const beritahu = (t: string) => { setToast(t); setTimeout(() => setToast(""), 2400); };
-  const jawaban = getMockJawaban(studentId);
+  const jawaban = getMockJawaban(s ? s.id : studentId);
   const firstName = s.name.split(" ")[0];
 
   const handleShareLaporan = async () => {
@@ -202,7 +202,7 @@ export function TalentMapDetailScreen({
       </div>
 
       {toast && (
-        <div style={{ position: "fixed", left: 20, right: 20, bottom: 20, zIndex: 75, background: "#2E3E35", borderRadius: 16, padding: "12px 16px", display: "flex", alignItems: "center", gap: 9, boxShaodw: "0 10px 28px rgba(0,0,0,0.28)" }}>
+        <div style={{ position: "fixed", left: 20, right: 20, bottom: 20, zIndex: 75, background: "#2E3E35", borderRadius: 16, padding: "12px 16px", display: "flex", alignItems: "center", gap: 9, boxShadow: "0 10px 28px rgba(0,0,0,0.28)" }}>
           <CheckCircle size={15} style={{ color: "#8BB098", flexShrink: 0 }} />
           <p className="text-xs font-semibold" style={{ color: "#fff", fontFamily: IPS }}>{toast}</p>
         </div>
