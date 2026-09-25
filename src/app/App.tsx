@@ -124,6 +124,7 @@ export default function App() {
   const enterParent = (linkedId: number | null) => {
     setRole("ortu"); setChildId(linkedId);
     setScreen("parent-dashboard"); setTab("parent-dashboard");
+    setShowOnboarding(true);
   };
 
   const handleLogout = () => {
@@ -472,9 +473,10 @@ export default function App() {
 
               {showOnboarding && (
                 <OnboardingModal
+                  role={role!}
                   onClose={() => {
                     setShowOnboarding(false);
-                    goTab("dashboard");
+                    goTab(role === "guru" ? "dashboard" : "parent-dashboard");
                   }}
                   goTab={goTab}
                 />
