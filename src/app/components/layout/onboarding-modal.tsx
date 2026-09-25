@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { T, A, CARD, TEXT, MUTED, BDR, PJS, IPS, DMM } from "../ui-kit";
-import { type Screen } from "../data";
+import { type Screen, type Role } from "../data";
 
 export type OStep = {
   targetScreen: Screen;
@@ -48,14 +48,42 @@ export const OBS_STEPS: OStep[] = [
   },
 ];
 
-export function OnboardingModal({ onClose, goTab }: { onClose: () => void; goTab: (s: Screen) => void }) {
+export const P_OBS_STEPS: OStep[] = [
+  {
+    targetScreen: "parent-dashboard", ring: { x: 16, y: 150, w: 358, h: 180, r: 20 }, cardPlacement: "bottom",
+    icon: "👤", title: "Beranda Orang Tua",
+    desc: "Pantau ringkasan perkembangan anak, agenda terdekat, dan rekomendasi pelatihan. Masukkan kode akses dari guru untuk terhubung dengan data anak.",
+    badge: "Beranda",
+  },
+  {
+    targetScreen: "parent-detail", ring: { x: 107, y: 788, w: 78, h: 56, r: 0 }, cardPlacement: "top",
+    icon: "📈", title: "Menu Anak",
+    desc: "Lihat detail peta bakat, profil fungsional, dan baca laporan perkembangan rutin yang dikirimkan oleh guru pendamping anak Anda.",
+    badge: "Nav Anak",
+  },
+  {
+    targetScreen: "parent-calendar", ring: { x: 204, y: 788, w: 78, h: 56, r: 0 }, cardPlacement: "top",
+    icon: "📅", title: "Menu Kalender",
+    desc: "Temukan jadwal kegiatan inklusif seperti lomba, festival, atau acara komunitas yang bisa diikuti oleh anak berkebutuhan khusus.",
+    badge: "Nav Kalender",
+  },
+  {
+    targetScreen: "parent-training", ring: { x: 302, y: 788, w: 78, h: 56, r: 0 }, cardPlacement: "top",
+    icon: "💡", title: "Menu Pelatihan",
+    desc: "Cari referensi tempat pelatihan, terapi, dan layanan profesional terdekat yang sesuai dengan minat serta kebutuhan spesifik anak Anda.",
+    badge: "Nav Pelatihan",
+  },
+];
+
+export function OnboardingModal({ role, onClose, goTab }: { role: Role; onClose: () => void; goTab: (s: Screen) => void }) {
   const [step, setStep] = useState(0);
-  const s = OBS_STEPS[step];
-  const isLast = step === OBS_STEPS.length - 1;
+  const steps = role === "guru" ? OBS_STEPS : P_OBS_STEPS;
+  const s = steps[step];
+  const isLast = step === steps.length - 1;
   const { ring } = s;
 
   const handleFinish = () => {
-    goTab("dashboard");
+    goTab(role === "guru" ? "dashboard" : "parent-dashboard");
     onClose();
   };
 
@@ -64,7 +92,7 @@ export function OnboardingModal({ onClose, goTab }: { onClose: () => void; goTab
       handleFinish();
       return;
     }
-    const next = OBS_STEPS[step + 1];
+    const next = steps[step + 1];
     if (next.targetScreen !== s.targetScreen) goTab(next.targetScreen);
     setStep(st => st + 1);
   };
@@ -121,7 +149,7 @@ export function OnboardingModal({ onClose, goTab }: { onClose: () => void; goTab
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ fontSize: 18 }}>{s.icon}</span>
               <span style={{ fontSize: 10, fontWeight: 700, color: A, fontFamily: DMM, letterSpacing: "0.08em" }}>
-                {step + 1} / {OBS_STEPS.length}
+                {step + 1} / {steps.length}
               </span>
             </div>
             <span style={{ fontSize: 10, fontWeight: 600, color: MUTED, fontFamily: IPS, background: "#F3F4F6", padding: "2px 8px", borderRadius: 6 }}>
@@ -130,7 +158,7 @@ export function OnboardingModal({ onClose, goTab }: { onClose: () => void; goTab
           </div>
 
           <div style={{ height: 3, background: "#EDE9E3", borderRadius: 2, marginBottom: 10 }}>
-            <div style={{ height: "100%", borderRadius: 2, background: T, width: `${(step + 1) / OBS_STEPS.length * 100}%`, transition: "width 0.35s" }} />
+            <div style={{ height: "100%", borderRadius: 2, background: T, width: `${(step + 1) / steps.length * 100}%`, transition: "width 0.35s" }} />
           </div>
 
           <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 14, color: TEXT, marginBottom: 4 }}>{s.title}</p>
