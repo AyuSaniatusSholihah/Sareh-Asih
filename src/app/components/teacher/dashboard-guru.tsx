@@ -12,7 +12,8 @@ import {
 import { type GuruProfile } from "../auth";
 import { KodeAksesCard } from "../kode-manager";
 import { TalentConstellation, type ConstellationStudent } from "./talent-constellation";
-import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
+import { kodeTigaHuruf } from "../shared-charts";
+import { useRiwayatAsesmen, type RiasecKategori } from "../data";
 
 export function DashboardGuru({
   go,
@@ -32,19 +33,25 @@ export function DashboardGuru({
   const pendingObs = students.filter(s => !s.hasObs);
   const firstName = guru.nama.split(" ")[0];
 
+  const { riwayat } = useRiwayatAsesmen();
   // ── Data untuk TalentConstellation ──
   const constellationStudents: ConstellationStudent[] = useMemo(
     () =>
       students
         .filter(s => s.hasObs)
-        .map(s => ({
-          id: String(s.id),
-          name: s.name,
-          domain: kodeTigaHuruf(getMockJawaban(s.id)),
-          progress: 80, // Mock progress for visual demo
-          needsAttention: !s.hasObs,
-        })),
-    [students],
+        .map(s => {
+          const r = riwayat[s.id] || [];
+          const latest = r[r.length - 1];
+          const skorRiasec = latest?.skorRiasec || ({} as Record<RiasecKategori, number | null>);
+          return {
+            id: String(s.id),
+            name: s.name,
+            domain: kodeTigaHuruf(skorRiasec),
+            progress: 80, // Mock progress for visual demo
+            needsAttention: !s.hasObs,
+          };
+        }),
+    [students, riwayat],
   );
 
   // ── Aktivitas terbaru (feed guru: asesmen + laporan terkirim) ──
@@ -57,14 +64,19 @@ export function DashboardGuru({
       ket: `${s.name.split(" ")[0]} · Belum dipetakan`,
       waktu: "Perlu aksi", tint: A,
     })),
-    ...students.filter(s => s.hasObs).slice(0, 2).map((s, i) => ({
-      id: `o${s.id}`,
-      I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: "#059669" }} />,
-      bg: "#ECFDF5",
-      judul: "Asesmen selesai",
-      ket: `${s.name.split(" ")[0]} · ${s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)) : ""}`,
-      waktu: ["Baru saja", "Hari ini"][i] ?? "Hari ini", tint: "#059669",
-    })),
+    ...students.filter(s => s.hasObs).slice(0, 2).map((s, i) => {
+      const r = riwayat[s.id] || [];
+      const latest = r[r.length - 1];
+      const skorRiasec = latest?.skorRiasec || ({} as Record<RiasecKategori, number | null>);
+      return {
+        id: `o${s.id}`,
+        I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: "#059669" }} />,
+        bg: "#ECFDF5",
+        judul: "Asesmen selesai",
+        ket: `${s.name.split(" ")[0]} · ${s.hasObs ? kodeTigaHuruf(skorRiasec) : ""}`,
+        waktu: ["Baru saja", "Hari ini"][i] ?? "Hari ini", tint: "#059669",
+      };
+    }),
     ...laporan.slice().reverse().slice(0, 3).map(l => {
       const s = students.find(x => x.id === l.studentId);
       return {

@@ -1,5 +1,5 @@
-import { GAYA_META, studentCompDetail, studentTalentDetail, type Student } from "./data";
-import { getMockJawaban, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
+import { GAYA_META, studentCompDetail, studentTalentDetail, type Student, type AsesmenPeriode, type FungsionalKategori, type RiasecKategori } from "./data";
+import { kodeTigaHuruf, skorKetekunan } from "./shared-charts";
 
 /* ── Util unduh berkas ────────────────────────────────────────────── */
 function unduh(nama:string, isi:string, mime:string) {
@@ -16,7 +16,7 @@ const tanggal = () => new Date().toLocaleDateString("id-ID",{day:"2-digit",month
 const stempel = () => new Date().toISOString().slice(0,10);
 
 /* ── 1. Ekspor spreadsheet (CSV, siap dibuka Excel / Google Sheets) ── */
-const KOLOM: {h:string; get:(s:Student)=>string}[] = [
+const getKolom = (riwayat: Record<number, AsesmenPeriode[]>): {h:string; get:(s:Student)=>string}[] => [
   {h:"Nama Siswa",       get:s=>s.name},
   {h:"Kelas",            get:s=>s.kelas},
   {h:"Umur",             get:s=>s.age?String(s.age):""},
@@ -24,8 +24,8 @@ const KOLOM: {h:string; get:(s:Student)=>string}[] = [
   {h:"Guru Pendamping",  get:s=>s.teacher},
   {h:"Status Asesmen", get:s=>s.hasObs?"Sudah didampingi":"Belum didampingi"},
   {h:"Cara Belajar",     get:s=>s.caraBelajar||""},
-  {h:"Potensi (RIASEC)", get:s=>s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)) : ""},
-  {h:"Kemandirian",    get:s=>s.hasObs ? skorKetekunan(getMockJawaban(s.id)) : ""},
+  {h:"Potensi (RIASEC)", get:s=>s.hasObs ? kodeTigaHuruf(riwayat[s.id]?.slice(-1)[0]?.skorRiasec || ({} as Record<RiasecKategori, number | null>)) : ""},
+  {h:"Kemandirian",    get:s=>s.hasObs ? skorKetekunan(riwayat[s.id]?.slice(-1)[0]?.skorFungsional || ({} as Record<FungsionalKategori, number | null>)) : ""},
   {h:"Rekomendasi Lomba",get:s=>s.comps.join(", ")},
   {h:"Tingkat Dukungan", get:s=>s.tingkatDukungan||""},
   {h:"Komunikasi",       get:s=>s.komunikasi||""},
@@ -42,21 +42,22 @@ function csvSel(v:string) {
   return /[;"\n]/.test(bersih) ? `"${bersih}"` : bersih;
 }
 
-export function exportSpreadsheet(list:Student[], namaSekolah:string) {
+export function exportSpreadsheet(list:Student[], namaSekolah:string, riwayat: Record<number, AsesmenPeriode[]>) {
   const judul = [
     `Data Siswa ABK - ${namaSekolah}`,
     `Diekspor ${tanggal()} - ${list.length} siswa`,
     "",
   ].join("\n");
-  const header = KOLOM.map(k=>csvSel(k.h)).join(";");
-  const baris  = list.map(s=>KOLOM.map(k=>csvSel(k.get(s))).join(";"));
+  const kolom = getKolom(riwayat);
+  const header = kolom.map(k=>csvSel(k.h)).join(";");
+  const baris  = list.map(s=>kolom.map(k=>csvSel(k.get(s))).join(";"));
   unduh(`data-siswa-${stempel()}.csv`, judul + [header,...baris].join("\n"), "text/csv");
 }
 
 /* ── 2. Ekspor laporan dokumen pemetaan (.doc, dibuka Word/Docs) ───── */
 const esc = (v:string) => v.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
-function bagianSiswa(s:Student, index:number, total:number) {
+function bagianSiswa(s:Student, index:number, total:number, riwayat: Record<number, AsesmenPeriode[]>) {
   const gaya = s.caraBelajar ? GAYA_META[s.caraBelajar] : undefined;
   const talent = studentTalentDetail[s.id];
   const lomba = s.comps
@@ -65,6 +66,11 @@ function bagianSiswa(s:Student, index:number, total:number) {
 
   const baris = (l:string,v:string) =>
     `<tr><td class="k">${esc(l)}</td><td class="v">${esc(v||"—")}</td></tr>`;
+    
+  const r = riwayat[s.id] || [];
+  const latest = r[r.length - 1];
+  const skorRiasec = latest?.skorRiasec || ({} as Record<RiasecKategori, number | null>);
+  const skorFungsional = latest?.skorFungsional || ({} as Record<FungsionalKategori, number | null>);
 
   return `
   <div class="siswa"${index<total-1?' style="page-break-after:always"':''}>
@@ -86,8 +92,8 @@ function bagianSiswa(s:Student, index:number, total:number) {
     ${!s.hasObs
       ? `<p class="kosong">Belum ada data asesmen. Pemetaan bakat akan tersedia setelah asesmen pertama diselesaikan.</p>`
       : `<table>
-          ${baris("Potensi (RIASEC)", s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)) : "")}
-          ${baris("Kemandirian", s.hasObs ? skorKetekunan(getMockJawaban(s.id)) : "")}
+          ${baris("Potensi (RIASEC)", s.hasObs ? kodeTigaHuruf(skorRiasec) : "")}
+          ${baris("Kemandirian", s.hasObs ? skorKetekunan(skorFungsional) : "")}
           ${baris("Gaya Belajar Dominan", s.caraBelajar||"")}
         </table>
         ${talent ? `<table class="rinci">
@@ -123,7 +129,7 @@ function bagianSiswa(s:Student, index:number, total:number) {
   </div>`;
 }
 
-export function buildLaporanHTML(list:Student[], namaSekolah:string) {
+export function buildLaporanHTML(list:Student[], namaSekolah:string, riwayat: Record<number, AsesmenPeriode[]>) {
   const satu = list.length === 1;
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Laporan Pemetaan Bakat</title>
@@ -158,13 +164,13 @@ export function buildLaporanHTML(list:Student[], namaSekolah:string) {
     <p class="meta">${esc(namaSekolah)} &middot; Dicetak ${tanggal()} &middot; ${list.length} siswa</p>
   </div>
   ${satu ? "" : `<p class="meta">Daftar siswa: ${list.map(s=>esc(s.name)).join(", ")}</p>`}
-  ${list.map((s,i)=>bagianSiswa(s,i,list.length)).join("")}
+  ${list.map((s,i)=>bagianSiswa(s,i,list.length, riwayat)).join("")}
   <p class="catatan">Laporan ini dihasilkan Sareh Asih dari data asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen tenaga ahli.</p>
 </body></html>`;
 }
 
-export function printReportPDF(list: Student[], namaSekolah: string) {
-  const html = buildLaporanHTML(list, namaSekolah);
+export function printReportPDF(list: Student[], namaSekolah: string, riwayat: Record<number, AsesmenPeriode[]>) {
+  const html = buildLaporanHTML(list, namaSekolah, riwayat);
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
   iframe.style.right = "0";
@@ -199,9 +205,9 @@ export function printReportPDF(list: Student[], namaSekolah: string) {
   }
 }
 
-export function exportLaporanPemetaan(list:Student[], namaSekolah:string) {
+export function exportLaporanPemetaan(list:Student[], namaSekolah:string, riwayat: Record<number, AsesmenPeriode[]>) {
   const satu = list.length === 1;
-  const html = buildLaporanHTML(list, namaSekolah);
+  const html = buildLaporanHTML(list, namaSekolah, riwayat);
   const nama = satu
     ? `laporan-pemetaan-${list[0].name.toLowerCase().replace(/\s+/g,"-")}-${stempel()}.doc`
     : `laporan-pemetaan-${list.length}-siswa-${stempel()}.doc`;

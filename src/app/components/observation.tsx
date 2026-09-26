@@ -8,7 +8,7 @@ import {
 import {
   FUNGSIONAL_KATEGORI, FUNGSIONAL_META, SKALA_FUNGSIONAL, PROFIL_FUNGSIONAL,
   RIASEC_KATEGORI, RIASEC_META, SKALA_RIASEC, PROFIL_KECENDERUNGAN,
-  useStudents, type FungsionalKategori, type RiasecKategori,
+  useStudents, type FungsionalKategori, type RiasecKategori, useRiwayatAsesmen
 } from "./data";
 import { VoiceTextarea } from "./voice-input";
 
@@ -22,17 +22,31 @@ export function ObservationScreen({
 }: {
   onBack: () => void;
   onDone: (id: number) => void;
-  onSave?: (id: number) => void;
+  onSave?: (id: number, hasil: { 
+    skorFungsional: Record<FungsionalKategori, number | null>; 
+    skorRiasec: Record<RiasecKategori, number | null>; 
+    catatan: string; 
+    tanggal: string; 
+    rawFungsional?: Record<number, number>;
+    rawRiasec?: Record<number, number>;
+    isDraft?: boolean;
+    lengkap?: boolean;
+  }) => void;
   studentId: number;
 }) {
   const students = useStudents();
   const student = students.find(s => s.id === studentId) ?? students[0];
+  const { riwayat } = useRiwayatAsesmen();
+  const studentRiwayat = riwayat[studentId] || [];
+  const latestDraft = studentRiwayat.length > 0 && studentRiwayat[studentRiwayat.length - 1].isDraft ? studentRiwayat[studentRiwayat.length - 1] : null;
 
   const [tahap, setTahap] = useState<Tahap>("fungsional");
-  const [skorFungsional, setSkorFungsional] = useState<Record<number, number>>({});
-  const [skorRiasec, setSkorRiasec] = useState<Record<number, number>>({});
-  const [catatan, setCatatan] = useState("");
+  const [skorFungsional, setSkorFungsional] = useState<Record<number, number>>(latestDraft?.rawFungsional || {});
+  const [skorRiasec, setSkorRiasec] = useState<Record<number, number>>(latestDraft?.rawRiasec || {});
+  const [catatan, setCatatan] = useState(latestDraft?.catatan || "");
   const [showResultModal, setShowResultModal] = useState(false);
+  const [showUnansweredModal, setShowUnansweredModal] = useState(false);
+  const [targetTahap, setTargetTahap] = useState<Tahap | "simpan" | null>(null);
   const [isSaved, setIsSaved] = useState(false);
 
   if (!student) {
@@ -58,24 +72,56 @@ export function ObservationScreen({
   const riasecPct = Math.round((terisiRiasec / totalRiasec) * 100);
 
   const rataFungsional = (k: FungsionalKategori) => {
-    const list = PROFIL_FUNGSIONAL.filter(a => a.kategori === k).filter(a => skorFungsional[a.id] !== undefined);
+    const list = PROFIL_FUNGSIONAL.filter(a => a.kategori === k)
+      .map(a => skorFungsional[a.id])
+      .filter(v => v !== undefined && v !== -1);
     if (!list.length) return null;
-    return Math.round(list.reduce((s, a) => s + skorFungsional[a.id], 0) / list.length * 100 / 3);
+    return Math.round(list.reduce((s, v) => s + v, 0) / list.length * 100 / 3);
   };
 
   const rataRiasec = (k: RiasecKategori) => {
-    const list = PROFIL_KECENDERUNGAN.filter(a => a.kategori === k).filter(a => skorRiasec[a.id] !== undefined);
+    const list = PROFIL_KECENDERUNGAN.filter(a => a.kategori === k)
+      .map(a => skorRiasec[a.id])
+      .filter(v => v !== undefined && v !== -1);
     if (!list.length) return null;
-    return Math.round(list.reduce((s, a) => s + skorRiasec[a.id], 0) / list.length * 100 / 3);
+    return Math.round(list.reduce((s, v) => s + v, 0) / list.length * 100 / 3);
   };
 
-  const bisaSimpan = terisiFungsional > 0 || terisiRiasec > 0;
+  const sisaSoal = (totalFungsional - terisiFungsional) + (totalRiasec - terisiRiasec);
+  const bisaSimpan = sisaSoal === 0;
 
   const handleSimpan = () => {
     if (!bisaSimpan) return;
+    executeSimpan();
+  };
+
+  const executeSimpan = () => {
+    setShowUnansweredModal(false);
     setIsSaved(true);
     if (onSave) {
-      onSave(student.id);
+      const finalFungsional = {} as Record<FungsionalKategori, number | null>;
+      FUNGSIONAL_KATEGORI.forEach(k => {
+        finalFungsional[k] = rataFungsional(k);
+      });
+
+      const finalRiasec = {} as Record<RiasecKategori, number | null>;
+      RIASEC_KATEGORI.forEach(k => {
+        finalRiasec[k] = rataRiasec(k);
+      });
+
+      const d = new Date();
+      const formatTanggal = `${d.getDate()} ${["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"][d.getMonth()]} ${d.getFullYear()}`;
+
+      onSave(student.id, {
+        skorFungsional: finalFungsional,
+        skorRiasec: finalRiasec,
+        catatan,
+        tanggal: formatTanggal,
+        rawFungsional: skorFungsional,
+        rawRiasec: skorRiasec,
+        isDraft: terisiFungsional < totalFungsional || terisiRiasec < totalRiasec,
+        lengkap: terisiFungsional === totalFungsional && terisiRiasec === totalRiasec
+      });
     }
     setShowResultModal(true);
   };
@@ -90,12 +136,59 @@ export function ObservationScreen({
     setTahap("catatan");
   };
 
+  const checkCompletion = (nextTarget: Tahap) => {
+    if (tahap === "fungsional" && nextTarget !== "fungsional" && terisiFungsional < totalFungsional) {
+      setTargetTahap(nextTarget);
+      setShowUnansweredModal(true);
+      return;
+    }
+    
+    if (tahap === "kecenderungan" && nextTarget !== "kecenderungan" && terisiRiasec < totalRiasec) {
+      setTargetTahap(nextTarget);
+      setShowUnansweredModal(true);
+      return;
+    }
+
+    setTahap(nextTarget);
+  };
+
   const TAHAP_TABS: { k: Tahap; l: string; n: string }[] = [
     { k: "fungsional", l: "Fungsional", n: `${terisiFungsional}/${totalFungsional}` },
     { k: "kecenderungan", l: "Aktivitas", n: `${terisiRiasec}/${totalRiasec}` },
     { k: "catatan", l: "Catatan", n: catatan.trim() ? "✓" : "—" },
   ];
   const curIdx = TAHAP_TABS.findIndex(t => t.k === tahap);
+
+  const handleSilentSaveAndExit = () => {
+    if (terisiFungsional > 0 || terisiRiasec > 0 || catatan.trim() !== "") {
+      if (onSave) {
+        const finalFungsional = {} as Record<FungsionalKategori, number | null>;
+        FUNGSIONAL_KATEGORI.forEach(k => {
+          finalFungsional[k] = rataFungsional(k);
+        });
+
+        const finalRiasec = {} as Record<RiasecKategori, number | null>;
+        RIASEC_KATEGORI.forEach(k => {
+          finalRiasec[k] = rataRiasec(k);
+        });
+
+        const d = new Date();
+        const formatTanggal = `${d.getDate()} ${["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"][d.getMonth()]} ${d.getFullYear()}`;
+
+        onSave(student.id, {
+          skorFungsional: finalFungsional,
+          skorRiasec: finalRiasec,
+          catatan,
+          tanggal: formatTanggal,
+          rawFungsional: skorFungsional,
+          rawRiasec: skorRiasec,
+          isDraft: terisiFungsional < totalFungsional || terisiRiasec < totalRiasec,
+          lengkap: terisiFungsional === totalFungsional && terisiRiasec === totalRiasec
+        });
+      }
+    }
+    onBack();
+  };
 
   return (
     <div
@@ -119,7 +212,7 @@ export function ObservationScreen({
           height: "100%",
         }}
       >
-        <TBar title="Asesmen Siswa" sub={student.name} onBack={onBack} />
+        <TBar title="Asesmen Siswa" sub={student.name} onBack={handleSilentSaveAndExit} />
 
         {/* Identitas + stepper + progress (terkunci saat scroll) */}
         <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#F7F5F0", boxShadow: "0 4px 12px rgba(91,122,104,0.08)" }}>
@@ -139,7 +232,7 @@ export function ObservationScreen({
                 const active = tahap === t.k;
                 const stageNum = i + 1;
                 return (
-                  <button key={t.k} onClick={() => setTahap(t.k)}
+                  <button key={t.k} onClick={() => checkCompletion(t.k)}
                     style={{
                       flex: 1, minHeight: 44, position: "relative",
                       color: active ? DEEP : MUTED,
@@ -287,7 +380,7 @@ export function ObservationScreen({
             <div className="flex gap-2.5 mt-2">
               <button
                 type="button"
-                onClick={onBack}
+                onClick={handleSilentSaveAndExit}
                 style={{
                   flex: 1,
                   border: `1.5px solid ${BDR}`,
@@ -314,7 +407,7 @@ export function ObservationScreen({
                   full
                   label="Lanjut ke Aktivitas"
                   icon={<Gauge size={17} />}
-                  onClick={() => setTahap("kecenderungan")}
+                  onClick={() => checkCompletion("kecenderungan")}
                   size="md"
                 />
               </div>
@@ -403,7 +496,7 @@ export function ObservationScreen({
             <div className="flex gap-2.5 mt-2">
               <button
                 type="button"
-                onClick={() => setTahap("fungsional")}
+                onClick={() => checkCompletion("fungsional")}
                 style={{
                   flex: 1,
                   border: `1.5px solid ${BDR}`,
@@ -430,7 +523,7 @@ export function ObservationScreen({
                   full
                   label="Lanjut ke Catatan"
                   icon={<ClipboardList size={17} />}
-                  onClick={() => setTahap("catatan")}
+                  onClick={() => checkCompletion("catatan")}
                   size="md"
                 />
               </div>
@@ -509,13 +602,13 @@ export function ObservationScreen({
 
             <div style={{ background: CARD, border: `1px solid ${BDR}` }} className="rounded-2xl px-4 py-3 text-center">
               <p className="text-xs mb-2.5" style={{ color: MUTED }}>
-                {!bisaSimpan ? "Isi minimal satu indikator atau butir asesmen sebelum menyimpan."
+                {!bisaSimpan ? `Lengkapi ${sisaSoal} soal lagi untuk menyimpan`
                   : "Data siap diproses AI untuk pemetaan bakat dan rekomendasi belajar."}
               </p>
               <div className="flex gap-2.5">
                 <button
                   type="button"
-                  onClick={() => setTahap("kecenderungan")}
+                  onClick={() => checkCompletion("kecenderungan")}
                   style={{
                     flex: 1,
                     border: `1.5px solid ${BDR}`,
@@ -552,6 +645,118 @@ export function ObservationScreen({
           </div>
         )}
       </div>
+
+      {/* ── POP UP MODAL ASESMEN BELUM LENGKAP ── */}
+      {showUnansweredModal && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            background: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
+            touchAction: "none",
+            overscrollBehavior: "contain",
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 360,
+              background: "#FFFFFF",
+              borderRadius: 24,
+              padding: "24px 20px",
+              boxShadow: "0 20px 40px rgba(15, 23, 42, 0.20)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                width: 58,
+                height: 58,
+                borderRadius: 20,
+                background: "#FEF2F2",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 14,
+                boxShadow: "0 4px 14px rgba(220, 38, 38, 0.12)",
+              }}
+            >
+              <Info size={32} style={{ color: "#DC2626" }} />
+            </div>
+            
+            <h3 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: "0 0 8px", lineHeight: 1.3 }}>
+              Asesmen Belum Lengkap
+            </h3>
+            <p style={{ fontFamily: IPS, fontSize: 13, color: "#5A6E63", margin: "0 0 20px", lineHeight: 1.5 }}>
+              Ada <strong>
+                {tahap === "fungsional" ? (totalFungsional - terisiFungsional) : (totalRiasec - terisiRiasec)}
+              </strong> soal {tahap === "fungsional" ? "Profil Fungsional" : "Aktivitas"} yang belum Anda jawab. Harap lengkapi seluruh asesmen sebelum lanjut ke tahap berikutnya, atau Anda dapat pindah tahap sekarang dan melanjutkan sisanya nanti.
+            </p>
+
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => setShowUnansweredModal(false)}
+                style={{
+                  width: "100%",
+                  minHeight: 46,
+                  background: DEEP,
+                  color: "#FFFFFF",
+                  fontFamily: PJS,
+                  fontWeight: 800,
+                  fontSize: 14,
+                  borderRadius: 14,
+                  border: "none",
+                  cursor: "pointer",
+                  boxShadow: `0 4px 14px ${DEEP}40`,
+                }}
+                className="hover:brightness-105 active:scale-95 transition-all"
+              >
+                Lengkapi Asesmen
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowUnansweredModal(false);
+                  executeSimpan();
+                }}
+                style={{
+                  width: "100%",
+                  minHeight: 44,
+                  background: "transparent",
+                  color: MUTED,
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  fontSize: 13.5,
+                  borderRadius: 14,
+                  border: `1.5px solid ${BDR}`,
+                  cursor: "pointer",
+                }}
+                className="active:scale-95 transition-all hover:bg-slate-50"
+              >
+                Keluar tapi Tetap Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── POP UP MODAL SETELAH SIMPAN (Lihat Hasil Asesmen / Kembali ke Catatan) — Terkunci Penuh di Frame HP ── */}
       {showResultModal && (
@@ -645,7 +850,7 @@ export function ObservationScreen({
                 lineHeight: 1.3,
               }}
             >
-              Asesmen Tersimpan!
+              {terisiFungsional === totalFungsional && terisiRiasec === totalRiasec ? "Asesmen Tersimpan!" : "Draft Tersimpan"}
             </h3>
             <p
               style={{
@@ -656,63 +861,97 @@ export function ObservationScreen({
                 lineHeight: 1.5,
               }}
             >
-              Data asesmen untuk <strong>{student.name}</strong> telah berhasil disimpan. Silakan pilih langkah selanjutnya:
+              {terisiFungsional === totalFungsional && terisiRiasec === totalRiasec ? (
+                <>Data asesmen untuk <strong>{student.name}</strong> telah berhasil disimpan. Silakan pilih langkah selanjutnya:</>
+              ) : (
+                <>Jawaban asesmen untuk <strong>{student.name}</strong> telah disimpan sebagai draft. Silakan lanjutkan nanti.</>
+              )}
             </p>
 
             {/* Actions */}
             <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
-              {/* Button 1: Lihat Hasil Asesmen */}
-              <button
-                type="button"
-                onClick={handleLihatHasil}
-                style={{
-                  width: "100%",
-                  minHeight: 46,
-                  background: "#2D543E",
-                  color: "#FFFFFF",
-                  fontFamily: PJS,
-                  fontWeight: 800,
-                  fontSize: 14,
-                  borderRadius: 14,
-                  border: "none",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 14px rgba(45, 84, 62, 0.35)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                }}
-                className="hover:brightness-105 active:scale-95 transition-all"
-              >
-                <Sparkles size={16} />
-                <span>Lihat Hasil Asesmen</span>
-              </button>
+              {terisiFungsional === totalFungsional && terisiRiasec === totalRiasec ? (
+                <>
+                  {/* Button 1: Lihat Hasil Asesmen */}
+                  <button
+                    type="button"
+                    onClick={handleLihatHasil}
+                    style={{
+                      width: "100%",
+                      minHeight: 46,
+                      background: "#2D543E",
+                      color: "#FFFFFF",
+                      fontFamily: PJS,
+                      fontWeight: 800,
+                      fontSize: 14,
+                      borderRadius: 14,
+                      border: "none",
+                      cursor: "pointer",
+                      boxShadow: "0 4px 14px rgba(45, 84, 62, 0.35)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                    }}
+                    className="hover:brightness-105 active:scale-95 transition-all"
+                  >
+                    <Sparkles size={16} />
+                    <span>Lihat Hasil Asesmen</span>
+                  </button>
 
-              {/* Button 2: Kembali (Redirects to Catatan) */}
-              <button
-                type="button"
-                onClick={handleKembali}
-                style={{
-                  width: "100%",
-                  minHeight: 44,
-                  background: "#F8FAFC",
-                  color: "#475569",
-                  fontFamily: PJS,
-                  fontWeight: 700,
-                  fontSize: 13.5,
-                  borderRadius: 14,
-                  border: "1.5px solid #E2E8F0",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 6,
-                }}
-                className="hover:bg-slate-100 active:scale-95 transition-all"
-              >
-                <ArrowLeft size={15} />
-                <span>Kembali</span>
-              </button>
+                  {/* Button 2: Kembali (Redirects to Catatan) */}
+                  <button
+                    type="button"
+                    onClick={handleKembali}
+                    style={{
+                      width: "100%",
+                      minHeight: 44,
+                      background: "#F8FAFC",
+                      color: "#475569",
+                      fontFamily: PJS,
+                      fontWeight: 700,
+                      fontSize: 13.5,
+                      borderRadius: 14,
+                      border: "1.5px solid #E2E8F0",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                    }}
+                    className="hover:bg-slate-100 active:scale-95 transition-all"
+                  >
+                    <ArrowLeft size={15} />
+                    <span>Kembali</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  style={{
+                    width: "100%",
+                    minHeight: 46,
+                    background: "#2D543E",
+                    color: "#FFFFFF",
+                    fontFamily: PJS,
+                    fontWeight: 800,
+                    fontSize: 14,
+                    borderRadius: 14,
+                    border: "none",
+                    cursor: "pointer",
+                    boxShadow: "0 4px 14px rgba(45, 84, 62, 0.35)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                  }}
+                  className="hover:brightness-105 active:scale-95 transition-all"
+                >
+                  <ArrowLeft size={16} />
+                  <span>Kembali ke Beranda</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

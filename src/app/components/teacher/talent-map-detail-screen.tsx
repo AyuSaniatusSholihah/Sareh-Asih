@@ -5,8 +5,8 @@ import {
 import {
   A, CARD, TEXT, MUTED, PJS, IPS, DMM, TBar, BDR
 } from "../ui-kit";
-import { useStudents, type Screen } from "../data";
-import { ProfilFungsionalRadar, ProfilKecenderunganBar, getMockJawaban } from "../shared-charts";
+import { useStudents, type Screen, useRiwayatAsesmen, type FungsionalKategori, type RiasecKategori } from "../data";
+import { ProfilFungsionalRadar, ProfilKecenderunganBar } from "../shared-charts";
 
 export function SuggestedCompetitions({ studentId, go }: { studentId: number; go?: (s: Screen) => void }) {
   const comps = studentId === 2 ? [
@@ -61,25 +61,58 @@ export function TalentMapDetailScreen({
   onBack,
   studentId,
   go,
+  onStartObs
 }: {
   onBack: () => void;
   studentId: number;
   go: (s: Screen) => void;
+  onStartObs?: (id: number) => void;
 }) {
   const students = useStudents();
+  const { riwayat } = useRiwayatAsesmen();
   const s = students.find(x => x.id === Number(studentId)) || students.find(x => x.hasObs) || students[0];
   if (!s) return null;
 
-  const jawaban = getMockJawaban(studentId);
+  const r = riwayat[s.id] || [];
+  const latest = r[r.length - 1];
+
+  if (!latest || !latest.lengkap) {
+    return (
+      <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, backgroundColor: "#F7F5F0" }}>
+        <TBar title="AI Talent Mapping" sub={`${s.name} · ${s.abk}`} onBack={onBack} />
+        <div className="p-8 text-center flex flex-col items-center justify-center" style={{ minHeight: "60vh" }}>
+          <div style={{ width: 64, height: 64, background: "#FFF", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+            <Trophy size={32} style={{ color: MUTED }} />
+          </div>
+          <h3 style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, marginBottom: 8 }}>Asesmen Belum Lengkap</h3>
+          <p style={{ color: MUTED, fontSize: 13, lineHeight: 1.5, marginBottom: 24, maxWidth: 280 }}>
+            Asesmen {s.name.split(" ")[0]} belum lengkap. Lengkapi asesmen terlebih dahulu untuk melihat hasil pemetaan bakat.
+          </p>
+          {onStartObs && (
+            <button
+              onClick={() => onStartObs(s.id)}
+              style={{ background: "#2D543E", color: "#FFF", fontFamily: PJS, fontWeight: 700, fontSize: 13, padding: "12px 24px", borderRadius: 14, border: "none", cursor: "pointer", boxShadow: "0 4px 14px rgba(45,84,62,0.3)" }}
+              className="active:scale-95 transition-all"
+            >
+              Lanjutkan Asesmen
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+  
+  const skorFungsional = latest.skorFungsional || ({} as Record<FungsionalKategori, number | null>);
+  const skorRiasec = latest.skorRiasec || ({} as Record<RiasecKategori, number | null>);
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, backgroundColor: "#F7F5F0" }}>
       <TBar title="AI Talent Mapping" sub={`${s.name} · ${s.abk}`} onBack={onBack} />
       
       <div className="px-4 pt-4 pb-8 space-y-5">
-        <ProfilFungsionalRadar jawaban={jawaban} studentName={s.name.split(" ")[0]} studentId={studentId} />
-        <ProfilKecenderunganBar jawaban={jawaban} studentName={s.name.split(" ")[0]} studentId={studentId} />
-        <SuggestedCompetitions studentId={studentId} go={go} />
+        <ProfilFungsionalRadar scores={skorFungsional} studentName={s.name.split(" ")[0]} studentId={s.id} />
+        <ProfilKecenderunganBar scores={skorRiasec} studentName={s.name.split(" ")[0]} studentId={s.id} />
+        <SuggestedCompetitions studentId={s.id} go={go} />
       </div>
     </div>
   );

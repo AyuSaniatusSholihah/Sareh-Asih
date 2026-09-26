@@ -13,43 +13,24 @@ import { CARD, BDR, TEXT, DEEP, PJS, IPS, DMM, MUTED, A } from "./ui-kit";
 import { Activity, Sparkles, Target } from "lucide-react";
 import riasecInfographicImg from "@/imports/riasec-infographic.jpg";
 
-// --- Utility Functions for Scoring ---
-export function skorDomain(jawaban: Record<number, number|"TDD">, domain: FungsionalKategori): number | null {
-  const items = PROFIL_FUNGSIONAL.filter(i => i.kategori === domain);
-  const validAnswers = items.map(i => jawaban[i.id]).filter(v => typeof v === "number" && v >= 0) as number[];
-  if (validAnswers.length === 0) return null;
-  const sum = validAnswers.reduce((a, b) => a + b, 0);
-  return Math.round((sum / (validAnswers.length * 3)) * 100);
-}
-
-export function skorTipe(jawaban: Record<number, number|"TDD">, tipe: RiasecKategori): number | null {
-  const items = PROFIL_KECENDERUNGAN.filter(i => i.kategori === tipe);
-  const validAnswers = items.map(i => jawaban[i.id]).filter(v => typeof v === "number" && v >= 0) as number[];
-  if (validAnswers.length === 0) return null;
-  const sum = validAnswers.reduce((a, b) => a + b, 0);
-  return Math.round((sum / (validAnswers.length * 3)) * 100);
-}
-
-export function kodeTigaHuruf(jawaban: Record<number, number|"TDD">): string {
-  const scores = RIASEC_KATEGORI.map(tipe => ({
+export function kodeTigaHuruf(scores: Record<RiasecKategori, number | null>): string {
+  const list = RIASEC_KATEGORI.map(tipe => ({
     tipe,
     letter: RIASEC_META[tipe].letter,
-    score: skorTipe(jawaban, tipe) ?? 0
+    score: scores[tipe] ?? 0
   })).sort((a, b) => b.score - a.score);
 
-  // Get top 3 or top 4 if there's a tie for the 3rd spot
   let topCount = 3;
-  if (scores.length >= 4 && scores[2].score === scores[3].score && scores[2].score > 0) {
+  if (list.length >= 4 && list[2].score === list[3].score && list[2].score > 0) {
     topCount = 4;
   }
   
-  return scores.slice(0, topCount).map(s => s.letter).join("");
+  return list.slice(0, topCount).map(s => s.letter).join("");
 }
 
-export function skorKetekunan(jawaban: Record<number, number|"TDD">): string {
-  // Mock ketekunan score based on Fungsional Partisipasi & Kognisi
-  const partisipasi = skorDomain(jawaban, "Partisipasi") ?? 0;
-  const kognisi = skorDomain(jawaban, "Kognisi") ?? 0;
+export function skorKetekunan(scores: Record<FungsionalKategori, number | null>): string {
+  const partisipasi = scores["Partisipasi"] ?? 0;
+  const kognisi = scores["Kognisi"] ?? 0;
   const avg = (partisipasi + kognisi) / 2;
   
   if (avg >= 80) return "Sangat Tekun (Mandiri & Berinisiatif)";
@@ -57,63 +38,15 @@ export function skorKetekunan(jawaban: Record<number, number|"TDD">): string {
   return "Perlu Bantuan (Membutuhkan dorongan konsisten)";
 }
 
-export function getMockJawaban(studentId: number): Record<number, number> {
-  const ans: Record<number, number> = {};
-  
-  if (studentId === 1) { // Rafi (Tunanetra)
-    // Fungsional
-    PROFIL_FUNGSIONAL.forEach(p => {
-      if (p.kategori === "Perawatan Diri") ans[p.id] = 2; // 2/2 -> 100% (or mostly 2s)
-      else if (p.kategori === "Mobilitas") ans[p.id] = 2;
-      else if (p.kategori === "Kognisi") ans[p.id] = 1; // 1/2 -> 50%
-      else ans[p.id] = 1;
-    });
-    // RIASEC
-    PROFIL_KECENDERUNGAN.forEach(p => {
-      if (p.kategori === "Artistic") ans[p.id] = 3;
-      else if (p.kategori === "Investigative") ans[p.id] = 2;
-      else ans[p.id] = 1;
-    });
-  } else if (studentId === 2) { // Nisa (Tunarungu)
-    PROFIL_FUNGSIONAL.forEach(p => {
-      if (p.kategori === "Kognisi") ans[p.id] = 2;
-      else if (p.kategori === "Interaksi dengan Orang Lain") ans[p.id] = 2;
-      else ans[p.id] = 1;
-    });
-    PROFIL_KECENDERUNGAN.forEach(p => {
-      if (p.kategori === "Realistic") ans[p.id] = 3;
-      else if (p.kategori === "Artistic") ans[p.id] = 3;
-      else ans[p.id] = 1;
-    });
-  } else if (studentId === 3) { // Arga (Tunadaksa)
-    PROFIL_FUNGSIONAL.forEach(p => {
-      if (p.kategori === "Kognisi") ans[p.id] = 2;
-      else if (p.kategori === "Mobilitas") ans[p.id] = 0;
-      else ans[p.id] = 1;
-    });
-    PROFIL_KECENDERUNGAN.forEach(p => {
-      if (p.kategori === "Investigative") ans[p.id] = 3;
-      else if (p.kategori === "Conventional") ans[p.id] = 2;
-      else ans[p.id] = 0;
-    });
-  } else {
-    // Default
-    PROFIL_FUNGSIONAL.forEach(p => ans[p.id] = 1);
-    PROFIL_KECENDERUNGAN.forEach(p => ans[p.id] = 1);
-  }
-  
-  return ans;
-}
-
 // --- Shared Chart Components ---
 
 export function ProfilFungsionalRadar({
-  jawaban,
+  scores,
   readOnly = false,
   studentName,
   studentId,
 }: {
-  jawaban: Record<number, number|"TDD">;
+  scores: Record<FungsionalKategori, number | null>;
   readOnly?: boolean;
   studentName?: string;
   studentId?: number;
@@ -121,7 +54,7 @@ export function ProfilFungsionalRadar({
   const data = FUNGSIONAL_KATEGORI.map(domain => ({
     subject: domain,
     icon: FUNGSIONAL_META[domain].icon,
-    A: skorDomain(jawaban, domain)
+    A: scores[domain]
   }));
 
   const validDataCount = data.filter(d => d.A !== null).length;
@@ -253,12 +186,12 @@ export function ProfilFungsionalRadar({
 }
 
 export function ProfilKecenderunganBar({
-  jawaban,
+  scores,
   readOnly = false,
   studentName,
   studentId,
 }: {
-  jawaban: Record<number, number|"TDD">;
+  scores: Record<RiasecKategori, number | null>;
   readOnly?: boolean;
   studentName?: string;
   studentId?: number;
@@ -266,7 +199,7 @@ export function ProfilKecenderunganBar({
   const data = RIASEC_KATEGORI.map(tipe => ({
     tipe,
     label: RIASEC_META[tipe].letter,
-    skor: skorTipe(jawaban, tipe),
+    skor: scores[tipe],
     color: RIASEC_META[tipe].color,
     icon: RIASEC_META[tipe].icon,
     fullName: tipe,

@@ -92,10 +92,10 @@ export const FUNGSIONAL_META: Record<FungsionalKategori,{icon:string;color:strin
 
 export const SKALA_FUNGSIONAL = [
   {v:-1, l:"N/A",     d:"Tidak dapat dijawab / diamati",       color:"#94A3B8", bg:"#F1F5F9"},
-  {v:0, l:"Belum",    d:"0 Belum bisa sama sekali",            color:"#D27D6B", bg:"#F8EBE8"},
-  {v:1, l:"Dibantu",  d:"1 Bisa dengan bantuan penuh",         color:"#F59E0B", bg:"#FFFBEB"},
-  {v:2, l:"Sebagian", d:"2 Bisa sebagian, butuh diingatkan",   color:"#8BB098", bg:"#EBF3ED"},
-  {v:3, l:"Mandiri",  d:"3 Bisa sendiri secara konsisten",     color:"#2E3E35", bg:"#D4E8DA"},
+  {v:0, l:"Belum",    d:"0 Belum bisa sama sekali",            color:"#5B7A68", bg:"#EBF3ED"},
+  {v:1, l:"Dibantu",  d:"1 Bisa dengan bantuan penuh",         color:"#5B7A68", bg:"#EBF3ED"},
+  {v:2, l:"Sebagian", d:"2 Bisa sebagian, butuh diingatkan",   color:"#5B7A68", bg:"#EBF3ED"},
+  {v:3, l:"Mandiri",  d:"3 Bisa sendiri secara konsisten",     color:"#5B7A68", bg:"#EBF3ED"},
 ];
 
 export interface FungsionalItem { id:number; text:string; kategori:FungsionalKategori }
@@ -151,10 +151,10 @@ export const RIASEC_META: Record<RiasecKategori,{icon:string;color:string;bg:str
 
 export const SKALA_RIASEC = [
   {v:-1, l:"N/A", d:"Tidak dapat dijawab / diamati", color:"#94A3B8", bg:"#F1F5F9"},
-  {v:0, l:"Tidak Pernah", d:"0 Tidak pernah",       color:"#64748B", bg:"#F1F5F9"},
-  {v:1, l:"Kadang",       d:"1 Kadang",             color:"#0EA5E9", bg:"#F0F9FF"},
-  {v:2, l:"Sering",       d:"2 Sering",             color:"#2563EB", bg:"#EFF6FF"},
-  {v:3, l:"Sangat Sering",d:"3 Sangat sering",      color:"#1E3A8A", bg:"#DBEAFE"},
+  {v:0, l:"Tidak Pernah", d:"0 Tidak pernah",       color:"#5B7A68", bg:"#EBF3ED"},
+  {v:1, l:"Kadang",       d:"1 Kadang",             color:"#5B7A68", bg:"#EBF3ED"},
+  {v:2, l:"Sering",       d:"2 Sering",             color:"#5B7A68", bg:"#EBF3ED"},
+  {v:3, l:"Sangat Sering",d:"3 Sangat sering",      color:"#5B7A68", bg:"#EBF3ED"},
 ];
 
 export interface RiasecItem { id:number; text:string; kategori:RiasecKategori }
@@ -191,6 +191,11 @@ export interface AsesmenPeriode {
   tanggal: string;        // contoh "3 Jun 2024"
   skorFungsional: Record<FungsionalKategori, number | null>;  // null = data belum memadai
   skorRiasec: Record<RiasecKategori, number | null>;
+  rawFungsional?: Record<number, number>;
+  rawRiasec?: Record<number, number>;
+  catatan?: string;
+  isDraft?: boolean;
+  lengkap: boolean;
 }
 
 export const seedRiwayatAsesmen: Record<number, AsesmenPeriode[]> = {
@@ -198,15 +203,25 @@ export const seedRiwayatAsesmen: Record<number, AsesmenPeriode[]> = {
   1: [
     { periode:"S1'23", tanggal:"Des 2023", 
       skorFungsional:{Kognisi:58,Mobilitas:70,"Perawatan Diri":62,"Interaksi dengan Orang Lain":40,"Aktivitas Sehari-hari":55,Partisipasi:48},
-      skorRiasec:{Realistic:30,Investigative:35,Artistic:70,Social:45,Enterprising:25,Conventional:40} },
+      skorRiasec:{Realistic:30,Investigative:35,Artistic:70,Social:45,Enterprising:25,Conventional:40}, lengkap: true },
     { periode:"S2'23", tanggal:"Jun 2024",
       skorFungsional:{Kognisi:62,Mobilitas:72,"Perawatan Diri":65,"Interaksi dengan Orang Lain":52,"Aktivitas Sehari-hari":58,Partisipasi:55},
-      skorRiasec:{Realistic:32,Investigative:38,Artistic:78,Social:50,Enterprising:28,Conventional:42} },
+      skorRiasec:{Realistic:32,Investigative:38,Artistic:78,Social:50,Enterprising:28,Conventional:42}, lengkap: true },
     { periode:"S1'24", tanggal:"Des 2024",
       skorFungsional:{Kognisi:65,Mobilitas:73,"Perawatan Diri":70,"Interaksi dengan Orang Lain":68,"Aktivitas Sehari-hari":60,Partisipasi:58},
-      skorRiasec:{Realistic:35,Investigative:42,Artistic:85,Social:65,Enterprising:30,Conventional:45} },
+      skorRiasec:{Realistic:35,Investigative:42,Artistic:85,Social:65,Enterprising:30,Conventional:45}, lengkap: true },
   ],
 };
+
+export const RiwayatAsesmenCtx = createContext<{
+  riwayat: Record<number, AsesmenPeriode[]>;
+  addAsesmen: (studentId: number, periode: AsesmenPeriode) => void;
+}>({
+  riwayat: seedRiwayatAsesmen,
+  addAsesmen: () => {},
+});
+
+export const useRiwayatAsesmen = () => useContext(RiwayatAsesmenCtx);
 
 // ─── Kelompok belajar ────────────────────────────────────────────────
 export const GAYA_META: Record<string,{icon:string;warna:string;strategi:string[];hindari:string[]}> = {

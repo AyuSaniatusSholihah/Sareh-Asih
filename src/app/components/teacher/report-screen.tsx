@@ -9,7 +9,8 @@ import {
 import { CARD, TEXT, MUTED, SEC, T, A, DEEP, PJS, IPS, BG, BDR, DMM, useUI } from "../ui-kit";
 import { useStudents, type Student } from "../data";
 import { exportSpreadsheet, exportLaporanPemetaan, printReportPDF } from "../export";
-import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
+import { kodeTigaHuruf } from "../shared-charts";
+import { useRiwayatAsesmen, type RiasecKategori } from "../data";
 
 type ReportView = "main" | "detail" | "web-connect";
 type FilterScope = "semua" | "kelas" | "anak";
@@ -26,6 +27,7 @@ interface ConnectedDeviceInfo {
 export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; onProfile?: () => void }) {
   const { openSearch, openSettings } = useUI();
   const students = useStudents();
+  const { riwayat } = useRiwayatAsesmen();
   const [view, setView] = useState<ReportView>("main");
   const [overviewTab, setOverviewTab] = useState<OverviewTab>("kelas");
   const [filterScope, setFilterScope] = useState<FilterScope>("semua");
@@ -90,13 +92,13 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
   };
 
   const showToast = (msg: string) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 3200); };
-  const handleDownloadExcel = () => { exportSpreadsheet(filteredList, namaSekolah); showToast(`Rekap Excel ${filteredList.length} siswa berhasil diunduh!`); };
-  const handleDownloadWord = () => { exportLaporanPemetaan(filteredList, namaSekolah); showToast(`Laporan Rapor ${filteredList.length} siswa berhasil diunduh!`); };
-  const handleDownloadPDF = () => { printReportPDF(filteredList, namaSekolah); showToast(`Format PDF ${filteredList.length} siswa disiapkan untuk dicetak/disimpan!`); };
+  const handleDownloadExcel = () => { exportSpreadsheet(filteredList, namaSekolah, riwayat); showToast(`Rekap Excel ${filteredList.length} siswa berhasil diunduh!`); };
+  const handleDownloadWord = () => { exportLaporanPemetaan(filteredList, namaSekolah, riwayat); showToast(`Laporan Rapor ${filteredList.length} siswa berhasil diunduh!`); };
+  const handleDownloadPDF = () => { printReportPDF(filteredList, namaSekolah, riwayat); showToast(`Format PDF ${filteredList.length} siswa disiapkan untuk dicetak/disimpan!`); };
 
   const handleShareWA = () => {
     // 1. Output dokumen PDF resmi secara otomatis
-    printReportPDF(filteredList, namaSekolah);
+    printReportPDF(filteredList, namaSekolah, riwayat);
 
     // 2. Format teks WhatsApp untuk dibagikan
     const isPerAnak = filterScope === "anak" && selectedStudentIds.size === 1;
@@ -112,7 +114,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
         `Kelas: ${student.kelas}`,
         `Kekhususan: ${student.abk}`,
         `Status: ${student.hasObs ? "Sudah dipetakan bakat" : "Belum diamati"}`,
-        student.hasObs ? `Potensi (RIASEC): ${kodeTigaHuruf(getMockJawaban(student.id))}` : "",
+        student.hasObs ? `Potensi (RIASEC): ${kodeTigaHuruf((riwayat[student.id]?.slice(-1)[0]?.skorRiasec) || ({} as Record<RiasecKategori, number | null>))}` : "",
         "",
         "Dokumen laporan lengkap dalam format PDF telah disiapkan.",
         "Terima kasih atas perhatian dan kerja samanya.",
@@ -554,7 +556,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
                     <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0 }}>Kelas {s.kelas}</p>
                   </div>
                   {s.hasObs ? (
-                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 8, fontFamily: PJS, flexShrink: 0 }}>{kodeTigaHuruf(getMockJawaban(s.id))}</span>
+                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 8, fontFamily: PJS, flexShrink: 0 }}>{kodeTigaHuruf((riwayat[s.id]?.slice(-1)[0]?.skorRiasec) || ({} as Record<RiasecKategori, number | null>))}</span>
                   ) : (
                     <span style={{ background: "#FFFBEB", color: "#B45309", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 8, fontFamily: PJS, flexShrink: 0, display: "flex", alignItems: "center", gap: 3 }}>
                       <Clock size={9} />Belum
@@ -842,7 +844,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
                     <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>Kelas {s.kelas} · {s.abk}</p>
                   </div>
                   {s.hasObs ? (
-                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0 }}>{kodeTigaHuruf(getMockJawaban(s.id))}</span>
+                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0 }}>{kodeTigaHuruf((riwayat[s.id]?.slice(-1)[0]?.skorRiasec) || ({} as Record<RiasecKategori, number | null>))}</span>
                   ) : (
                     <span style={{ background: "#FFFBEB", color: "#B45309", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0, display: "flex", alignItems: "center", gap: 3 }}>
                       <Clock size={10} />Belum

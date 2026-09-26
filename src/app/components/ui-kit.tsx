@@ -93,24 +93,24 @@ export function PBtn({
   const fSize = size === "sm" ? 13 : size === "lg" ? 15 : 14;
   const pad = size === "sm" ? "8px 16px" : size === "lg" ? "14px 24px" : "12px 20px";
 
-  let bg = A;
+  let bg = DEEP;
   let color = "#FFFFFF";
   let border = "none";
-  let shadow = "0 6px 20px rgba(210,125,107,0.45)";
+  let shadow = "0 6px 20px rgba(91,122,104,0.38)";
 
   if (disabled) {
     bg = "#CBD5E1";
     color = "#94A3B8";
     shadow = "none";
   } else if (variant === "light") {
-    bg = "rgba(210,125,107,0.16)";
-    color = A;
-    border = "1.5px solid rgba(210,125,107,0.35)";
+    bg = SEC;
+    color = DEEP;
+    border = `1.5px solid rgba(91,122,104,0.35)`;
     shadow = "none";
   } else if (variant === "outline") {
     bg = "transparent";
-    color = A;
-    border = `2.5px solid ${A}`;
+    color = DEEP;
+    border = `2.5px solid ${DEEP}`;
     shadow = "none";
   }
 

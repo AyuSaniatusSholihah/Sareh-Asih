@@ -13,11 +13,11 @@ import {
 } from "./ui-kit";
 import {
   AGENDA, KIND_META, LAYANAN, studentTalentDetail, RIASEC_META, FUNGSIONAL_KATEGORI, RIASEC_KATEGORI,
-  seedRiwayatAsesmen, type AsesmenPeriode, type RiasecKategori,
+  useRiwayatAsesmen, type AsesmenPeriode, type RiasecKategori,
   type Screen, type Student, type LaporanKirim,
   type AgendaEvent, type EventKind,
 } from "./data";
-import { ProfilFungsionalRadar, ProfilKecenderunganBar, getMockJawaban, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
+import { ProfilFungsionalRadar, ProfilKecenderunganBar, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
 
 // ─── Modal: masukkan kode akses dari dalam aplikasi ───────────────────
 export function LinkCodeModal({onClose,onLinked,students}:{onClose:()=>void;onLinked:(s:Student)=>void;students:Student[]}) {
@@ -824,8 +824,8 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
         {child.hasObs && (
           <>
             <SeksiCollapsible judul="Peta Potensi Anak" defaultTerbuka={true}>
-              <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} readOnly={true} />
-              <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} readOnly={true} />
+              <ProfilFungsionalRadar scores={skorFungsional} readOnly={true} />
+              <ProfilKecenderunganBar scores={skorRiasec} readOnly={true} />
               <div style={{background:"#F0FDF4",border:`1px solid #BBF7D0`}} className="rounded-xl px-4 py-3 flex items-start gap-2.5 mt-2">
                 <Info size={14} style={{color:"#15803D",flexShrink:0,marginTop:1}}/>
                 <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
@@ -835,8 +835,8 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
             </SeksiCollapsible>
 
             <SeksiCollapsible judul="Tren & Perkembangan" defaultTerbuka={true}>
-              <TrenKecenderunganAktivitas riwayat={seedRiwayatAsesmen[child.id] ?? []} />
-              <PerkembanganKemandirian riwayat={seedRiwayatAsesmen[child.id] ?? []} />
+              <TrenKecenderunganAktivitas riwayat={r} />
+              <PerkembanganKemandirian riwayat={r} />
             </SeksiCollapsible>
           </>
         )}

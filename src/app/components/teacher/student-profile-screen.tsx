@@ -6,9 +6,9 @@ import {
 import {
   T, A, CARD, TEXT, MUTED, SEC, BDR, DEEP, BG, PJS, IPS, DMM, TBar, Chip, SBadge,
 } from "../ui-kit";
-import { useStudents, type Student, type LaporanKirim, type Screen } from "../data";
+import { useStudents, type Student, type LaporanKirim, type Screen, useRiwayatAsesmen, type RiasecKategori } from "../data";
 import { exportLaporanPemetaan } from "../export";
-import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
+import { kodeTigaHuruf } from "../shared-charts";
 /** Kartu kode orang tua — guru yang membuat & membagikannya (peran admin ada di guru). */
 export function KodeOrtuCard({ s, onRegen }: { s: Student; onRegen: (id: number) => void }) {
   const [copied, setCopied] = useState(false);
@@ -79,7 +79,12 @@ export function JurnalTab({
   laporan: LaporanKirim[];
   onKirim: (studentId: number, isi: string) => void;
 }) {
-  const generated = `${s.name} menunjukkan perkembangan positif pada ${s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)).toLowerCase() : "kegiatan belajarnya"} di Semester Genap 2026. Fokus dan kemandirian meningkat dibanding semester lalu.`;
+  const { riwayat: riwayatAsesmenMap } = useRiwayatAsesmen();
+  const r = riwayatAsesmenMap[s.id] || [];
+  const latest = r[r.length - 1];
+  const skorRiasec = latest?.skorRiasec || ({} as Record<RiasecKategori, number | null>);
+  
+  const generated = `${s.name} menunjukkan perkembangan positif pada ${s.hasObs ? kodeTigaHuruf(skorRiasec).toLowerCase() : "kegiatan belajarnya"} di Semester Genap 2026. Fokus dan kemandirian meningkat dibanding semester lalu.`;
   const [draft, setDraft] = useState(generated);
   const [expanded, setExpanded] = useState(false);
   const [listening, setListening] = useState(false);

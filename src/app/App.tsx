@@ -5,8 +5,8 @@ import {
   T, A, BG, PJS, IPS, UI, type UICtx,
 } from "./components/ui-kit";
 import {
-  seedStudents, StudentsCtx, seedLaporan,
-  type Role, type Screen, type Student, type LaporanKirim,
+  seedStudents, StudentsCtx, seedLaporan, seedRiwayatAsesmen, RiwayatAsesmenCtx,
+  type Role, type Screen, type Student, type LaporanKirim, type AsesmenPeriode,
 } from "./components/data";
 import {
   LandingScreen, RoleSelectScreen, GoogleLoginScreen, ParentCodeScreen,
@@ -66,6 +66,14 @@ export default function App() {
     const created: Student = { ...s, id: Math.max(0, ...list.map(x => x.id)) + 1 };
     setList(prev => [...prev, created]);
     return created;
+  };
+
+  const [riwayatAsesmen, setRiwayatAsesmen] = useState<Record<number, AsesmenPeriode[]>>(seedRiwayatAsesmen);
+  const addAsesmen = (studentId: number, periode: AsesmenPeriode) => {
+    setRiwayatAsesmen(prev => ({
+      ...prev,
+      [studentId]: [...(prev[studentId] || []), periode]
+    }));
   };
 
   // Guru
@@ -252,20 +260,34 @@ export default function App() {
         <ObservationScreen
           onBack={goBack}
           onDone={finishObs}
-          onSave={(id) => {
+          onSave={(id, hasil) => {
             setList(prev => prev.map(s => s.id === id
               ? {
                 ...s,
-                hasObs: true,
+                hasObs: s.hasObs || (hasil.lengkap ?? false),
                 caraBelajar: s.caraBelajar || "Visual & Kinestetik"
               }
               : s));
+            
+            const d = new Date();
+            const periodeTitle = `S${Math.floor(d.getMonth() / 6) + 1}'${d.getFullYear().toString().slice(2)}`;
+            addAsesmen(id, {
+              periode: periodeTitle,
+              tanggal: hasil.tanggal,
+              skorFungsional: hasil.skorFungsional,
+              skorRiasec: hasil.skorRiasec,
+              rawFungsional: hasil.rawFungsional,
+              rawRiasec: hasil.rawRiasec,
+              catatan: hasil.catatan,
+              isDraft: hasil.isDraft,
+              lengkap: hasil.lengkap
+            });
           }}
           studentId={selectedStudentId}
         />
       );
       case "talent-map": return <TalentMapScreen go={go} onStartObs={startObs} onSelect={setSelectedStudentId} />;
-      case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} />;
+      case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} onStartObs={startObs} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
       case "competition": return <CompetitionScreen onStartObs={startObs} />;
       case "report": return (
@@ -298,8 +320,9 @@ export default function App() {
   const [title, sub] = headerTitle();
 
   return (
-    <StudentsCtx.Provider value={{ list, add: addStudent }}>
-      <UI.Provider value={uiCtx}>
+    <RiwayatAsesmenCtx.Provider value={{ riwayat: riwayatAsesmen, addAsesmen }}>
+      <StudentsCtx.Provider value={{ list, add: addStudent }}>
+        <UI.Provider value={uiCtx}>
         <div className="min-h-screen w-full flex items-center justify-center" style={{ background: "#EBF3ED", fontFamily: PJS }}>
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-16 left-16 w-72 h-72 rounded-full opacity-30 blur-3xl" style={{ background: `${T}25` }} />
@@ -467,5 +490,6 @@ export default function App() {
         </div>
       </UI.Provider>
     </StudentsCtx.Provider>
+    </RiwayatAsesmenCtx.Provider>
   );
 }
