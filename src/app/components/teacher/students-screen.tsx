@@ -125,11 +125,10 @@ export function StudentsScreen({
     const abkOptions = [
       "Tunanetra",
       "Tunarungu",
+      "Tunagrahita",
       "Tunadaksa",
-      "Tunanetra",
-      "Tunarungu",
-      "Tunanetra",
       "Tunalaras",
+      "Tunaganda",
       "Lainnya"
     ];
 

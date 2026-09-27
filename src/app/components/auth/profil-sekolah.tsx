@@ -47,14 +47,13 @@ export function ProfilSekolahModal({
     SMALB: { label: "SMALB", sub: "Kelas 10–12", defaultTingkat: "10", tingkats: ["10", "11", "12"] },
   };
 
-  // Konfigurasi Jenis Kekhususan / Layanan
   const KEKHUSUSAN_LIST = [
     { kode: "A", nama: "Kelas Tunanetra (A)", ringkas: "Tunanetra", abk: "Tunanetra", desc: "Hambatan penglihatan" },
     { kode: "B", nama: "Kelas Tunarungu (B)", ringkas: "Tunarungu", abk: "Tunarungu", desc: "Hambatan pendengaran/wicara" },
-    { kode: "C", nama: "Kelas Tunanetra (C)", ringkas: "Tunanetra", abk: "Tunanetra", desc: "Hambatan intelektual (ringan–sedang)" },
+    { kode: "C", nama: "Kelas Tunagrahita (C)", ringkas: "Tunagrahita", abk: "Tunagrahita", desc: "Hambatan intelektual/mental" },
     { kode: "D", nama: "Kelas Tunadaksa (D)", ringkas: "Tunadaksa", abk: "Tunadaksa", desc: "Hambatan fisik/motorik" },
-    { kode: "Tunanetra", nama: "Kelas Spektrum Tunanetra", ringkas: "Tunanetra", abk: "Tunanetra", desc: "Penanganan & kurikulum adaptif" },
-    { kode: "Ganda", nama: "Kelas Disabilitas Ganda", ringkas: "Disabilitas Ganda", abk: "Disabilitas Ganda", desc: "Memiliki lebih dari satu ragam disabilitas" },
+    { kode: "E", nama: "Kelas Tunalaras (E)", ringkas: "Tunalaras", abk: "Tunalaras", desc: "Hambatan emosi/perilaku" },
+    { kode: "G", nama: "Kelas Tunaganda (G)", ringkas: "Tunaganda", abk: "Tunaganda", desc: "Kombinasi dua atau lebih hambatan" },
     { kode: "Lainnya", nama: "Lainnya (Input Sendiri)", ringkas: "Lainnya", abk: "Lainnya", desc: "Ketikkan kelas / layanan khusus jika tidak ada di daftar" },
   ];
 
@@ -440,7 +439,7 @@ export function ProfilSekolahModal({
                                   fontSize: 10,
                                   fontWeight: 800,
                                 }}>
-                                {k.kode === "Tunanetra" ? "★" : k.kode === "Ganda" ? "∞" : k.kode === "Lainnya" ? "" : k.kode}
+                                {k.kode === "Lainnya" ? "" : k.kode}
                               </span>
                               <p
                                 className="text-xs font-bold leading-tight"
@@ -568,8 +567,8 @@ export function ProfilSekolahModal({
                           width: "100%",
                           border: "1.5px solid #FCD34D",
                           borderRadius: 10,
-                          padding: "7px 10px",
-                          fontSize: 11.5,
+                          padding: "9px 12px",
+                          fontSize: 13,
                           color: TEXT,
                           fontFamily: IPS,
                           background: "#fff",
@@ -577,15 +576,12 @@ export function ProfilSekolahModal({
                           boxSizing: "border-box"
                         }}>
                         <option value="" disabled>-- Pilih Kebutuhan Khusus --</option>
-                        <option value="Tunanetra">Tunanetra (ASD)</option>
-                        <option value="Tunarungu">Tunarungu / Wicara</option>
-                        <option value="Tunadaksa">Tunadaksa (Fisik/Motorik)</option>
                         <option value="Tunanetra">Tunanetra</option>
                         <option value="Tunarungu">Tunarungu</option>
-                        <option value="Tunanetra">Tunanetra</option>
+                        <option value="Tunagrahita">Tunagrahita</option>
+                        <option value="Tunadaksa">Tunadaksa</option>
                         <option value="Tunalaras">Tunalaras</option>
-                        <option value="Disabilitas Ganda">Disabilitas Ganda</option>
-                        <option value="Inklusi & Lainnya">Inklusi / ADHD / Lainnya</option>
+                        <option value="Tunaganda">Tunaganda</option>
                       </select>
                     </div>
                   </div>
