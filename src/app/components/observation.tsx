@@ -60,13 +60,17 @@ export function ObservationScreen({
   const riasecPct = Math.round((terisiRiasec / totalRiasec) * 100);
 
   const rataFungsional = (k: FungsionalKategori) => {
-    const list = PROFIL_FUNGSIONAL.filter(a => a.kategori === k).filter(a => skorFungsional[a.id] !== undefined);
+    const list = PROFIL_FUNGSIONAL
+      .filter(a => a.kategori === k)
+      .filter(a => skorFungsional[a.id] !== undefined && skorFungsional[a.id] !== -1);
     if (!list.length) return null;
     return Math.round(list.reduce((s, a) => s + skorFungsional[a.id], 0) / list.length * 100 / 3);
   };
 
   const rataRiasec = (k: RiasecKategori) => {
-    const list = PROFIL_KECENDERUNGAN.filter(a => a.kategori === k).filter(a => skorRiasec[a.id] !== undefined);
+    const list = PROFIL_KECENDERUNGAN
+      .filter(a => a.kategori === k)
+      .filter(a => skorRiasec[a.id] !== undefined && skorRiasec[a.id] !== -1);
     if (!list.length) return null;
     return Math.round(list.reduce((s, a) => s + skorRiasec[a.id], 0) / list.length * 100 / 3);
   };
