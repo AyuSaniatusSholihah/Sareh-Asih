@@ -52,8 +52,16 @@ export function AddStudentSheet({
   firstTime,
   savedCount,
 }: AddStudentSheetProps) {
+  const kelasOptions = Object.keys(kelasAbkMap).length ? Object.keys(kelasAbkMap) : ["VII A", "VII B", "VIII A"];
+  const defaultKelas = kelasOptions[0] || "VII A";
+  const defaultAbk = kelasAbkMap[defaultKelas] || "Tunanetra";
+
   const [step, setStep] = useState<Step>("choice");
-  const [form, setForm] = useState(EMPTY);
+  const [form, setForm] = useState(() => ({
+    ...EMPTY,
+    kelas: defaultKelas,
+    jenis_abk: defaultAbk,
+  }));
   const [lastName, setLastName] = useState("");
   const [extraInput, setExtraInput] = useState("");
 
@@ -71,7 +79,7 @@ export function AddStudentSheet({
 
   // Ketika kelas dipilih, auto-fill jenis_abk dari map
   const onKelasChange = (k: string) => {
-    const abk = kelasAbkMap[k] ?? "";
+    const abk = kelasAbkMap[k] ?? "Tunanetra";
     setForm(f => ({ ...f, kelas: k, jenis_abk: abk, extra_abk: [] }));
   };
 
@@ -85,10 +93,7 @@ export function AddStudentSheet({
   const removeExtra = (v: string) => setForm(f => ({ ...f, extra_abk: f.extra_abk.filter(x => x !== v) }));
 
   const extraOptions = ABK_OPTIONS.filter(o => o !== form.jenis_abk && !form.extra_abk.includes(o));
-  const kelasOptions = Object.keys(kelasAbkMap).length ? Object.keys(kelasAbkMap) : ["VII A", "VII B", "VIII A"];
-  const [selectedUploadKelas, setSelectedUploadKelas] = useState<string>(
-    kelasOptions.length === 1 ? kelasOptions[0] : ""
-  );
+  const [selectedUploadKelas, setSelectedUploadKelas] = useState<string>(defaultKelas);
   const canNext = form.nama.trim() !== "" && form.kelas !== "";
 
   const save = () => {
@@ -122,7 +127,11 @@ export function AddStudentSheet({
   };
 
   const tambahLagi = () => {
-    setForm(EMPTY);
+    setForm({
+      ...EMPTY,
+      kelas: defaultKelas,
+      jenis_abk: defaultAbk,
+    });
     setUploadedRows([]);
     setStep("choice");
   };

@@ -47,11 +47,11 @@ const DEFAULT_GURU: GuruProfile = {
   nama: "Sari Dewi, S.Pd.",
   email: "sari.dewi@gmail.com",
   sekolah: "SLB N Surakarta",
-  jabatan: "",
-  noHp: "",
-  kelas: [],
-  abk: [],
-  kelasAbkMap: {},
+  jabatan: "Guru Kelas / Wali Kelas",
+  noHp: "081234567890",
+  kelas: ["VII A", "VIII B"],
+  abk: ["Tunanetra", "Tunarungu"],
+  kelasAbkMap: { "VII A": "Tunanetra", "VIII B": "Tunarungu" },
 };
 
 export default function App() {
