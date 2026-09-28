@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import {
   Percent, Star, Calendar, FileText, Search, Bell, Settings,
   ChevronRight, Activity, ClipboardCheck, User,
@@ -11,7 +11,7 @@ import {
 } from "../data";
 import { type GuruProfile } from "../auth";
 import { KodeAksesCard } from "../kode-manager";
-import { TalentConstellation, type ConstellationStudent } from "./talent-constellation";
+
 import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
 
 export function DashboardGuru({
@@ -32,20 +32,7 @@ export function DashboardGuru({
   const pendingObs = students.filter(s => !s.hasObs);
   const firstName = guru.nama.split(" ")[0];
 
-  // ── Data untuk TalentConstellation ──
-  const constellationStudents: ConstellationStudent[] = useMemo(
-    () =>
-      students
-        .filter(s => s.hasObs)
-        .map(s => ({
-          id: String(s.id),
-          name: s.name,
-          domain: kodeTigaHuruf(getMockJawaban(s.id)),
-          progress: 80, // Mock progress for visual demo
-          needsAttention: !s.hasObs,
-        })),
-    [students],
-  );
+
 
   // ── Aktivitas terbaru (feed guru: asesmen + laporan terkirim) ──
   const aktivitas = [
@@ -296,11 +283,7 @@ export function DashboardGuru({
           </div>
         </div>
 
-        {/* ── Sorotan Bakat (Konstelasi) ── */}
-        <TalentConstellation
-          students={constellationStudents}
-          onSelectStudent={() => go("talent-map")}
-        />
+
 
         {/* ── Kartu kode akses orang tua (dipakai ulang dari KodeAksesCard) ── */}
         {students.length > 0 && <KodeAksesCard onOpen={() => go("kode-akses")} />}

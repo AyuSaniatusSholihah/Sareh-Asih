@@ -10,7 +10,7 @@ import {
   FungsionalKategori, RiasecKategori
 } from "./data";
 import { CARD, BDR, TEXT, DEEP, PJS, IPS, DMM, MUTED, A } from "./ui-kit";
-import { Activity, Sparkles, Target } from "lucide-react";
+import { Activity, Sparkles, Target, Brain } from "lucide-react";
 import riasecInfographicImg from "@/imports/riasec-infographic.jpg";
 
 // --- Utility Functions for Scoring ---
@@ -257,11 +257,13 @@ export function ProfilKecenderunganBar({
   readOnly = false,
   studentName,
   studentId,
+  onLearningRec,
 }: {
   jawaban: Record<number, number|"TDD">;
   readOnly?: boolean;
   studentName?: string;
   studentId?: number;
+  onLearningRec?: () => void;
 }) {
   const data = RIASEC_KATEGORI.map(tipe => ({
     tipe,
@@ -452,6 +454,30 @@ export function ProfilKecenderunganBar({
           </p>
         </div>
       </div>
+
+      {onLearningRec && (
+        <button
+          type="button"
+          onClick={onLearningRec}
+          style={{
+            width: "100%",
+            marginTop: 16,
+            background: `linear-gradient(135deg, ${A} 0%, #c96b55 100%)`,
+            border: "none",
+            color: "#FFFFFF",
+            fontFamily: PJS,
+            fontWeight: 800,
+            minHeight: 50,
+            borderRadius: 16,
+            cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(210,125,107,0.35)",
+          }}
+          className="text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"
+        >
+          <Brain size={16} />
+          Rekomendasi Pembelajaran
+        </button>
+      )}
     </div>
   );
 }
