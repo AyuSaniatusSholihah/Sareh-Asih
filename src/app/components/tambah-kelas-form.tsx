@@ -11,13 +11,15 @@ export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }:
   const [namaSekolah, setNamaSekolah] = useState(defaultSekolah);
   const [namaKelas, setNamaKelas] = useState('');
   const [selectedTag, setSelectedTag] = useState('Tunanetra');
+  const [customTag, setCustomTag] = useState('');
   const [showModal, setShowModal] = useState(false);
 
   const tags = [
     'Tunanetra',
-    'Tunarungu',
-    'Tunanetra',
-    'Tunadaksa',
+    'Tuna Rungu',
+    'Tuna Daksa Ringan',
+    'Tuna Daksa Sedang',
+    'Tuna Wicara',
     'Lainnya',
   ];
 
@@ -33,7 +35,7 @@ export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }:
       onSave({
         namaSekolah: namaSekolah.trim(),
         namaKelas: namaKelas.trim(),
-        tag: selectedTag,
+        tag: selectedTag === 'Lainnya' ? (customTag.trim() || 'Lainnya') : selectedTag,
       });
     }
   };
@@ -107,6 +109,18 @@ export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }:
                   </button>
                 ))}
               </div>
+
+              {selectedTag === 'Lainnya' && (
+                <div className="mt-2.5">
+                  <input
+                    type="text"
+                    placeholder="Tuliskan jenis ABK / kategori kelas secara mandiri..."
+                    value={customTag}
+                    onChange={(e) => setCustomTag(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-[#EAEFEA] rounded-xl text-xs border border-transparent focus:border-gray-500 outline-none text-gray-800 placeholder-gray-400 shadow-inner"
+                  />
+                </div>
+              )}
             </div>
           </div>
 

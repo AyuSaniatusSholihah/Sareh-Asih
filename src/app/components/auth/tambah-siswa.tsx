@@ -1,8 +1,17 @@
-import { useState, useRef, type MouseEvent } from "react";
-import { Users, Database, Upload, UserPlus, ChevronRight, AlertCircle, Trash2, CheckCircle } from "lucide-react";
-import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS } from "../ui-kit";
-import { ABK_OPTIONS } from "../data";
+import { useState, useRef, useCallback, type MouseEvent } from "react";
+import { Users, Database, Upload, UserPlus, ChevronRight, AlertCircle, Trash2, CheckCircle, Info } from "lucide-react";
+import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, Field, SelectField } from "../ui-kit";
+import { ABK_OPTIONS, CARA_BELAJAR_OPTIONS } from "../data";
 import { ModalShell } from "./modal-shell";
+
+const STATUS_ORTU_OPTIONS = [
+  "Kandung", "Yatim", "Piatu", "Yatim Piatu", "Wali", "Saudara", "Lainnya",
+];
+
+const GENDER_OPTIONS = [
+  { label: "Laki-laki", emoji: "👦" },
+  { label: "Perempuan", emoji: "👧" },
+];
 
 export type SiswaImportData = { nama: string; abk: string; ttl: string; kelas?: string };
 
@@ -40,7 +49,27 @@ export function TambahSiswaPromptModal({
   kelasAbkMap?: Record<string, string>;
   teacher?: string;
   onBack?: () => void;
-  onSaveManual: (s: { name: string; abk: string; kelas: string; age: number; emoji: string; gender: "L" | "P" }) => void;
+  onSaveManual: (s: {
+    name: string;
+    abk: string;
+    kelas: string;
+    age: number;
+    emoji: string;
+    gender: "L" | "P";
+    foto?: string;
+    nisn?: string;
+    tanggalLahir?: string;
+    alamat?: string;
+    statusOrtu?: string;
+    namaOrtu?: string;
+    tingkatDukungan?: string;
+    komunikasi?: string;
+    motorik?: string;
+    caraBelajar?: string;
+    rentang?: string;
+    minat?: string;
+    terapi?: string;
+  }) => void;
   onImportSiswa: (siswa: SiswaImportData[]) => void;
   onDone: () => void;
   onClose?: () => void;
@@ -50,12 +79,33 @@ export function TambahSiswaPromptModal({
   // Tracking siswa yang sudah disimpan di sesi ini
   const [savedStudents, setSavedStudents] = useState<string[]>([]);
 
-  // Form state untuk manual
-  const kelasOptions = Object.keys(kelasAbkMap).length ? Object.keys(kelasAbkMap) : ["VII A", "VII B", "VIII A"];
+  // Sub-langkah form manual: 1 (Identitas) atau 2 (Profil Kebutuhan Siswa)
+  const [manualStep, setManualStep] = useState<1 | 2>(1);
+
+  // Form state untuk manual (menyamakan dengan add-student.tsx)
+  const kelasOptions = Object.keys(kelasAbkMap);
   const [manualNama, setManualNama] = useState("");
-  const [manualKelas, setManualKelas] = useState(kelasOptions[0] || "VII A");
-  const [manualAbkList, setManualAbkList] = useState<string[]>([kelasAbkMap[kelasOptions[0]] || "Tunanetra"]);
+  const [manualNisn, setManualNisn] = useState("");
+  const [manualTanggalLahir, setManualTanggalLahir] = useState("");
+  const [manualAlamat, setManualAlamat] = useState("");
+  const [manualStatusOrtu, setManualStatusOrtu] = useState("");
+  const [manualNamaOrtu, setManualNamaOrtu] = useState("");
+  const [manualKelas, setManualKelas] = useState(kelasOptions[0] || "");
+  const [manualAbkList, setManualAbkList] = useState<string[]>(
+    kelasOptions[0] && kelasAbkMap[kelasOptions[0]] ? [kelasAbkMap[kelasOptions[0]]] : ["Tunanetra"]
+  );
   const [manualEmoji, setManualEmoji] = useState("👦");
+  const [manualFoto, setManualFoto] = useState("");
+  const [manualCustomAbk, setManualCustomAbk] = useState("");
+
+  // Profil detail kebutuhan siswa (Step 2)
+  const [manualTingkatDukungan, setManualTingkatDukungan] = useState("");
+  const [manualKomunikasi, setManualKomunikasi] = useState("");
+  const [manualMotorik, setManualMotorik] = useState("");
+  const [manualCaraBelajar, setManualCaraBelajar] = useState("");
+  const [manualRentang, setManualRentang] = useState("");
+  const [manualMinat, setManualMinat] = useState("");
+  const [manualTerapi, setManualTerapi] = useState("");
 
   const toggleManualAbk = (opt: string) => {
     setManualAbkList(prev => {
@@ -69,11 +119,67 @@ export function TambahSiswaPromptModal({
   };
 
   const resetManualForm = () => {
+    setManualStep(1);
     setManualNama("");
-    setManualKelas(kelasOptions[0] || "VII A");
-    setManualAbkList([kelasAbkMap[kelasOptions[0]] || "Tunanetra"]);
+    setManualNisn("");
+    setManualTanggalLahir("");
+    setManualAlamat("");
+    setManualStatusOrtu("");
+    setManualNamaOrtu("");
+    setManualKelas(kelasOptions[0] || "");
+    setManualAbkList(kelasOptions[0] && kelasAbkMap[kelasOptions[0]] ? [kelasAbkMap[kelasOptions[0]]] : ["Tunanetra"]);
     setManualEmoji("👦");
+    setManualFoto("");
+    setManualCustomAbk("");
+    setManualTingkatDukungan("");
+    setManualKomunikasi("");
+    setManualMotorik("");
+    setManualCaraBelajar("");
+    setManualRentang("");
+    setManualMinat("");
+    setManualTerapi("");
   };
+
+  const handleCommitManualSave = () => {
+    if (!manualNama.trim()) return;
+    const resolvedAbkList = manualAbkList.map(x => (x === "Lainnya" ? (manualCustomAbk.trim() || "Lainnya") : x));
+    onSaveManual({
+      name: manualNama.trim(),
+      abk: resolvedAbkList.join(", ") || kelasAbkMap[manualKelas] || "Tunanetra",
+      kelas: manualKelas,
+      age: 13,
+      emoji: manualEmoji,
+      gender: manualEmoji === "👦" ? "L" : "P",
+      foto: manualFoto || undefined,
+      nisn: manualNisn.trim() || undefined,
+      tanggalLahir: manualTanggalLahir.trim() || undefined,
+      alamat: manualAlamat.trim() || undefined,
+      statusOrtu: manualStatusOrtu || undefined,
+      namaOrtu: manualNamaOrtu.trim() || undefined,
+      tingkatDukungan: manualTingkatDukungan || undefined,
+      komunikasi: manualKomunikasi || undefined,
+      motorik: manualMotorik || undefined,
+      caraBelajar: manualCaraBelajar || undefined,
+      rentang: manualRentang.trim() || undefined,
+      minat: manualMinat.trim() || undefined,
+      terapi: manualTerapi.trim() || undefined,
+    });
+    setSavedStudents(prev => [...prev, manualNama.trim()]);
+    resetManualForm();
+    setMode("choice");
+  };
+
+  // State foto untuk form manual
+  const manualFotoRef = useRef<HTMLInputElement>(null);
+  const handleManualFotoChange = useCallback((file: File) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      setManualFoto(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  }, []);
 
   if (mode === "upload")
     return (
@@ -108,152 +214,413 @@ export function TambahSiswaPromptModal({
   if (mode === "manual") {
     const canSave = manualNama.trim() !== "";
     return (
-      <ModalShell step={3} total={3} title="Tambah Siswa Manual" desc="Masukkan data siswa satu per satu" onClose={onClose || onDone}>
-        <div className="space-y-3.5 mb-4">
-          <div>
-            <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
-              Nama Lengkap Siswa <span className="text-red-500">*</span>
-            </label>
-            <input
-              value={manualNama}
-              onChange={e => setManualNama(e.target.value)}
-              placeholder="Contoh: Budi Santoso"
-              style={{
-                width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 14,
-                padding: "11px 14px", fontSize: 13, color: TEXT, outline: "none",
-                background: CARD, fontFamily: IPS, boxSizing: "border-box"
-              }}
-            />
-          </div>
+      <ModalShell
+        step={3}
+        total={3}
+        title={manualStep === 1 ? "Tambah Siswa Manual" : "Profil Kebutuhan Siswa"}
+        desc={manualStep === 1 ? "Masukkan data identitas siswa" : "Semua opsional, bisa dilengkapi nanti"}
+        onClose={onClose || onDone}
+      >
+        {/* Step Indicator (1/2 atau 2/2) */}
+        <div className="flex items-center gap-1.5 mb-3.5">
+          <div style={{ height: 4, flex: 1, borderRadius: 2, background: T }} />
+          <div style={{ height: 4, flex: 1, borderRadius: 2, background: manualStep === 2 ? T : "#E5E7EB" }} />
+          <span className="text-xs ml-1 font-semibold" style={{ color: MUTED, fontFamily: IPS }}>
+            {manualStep}/2
+          </span>
+        </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
-                Kelompok/Kelas
-              </label>
-              <select
-                value={manualKelas}
+        {manualStep === 1 ? (
+          <div className="space-y-3 mb-4">
+            {/* ── FOTO PROFIL UPLOAD ── */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 2 }}>
+              <button
+                type="button"
+                onClick={() => manualFotoRef.current?.click()}
+                style={{
+                  width: 88,
+                  height: 88,
+                  borderRadius: "50%",
+                  border: manualFoto ? "3px solid #738B7B" : "2.5px dashed #B0C4B8",
+                  background: manualFoto ? "transparent" : "#F4F8F5",
+                  cursor: "pointer",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                  transition: "all 0.2s ease",
+                  boxShadow: manualFoto ? "0 4px 14px rgba(91,122,104,0.25)" : "none",
+                  padding: 0,
+                }}
+                title="Upload foto profil siswa"
+              >
+                {manualFoto ? (
+                  <img src={manualFoto} alt="Foto profil" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: 26 }}>📷</div>
+                    <p style={{ fontFamily: IPS, fontSize: 10, color: MUTED, marginTop: 2, fontWeight: 600 }}>Tambah Foto</p>
+                  </div>
+                )}
+              </button>
+              {manualFoto ? (
+                <button
+                  type="button"
+                  onClick={() => setManualFoto("")}
+                  style={{ marginTop: 6, fontSize: 11, color: "#B91C1C", background: "transparent", border: "none", cursor: "pointer", fontFamily: IPS, fontWeight: 600 }}
+                >
+                  × Hapus Foto
+                </button>
+              ) : (
+                <p style={{ fontSize: 10.5, color: MUTED, marginTop: 6, fontFamily: IPS }}>Opsional · JPG, PNG</p>
+              )}
+              <input
+                ref={manualFotoRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                style={{ display: "none" }}
                 onChange={e => {
-                  const k = e.target.value;
+                  const f = e.target.files?.[0];
+                  if (f) handleManualFotoChange(f);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+
+            <Field
+              label="Nama Lengkap Siswa"
+              placeholder="Contoh: Budi Santoso"
+              value={manualNama}
+              onChange={setManualNama}
+              required
+            />
+
+            <div className="grid grid-cols-2 gap-3">
+              <Field
+                label="NISN"
+                placeholder="Contoh: 0012345678"
+                value={manualNisn}
+                onChange={setManualNisn}
+              />
+              <Field
+                label="Tanggal Lahir"
+                placeholder="Contoh: 12 Maret 2013"
+                value={manualTanggalLahir}
+                onChange={setManualTanggalLahir}
+              />
+            </div>
+
+            <Field
+              label="Alamat"
+              placeholder="Contoh: Jl. Merpati No. 5, Surakarta"
+              value={manualAlamat}
+              onChange={setManualAlamat}
+            />
+
+            <div className="grid grid-cols-2 gap-3">
+              <SelectField
+                label="Status Orang Tua"
+                options={STATUS_ORTU_OPTIONS}
+                value={manualStatusOrtu}
+                onChange={setManualStatusOrtu}
+              />
+              <Field
+                label="Nama Orang Tua"
+                placeholder="Contoh: Ibu Ratna"
+                value={manualNamaOrtu}
+                onChange={setManualNamaOrtu}
+              />
+            </div>
+
+            {/* Pilihan kelas jika guru mengampu lebih dari 1 kelas */}
+            {kelasOptions.length > 1 && (
+              <SelectField
+                label="Kelompok/Kelas"
+                options={kelasOptions}
+                value={manualKelas}
+                onChange={k => {
                   setManualKelas(k);
                   if (kelasAbkMap[k]) setManualAbkList([kelasAbkMap[k]]);
                 }}
-                style={{
-                  width: "100%", border: `1.5px solid ${BDR}`, borderRadius: 14,
-                  padding: "11px 12px", fontSize: 13, color: TEXT, outline: "none",
-                  background: CARD, fontFamily: IPS, boxSizing: "border-box"
-                }}
-              >
-                {kelasOptions.map(k => <option key={k} value={k}>{k}</option>)}
-              </select>
-            </div>
+              />
+            )}
+
+            {/* Input kelas jika belum ada kelas terdaftar */}
+            {kelasOptions.length === 0 && (
+              <Field
+                label="Kelompok/Kelas"
+                placeholder="Contoh: VII A"
+                value={manualKelas}
+                onChange={setManualKelas}
+              />
+            )}
 
             <div>
-              <label className="block text-xs font-bold text-gray-800 mb-1" style={{ fontFamily: PJS }}>
+              <label style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: IPS, display: "block", marginBottom: 8 }}>
                 Jenis Kelamin
               </label>
-              <div className="flex gap-2">
-                {[
-                  { label: "L", emoji: "👦" },
-                  { label: "P", emoji: "👧" }
-                ].map(g => (
+              <div style={{ display: "flex", gap: 8 }}>
+                {GENDER_OPTIONS.map(g => (
                   <button
                     key={g.label}
                     type="button"
                     onClick={() => setManualEmoji(g.emoji)}
                     style={{
-                      flex: 1, padding: "8px 0", borderRadius: 12, border: `1.5px solid ${manualEmoji === g.emoji ? T : BDR}`,
-                      background: manualEmoji === g.emoji ? SEC : CARD, color: manualEmoji === g.emoji ? DEEP : MUTED,
-                      fontFamily: PJS, fontWeight: 700, fontSize: 12, cursor: "pointer"
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                      padding: "10px 0",
+                      borderRadius: 14,
+                      fontSize: 13,
+                      fontWeight: 600,
+                      fontFamily: IPS,
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                      background: manualEmoji === g.emoji ? SEC : BG,
+                      border: `1.5px solid ${manualEmoji === g.emoji ? T : BDR}`,
+                      color: manualEmoji === g.emoji ? DEEP : MUTED,
                     }}
                   >
-                    <span className="text-base mr-1">{g.emoji}</span> {g.label}
+                    <span style={{ fontSize: 22 }}>{g.emoji}</span>
+                    {g.label}
                   </button>
                 ))}
               </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-bold text-gray-800 mb-2 flex items-center justify-between" style={{ fontFamily: PJS }}>
-              <span>Jenis Kekhususan (ABK)</span>
-              <span className="text-gray-400 font-normal text-[11px]">(bisa pilih lebih dari satu)</span>
-            </label>
-            <div className="flex flex-wrap gap-2 pt-0.5">
-              {ABK_OPTIONS.map(o => {
-                const isSelected = manualAbkList.includes(o);
-                return (
-                  <button
-                    key={o}
-                    type="button"
-                    onClick={() => toggleManualAbk(o)}
-                    style={{
-                      fontFamily: PJS,
-                      fontSize: 12,
-                      fontWeight: isSelected ? 700 : 600,
-                      padding: "7px 14px",
-                      borderRadius: 20,
-                      border: `1.5px solid ${isSelected ? "#738B7B" : "#D5E0D5"}`,
-                      background: isSelected ? "#EAF2EC" : "#FFFFFF",
-                      color: isSelected ? "#1B2E24" : "#4B5563",
-                      cursor: "pointer",
-                      transition: "all 0.15s ease-in-out",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 5
-                    }}
-                  >
-                    {isSelected && (
-                      <span style={{ fontSize: 11, fontWeight: 800, color: "#2E5537" }}>✓</span>
-                    )}
-                    {o}
-                  </button>
-                );
-              })}
+            {/* Action Buttons Step 1 */}
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setMode("choice")}
+                style={{
+                  flex: 1,
+                  border: `2px solid ${DEEP}`,
+                  color: DEEP,
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  fontSize: 14,
+                  minHeight: 50,
+                  background: CARD,
+                  borderRadius: 16,
+                  cursor: "pointer",
+                }}
+                className="active:scale-[0.98] transition-all"
+              >
+                ← Kembali
+              </button>
+              <button
+                type="button"
+                disabled={!canSave}
+                onClick={() => {
+                  if (canSave) setManualStep(2);
+                }}
+                style={{
+                  flex: 2,
+                  background: canSave ? A : "#D1D5DB",
+                  color: "#fff",
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  fontSize: 15,
+                  minHeight: 50,
+                  borderRadius: 16,
+                  border: "none",
+                  boxShadow: canSave ? "0 6px 20px rgba(210,125,107,0.42)" : "none",
+                  cursor: canSave ? "pointer" : "not-allowed",
+                }}
+                className="active:scale-[0.98] transition-all"
+              >
+                Lanjut →
+              </button>
+            </div>
+
+            {/* Simpan cepat tanpa profil detail */}
+            <div className="text-center pt-1 pb-1">
+              <button
+                type="button"
+                disabled={!canSave}
+                onClick={handleCommitManualSave}
+                style={{
+                  width: "100%",
+                  color: canSave ? DEEP : "#9CA3AF",
+                  fontFamily: PJS,
+                  fontWeight: 600,
+                  minHeight: 32,
+                  background: "transparent",
+                  border: "none",
+                  cursor: canSave ? "pointer" : "default",
+                }}
+                className="text-xs"
+              >
+                Simpan cepat tanpa profil detail
+              </button>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="space-y-3.5 mb-4">
+            <div
+              style={{ background: "#FEF9EC", border: "1px solid rgba(217,142,30,0.2)" }}
+              className="rounded-xl px-3 py-2.5 flex items-start gap-2"
+            >
+              <Info size={14} style={{ color: A, flexShrink: 0, marginTop: 1 }} />
+              <p className="text-xs leading-relaxed" style={{ color: A, fontFamily: IPS, margin: 0 }}>
+                Bagian ini boleh dilewati. Semakin lengkap, semakin akurat rekomendasi AI-nya.
+              </p>
+            </div>
 
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => setMode("choice")}
-            style={{
-              flex: 1, border: `1.5px solid ${DEEP}`, color: DEEP, fontFamily: PJS,
-              fontWeight: 700, fontSize: 13, padding: "12px 0", background: CARD,
-              borderRadius: 14, cursor: "pointer"
-            }}
-          >
-            Kembali
-          </button>
-          <button
-            type="button"
-            disabled={!canSave}
-            onClick={() => {
-              if (canSave) {
-                onSaveManual({
-                  name: manualNama.trim(),
-                  abk: manualAbkList.join(", ") || "Tunanetra",
-                  kelas: manualKelas,
-                  age: 13,
-                  emoji: manualEmoji,
-                  gender: manualEmoji === "👦" ? "L" : "P",
-                });
-                setSavedStudents(prev => [...prev, manualNama.trim()]);
-                resetManualForm();
-                setMode("choice");
-              }
-            }}
-            style={{
-              flex: 2, background: canSave ? A : "#CBD5E1", color: "#FFFFFF",
-              fontFamily: PJS, fontWeight: 800, fontSize: 14, padding: "12px 0",
-              border: "none", borderRadius: 14, cursor: canSave ? "pointer" : "not-allowed",
-              boxShadow: canSave ? "0 4px 14px rgba(210,125,107,0.3)" : "none"
-            }}
-          >
-            Simpan Siswa
-          </button>
-        </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-800 mb-2 flex items-center justify-between" style={{ fontFamily: PJS }}>
+                <span>Jenis Kekhususan (ABK)</span>
+                <span className="text-gray-400 font-normal text-[11px]">(bisa pilih lebih dari satu)</span>
+              </label>
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {ABK_OPTIONS.map(o => {
+                  const isSelected = manualAbkList.includes(o);
+                  return (
+                    <button
+                      key={o}
+                      type="button"
+                      onClick={() => toggleManualAbk(o)}
+                      style={{
+                        fontFamily: PJS,
+                        fontSize: 12,
+                        fontWeight: isSelected ? 700 : 600,
+                        padding: "7px 14px",
+                        borderRadius: 20,
+                        border: `1.5px solid ${isSelected ? "#738B7B" : "#D5E0D5"}`,
+                        background: isSelected ? "#EAF2EC" : "#FFFFFF",
+                        color: isSelected ? "#1B2E24" : "#4B5563",
+                        cursor: "pointer",
+                        transition: "all 0.15s ease-in-out",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 5,
+                      }}
+                    >
+                      {isSelected && <span style={{ fontSize: 11, fontWeight: 800, color: "#2E5537" }}>✓</span>}
+                      {o}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {manualAbkList.includes("Lainnya") && (
+                <div className="mt-2.5 p-2.5 rounded-xl border" style={{ background: "#FEF9C3", borderColor: "#FACC15" }}>
+                  <label className="text-[11px] font-bold block mb-1" style={{ color: "#854D0E", fontFamily: PJS }}>
+                    Tuliskan Hambatan / ABK Lainnya (Mandiri):
+                  </label>
+                  <input
+                    value={manualCustomAbk}
+                    onChange={e => setManualCustomAbk(e.target.value)}
+                    placeholder="Contoh: Hambatan Belajar Spesifik, dll."
+                    style={{
+                      width: "100%",
+                      border: "1.5px solid #FCD34D",
+                      borderRadius: 10,
+                      padding: "8px 12px",
+                      fontSize: 12,
+                      color: TEXT,
+                      fontFamily: IPS,
+                      background: "#fff",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            <SelectField
+              label="Tingkat Dukungan"
+              options={["Dukungan Minimal", "Dukungan Sedang", "Dukungan Intensif"]}
+              value={manualTingkatDukungan}
+              onChange={setManualTingkatDukungan}
+            />
+            <SelectField
+              label="Kemampuan Komunikasi"
+              options={["Verbal baik", "Verbal terbatas", "Non-verbal", "Menggunakan BISINDO/SIBI"]}
+              value={manualKomunikasi}
+              onChange={setManualKomunikasi}
+            />
+            <SelectField
+              label="Kemampuan Motorik"
+              options={["Motorik halus baik", "Motorik kasar baik", "Keduanya baik", "Perlu dukungan alat bantu"]}
+              value={manualMotorik}
+              onChange={setManualMotorik}
+            />
+            <SelectField
+              label="Cara Belajar Dominan"
+              options={CARA_BELAJAR_OPTIONS}
+              value={manualCaraBelajar}
+              onChange={setManualCaraBelajar}
+            />
+            <Field
+              label="Rentang Konsentrasi"
+              placeholder="Contoh: 10–15 menit"
+              value={manualRentang}
+              onChange={setManualRentang}
+            />
+            <Field
+              label="Minat Awal"
+              placeholder="Contoh: Menggambar, musik"
+              value={manualMinat}
+              onChange={setManualMinat}
+            />
+            <Field
+              label="Riwayat Terapi"
+              placeholder="Contoh: Terapi wicara 2021–2023"
+              value={manualTerapi}
+              onChange={setManualTerapi}
+            />
+
+            {/* Action Buttons Step 2 */}
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setManualStep(1)}
+                style={{
+                  flex: 1,
+                  border: `2px solid ${DEEP}`,
+                  color: DEEP,
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  fontSize: 14,
+                  minHeight: 50,
+                  background: CARD,
+                  borderRadius: 16,
+                  cursor: "pointer",
+                }}
+                className="active:scale-[0.98] transition-all"
+              >
+                ← Kembali
+              </button>
+              <button
+                type="button"
+                onClick={handleCommitManualSave}
+                style={{
+                  flex: 2,
+                  background: A,
+                  color: "#fff",
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  fontSize: 15,
+                  minHeight: 50,
+                  borderRadius: 16,
+                  border: "none",
+                  boxShadow: "0 6px 20px rgba(210,125,107,0.42)",
+                  cursor: "pointer",
+                }}
+                className="active:scale-[0.98] transition-all"
+              >
+                Simpan Siswa
+              </button>
+            </div>
+          </div>
+        )}
       </ModalShell>
     );
   }
