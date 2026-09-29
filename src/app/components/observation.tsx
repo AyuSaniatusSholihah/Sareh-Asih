@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import {
   Sparkles, CheckCircle, ChevronRight, ChevronDown, Info, ClipboardList, Gauge, X, ArrowLeft,
-  AlertCircle, ArrowRight, Check,
+  AlertCircle, ArrowRight, Check, Users,
 } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, PBtn, TBar,
@@ -33,6 +33,15 @@ const DOMAIN_SHORT: Record<FungsionalKategori, string> = {
   "Partisipasi": "Partisipasi",
 };
 
+const PILL_CONFIG: Record<FungsionalKategori, { label: string; circleBg: string; icon: string }> = {
+  "Kognisi": { label: "Kognisi", circleBg: "#FCE7F3", icon: "🧠" },
+  "Mobilitas": { label: "Mobilitas", circleBg: "#FEF3C7", icon: "🏃" },
+  "Perawatan Diri": { label: "Perawatan", circleBg: "#EDE9FE", icon: "🧍" },
+  "Interaksi dengan Orang Lain": { label: "Interaksi", circleBg: "#FEF3C7", icon: "🤝" },
+  "Aktivitas Sehari-hari": { label: "Aktivitas", circleBg: "#D1FAE5", icon: "📅" },
+  "Partisipasi": { label: "Partisipasi", circleBg: "#FCE7F3", icon: "👥" },
+};
+
 export function ObservationScreen({
   onBack,
   onDone,
@@ -57,6 +66,7 @@ export function ObservationScreen({
   const [fungsionalStep, setFungsionalStep] = useState<number>(0); // 0 to 5 for the 6 domains
   const [showIncompleteModal, setShowIncompleteModal] = useState<boolean>(false);
   const [highlightUnanswered, setHighlightUnanswered] = useState<boolean>(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState<boolean>(false);
   const contentScrollRef = useRef<HTMLDivElement>(null);
 
   const currentCategory = FUNGSIONAL_KATEGORI[fungsionalStep] || FUNGSIONAL_KATEGORI[0];
@@ -296,83 +306,223 @@ export function ObservationScreen({
             )}
           </div>
 
-          {/* ── 6-STEP SLIDE INDICATOR (ASPEK 1 S/D 6) ── */}
+          {/* ── CAPSULE FILTER BAR (PERSIS SEPERTI GAMBAR USER) ── */}
           {tahap === "fungsional" && (
-            <div style={{ background: "#F7F5F0", borderBottom: `1px solid ${BDR}`, paddingTop: 7, paddingBottom: 7 }} className="px-3">
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                {FUNGSIONAL_KATEGORI.map((kat, idx) => {
-                  const meta = FUNGSIONAL_META[kat];
-                  const isCurrent = fungsionalStep === idx;
-                  const list = PROFIL_FUNGSIONAL.filter(a => a.kategori === kat);
-                  const answeredCount = list.filter(a => skorFungsional[a.id] !== undefined).length;
-                  const isComplete = answeredCount === list.length;
+            <div style={{ background: "#F5F3EF", borderBottom: `1px solid ${BDR}`, paddingTop: 8, paddingBottom: 8 }} className="px-3">
+              <div
+                style={{
+                  background: "#EDE9E1",
+                  borderRadius: 9999,
+                  padding: "4px 5px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                {/* Scrollable container of rounded pill tabs */}
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 flex-1">
+                  {FUNGSIONAL_KATEGORI.map((kat, idx) => {
+                    const conf = PILL_CONFIG[kat];
+                    const isCurrent = fungsionalStep === idx;
+                    const list = PROFIL_FUNGSIONAL.filter(a => a.kategori === kat);
+                    const answeredCount = list.filter(a => skorFungsional[a.id] !== undefined).length;
+                    const isComplete = answeredCount === list.length;
 
-                  return (
-                    <button
-                      key={kat}
-                      type="button"
-                      onClick={() => {
-                        setFungsionalStep(idx);
-                        setHighlightUnanswered(false);
-                        contentScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      style={{
-                        flex: "1 0 auto",
-                        minWidth: 54,
-                        padding: "5px 6px",
-                        borderRadius: 12,
-                        background: isCurrent ? meta.color : isComplete ? "#ECFDF5" : CARD,
-                        border: isCurrent
-                          ? `1.5px solid ${meta.color}`
-                          : isComplete
-                          ? "1px solid #A7F3D0"
-                          : `1px solid ${BDR}`,
-                        color: isCurrent ? "#FFFFFF" : isComplete ? "#059669" : TEXT,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 2,
-                        cursor: "pointer",
-                        transition: "all 0.2s ease",
-                      }}
-                      className="transition-all active:scale-95"
-                    >
-                      <div className="flex items-center gap-1">
-                        <span style={{ fontSize: 11 }}>{meta.icon}</span>
-                        <span style={{ fontFamily: DMM, fontWeight: 800, fontSize: 11 }}>
-                          {DOMAIN_CODES[kat]}
+                    return (
+                      <button
+                        key={kat}
+                        type="button"
+                        onClick={() => {
+                          setFungsionalStep(idx);
+                          setHighlightUnanswered(false);
+                          contentScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        style={{
+                          flexShrink: 0,
+                          height: 38,
+                          borderRadius: 9999,
+                          background: isComplete
+                            ? "#E6FBF2"
+                            : isCurrent
+                            ? "#FFFFFF"
+                            : "#FFFFFF",
+                          border: isComplete
+                            ? "1px solid #A7F3D0"
+                            : isCurrent
+                            ? "1.5px solid #0F172A"
+                            : "1px solid #E2E8F0",
+                          boxShadow: isCurrent
+                            ? "0 2px 8px rgba(0,0,0,0.08)"
+                            : "0 1px 3px rgba(0,0,0,0.03)",
+                          padding: "0 10px 0 5px",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 8,
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                        }}
+                        className="transition-all active:scale-95"
+                      >
+                        {/* Circular icon container */}
+                        <div
+                          style={{
+                            width: 28,
+                            height: 28,
+                            borderRadius: "50%",
+                            background: isComplete ? "#D1FAE5" : conf.circleBg,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 14,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {conf.icon}
+                        </div>
+
+                        {/* Label */}
+                        <span
+                          style={{
+                            fontSize: 12.5,
+                            fontWeight: isCurrent ? 800 : 600,
+                            fontFamily: PJS,
+                            color: isComplete ? "#065F46" : (isCurrent ? "#0F172A" : "#334155"),
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {conf.label}
                         </span>
-                        {isComplete && !isCurrent && (
-                          <Check size={11} strokeWidth={3} style={{ color: "#059669" }} />
-                        )}
-                      </div>
-                      <span
-                        style={{
-                          fontSize: 9.5,
-                          fontWeight: isCurrent ? 700 : 500,
-                          fontFamily: PJS,
-                          opacity: isCurrent ? 1 : 0.85,
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {DOMAIN_SHORT[kat]}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 8.5,
-                          padding: "0.5px 4px",
-                          borderRadius: 6,
-                          background: isCurrent ? "rgba(255,255,255,0.25)" : isComplete ? "#DCFCE7" : "#F1F5F9",
-                          color: isCurrent ? "#FFFFFF" : isComplete ? "#15803D" : MUTED,
-                          fontFamily: DMM,
-                          fontWeight: 700,
-                        }}
-                      >
-                        {answeredCount}/12
-                      </span>
-                    </button>
-                  );
-                })}
+
+                        {/* Counter badge */}
+                        <span
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            fontFamily: DMM,
+                            padding: "2px 7px",
+                            borderRadius: 9999,
+                            background: isComplete
+                              ? "#86EFAC"
+                              : isCurrent
+                              ? "#E2E8F0"
+                              : "#F1F5F9",
+                            color: isComplete
+                              ? "#065F46"
+                              : isCurrent
+                              ? "#0F172A"
+                              : "#64748B",
+                          }}
+                        >
+                          {answeredCount}/12
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Magenta switcher button on the far right as in screenshot */}
+                <div className="relative flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowCategoryDropdown(prev => !prev)}
+                    style={{
+                      height: 38,
+                      borderRadius: 9999,
+                      background: "linear-gradient(135deg, #DB2777 0%, #BE185D 100%)",
+                      color: "#FFFFFF",
+                      border: "none",
+                      padding: "0 12px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 4,
+                      cursor: "pointer",
+                      boxShadow: "0 2px 8px rgba(219, 39, 119, 0.35)",
+                    }}
+                    className="active:scale-95 transition-all"
+                    title="Pilih Kategori Asesmen"
+                  >
+                    <Users size={16} />
+                    <ChevronDown
+                      size={13}
+                      style={{
+                        transform: showCategoryDropdown ? "rotate(180deg)" : "rotate(0deg)",
+                        transition: "transform 0.2s",
+                      }}
+                    />
+                  </button>
+
+                  {/* Dropdown menu to jump to any category */}
+                  {showCategoryDropdown && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 44,
+                        right: 0,
+                        zIndex: 999,
+                        background: "#FFFFFF",
+                        borderRadius: 16,
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
+                        border: "1px solid #E2E8F0",
+                        padding: 6,
+                        minWidth: 190,
+                      }}
+                    >
+                      {FUNGSIONAL_KATEGORI.map((kat, idx) => {
+                        const conf = PILL_CONFIG[kat];
+                        const list = PROFIL_FUNGSIONAL.filter(a => a.kategori === kat);
+                        const answeredCount = list.filter(a => skorFungsional[a.id] !== undefined).length;
+                        const isComplete = answeredCount === list.length;
+                        const isCurrent = fungsionalStep === idx;
+
+                        return (
+                          <button
+                            key={kat}
+                            type="button"
+                            onClick={() => {
+                              setFungsionalStep(idx);
+                              setShowCategoryDropdown(false);
+                              setHighlightUnanswered(false);
+                              contentScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                            }}
+                            style={{
+                              width: "100%",
+                              padding: "8px 10px",
+                              borderRadius: 10,
+                              border: "none",
+                              background: isCurrent ? "#F1F5F9" : "transparent",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              cursor: "pointer",
+                              textAlign: "left",
+                            }}
+                            className="hover:bg-slate-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span style={{ fontSize: 14 }}>{conf.icon}</span>
+                              <span style={{ fontSize: 12, fontWeight: isCurrent ? 700 : 500, color: "#1E293B", fontFamily: PJS }}>
+                                {conf.label}
+                              </span>
+                            </div>
+                            <span
+                              style={{
+                                fontSize: 10,
+                                fontWeight: 700,
+                                padding: "1px 6px",
+                                borderRadius: 9999,
+                                background: isComplete ? "#D1FAE5" : "#F1F5F9",
+                                color: isComplete ? "#065F46" : "#64748B",
+                                fontFamily: DMM,
+                              }}
+                            >
+                              {answeredCount}/12
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
