@@ -1,0 +1,322 @@
+<USER_REQUEST>
+KONTEKS
+Kartu "Progress per Semester" di src/app/components/parent.tsx (sekitar baris 
+680-700) melacak `progressData` dari data.tsx — hardcoded 4 semester dengan 
+tiga label "seni/Bakat Utama", "komunikasi/Komunikasi", "motorik/Motorik" 
+yang tidak berasal dari struktur data resmi (FUNGSIONAL_DOMAINS / RIASEC_TIPE) 
+dan mencampur dua konsep berbeda jadi satu chart. Ganti total dengan struktur 
+di bawah.
+
+PRINSIP PEMISAHAN
+Kecenderungan Aktivitas (RIASEC) dan Profil Fungsional (WHODAS/WeeFIM) punya 
+sifat berbeda dan HARUS ditampilkan dengan cara berbeda:
+- RIASEC (minat) → cocok dilihat sebagai TREN GARIS dari waktu ke waktu, 
+  karena pertanyaannya "apakah minat anak konsisten atau berubah?"
+- Fungsional (kemandirian, 6 domain) → JANGAN dipaksa jadi satu chart garis 
+  atau dirata-ratakan jadi satu angka. Tampilkan sebagai kartu ringkas 
+  "yang berkembang" vs "yang masih stabil", memakai bahasa positif.
+
+LANGKAH 1 — GANTI progressData DI data.tsx
+
+Hapus array `progressData` yang lama. Ganti dengan riwayat skor asli per 
+periode asesmen, terstruktur begini:
+
+```typescript
+export interface AsesmenPeriode {
+  periode: string;        // contoh "S1'24"
+  tanggal: string;        // contoh "3 Jun 2024"
+  skorFungsional: Record<FungsionalDomain, number | null>;  // null = data belum memadai
+  skorRiasec: Record<RiasecTipe, number | null>;
+}
+
+export const seedRiwayatAsesmen: Record<number, AsesmenPeriode[]> = {
+  // key = studentId
+  1: [
+    { periode:"S1'23", tanggal:"Des 2023", 
+      skorFungsional:{Kognisi:58,Mobilitas:70,"Perawatan Diri":62,"Interaksi dengan Orang Lain":40,"Aktivitas Sehari-hari":55,Partisipasi:48},
+      skorRiasec:{Realistic:30,Investigative:35,Artistic:70,Social:45,Enterprising:25,Conventional:40} },
+    { periode:"S2'23", tanggal:"Jun 2024",
+      skorFungsional:{Kognisi:62,Mobilitas:72,"Perawatan Diri":65,"Interaksi dengan Orang Lain":52,"Aktivitas Sehari-hari":58,Partisipasi:55},
+      skorRiasec:{Realistic:32,Investigative:38,Artistic:78,Social:50,Enterprising:28,Conventional:42} },
+    { periode:"S1'24", tanggal:"Des 2024",
+      skorFungsional:{Kognisi:65,Mobilitas:73,"Perawatan Diri":70,"Interaksi dengan Orang Lain":68,"Aktivitas Sehari-hari":60,Partisipasi:58},
+      skorRiasec:{Realistic:35,Investigative:42,Artistic:85,Social:65,Enterprising:30,Conventional:45} },
+  ],
+  // tambahkan untuk siswa lain sesuai kebutuhan data contoh
+};
+```
+
+Data ini yang seharusnya diisi dari hasil asesmen guru sungguhan di masa 
+depan (bukan mock) — untuk sekarang cukup data contoh yang masuk akal.
+
+LANGKAH 2 — BUAT DUA KOMPONEN BARU MENGGANTIKAN KARTU LAMA
+
+### 2a. TrenKecenderunganAktivitas (line chart, RIASEC saja)
+
+```tsx
+function TrenKecenderunganAktivitas({ riwayat }: { riwayat: AsesmenPeriode[] }) {
+  if (riwayat.length < 2) {
+    return (
+      <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+        <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tren Kecenderungan Aktivitas</p>
+        <p className="text-xs" style={{color:MUTED}}>Ini asesmen pertama. Tren akan mulai terlihat mulai periode berikutnya.</p>
+      </div>
+    );
+  }
+
+  // Ambil 3 tipe RIASEC dengan skor tertinggi di periode TERBARU saja
+  const terbaru = riwayat[riwayat.length - 1];
+  const top3 = Object.entries(terbaru.skorRiasec)
+    .filter(([,v]) => v !== null)
+    .sort((a,b) => (b[1]as number) - (a[1] as number))
+    .slice(0,3)
+    .map(([tipe]) => tipe as RiasecTipe);
+
+  const chartData = riwayat.map(r => {
+    const row: any = { periode: r.periode };
+    top3.forEach(tipe => { row[tipe] = r.skorRiasec[tipe]; });
+    return row;
+  });
+
+  return (
+    <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+      <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tren Kecenderungan Aktivitas</p>
+      <p className="text-xs mb-3" style={{color:MUTED}}>3 kecenderungan paling menonjol, dari waktu ke waktu.</p>
+      <ResponsiveContainer width="100%" height={160}>
+        <LineChart data={chartData} margin={{top:4,right:4,left:-24,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke={BDR}/>
+          <XAxis dataKey="periode" tick={{fontSize:10}}/>
+          <YAxis domain={[0,100]} tick={{fontSize:10}}/>
+          <Tooltip/>
+          {top3.map(tipe => (
+            <Line key={tipe} type="monotone" dataKey={tipe} 
+                  stroke={RIASEC_META[tipe].color} strokeWidth={2.5} dot={{r:3}} 
+                  name={tipe}/>
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+      <div className="flex gap-3 mt-2 flex-wrap">
+        {top3.map(tipe => (
+          <div key={tipe} className="flex items-center gap-1.5 text-xs" style={{color:MUTED}}>
+            <span style={{width:8,height:8,borderRadius:99,background:RIASEC_META[tipe].color,display:"inline-block"}}/>
+            {tipe}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### 2b. PerkembanganKemandirian (kartu delta, BUKAN chart)
+
+```tsx
+function PerkembanganKemandirian({ riwayat }: { riwayat: AsesmenPeriode[] }) {
+  if (riwayat.length < 2) {
+    return (
+      <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+        <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Perkembangan Kemandirian</p>
+        <p className="text-xs" style={{color:MUTED}}>Ini asesmen pertama. Perbandingan akan muncul mulai periode berikutnya.</p>
+      </div>
+    );
+  }
+
+  const sebelum = riwayat[riwayat.length - 2].skorFungsional;
+  const sekarang = riwayat[riwayat.length - 1].skorFungsional;
+
+  const deltas = FUNGSIONAL_DOMAINS
+    .map(domain => ({
+      domain,
+      delta: (sekarang[domain] ?? 0) - (sebelum[domain] ?? 0),
+      tersedia: sekarang[domain] !== null && sebelum[domain] !== null,
+    }))
+    .filter(d => d.tersedia);
+
+  // Aturan: selisih <10 poin = "relatif stabil", bukan naik/turun
+  const berkembang = deltas.filter(d => d.delta >= 10).sort((a,b)=>b.delta-a.delta);
+  const stabil = deltas.filter(d => Math.abs(d.delta) < 10);
+
+  return (
+    <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
+      <p className="font-bold text-sm mb-3" style={{fontFamily:PJS,color:TEXT}}>Perkembangan Kemandirian</p>
+      
+      {berkembang.length > 0 && (
+        <div className="mb-3">
+          <p className="text-xs font-semibold mb-1.5" style={{color:"#2E7A5C"}}>Yang berkembang sejak periode lalu</p>
+          {berkembang.map(d => (
+            <div key={d.domain} className="flex justify-between text-sm py-1">
+              <span style={{color:TEXT}}>↑ {d.domain}</span>
+              <span className="font-semibold" style={{color:"#2E7A5C"}}>+{d.delta} poin</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {stabil.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold mb-1.5" style={{color:MUTED}}>Yang masih perlu dipantau</p>
+          {stabil.map(d => (
+            <div key={d.domain} className="flex justify-between text-sm py-1">
+              <span style={{color:TEXT}}>→ {d.domain}</span>
+              <span style={{color:MUTED}}>relatif stabil</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+LANGKAH 3 — GANTI PEMANGGILAN DI ParentDetailScreen
+
+Cari blok kode kartu "Progress per Semester" yang lama (sekitar baris 
+680-700 di parent.tsx) dan ganti pemanggilannya jadi:
+
+```tsx
+<TrenKecenderunganAktivitas riwayat={seedRiwayatAsesmen[child.id] ?? []} />
+<PerkembanganKemandirian riwayat={seedRiwayatAsesmen[child.id] ?? []} />
+```
+
+Tempatkan keduanya di bagian "Peta Potensi Anak" (setelah kartu Profil 
+Fungsional dan Kecenderungan Aktivitas yang sudah ada dari perbaikan 
+sebelumnya), karena ini memang bagian dari perkembangan hasil asesmen, 
+bukan berdiri sendiri.
+
+VALIDASI
+- Pastikan kartu tren menyesuaikan kalau data cuma 1 periode (tampilkan 
+  pesan "asesmen pertama", jangan render chart kosong/1 titik).
+- Pastikan domain dengan skor null (data belum memadai) di salah satu 
+  periode dikeluarkan dari perhitungan delta, bukan dianggap 0.
+- Hapus import/referensi `progressData` yang lama di seluruh file.
+- npm run build, laporkan kalau ada error.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-20T23:17:55+07:00.
+
+The user's current state is as follows:
+Active Document: c:\Users\user\Documents\Sareh-Asih\src\app\components\observation.tsx (LANGUAGE_TSX)
+Cursor is on line: 253
+Other open documents:
+- c:\Users\user\Documents\Sareh-Asih\src\app\components\observation.tsx (LANGUAGE_TSX)
+Running terminal commands:
+- npm run dev (in c:\Users\user\Documents\Sareh-Asih, running for 16m24s)
+</ADDITIONAL_METADATA>
+
+====================
+
+<USER_REQUEST>
+KONTEKS
+Perbaikan struktur seksi di ParentDetailScreen (src/app/components/parent.tsx). 
+Saat ini ada label seksi "PETA POTENSI ANAK" di atas kartu Profil Kemandirian 
++ Kecenderungan Aktivitas, tapi kartu Tren Kecenderungan Aktivitas dan 
+Perkembangan Kemandirian (dari perbaikan sebelumnya) belum punya label seksi 
+sendiri — semua terlihat menyatu jadi satu blok panjang tanpa pembeda.
+
+REGRESI YANG PERLU DIPERBAIKI DULU
+Badge "Rata-rata: 44%" muncul lagi di kartu Profil Kemandirian. Ini sudah 
+pernah diminta dihapus sebelumnya (rata-rata dari 6 domain menyembunyikan 
+pola, dan framing angka tunggal berisiko jadi label defisit). Hapus lagi 
+badge ini beserta logika penghitungan rata-ratanya — pastikan tidak muncul 
+di kartu manapun (Profil Kemandirian maupun Kecenderungan Aktivitas).
+
+LANGKAH 1 — BUAT KOMPONEN SeksiCollapsible YANG BISA DIPAKAI ULANG
+
+Buat satu komponen generik untuk section header yang bisa toggle 
+expand/collapse, dipakai di semua pengelompokan kartu di halaman ini:
+
+```tsx
+function SeksiCollapsible({
+  judul, defaultTerbuka = true, children,
+}: { judul: string; defaultTerbuka?: boolean; children: React.ReactNode }) {
+  const [terbuka, setTerbuka] = useState(defaultTerbuka);
+  return (
+    <div className="mt-5">
+      <button
+        onClick={() => setTerbuka(!terbuka)}
+        className="w-full flex items-center justify-between px-1 mb-2"
+      >
+        <span
+          className="text-xs font-bold uppercase"
+          style={{ color: MUTED, fontFamily: PJS, letterSpacing: "0.05em" }}
+        >
+          {judul}
+        </span>
+        <ChevronDown
+          size={14}
+          style={{
+            color: MUTED,
+            transform: terbuka ? "rotate(0deg)" : "rotate(-90deg)",
+            transition: "transform 0.15s",
+          }}
+        />
+      </button>
+      {terbuka && <div className="space-y-3">{children}</div>}
+    </div>
+  );
+}
+```
+
+Pastikan `ChevronDown` dan `useState` sudah diimpor di parent.tsx (kemungkinan 
+besar sudah ada dari komponen lain seperti LaporanGuruSection versi awal — 
+cek importnya, jangan duplikat import).
+
+LANGKAH 2 — BUNGKUS SETIAP KELOMPOK KARTU DENGAN SeksiCollapsible
+
+Susun ulang JSX di ParentDetailScreen jadi struktur berikut (urutan tetap 
+sama seperti sekarang, hanya dibungkus per kelompok):
+
+```tsx
+{/* Laporan dari Guru — TIDAK dibungkus SeksiCollapsible, biarkan berdiri 
+    sendiri seperti sekarang karena ini bukan bagian dari hasil asesmen */}
+<LaporanGuruSection ... />
+
+<SeksiCollapsible judul="Peta Potensi Anak" defaultTerbuka={true}>
+  <ProfilFungsionalRadar ... />
+  <ProfilKecenderunganBar ... />
+</SeksiCollapsible>
+
+<SeksiCollapsible judul="Tren & Perkembangan" defaultTerbuka={true}>
+  <TrenKecenderunganAktivitas riwayat={...} />
+  <PerkembanganKemandirian riwayat={...} />
+</SeksiCollapsible>
+
+<SeksiCollapsible judul="Saran Guru untuk di Rumah" defaultTerbuka={true}>
+  <SaranGuruSection ... />
+</SeksiCollapsible>
+```
+
+Sesuaikan nama komponen persis dengan yang sudah ada di file ini (misal 
+kalau "Saran Guru untuk di Rumah" adalah bagian JSX inline, bukan komponen 
+terpisah, bungkus langsung tanpa perlu extract jadi komponen baru — yang 
+penting dibungkus SeksiCollapsible).
+
+Judul seksi yang dipakai: "Peta Potensi Anak", "Tren & Perkembangan", 
+"Saran Guru untuk di Rumah" — masing-masing kelompok defaultnya TERBUKA 
+(defaultTerbuka=true) supaya orang tua tetap langsung lihat semua isinya 
+saat pertama buka halaman; toggle ini untuk kenyamanan menyembunyikan 
+setelah dibaca, bukan untuk menyembunyikan info penting secara default.
+
+VALIDASI
+- Tap judul seksi harus toggle expand/collapse dengan animasi panah yang 
+  berputar, konten di bawahnya langsung hilang/muncul tanpa delay aneh.
+- Pastikan badge "Rata-rata: X%" benar-benar hilang dari kartu Profil 
+  Kemandirian dan Kecenderungan Aktivitas — grep ulang kode untuk 
+  memastikan tidak ada sisa logika perhitungan rata-rata gabungan di 
+  file ini.
+- npm run build, laporkan kalau ada error.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-20T23:34:06+07:00.
+
+The user's current state is as follows:
+Active Document: c:\Users\user\Documents\Sareh-Asih\src\app\components\observation.tsx (LANGUAGE_TSX)
+Cursor is on line: 253
+Other open documents:
+- c:\Users\user\Documents\Sareh-Asih\src\app\components\observation.tsx (LANGUAGE_TSX)
+Running terminal commands:
+- npm run dev (in c:\Users\user\Documents\Sareh-Asih, running for 32m35s)
+</ADDITIONAL_METADATA>
+
+====================
+

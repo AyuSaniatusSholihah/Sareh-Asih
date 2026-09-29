@@ -28,24 +28,18 @@ export function AkunGuruModal({
 }) {
   const [nama, setNama] = useState(profile.nama);
   const [email, setEmail] = useState(profile.email);
-  const [jabatan, setJabatan] = useState(profile.jabatan || "");
   const [noHp, setNoHp] = useState(profile.noHp || "");
   const [edit, setEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const valid = nama.trim() !== "" && email.trim() !== "" && jabatan.trim() !== "";
-
-  const JABATAN_OPTIONS = [
-    "Guru Kelas", "Guru Mata Pelajaran", "Guru Pendamping Khusus (GPK)",
-    "Wali Kelas", "Terapis", "Konselor",
-  ];
+  const valid = nama.trim() !== "" && email.trim() !== "";
 
   return (
     <ModalShell
       step={1}
       total={3}
       title="Konfirmasi Profil Anda"
-      desc="Data diambil dari akun Google. Lengkapi jabatan untuk melanjutkan."
+      desc="Data diambil dari akun Google."
       onClose={onClose}
     >
       {/* Google badge */}
@@ -71,30 +65,32 @@ export function AkunGuruModal({
             ))}
           </div>
         )}
-        <button onClick={() => setEdit(!edit)} className="text-xs font-semibold" style={{ color: T, fontFamily: IPS, minHeight: 36 }}>
-          {edit ? "✓ Selesai mengubah" : "✎ Ubah nama atau email"}
-        </button>
-
-        {/* Jabatan — wajib (SRS-F-002) */}
-        <div>
-          <label className="text-xs font-semibold block mb-1.5" style={{ color: TEXT, fontFamily: IPS }}>
-            <Briefcase size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
-            Jabatan / Peran <span style={{ color: "#B91C1C" }}>*</span>
-          </label>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {JABATAN_OPTIONS.map(j => (
-              <button key={j} onClick={() => setJabatan(j)}
-                style={{
-                  padding: "6px 12px", borderRadius: 14, fontSize: 12, fontWeight: 600, fontFamily: IPS,
-                  background: jabatan === j ? SEC : CARD,
-                  border: `1.5px solid ${jabatan === j ? T : BDR}`,
-                  color: jabatan === j ? DEEP : MUTED, cursor: "pointer", transition: "all 0.15s"
-                }}>
-                {j}
-              </button>
-            ))}
+        {edit ? (
+          <div className="flex justify-end mt-1">
+            <button 
+              onClick={() => setEdit(false)} 
+              style={{ 
+                background: CARD,
+                border: `1.5px solid ${BDR}`,
+                color: DEEP,
+                padding: "6px 16px", 
+                borderRadius: 14, 
+                fontSize: 12, 
+                fontWeight: 700, 
+                fontFamily: IPS, 
+                cursor: "pointer",
+                boxShadow: "0 2px 6px rgba(91,122,104,0.08)",
+              }}
+              className="active:scale-[0.98] hover:bg-slate-50 transition-all"
+            >
+              Simpan
+            </button>
           </div>
-        </div>
+        ) : (
+          <button onClick={() => setEdit(true)} className="text-xs font-semibold" style={{ color: T, fontFamily: IPS, minHeight: 36 }}>
+            ✎ Ubah nama atau email
+          </button>
+        )}
 
       </div>
 
@@ -134,7 +130,7 @@ export function AkunGuruModal({
               setIsSaving(false);
               setIsSaved(true);
               setTimeout(() => {
-                onNext({ nama: nama.trim(), email: email.trim(), jabatan, noHp: noHp.trim() });
+                onNext({ nama: nama.trim(), email: email.trim(), jabatan: "Guru Pendamping Khusus (GPK)", noHp: noHp.trim() });
               }, 700);
             }, 600);
           }}
