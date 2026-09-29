@@ -11,6 +11,7 @@ import {
   useStudents, type FungsionalKategori, type RiasecKategori,
 } from "./data";
 import { VoiceTextarea } from "./voice-input";
+import { exportAsesmenFungsionalCSV } from "./export";
 
 type Tahap = "fungsional" | "kecenderungan" | "catatan";
 
@@ -32,6 +33,8 @@ export function ObservationScreen({
   const [skorFungsional, setSkorFungsional] = useState<Record<number, number>>({});
   const [skorRiasec, setSkorRiasec] = useState<Record<number, number>>({});
   const [catatan, setCatatan] = useState("");
+  const [catatanButir, setCatatanButir] = useState<Record<number, string>>({});
+  const [openCatatanId, setOpenCatatanId] = useState<number | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [activeRiasecFilter, setActiveRiasecFilter] = useState<string>("Semua");
@@ -125,17 +128,24 @@ export function ObservationScreen({
           height: "100%",
         }}
       >
-        <TBar title="Asesmen Siswa" sub={student.name} onBack={onBack} />
+        <TBar title="Asesmen Siswa" sub="Profil Fungsional & Kemandirian" onBack={onBack} />
 
         {/* Identitas + stepper + progress (terkunci saat scroll) */}
         <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#F7F5F0", boxShadow: "0 4px 12px rgba(91,122,104,0.08)" }}>
-          <div style={{ background: CARD }} className="px-4 pt-2 pb-3">
-            <div className="mb-3">
+          <div style={{ background: CARD }} className="px-4 pt-2.5 pb-3">
+            <div className="mb-2.5">
               <div className="min-w-0">
-                <p className="font-bold text-base" style={{ fontFamily: PJS, color: TEXT }}>{student.name}</p>
-                <div className="flex gap-1.5 mt-1 flex-wrap">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <p className="font-bold text-base" style={{ fontFamily: PJS, color: TEXT }}>{student.name}</p>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md flex-shrink-0" style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #FDE68A" }}>
+                    SMPLB C · Kemandirian
+                  </span>
+                </div>
+                <div className="flex gap-1.5 mt-1 flex-wrap items-center">
                   <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#F3EFFF", color: "#6D28D9" }}>{student.abk}</span>
                   <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: SEC, color: T }}>Kelas {student.kelas}</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full font-medium" style={{ background: "#F1F5F9", color: MUTED }}>NISN: {student.nisn || "0098421873"}</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full font-medium" style={{ background: "#F1F5F9", color: MUTED }}>Penilai: {student.teacher}</span>
                 </div>
               </div>
             </div>
@@ -175,7 +185,7 @@ export function ObservationScreen({
             {tahap === "fungsional" && (
               <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 14, padding: "10px 14px", boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }}>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span style={{ color: TEXT, fontWeight: 600 }}>Profil Fungsional Terisi</span>
+                  <span style={{ color: TEXT, fontWeight: 600 }}>Profil Fungsional Terisi (D1–D6)</span>
                   <span className="font-bold" style={{ color: "#059669", fontFamily: DMM, fontSize: 13 }}>{terisiFungsional}/{totalFungsional} · {fungsionalPct}%</span>
                 </div>
                 <div className="h-2 rounded-full" style={{ background: "#EDE9E3" }}>
@@ -232,7 +242,7 @@ export function ObservationScreen({
                   flexShrink: 0
                 }}
               >
-                Semua Kategori
+                Semua Domain (72)
               </button>
               {FUNGSIONAL_KATEGORI.map(kat => {
                 const meta = FUNGSIONAL_META[kat];
@@ -262,7 +272,7 @@ export function ObservationScreen({
                     }}
                   >
                     <span>{meta.icon}</span>
-                    <span>{kat}</span>
+                    <span>{meta.kode} {kat}</span>
                     <span style={{ fontSize: 10, opacity: 0.9, background: isActive ? "rgba(255,255,255,0.25)" : meta.bg, padding: "1px 5px", borderRadius: 10, color: isActive ? "#FFFFFF" : meta.color }}>{isi}/{list.length}</span>
                   </button>
                 );
@@ -334,7 +344,17 @@ export function ObservationScreen({
           <div className="px-4 pt-4 pb-6 space-y-3">
             {/* Legenda skala */}
             <div style={{ background: CARD, border: `1px solid ${BDR}` }} className="rounded-2xl px-4 py-3 mb-2">
-              <p className="text-xs font-bold mb-2" style={{ color: TEXT, fontFamily: PJS }}>Arti tingkat kemampuan</p>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-bold" style={{ color: TEXT, fontFamily: PJS }}>
+                  ASESMEN PROFIL FUNGSIONAL (KEMANDIRIAN)
+                </p>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#D4E8DA", color: DEEP }}>
+                  72 Butir
+                </span>
+              </div>
+              <p className="text-[11px] mb-2 font-medium" style={{ color: MUTED }}>
+                SMPLB Kategori C (Tunagrahita Ringan) · Skala: 0 = Belum, 1 = Dibantu, 2 = Sebagian, 3 = Mandiri
+              </p>
               <div className="space-y-1.5">
                 {SKALA_FUNGSIONAL.map(s => (
                   <div key={s.v} className="flex items-center gap-2">
@@ -348,59 +368,108 @@ export function ObservationScreen({
             {FUNGSIONAL_KATEGORI.filter(kat => activeFungsionalFilter === "Semua" || activeFungsionalFilter === kat).map(kat => {
               const meta = FUNGSIONAL_META[kat];
               const list = PROFIL_FUNGSIONAL.filter(a => a.kategori === kat);
-              const rata = rataFungsional(kat);
               const isi = list.filter(a => skorFungsional[a.id] !== undefined).length;
               return (
                 <div key={kat} style={{ background: CARD, border: `1.5px solid ${meta.color}35`, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }} className="rounded-2xl p-4">
                   <div style={{ position: "sticky", top: 146, zIndex: 10, background: CARD, paddingTop: 4, paddingBottom: 8, marginTop: -4, borderBottom: `1px solid ${BDR}30` }} className="flex items-center gap-3 mb-1">
                     <div style={{ width: 42, height: 42, background: meta.bg, borderRadius: 12, border: `1px solid ${meta.color}40`, flexShrink: 0, fontSize: 20 }} className="flex items-center justify-center">{meta.icon}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>{kat}</p>
+                      <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>{meta.kode} {kat}</p>
                       <p className="text-xs" style={{ color: MUTED }}>{meta.desc}</p>
                     </div>
                     <span className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0" style={{ background: isi > 0 ? meta.bg : BG, color: isi > 0 ? meta.color : MUTED, border: `1px solid ${isi > 0 ? meta.color + "50" : BDR}`, fontFamily: DMM }}>{isi}/{list.length}</span>
                   </div>
 
                   <div className="space-y-3 mt-3" style={{ borderTop: `1px solid ${BDR}`, paddingTop: 12 }}>
-                    {list.map(a => (
-                      <div key={a.id}>
-                        <p className="text-sm leading-snug mb-2 font-medium" style={{ color: TEXT }}>{a.text}</p>
-                        <div className="flex gap-1.5">
-                          {SKALA_FUNGSIONAL.filter(s => s.v !== -1).map(s => {
-                            const on = skorFungsional[a.id] === s.v;
-                            return (
-                              <button key={s.v} onClick={() => setSkorFungsional(p => ({ ...p, [a.id]: s.v }))}
-                                style={{
-                                  flex: 1,
-                                  minHeight: 42,
-                                  background: on ? s.color : CARD,
-                                  border: on ? `2px solid ${s.color}` : `1.5px solid ${BDR}`,
-                                  color: on ? "#FFFFFF" : TEXT,
-                                  fontFamily: PJS,
-                                  fontWeight: on ? 800 : 600,
-                                  boxShadow: on ? `0 3px 10px ${s.color}40` : "none"
-                                }}
-                                className="rounded-xl text-xs transition-all active:scale-95">
-                                {s.l}
-                              </button>
-                            );
-                          })}
+                    {list.map(a => {
+                      const hasScore = skorFungsional[a.id] !== undefined;
+                      const showCatatan = openCatatanId === a.id || !!catatanButir[a.id];
+                      return (
+                        <div
+                          key={a.id}
+                          className="p-3 rounded-xl border transition-all"
+                          style={{
+                            background: "#FCFBF9",
+                            borderColor: hasScore && skorFungsional[a.id] !== -1 ? `${meta.color}40` : "#EDE9E3",
+                            boxShadow: hasScore && skorFungsional[a.id] !== -1 ? `0 2px 6px ${meta.color}10` : "none"
+                          }}
+                        >
+                          <div className="flex items-start gap-2 mb-2">
+                            <span
+                              className="text-[10px] font-bold px-1.5 py-0.5 rounded text-white flex-shrink-0 mt-0.5"
+                              style={{ background: meta.color, fontFamily: DMM }}
+                            >
+                              {a.kode}
+                            </span>
+                            <p className="text-sm leading-snug font-medium flex-1" style={{ color: TEXT }}>{a.text}</p>
+                          </div>
+
+                          <div className="flex gap-1.5">
+                            {SKALA_FUNGSIONAL.filter(s => s.v !== -1).map(s => {
+                              const on = skorFungsional[a.id] === s.v;
+                              return (
+                                <button key={s.v} onClick={() => setSkorFungsional(p => ({ ...p, [a.id]: s.v }))}
+                                  style={{
+                                    flex: 1,
+                                    minHeight: 40,
+                                    background: on ? s.color : CARD,
+                                    border: on ? `2px solid ${s.color}` : `1.5px solid ${BDR}`,
+                                    color: on ? "#FFFFFF" : TEXT,
+                                    fontFamily: PJS,
+                                    fontWeight: on ? 800 : 600,
+                                    boxShadow: on ? `0 3px 10px ${s.color}40` : "none"
+                                  }}
+                                  className="rounded-xl text-xs transition-all active:scale-95">
+                                  {s.l}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          <div className="mt-2 flex items-center justify-between gap-2 pt-1 border-t border-[#F1EFEA]">
+                            <button onClick={() => setSkorFungsional(p => ({ ...p, [a.id]: -1 }))}
+                              className="text-[11px] px-2 py-1 rounded-lg transition-all active:scale-95"
+                              style={{
+                                background: skorFungsional[a.id] === -1 ? "#F1F5F9" : "transparent",
+                                color: skorFungsional[a.id] === -1 ? "#475569" : MUTED,
+                                border: skorFungsional[a.id] === -1 ? "1px solid #CBD5E1" : `1px dashed #CBD5E1`,
+                                fontWeight: skorFungsional[a.id] === -1 ? 700 : 500,
+                                fontFamily: PJS
+                              }}>
+                              Tidak dapat dijawab
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setOpenCatatanId(openCatatanId === a.id ? null : a.id)}
+                              className="text-[11px] px-2 py-1 rounded-lg transition-all flex items-center gap-1"
+                              style={{
+                                background: catatanButir[a.id] ? "#FEF3C7" : "transparent",
+                                color: catatanButir[a.id] ? "#92400E" : MUTED,
+                                fontFamily: PJS,
+                                fontWeight: catatanButir[a.id] ? 700 : 500,
+                              }}
+                            >
+                              <span>💬</span>
+                              <span>{catatanButir[a.id] ? "Catatan tersimpan" : "+ Catatan"}</span>
+                            </button>
+                          </div>
+
+                          {showCatatan && (
+                            <div className="mt-2 pt-2 border-t border-dashed border-[#E2DDD5]">
+                              <input
+                                type="text"
+                                placeholder="Tulis catatan butir ini (mis: respon lambat, butuh contoh 2x)..."
+                                value={catatanButir[a.id] || ""}
+                                onChange={(e) => setCatatanButir(p => ({ ...p, [a.id]: e.target.value }))}
+                                className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-[#D5D0C7] focus:outline-none focus:ring-1 focus:ring-[#5B7A68] bg-white"
+                                style={{ color: TEXT, fontFamily: IPS }}
+                              />
+                            </div>
+                          )}
                         </div>
-                        <div className="mt-2 flex">
-                          <button onClick={() => setSkorFungsional(p => ({ ...p, [a.id]: -1 }))}
-                            className="text-[11px] px-2.5 py-1.5 rounded-lg transition-all active:scale-95"
-                            style={{
-                              background: skorFungsional[a.id] === -1 ? "#F1F5F9" : "transparent",
-                              color: skorFungsional[a.id] === -1 ? "#475569" : MUTED,
-                              border: skorFungsional[a.id] === -1 ? "1px solid #CBD5E1" : `1px dashed #CBD5E1`,
-                              fontWeight: skorFungsional[a.id] === -1 ? 700 : 500,
-                              fontFamily: PJS
-                            }}>
-                            Tidak dapat dijawab
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -810,6 +879,32 @@ export function ObservationScreen({
               >
                 <Sparkles size={16} />
                 <span>Lihat Hasil Asesmen</span>
+              </button>
+
+              {/* Button 2: Unduh Spreadsheet Excel (CSV) */}
+              <button
+                type="button"
+                onClick={() => exportAsesmenFungsionalCSV(student, skorFungsional, catatanButir)}
+                style={{
+                  width: "100%",
+                  minHeight: 44,
+                  background: "#F0FDF4",
+                  color: "#166534",
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  fontSize: 13,
+                  borderRadius: 14,
+                  border: "1.5px solid #BBF7D0",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                }}
+                className="hover:bg-emerald-50 active:scale-95 transition-all"
+              >
+                <span>📊</span>
+                <span>Unduh Lembar Excel (CSV)</span>
               </button>
 
               {/* Button 2: Kembali (Redirects to Catatan) */}

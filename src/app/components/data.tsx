@@ -23,18 +23,19 @@ export interface Student {
   tingkatDukungan?:string; komunikasi?:string; motorik?:string;
   sensorik?:string; rentang?:string; minat?:string; terapi?:string;
   kodeOrtu?:string;
+  nisn?: string;
 }
 
 // ─── Seed data ───────────────────────────────────────────────────────
 export const seedStudents: Student[] = [
-  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI" },
-  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA" },
-  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA" },
-  { id:4, name:"Dina Maharani",  abk:"Tunanetra",   kelas:"IX C",   age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA" },
-  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI" },
-  { id:6, name:"Maya Dewi",      abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA" },
-  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"IX A",   age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI" },
-  { id:8, name:"Sari Indah",     abk:"Tunarungu",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI" },
+  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","LKS"],         caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI", nisn:"0098421873" },
+  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS2N-PDBK","O2SN Diksus"], caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA", nisn:"0097654321" },
+  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, comps:[],                           caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA", nisn:"0091122334" },
+  { id:4, name:"Dina Maharani",  abk:"Tunanetra",   kelas:"IX C",   age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA", nisn:"0089988776" },
+  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, comps:["FLS2N-PDBK"],               caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI", nisn:"0093344556" },
+  { id:6, name:"Maya Dewi",      abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                           caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA", nisn:"0095566778" },
+  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"IX A",   age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  comps:["LKS"],                      caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI", nisn:"0087788990" },
+  { id:8, name:"Sari Indah",     abk:"Tunarungu",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],              caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI", nisn:"0092233445" },
 ];
 
 // ─── Laporan ke orang tua ────────────────────────────────────────────
@@ -87,13 +88,13 @@ export const FUNGSIONAL_KATEGORI: FungsionalKategori[] = [
   "Kognisi", "Mobilitas", "Perawatan Diri", "Interaksi dengan Orang Lain", "Aktivitas Sehari-hari", "Partisipasi"
 ];
 
-export const FUNGSIONAL_META: Record<FungsionalKategori,{icon:string;color:string;bg:string;desc:string}> = {
-  "Kognisi": {icon:"🧠", color:"#0284C7", bg:"#F0F9FF", desc:"Memahami instruksi, memori, dan penyelesaian masalah"},
-  "Mobilitas": {icon:"🏃", color:"#059669", bg:"#ECFDF5", desc:"Berpindah tempat dan menavigasi lingkungan"},
-  "Perawatan Diri": {icon:"🧍", color:"#F59E0B", bg:"#FFFBEB", desc:"Makan, ke toilet, dan menjaga kerapian"},
-  "Interaksi dengan Orang Lain": {icon:"🤝", color:"#7C3AED", bg:"#F5F3FF", desc:"Komunikasi dan respons sosial"},
-  "Aktivitas Sehari-hari": {icon:"📅", color:"#D97706", bg:"#FEF3C7", desc:"Tanggung jawab rutin dan tugas sekolah"},
-  "Partisipasi": {icon:"🙋", color:"#DB2777", bg:"#FDF2F8", desc:"Keterlibatan dalam kegiatan kelas atau kelompok"},
+export const FUNGSIONAL_META: Record<FungsionalKategori,{icon:string;color:string;bg:string;desc:string;kode:string}> = {
+  "Kognisi": {icon:"🧠", color:"#0284C7", bg:"#F0F9FF", desc:"Memahami instruksi, memori, dan penyelesaian masalah", kode:"D1"},
+  "Mobilitas": {icon:"🏃", color:"#059669", bg:"#ECFDF5", desc:"Berpindah tempat dan menavigasi lingkungan", kode:"D2"},
+  "Perawatan Diri": {icon:"🧍", color:"#F59E0B", bg:"#FFFBEB", desc:"Makan, ke toilet, dan menjaga kerapian", kode:"D3"},
+  "Interaksi dengan Orang Lain": {icon:"🤝", color:"#7C3AED", bg:"#F5F3FF", desc:"Komunikasi dan respons sosial", kode:"D4"},
+  "Aktivitas Sehari-hari": {icon:"📅", color:"#D97706", bg:"#FEF3C7", desc:"Tanggung jawab rutin dan tugas sekolah", kode:"D5"},
+  "Partisipasi": {icon:"🙋", color:"#DB2777", bg:"#FDF2F8", desc:"Keterlibatan dalam kegiatan kelas atau kelompok", kode:"D6"},
 };
 
 export const SKALA_FUNGSIONAL = [
@@ -104,39 +105,99 @@ export const SKALA_FUNGSIONAL = [
   {v:3, l:"Mandiri",  d:"3 Bisa sendiri secara konsisten",     color:"#2E3E35", bg:"#D4E8DA"},
 ];
 
-export interface FungsionalItem { id:number; text:string; kategori:FungsionalKategori }
+export interface FungsionalItem {
+  id: number;
+  kode: string;
+  no: number;
+  domain: string;
+  kategori: FungsionalKategori;
+  text: string;
+}
 
 export const PROFIL_FUNGSIONAL: FungsionalItem[] = [
-  // D1 Kognisi
-  {id:101, kategori:"Kognisi", text:"Memahami instruksi bertahap (2-3 langkah) yang diberikan guru."},
-  {id:102, kategori:"Kognisi", text:"Mengingat informasi pelajaran dari pertemuan sebelumnya."},
-  {id:103, kategori:"Kognisi", text:"Mempertahankan perhatian pada satu tugas hingga selesai."},
-  {id:104, kategori:"Kognisi", text:"Menemukan cara alternatif ketika menghadapi kesulitan dalam tugas."},
-  // D2 Mobilitas
-  {id:201, kategori:"Mobilitas", text:"Berpindah tempat di dalam ruang kelas."},
-  {id:202, kategori:"Mobilitas", text:"Menavigasi lingkungan sekolah di luar kelas (kantin, toilet, lapangan)."},
-  {id:203, kategori:"Mobilitas", text:"Mengikuti kegiatan yang melibatkan gerak fisik."},
-  {id:204, kategori:"Mobilitas", text:"Menyesuaikan diri ketika ada perubahan tata letak atau rute."},
-  // D3 Perawatan Diri
-  {id:301, kategori:"Perawatan Diri", text:"Makan dan minum sendiri saat istirahat."},
-  {id:302, kategori:"Perawatan Diri", text:"Ke toilet dan membersihkan diri sendiri."},
-  {id:303, kategori:"Perawatan Diri", text:"Menjaga kerapian diri dan seragam."},
-  {id:304, kategori:"Perawatan Diri", text:"Menjaga dan mengelola barang miliknya sendiri."},
-  // D4 Interaksi dengan Orang Lain
-  {id:401, kategori:"Interaksi dengan Orang Lain", text:"Memulai komunikasi dengan teman atau guru."},
-  {id:402, kategori:"Interaksi dengan Orang Lain", text:"Merespons ketika disapa atau diajak berkomunikasi."},
-  {id:403, kategori:"Interaksi dengan Orang Lain", text:"Menjaga interaksi berlangsung dua arah (bukan hanya menjawab satu kali)."},
-  {id:404, kategori:"Interaksi dengan Orang Lain", text:"Menyelesaikan perselisihan dengan teman tanpa bantuan orang dewasa."},
-  // D5 Aktivitas Sehari-hari
-  {id:501, kategori:"Aktivitas Sehari-hari", text:"Memulai tugas tanpa harus diminta berulang."},
-  {id:502, kategori:"Aktivitas Sehari-hari", text:"Menyelesaikan tugas sekolah dalam waktu yang tersedia."},
-  {id:503, kategori:"Aktivitas Sehari-hari", text:"Menyiapkan dan merapikan alat belajar sendiri."},
-  {id:504, kategori:"Aktivitas Sehari-hari", text:"Berpindah antar kegiatan mengikuti jadwal tanpa pendampingan."},
-  // D6 Partisipasi
-  {id:601, kategori:"Partisipasi", text:"Terlibat aktif dalam kegiatan kelompok di kelas."},
-  {id:602, kategori:"Partisipasi", text:"Ikut serta dalam kegiatan sekolah di luar jam pelajaran."},
-  {id:603, kategori:"Partisipasi", text:"Menggunakan alat bantu atau teknologi pendukungnya secara mandiri."},
-  {id:604, kategori:"Partisipasi", text:"Menyampaikan kebutuhan atau meminta penyesuaian ketika menghadapi hambatan."},
+  // ── D1 Kognisi (12 butir) ──
+  { id: 1,  no: 1,  kode: "D1.01", domain: "D1 Kognisi", kategori: "Kognisi", text: "Memahami instruksi bertahap (2-3 langkah) yang diberikan guru, dengan contoh bila diperlukan." },
+  { id: 2,  no: 2,  kode: "D1.02", domain: "D1 Kognisi", kategori: "Kognisi", text: "Mengingat informasi pelajaran dari pertemuan sebelumnya." },
+  { id: 3,  no: 3,  kode: "D1.03", domain: "D1 Kognisi", kategori: "Kognisi", text: "Mempertahankan perhatian pada satu tugas hingga selesai." },
+  { id: 4,  no: 4,  kode: "D1.04", domain: "D1 Kognisi", kategori: "Kognisi", text: "Menemukan cara alternatif (bertanya, mencoba ulang) ketika menghadapi kesulitan dalam tugas." },
+  { id: 5,  no: 5,  kode: "D1.05", domain: "D1 Kognisi", kategori: "Kognisi", text: "Membaca teks pendek dan menyebutkan isi pokoknya." },
+  { id: 6,  no: 6,  kode: "D1.06", domain: "D1 Kognisi", kategori: "Kognisi", text: "Melakukan operasi hitung dasar (tambah, kurang, kali, bagi sederhana) dengan bilangan sampai 1.000." },
+  { id: 7,  no: 7,  kode: "D1.07", domain: "D1 Kognisi", kategori: "Kognisi", text: "Mengenal konsep waktu sederhana (pagi-siang-malam, nama hari, jam)." },
+  { id: 8,  no: 8,  kode: "D1.08", domain: "D1 Kognisi", kategori: "Kognisi", text: "Mengenali nilai uang dan menggunakannya dalam transaksi sederhana." },
+  { id: 9,  no: 9,  kode: "D1.09", domain: "D1 Kognisi", kategori: "Kognisi", text: "Menerapkan hal yang telah dipelajari pada situasi baru yang serupa." },
+  { id: 10, no: 10, kode: "D1.10", domain: "D1 Kognisi", kategori: "Kognisi", text: "Merencanakan langkah-langkah untuk menyelesaikan tugas atau proyek sederhana (mis. praktik keterampilan) sebelum mengerjakannya." },
+  { id: 11, no: 11, kode: "D1.11", domain: "D1 Kognisi", kategori: "Kognisi", text: "Membandingkan dua pilihan dan menyebutkan alasan memilih salah satunya." },
+  { id: 12, no: 12, kode: "D1.12", domain: "D1 Kognisi", kategori: "Kognisi", text: "Menerapkan konsep pelajaran pada situasi nyata (mis. mengukur bahan, menghitung uang, membaca petunjuk)." },
+
+  // ── D2 Mobilitas (12 butir) ──
+  { id: 13, no: 13, kode: "D2.01", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Berpindah tempat di dalam ruang kelas dengan aman." },
+  { id: 14, no: 14, kode: "D2.02", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Menavigasi lingkungan sekolah di luar kelas (kantin, toilet, lapangan)." },
+  { id: 15, no: 15, kode: "D2.03", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Mengikuti kegiatan yang melibatkan gerak fisik (senam, permainan)." },
+  { id: 16, no: 16, kode: "D2.04", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Menyesuaikan diri ketika ada perubahan tata letak atau rute." },
+  { id: 17, no: 17, kode: "D2.05", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Berlari, melompat, dan menjaga keseimbangan sesuai usia." },
+  { id: 18, no: 18, kode: "D2.06", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Berjalan beriringan dan mengantre dalam barisan." },
+  { id: 19, no: 19, kode: "D2.07", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Menyeberang jalan dengan aman." },
+  { id: 20, no: 20, kode: "D2.08", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Menemukan jalan menuju ruang atau tempat yang sudah dikenal di sekolah (ruang keterampilan, perpustakaan, kantin, gerbang)." },
+  { id: 21, no: 21, kode: "D2.09", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Mengenali tanda bahaya di lingkungan sekolah dan menghindarinya." },
+  { id: 22, no: 22, kode: "D2.10", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Berpindah antar ruang pelajaran (kelas, laboratorium, ruang keterampilan, perpustakaan) tepat waktu sesuai jadwal." },
+  { id: 23, no: 23, kode: "D2.11", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Mencapai sekolah dan pulang dengan cara yang aman (berjalan, kendaraan antar-jemput, atau angkutan) sesuai pengaturan yang disepakati." },
+  { id: 24, no: 24, kode: "D2.12", domain: "D2 Mobilitas", kategori: "Mobilitas", text: "Berpartisipasi dalam kegiatan fisik atau ekstrakurikuler (olahraga, pramuka, senam) dengan alat bantu atau modifikasi bila perlu." },
+
+  // ── D3 Perawatan Diri (12 butir) ──
+  { id: 25, no: 25, kode: "D3.01", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Makan dan minum sendiri saat istirahat dengan rapi." },
+  { id: 26, no: 26, kode: "D3.02", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Ke toilet dan membersihkan diri sendiri." },
+  { id: 27, no: 27, kode: "D3.03", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Menjaga kerapian diri dan seragam." },
+  { id: 28, no: 28, kode: "D3.04", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Menjaga dan mengelola barang miliknya sendiri." },
+  { id: 29, no: 29, kode: "D3.05", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Mandi, menyikat gigi, dan keramas secara mandiri." },
+  { id: 30, no: 30, kode: "D3.06", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Menyiapkan makanan atau minuman sederhana." },
+  { id: 31, no: 31, kode: "D3.07", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Mengenali kebutuhan tubuh (lapar, haus, sakit) dan menyampaikannya." },
+  { id: 32, no: 32, kode: "D3.08", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Menjaga keselamatan diri (tidak ikut orang asing, menjauhi benda berbahaya)." },
+  { id: 33, no: 33, kode: "D3.09", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Menyebutkan identitas diri dan nomor telepon orang tua atau wali." },
+  { id: 34, no: 34, kode: "D3.10", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Menjaga kebersihan diri sesuai perubahan masa remaja (memakai deodoran, merawat rambut dan kuku, mengganti pakaian dalam)." },
+  { id: 35, no: 35, kode: "D3.11", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Mengelola kebutuhan pribadi masa pubertas (mis. kebersihan saat menstruasi atau mimpi basah) dengan bantuan minimal atau meminta bantuan orang yang tepat." },
+  { id: 36, no: 36, kode: "D3.12", domain: "D3 Perawatan Diri", kategori: "Perawatan Diri", text: "Mengelola uang saku sederhana (membawa, membelanjakan, menyimpan) untuk kebutuhan sekolah atau jajan." },
+
+  // ── D4 Interaksi dengan Orang Lain (12 butir) ──
+  { id: 37, no: 37, kode: "D4.01", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Memulai komunikasi dengan teman atau guru." },
+  { id: 38, no: 38, kode: "D4.02", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Merespons ketika disapa atau diajak berkomunikasi." },
+  { id: 39, no: 39, kode: "D4.03", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Menjaga interaksi berlangsung dua arah (bukan hanya menjawab satu kali)." },
+  { id: 40, no: 40, kode: "D4.04", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Menyelesaikan perselisihan dengan teman tanpa bantuan orang dewasa." },
+  { id: 41, no: 41, kode: "D4.05", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Menyampaikan keinginan atau pendapat dengan kalimat yang jelas." },
+  { id: 42, no: 42, kode: "D4.06", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Mengikuti aturan permainan atau kegiatan kelompok (olahraga, permainan tim)." },
+  { id: 43, no: 43, kode: "D4.07", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Mengenali dan menyebutkan emosi diri dan orang lain beserta penyebabnya." },
+  { id: 44, no: 44, kode: "D4.08", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Mengendalikan emosi (marah, kecewa) tanpa menyakiti orang lain." },
+  { id: 45, no: 45, kode: "D4.09", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Menolak ajakan atau permintaan yang tidak sesuai dengan sopan." },
+  { id: 46, no: 46, kode: "D4.10", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Menjaga hubungan pertemanan sebaya (menepati janji, berbagi cerita, menyelesaikan salah paham)." },
+  { id: 47, no: 47, kode: "D4.11", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Menolak ajakan berisiko atau tidak sesuai dari teman sebaya (mis. bolos, mengambil barang orang lain, ajakan tidak pantas) dan melapor kepada orang dewasa yang dipercaya." },
+  { id: 48, no: 48, kode: "D4.12", domain: "D4 Berinteraksi dengan Orang Lain", kategori: "Interaksi dengan Orang Lain", text: "Berkomunikasi dengan guru mata pelajaran dan staf sekolah yang berbeda sesuai kesantunan masing-masing." },
+
+  // ── D5 Aktivitas Sehari-hari (12 butir) ──
+  { id: 49, no: 49, kode: "D5.01", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Memulai tugas tanpa harus diminta berulang." },
+  { id: 50, no: 50, kode: "D5.02", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Menyelesaikan tugas sekolah dalam waktu yang tersedia." },
+  { id: 51, no: 51, kode: "D5.03", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Menyiapkan dan merapikan alat belajar sendiri." },
+  { id: 52, no: 52, kode: "D5.04", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Berpindah antar kegiatan mengikuti jadwal tanpa pendampingan." },
+  { id: 53, no: 53, kode: "D5.05", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Mengikuti langkah kerja tugas praktik (3-5 langkah) sesuai contoh." },
+  { id: 54, no: 54, kode: "D5.06", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Melaksanakan piket kelas sesuai tugasnya." },
+  { id: 55, no: 55, kode: "D5.07", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Membawa pulang dan membawa kembali perlengkapan sekolah (buku, tugas)." },
+  { id: 56, no: 56, kode: "D5.08", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Menggunakan alat kerja sederhana (gunting, cutter, palu, alat dapur) dengan benar dan aman." },
+  { id: 57, no: 57, kode: "D5.09", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Melakukan pekerjaan rumah tangga (menyapu, mencuci piring, menyetrika, memasak sederhana)." },
+  { id: 58, no: 58, kode: "D5.10", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Mengatur perlengkapan sesuai jadwal pelajaran harian (membawa buku dan alat hari itu) dengan bantuan minimal." },
+  { id: 59, no: 59, kode: "D5.11", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Mengerjakan tugas rumah atau tugas mandiri dan mengumpulkannya tepat waktu." },
+  { id: 60, no: 60, kode: "D5.12", domain: "D5 Aktivitas Sehari-hari", kategori: "Aktivitas Sehari-hari", text: "Mengerjakan tugas keterampilan dasar (mis. boga, kriya, berkebun, membatik) sesuai langkah kerja dan aturan keselamatan." },
+
+  // ── D6 Partisipasi (12 butir) ──
+  { id: 61, no: 61, kode: "D6.01", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Terlibat aktif dalam kegiatan kelompok di kelas." },
+  { id: 62, no: 62, kode: "D6.02", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Ikut serta dalam kegiatan sekolah di luar jam pelajaran." },
+  { id: 63, no: 63, kode: "D6.03", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Menggunakan alat bantu atau media pendukung (kartu, media visual, tablet) secara mandiri." },
+  { id: 64, no: 64, kode: "D6.04", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Menyampaikan kebutuhan atau meminta penyesuaian ketika menghadapi hambatan." },
+  { id: 65, no: 65, kode: "D6.05", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Ikut serta dalam pentas atau lomba sederhana." },
+  { id: 66, no: 66, kode: "D6.06", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Menjalankan peran yang diberikan dalam kelompok." },
+  { id: 67, no: 67, kode: "D6.07", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Mengikuti kegiatan masyarakat di lingkungan sekitar." },
+  { id: 68, no: 68, kode: "D6.08", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Menaati aturan dan tata tertib bersama." },
+  { id: 69, no: 69, kode: "D6.09", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Menyampaikan pendapat sederhana dalam diskusi." },
+  { id: 70, no: 70, kode: "D6.10", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Ikut serta dalam organisasi atau kegiatan kelompok sekolah (OSIS, pramuka, ekstrakurikuler)." },
+  { id: 71, no: 71, kode: "D6.11", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Menyampaikan pendapat, kebutuhan, atau keberatan kepada guru dengan cara sopan dan jelas." },
+  { id: 72, no: 72, kode: "D6.12", domain: "D6 Partisipasi", kategori: "Partisipasi", text: "Berpartisipasi dalam kegiatan keterampilan, pentas, atau pameran karya di sekolah dan lingkungan sekitar." },
 ];
 
 // ─── Profil Kecenderungan Aktivitas / RIASEC (Tahap 2) ─────────────────────────

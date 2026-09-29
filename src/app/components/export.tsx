@@ -1,4 +1,4 @@
-import { GAYA_META, studentCompDetail, studentTalentDetail, type Student } from "./data";
+import { GAYA_META, studentCompDetail, studentTalentDetail, type Student, PROFIL_FUNGSIONAL } from "./data";
 import { getMockJawaban, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
 
 /* ── Util unduh berkas ────────────────────────────────────────────── */
@@ -250,4 +250,42 @@ export function exportLaporanPemetaan(list:Student[], namaSekolah:string) {
     ? `laporan-pemetaan-${list[0].name.toLowerCase().replace(/\s+/g,"-")}-${stempel()}.doc`
     : `laporan-pemetaan-${list.length}-siswa-${stempel()}.doc`;
   unduh(nama, html, "application/msword");
+}
+
+export function exportAsesmenFungsionalCSV(
+  student: Student,
+  skorFungsional: Record<number, number>,
+  catatanButir: Record<number, string> = {}
+) {
+  const tgl = tanggal();
+  const headerInfo = [
+    `ASESMEN PROFIL FUNGSIONAL - SMPLB KATEGORI C (TUNAGRAHITA RINGAN)`,
+    `Skala: 0 = Belum; 1 = Dibantu; 2 = Sebagian; 3 = Mandiri`,
+    "",
+    `Nama peserta didik;${csvSel(student.name)}`,
+    `NISN / NIS;${csvSel(student.nisn || "0098421873")}`,
+    `Kelas;${csvSel(student.kelas)}`,
+    `Tanggal asesmen;${csvSel(tgl)}`,
+    `Nama penilai;${csvSel(student.teacher)}`,
+    "",
+    `No;Kode;Domain;Butir asesmen (indikator);Skor (0-3);Catatan`,
+  ].join("\n");
+
+  const baris = PROFIL_FUNGSIONAL.map(item => {
+    const skor = skorFungsional[item.id];
+    const skorStr = skor === undefined ? "" : skor === -1 ? "N/A" : String(skor);
+    const catatan = catatanButir[item.id] || "";
+    return [
+      item.no,
+      csvSel(item.kode),
+      csvSel(item.domain),
+      csvSel(item.text),
+      skorStr,
+      csvSel(catatan)
+    ].join(";");
+  });
+
+  const content = headerInfo + "\n" + baris.join("\n");
+  const filename = `asesmen-fungsional-${student.name.toLowerCase().replace(/\s+/g, "-")}-${stempel()}.csv`;
+  unduh(filename, content, "text/csv");
 }
