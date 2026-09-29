@@ -46,12 +46,12 @@ type GuruSetup = null | "akun" | "sekolah" | "siswa";
 const DEFAULT_GURU: GuruProfile = {
   nama: "Sari Dewi, S.Pd.",
   email: "sari.dewi@gmail.com",
-  sekolah: "SLB N Surakarta",
+  sekolah: "",
   jabatan: "Guru Kelas / Wali Kelas",
   noHp: "081234567890",
-  kelas: ["VII A", "VIII B"],
-  abk: ["Tunanetra", "Tunarungu"],
-  kelasAbkMap: { "VII A": "Tunanetra", "VIII B": "Tunarungu" },
+  kelas: [],
+  abk: [],
+  kelasAbkMap: {},
 };
 
 export default function App() {
@@ -409,15 +409,27 @@ export default function App() {
                         kelas: s.kelas,
                         age: s.age,
                         emoji: s.emoji,
-                        gender: (s as any).gender ?? (s.emoji === "👦" ? "L" : "P"),
-                        talent: "", talentScore: 0, stars: 0,
+                        gender: s.gender ?? (s.emoji === "👦" ? "L" : "P"),
+                        talent: "",
+                        talentScore: 0,
+                        stars: 0,
                         teacher: guru.nama,
-                        hasObs: false, comps: [],
-                        kodeOrtu: undefined,
-                        caraBelajar: "",
-                        komunikasi: "", motorik: "",
-                        tingkatDukungan: "",
-                        rentang: "", minat: "", terapi: "",
+                        hasObs: false,
+                        comps: [],
+                        kodeOrtu: `ABK-2026-${s.name.trim().split(" ")[0].toUpperCase()}`,
+                        caraBelajar: s.caraBelajar || "",
+                        komunikasi: s.komunikasi || "",
+                        motorik: s.motorik || "",
+                        tingkatDukungan: s.tingkatDukungan || "",
+                        rentang: s.rentang || "",
+                        minat: s.minat || "",
+                        terapi: s.terapi || "",
+                        nisn: s.nisn,
+                        tanggalLahir: s.tanggalLahir,
+                        alamat: s.alamat,
+                        statusOrtu: s.statusOrtu,
+                        namaOrtu: s.namaOrtu,
+                        foto: s.foto,
                       });
                       // Tidak langsung finishGuruSetup — modal handle kembali ke choice screen
                     }}
@@ -453,7 +465,7 @@ export default function App() {
                 {showAddStudent && (
                   <AddStudentSheet
                     teacher={guru.nama}
-                    kelasAbkMap={Object.keys(guru.kelasAbkMap ?? {}).length ? guru.kelasAbkMap : DEFAULT_GURU.kelasAbkMap}
+                    kelasAbkMap={guru.kelasAbkMap ?? {}}
                     firstTime={addFirstTime}
                     savedCount={list.length}
                     onSave={addStudent}

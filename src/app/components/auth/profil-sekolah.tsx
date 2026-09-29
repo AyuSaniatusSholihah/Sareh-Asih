@@ -49,12 +49,11 @@ export function ProfilSekolahModal({
 
   const KEKHUSUSAN_LIST = [
     { kode: "A", nama: "Kelas Tunanetra (A)", ringkas: "Tunanetra", abk: "Tunanetra", desc: "Hambatan penglihatan" },
-    { kode: "B", nama: "Kelas Tunarungu (B)", ringkas: "Tunarungu", abk: "Tunarungu", desc: "Hambatan pendengaran/wicara" },
-    { kode: "C", nama: "Kelas Tunagrahita (C)", ringkas: "Tunagrahita", abk: "Tunagrahita", desc: "Hambatan intelektual/mental" },
-    { kode: "D", nama: "Kelas Tunadaksa (D)", ringkas: "Tunadaksa", abk: "Tunadaksa", desc: "Hambatan fisik/motorik" },
-    { kode: "E", nama: "Kelas Tunalaras (E)", ringkas: "Tunalaras", abk: "Tunalaras", desc: "Hambatan emosi/perilaku" },
-    { kode: "G", nama: "Kelas Tunaganda (G)", ringkas: "Tunaganda", abk: "Tunaganda", desc: "Kombinasi dua atau lebih hambatan" },
-    { kode: "Lainnya", nama: "Lainnya (Input Sendiri)", ringkas: "Lainnya", abk: "Lainnya", desc: "Ketikkan kelas / layanan khusus jika tidak ada di daftar" },
+    { kode: "B", nama: "Kelas Tuna Rungu (B)", ringkas: "Tuna Rungu", abk: "Tuna Rungu", desc: "Hambatan pendengaran/komunikasi" },
+    { kode: "D", nama: "Kelas Tuna Daksa Ringan (D)", ringkas: "Tuna Daksa Ringan", abk: "Tuna Daksa Ringan", desc: "Hambatan fisik dan motorik ringan" },
+    { kode: "D1", nama: "Kelas Tuna Daksa Sedang (D1)", ringkas: "Tuna Daksa Sedang", abk: "Tuna Daksa Sedang", desc: "Hambatan fisik dan motorik sedang" },
+    { kode: "F", nama: "Kelas Tuna Wicara (F)", ringkas: "Tuna Wicara", abk: "Tuna Wicara", desc: "Hambatan wicara dan komunikasi" },
+    { kode: "Lainnya", nama: "Lainnya (Tulis Mandiri)", ringkas: "Lainnya", abk: "Lainnya", desc: "Ketikkan nama kelas / layanan khusus secara mandiri" },
   ];
 
   // Presets kombinasi disabilitas ganda
@@ -131,7 +130,7 @@ export function ProfilSekolahModal({
       if (k.kode === "Ganda") {
         abkItems.push(detailGanda.trim() ? `Disabilitas Ganda (${detailGanda.trim()})` : "Disabilitas Ganda");
       } else if (k.kode === "Lainnya") {
-        abkItems.push(customAbkInput.trim() || customJenisInput.trim() || "Kebutuhan Khusus");
+        abkItems.push(customJenisInput.trim() || "Lainnya");
       } else {
         abkItems.push(k.abk);
       }
@@ -556,34 +555,6 @@ export function ProfilSekolahModal({
                         boxSizing: "border-box"
                       }}
                     />
-                    <div className="pt-0.5">
-                      <label className="text-[10px] font-bold block mb-1" style={{ color: "#854D0E", fontFamily: IPS }}>
-                        Jenis Kebutuhan Khusus / ABK Terkait:
-                      </label>
-                      <select
-                        value={customAbkInput}
-                        onChange={e => setCustomAbkInput(e.target.value)}
-                        style={{
-                          width: "100%",
-                          border: "1.5px solid #FCD34D",
-                          borderRadius: 10,
-                          padding: "9px 12px",
-                          fontSize: 13,
-                          color: TEXT,
-                          fontFamily: IPS,
-                          background: "#fff",
-                          outline: "none",
-                          boxSizing: "border-box"
-                        }}>
-                        <option value="" disabled>-- Pilih Kebutuhan Khusus --</option>
-                        <option value="Tunanetra">Tunanetra</option>
-                        <option value="Tunarungu">Tunarungu</option>
-                        <option value="Tunagrahita">Tunagrahita</option>
-                        <option value="Tunadaksa">Tunadaksa</option>
-                        <option value="Tunalaras">Tunalaras</option>
-                        <option value="Tunaganda">Tunaganda</option>
-                      </select>
-                    </div>
                   </div>
                 )}
 

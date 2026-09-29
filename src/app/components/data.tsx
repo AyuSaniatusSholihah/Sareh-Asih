@@ -31,6 +31,7 @@ export interface Student {
   talent?:string;
   talentScore?:number;
   stars?:number;
+  foto?:string; // base64 data URL dari upload foto profil
 }
 
 // ─── Seed data ───────────────────────────────────────────────────────
@@ -74,11 +75,10 @@ export const useAddStudent = () => useContext(StudentsCtx).add;
 // ─── Pilihan form ────────────────────────────────────────────────────
 export const ABK_OPTIONS = [
   "Tunanetra",
-  "Tunarungu",
-  "Tunagrahita",
-  "Tunadaksa",
-  "Tunalaras",
-  "Tunaganda",
+  "Tuna Rungu",
+  "Tuna Daksa Ringan",
+  "Tuna Daksa Sedang",
+  "Tuna Wicara",
   "Lainnya",
 ];
 export const KELAS_OPTIONS = [

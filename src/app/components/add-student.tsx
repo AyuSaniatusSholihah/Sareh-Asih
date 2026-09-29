@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import {
   CheckCircle, Info, XCircle, UserPlus, Sparkles, Plus, ArrowLeft,
   Upload, Download, Lightbulb, FileText, AlertCircle, Trash2, Database,
@@ -16,10 +16,12 @@ type Step = "choice" | "db-sekolah" | "upload" | "identitas" | "abk" | "success"
 const EMPTY = {
   nama: "", kelas: "", umur: "", emoji: "👦",
   jenis_abk: "", extra_abk: [] as string[],
+  custom_abk: "",
   tingkat_dukungan: "", komunikasi: "", motorik: "",
   cara_belajar: "", rentang: "", minat: "", terapi: "",
   tanggalLahir: "", nisn: "", alamat: "",
   statusOrtu: "", namaOrtu: "",
+  foto: "",
 };
 
 const STATUS_ORTU_OPTIONS = [
@@ -58,9 +60,9 @@ export function AddStudentSheet({
   firstTime,
   savedCount,
 }: AddStudentSheetProps) {
-  const kelasOptions = Object.keys(kelasAbkMap).length ? Object.keys(kelasAbkMap) : ["VII A", "VII B", "VIII A"];
-  const defaultKelas = kelasOptions[0] || "VII A";
-  const defaultAbk = kelasAbkMap[defaultKelas] || "Tunanetra";
+  const kelasOptions = Object.keys(kelasAbkMap);
+  const defaultKelas = kelasOptions[0] || "";
+  const defaultAbk = (defaultKelas && kelasAbkMap[defaultKelas]) ? kelasAbkMap[defaultKelas] : "Tunanetra";
 
   const [step, setStep] = useState<Step>("choice");
   const [form, setForm] = useState(() => ({
@@ -69,6 +71,16 @@ export function AddStudentSheet({
     jenis_abk: defaultAbk,
   }));
   const [lastName, setLastName] = useState("");
+  const fotoInputRef = useRef<HTMLInputElement>(null);
+  const handleFotoChange = useCallback((file: File) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      setForm(f => ({ ...f, foto: dataUrl }));
+    };
+    reader.readAsDataURL(file);
+  }, []);
   const [extraInput, setExtraInput] = useState("");
 
   // State untuk Database Sekolah
@@ -100,16 +112,29 @@ export function AddStudentSheet({
 
   const extraOptions = ABK_OPTIONS.filter(o => o !== form.jenis_abk && !form.extra_abk.includes(o));
   const [selectedUploadKelas, setSelectedUploadKelas] = useState<string>(defaultKelas);
-  const canNext = form.nama.trim() !== "" && form.kelas !== "";
+  const canNext = form.nama.trim() !== "";
+
+  const toggleStudentAbk = (opt: string) => {
+    setForm(f => {
+      const currentList = f.extra_abk.length > 0 ? f.extra_abk : [f.jenis_abk || "Tunanetra"];
+      if (currentList.includes(opt)) {
+        if (currentList.length === 1) return f;
+        const next = currentList.filter(x => x !== opt);
+        return { ...f, jenis_abk: next[0], extra_abk: next };
+      } else {
+        const next = [...currentList, opt];
+        return { ...f, extra_abk: next };
+      }
+    });
+  };
 
   const save = () => {
-    const allAbk = form.extra_abk.length
-      ? `${form.jenis_abk} · ${form.extra_abk.join(" · ")}`
-      : form.jenis_abk;
+    const rawAbkList = form.extra_abk.length > 0 ? form.extra_abk : [form.jenis_abk || "Tunanetra"];
+    const allAbk = rawAbkList.map(x => (x === "Lainnya" ? (form.custom_abk?.trim() || "Lainnya") : x)).join(", ");
     onSave({
       name: form.nama.trim(),
       abk: allAbk || "Tunanetra",
-      kelas: form.kelas || kelasOptions[0],
+      kelas: form.kelas || kelasOptions[0] || "Umum",
       age: Number(form.umur) || 0,
       emoji: form.emoji,
       gender: form.emoji === "👦" ? "L" : "P",
@@ -132,6 +157,7 @@ export function AddStudentSheet({
       alamat: form.alamat,
       statusOrtu: form.statusOrtu,
       namaOrtu: form.namaOrtu,
+      foto: form.foto || undefined,
     });
     setLastName(form.nama.trim());
     setStep("success");
@@ -969,6 +995,53 @@ export function AddStudentSheet({
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
               {step === "identitas" && (
                 <>
+                  {/* ── FOTO PROFIL UPLOAD ── */}
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 4 }}>
+                    <button
+                      type="button"
+                      onClick={() => fotoInputRef.current?.click()}
+                      style={{
+                        width: 88, height: 88, borderRadius: "50%",
+                        border: form.foto ? "3px solid #738B7B" : "2.5px dashed #B0C4B8",
+                        background: form.foto ? "transparent" : "#F4F8F5",
+                        cursor: "pointer", overflow: "hidden", flexShrink: 0,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        position: "relative", transition: "all 0.2s ease",
+                        boxShadow: form.foto ? "0 4px 14px rgba(91,122,104,0.25)" : "none",
+                        padding: 0,
+                      }}
+                      title="Upload foto profil siswa"
+                    >
+                      {form.foto ? (
+                        <img src={form.foto} alt="Foto profil" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <div style={{ textAlign: "center" }}>
+                          <div style={{ fontSize: 26 }}>📷</div>
+                          <p style={{ fontFamily: IPS, fontSize: 10, color: MUTED, marginTop: 2, fontWeight: 600 }}>Tambah Foto</p>
+                        </div>
+                      )}
+                    </button>
+                    {form.foto && (
+                      <button
+                        type="button"
+                        onClick={() => setForm(f => ({ ...f, foto: "" }))}
+                        style={{ marginTop: 6, fontSize: 11, color: "#B91C1C", background: "transparent", border: "none", cursor: "pointer", fontFamily: IPS, fontWeight: 600 }}
+                      >
+                        × Hapus Foto
+                      </button>
+                    )}
+                    {!form.foto && (
+                      <p style={{ fontSize: 10.5, color: MUTED, marginTop: 6, fontFamily: IPS }}>Opsional · JPG, PNG</p>
+                    )}
+                    <input
+                      ref={fotoInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      style={{ display: "none" }}
+                      onChange={e => { const f = e.target.files?.[0]; if (f) handleFotoChange(f); e.target.value = ""; }}
+                    />
+                  </div>
+
                   <Field label="Nama Lengkap Siswa" placeholder="Contoh: Budi Santoso" value={form.nama} onChange={set("nama")} required />
 
                   <div className="grid grid-cols-2 gap-3">
@@ -1024,7 +1097,22 @@ export function AddStudentSheet({
 
 
 
-
+                  {kelasOptions.length > 1 && (
+                    <SelectField
+                      label="Kelompok/Kelas"
+                      options={kelasOptions}
+                      value={form.kelas}
+                      onChange={onKelasChange}
+                    />
+                  )}
+                  {kelasOptions.length === 0 && (
+                    <Field
+                      label="Kelompok/Kelas"
+                      placeholder="Contoh: VII A"
+                      value={form.kelas}
+                      onChange={set("kelas")}
+                    />
+                  )}
                   <div>
                     <label style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: IPS, display: "block", marginBottom: 8 }}>Jenis Kelamin</label>
                     <div style={{ display: "flex", gap: 8 }}>
@@ -1057,6 +1145,70 @@ export function AddStudentSheet({
                       Bagian ini boleh dilewati. Semakin lengkap, semakin akurat rekomendasi AI-nya.
                     </p>
                   </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-800 mb-2 flex items-center justify-between" style={{ fontFamily: PJS }}>
+                      <span>Jenis Kekhususan (ABK)</span>
+                      <span className="text-gray-400 font-normal text-[11px]">(bisa pilih lebih dari satu)</span>
+                    </label>
+                    <div className="flex flex-wrap gap-2 pt-0.5">
+                      {ABK_OPTIONS.map(o => {
+                        const currentList = form.extra_abk.length > 0 ? form.extra_abk : [form.jenis_abk || "Tunanetra"];
+                        const isSelected = currentList.includes(o);
+                        return (
+                          <button
+                            key={o}
+                            type="button"
+                            onClick={() => toggleStudentAbk(o)}
+                            style={{
+                              fontFamily: PJS,
+                              fontSize: 12,
+                              fontWeight: isSelected ? 700 : 600,
+                              padding: "7px 14px",
+                              borderRadius: 20,
+                              border: `1.5px solid ${isSelected ? "#738B7B" : "#D5E0D5"}`,
+                              background: isSelected ? "#EAF2EC" : "#FFFFFF",
+                              color: isSelected ? "#1B2E24" : "#4B5563",
+                              cursor: "pointer",
+                              transition: "all 0.15s ease-in-out",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 5,
+                            }}
+                          >
+                            {isSelected && <span style={{ fontSize: 11, fontWeight: 800, color: "#2E5537" }}>✓</span>}
+                            {o}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {(form.extra_abk.includes("Lainnya") || form.jenis_abk === "Lainnya") && (
+                      <div className="mt-2.5 p-2.5 rounded-xl border" style={{ background: "#FEF9C3", borderColor: "#FACC15" }}>
+                        <label className="text-[11px] font-bold block mb-1" style={{ color: "#854D0E", fontFamily: PJS }}>
+                          Tuliskan Hambatan / ABK Lainnya (Mandiri):
+                        </label>
+                        <input
+                          value={form.custom_abk}
+                          onChange={e => setForm(f => ({ ...f, custom_abk: e.target.value }))}
+                          placeholder="Contoh: Hambatan Belajar Spesifik, dll."
+                          style={{
+                            width: "100%",
+                            border: "1.5px solid #FCD34D",
+                            borderRadius: 10,
+                            padding: "8px 12px",
+                            fontSize: 12,
+                            color: TEXT,
+                            fontFamily: IPS,
+                            background: "#fff",
+                            outline: "none",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
                   <SelectField label="Tingkat Dukungan" options={["Dukungan Minimal", "Dukungan Sedang", "Dukungan Intensif"]} value={form.tingkat_dukungan} onChange={set("tingkat_dukungan")} />
                   <SelectField label="Kemampuan Komunikasi" options={["Verbal baik", "Verbal terbatas", "Non-verbal", "Menggunakan BISINDO/SIBI"]} value={form.komunikasi} onChange={set("komunikasi")} />
                   <SelectField label="Kemampuan Motorik" options={["Motorik halus baik", "Motorik kasar baik", "Keduanya baik", "Perlu dukungan alat bantu"]} value={form.motorik} onChange={set("motorik")} />
