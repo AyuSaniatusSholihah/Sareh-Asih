@@ -89,7 +89,7 @@ export function DashboardGuru({
     {
       icon: <Calendar size={20} strokeWidth={2.4} />,
       label: "Agenda",
-      sub: "Jadwal kegiatan & agenda lomba.",
+      sub: "Jadwal O2SN, FLS3N & LKSN Diksus.",
       iconBg: "rgba(255,255,255,0.22)",
       iconColor: "#FFFFFF",
       img: "https://images.unsplash.com/photo-1506784365847-bbad939e9335?w=400&q=80&auto=format&fit=crop",

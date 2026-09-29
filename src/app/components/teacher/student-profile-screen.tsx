@@ -375,7 +375,12 @@ export function ProfileScreen({
   const yrNext  = semNow === 1 ? yr : yr + 1;
 
   const rows: [string, string][] = [
-    ["Jenis ABK", s.abk],
+    ["NISN", s.nisn || "Belum diisi"],
+    ["Jenis Kelamin", s.gender === "L" ? "Laki-laki" : "Perempuan"],
+    ["Tanggal Lahir", s.tanggalLahir || "Belum diisi"],
+    ["Alamat", s.alamat || "Belum diisi"],
+    ["Orang Tua / Wali", s.namaOrtu ? `${s.namaOrtu}${s.statusOrtu ? ` (${s.statusOrtu})` : ""}` : "Belum diisi"],
+    ["Jenis Kekhususan (PDBK)", s.abk],
     ["Tingkat Dukungan", s.tingkatDukungan || "Belum diisi"],
     ["Kemampuan Komunikasi", s.komunikasi || "Belum diisi"],
     ["Kemampuan Motorik", s.motorik || "Belum diisi"],
@@ -440,7 +445,7 @@ export function ProfileScreen({
         </div>
       </div>
       <div className="flex" style={{ background: CARD, borderBottom: `1px solid ${BDR}` }}>
-        {[{ k: "abk", l: "Profil ABK" }, { k: "kode", l: "Kode Ortu" }, { k: "jurnal", l: "Jurnal & Catatan" }].map(t => (
+        {[{ k: "abk", l: "Profil Siswa" }, { k: "kode", l: "Kode Ortu" }, { k: "jurnal", l: "Jurnal & Catatan" }].map(t => (
           <button key={t.k} onClick={() => setTab(t.k as any)}
             style={{
               color: tab === t.k ? DEEP : MUTED,

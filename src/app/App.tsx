@@ -216,9 +216,9 @@ export default function App() {
     switch (screen) {
       case "dashboard": return ["Beranda", `${guru.nama.split(" ")[0]} · ${guru.sekolah}`];
       case "asesmen-pending": return ["Asesmen Perlu Diperiksa", "Daftar siswa yang belum dinilai"];
-      case "students": return ["Kelas Saya", "Kelola Kelas dengan Mudah"];
+      case "students": return ["Kelas Saya", "Kelola Siswa dengan Mudah"];
       case "talent-map": return ["Peta Bakat", guru.sekolah];
-      case "competition": return ["Rekomendasi Lomba", "Daftar rekomendasi kegiatan & lomba"];
+      case "competition": return ["Agenda Ajang Talenta", "Jadwal O2SN, FLS3N & LKSN Diksus"];
       case "report": return ["Laporan", "Rekap data siswa & pemetaan bakat"];
       case "parent-dashboard": return ["Beranda ♡", child ? `Orang Tua · ${child.name}` : "Orang Tua · belum terhubung"];
       case "parent-detail": return ["Perkembangan Anak", child ? child.name : "Belum terhubung"];

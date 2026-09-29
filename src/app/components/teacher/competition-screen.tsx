@@ -145,7 +145,7 @@ export function CompetitionScreen({
           {/* ── Subtitle / Tip Bar ── */}
           <div className="flex items-center gap-2 px-1 text-[11.5px]" style={{ color: "#5B7A68" }}>
             <Lightbulb size={14} className="text-[#5B7A68] flex-shrink-0" strokeWidth={2.2} />
-            <span style={{ fontWeight: 500 }}>Ketuk lomba untuk melihat siswa yang direkomendasikan</span>
+            <span style={{ fontWeight: 500 }}>Ketuk agenda untuk melihat PDBK yang direkomendasikan</span>
           </div>
 
           {/* ── List Lomba Cards ── */}
@@ -243,7 +243,7 @@ export function CompetitionScreen({
                           }}
                         >
                           <Users size={12} strokeWidth={2.4} />
-                          <span>{matchedStudents.length} siswa cocok</span>
+                          <span>{matchedStudents.length} PDBK cocok</span>
                         </div>
                         <div style={{ color: "#374151" }}>
                           {isExpanded ? (
@@ -318,13 +318,13 @@ export function CompetitionScreen({
                             margin: 0,
                           }}
                         >
-                          Siswa yang Direkomendasikan:
+                          PDBK yang Direkomendasikan:
                         </p>
                       </div>
 
                       {matchedStudents.length === 0 ? (
                         <p className="text-sm" style={{ color: MUTED }}>
-                          Belum ada siswa yang cocok dengan kriteria lomba ini.
+                          Belum ada PDBK yang cocok dengan kriteria agenda ini.
                         </p>
                       ) : (
                         <div className="space-y-3">

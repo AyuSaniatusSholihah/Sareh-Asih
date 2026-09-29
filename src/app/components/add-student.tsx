@@ -18,7 +18,13 @@ const EMPTY = {
   jenis_abk: "", extra_abk: [] as string[],
   tingkat_dukungan: "", komunikasi: "", motorik: "",
   cara_belajar: "", rentang: "", minat: "", terapi: "",
+  tanggalLahir: "", nisn: "", alamat: "",
+  statusOrtu: "", namaOrtu: "",
 };
+
+const STATUS_ORTU_OPTIONS = [
+  "Kandung", "Yatim", "Piatu", "Yatim Piatu", "Wali", "Saudara", "Lainnya",
+];
 
 const GENDER_OPTIONS = [
   { label: "Laki-laki", emoji: "👦" },
@@ -121,6 +127,11 @@ export function AddStudentSheet({
       minat: form.minat,
       terapi: form.terapi,
       kodeOrtu: `ABK-2026-${form.nama.trim().split(" ")[0].toUpperCase()}`,
+      tanggalLahir: form.tanggalLahir,
+      nisn: form.nisn,
+      alamat: form.alamat,
+      statusOrtu: form.statusOrtu,
+      namaOrtu: form.namaOrtu,
     });
     setLastName(form.nama.trim());
     setStep("success");
@@ -319,10 +330,10 @@ export function AddStudentSheet({
             </button>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
-                Tambah Siswa
+                Tambah PDBK
               </h1>
               <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
-                Lengkapi informasi kelas yang akan ditambahkan
+                Tambah data Peserta Didik Berkebutuhan Khusus
               </p>
             </div>
           </div>
@@ -332,7 +343,7 @@ export function AddStudentSheet({
 
           {/* Judul Subseksi */}
           <h2 className="text-center text-sm font-bold text-[#2C3531] mb-4" style={{ fontFamily: PJS }}>
-            Pilih cara menambahkan siswa
+            Pilih cara menambahkan PDBK
           </h2>
 
           {/* Wrapper 3 Kartu Pilihan */}
@@ -348,7 +359,7 @@ export function AddStudentSheet({
                 Input dari Database Sekolah
               </h3>
               <p className="text-[11.5px] text-gray-500 mb-3 leading-relaxed px-2">
-                Import data siswa & kelas langsung dari sistem dapodik sekolah
+                Import data PDBK & kelas langsung dari sistem dapodik sekolah
               </p>
 
               <button
@@ -369,10 +380,10 @@ export function AddStudentSheet({
               </div>
 
               <h3 className="font-bold text-[15px] text-[#2C3531] mb-1" style={{ fontFamily: PJS }}>
-                Upload Daftar Siswa
+                Upload Daftar PDBK
               </h3>
               <p className="text-[11.5px] text-gray-500 mb-3 leading-relaxed">
-                Tambahkan banyak siswa sekaligus<br />
+                Tambahkan banyak PDBK sekaligus<br />
                 Format: CSV, Excel, JPG, PNG
               </p>
 
@@ -394,10 +405,10 @@ export function AddStudentSheet({
               </div>
 
               <h3 className="font-bold text-[15px] text-[#D07B64] mb-1" style={{ fontFamily: PJS }}>
-                Tambah Siswa Manual
+                Tambah PDBK Manual
               </h3>
               <p className="text-[11.5px] text-gray-500 mb-3">
-                Masukkan data siswa satu per satu
+                Masukkan data PDBK satu per satu
               </p>
 
               <button
@@ -407,7 +418,7 @@ export function AddStudentSheet({
                 style={{ fontFamily: PJS }}
               >
                 <UserPlus size={15} />
-                Tambah Siswa Manual
+                Tambah PDBK Manual
               </button>
             </div>
 
@@ -424,7 +435,7 @@ export function AddStudentSheet({
                   <Lightbulb size={16} />
                 </div>
                 <p className="text-[11px] text-gray-600 leading-tight">
-                  <strong className="text-gray-800">Tips:</strong> Pilih Database Sekolah jika data sekolah sudah ada di sistem, Upload file jika sudah punya berkas siswa, atau Tambah manual jika hanya beberapa siswa.
+                  <strong className="text-gray-800">Tips:</strong> Pilih Database Sekolah jika data sekolah sudah ada di sistem, Upload file jika sudah punya berkas PDBK, atau Tambah manual jika hanya beberapa peserta didik.
                 </p>
               </div>
 
@@ -958,61 +969,18 @@ export function AddStudentSheet({
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
               {step === "identitas" && (
                 <>
-                  <Field label="Nama Lengkap" placeholder="Contoh: Budi Santoso" value={form.nama} onChange={set("nama")} required />
+                  <Field label="Nama Lengkap Siswa" placeholder="Contoh: Budi Santoso" value={form.nama} onChange={set("nama")} required />
 
                   <div className="grid grid-cols-2 gap-3">
-                    <SelectField label="Kelompok/Kelas" options={kelasOptions} value={form.kelas} onChange={onKelasChange} required />
-                    <Field label="Umur" placeholder="13" value={form.umur} onChange={set("umur")} type="number" />
+                    <Field label="NISN" placeholder="Contoh: 0012345678" value={form.nisn} onChange={set("nisn")} />
+                    <Field label="Tanggal Lahir" placeholder="Contoh: 12 Maret 2013" value={form.tanggalLahir} onChange={set("tanggalLahir")} />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold mb-2 flex items-center justify-between" style={{ fontFamily: PJS, color: TEXT }}>
-                      <span>Jenis Kekhususan (ABK)</span>
-                      <span className="text-gray-400 font-normal text-[11px]">(bisa pilih lebih dari satu)</span>
-                    </label>
-                    <div className="flex flex-wrap gap-2 pt-0.5">
-                      {ABK_OPTIONS.map(o => {
-                        const selectedList = form.extra_abk.length ? form.extra_abk : (form.jenis_abk ? [form.jenis_abk] : ["Tunanetra"]);
-                        const isSelected = selectedList.includes(o);
-                        return (
-                          <button
-                            key={o}
-                            type="button"
-                            onClick={() => {
-                              const curr = form.extra_abk.length ? form.extra_abk : (form.jenis_abk ? [form.jenis_abk] : ["Tunanetra"]);
-                              let next: string[];
-                              if (curr.includes(o)) {
-                                if (curr.length === 1) return;
-                                next = curr.filter(x => x !== o);
-                              } else {
-                                next = [...curr, o];
-                              }
-                              setForm(f => ({ ...f, jenis_abk: next[0] || "", extra_abk: next }));
-                            }}
-                            style={{
-                              fontFamily: PJS,
-                              fontSize: 12,
-                              fontWeight: isSelected ? 700 : 600,
-                              padding: "7px 14px",
-                              borderRadius: 20,
-                              border: `1.5px solid ${isSelected ? T : BDR}`,
-                              background: isSelected ? SEC : CARD,
-                              color: isSelected ? DEEP : MUTED,
-                              cursor: "pointer",
-                              transition: "all 0.15s ease-in-out",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 5
-                            }}
-                          >
-                            {isSelected && (
-                              <span style={{ fontSize: 11, fontWeight: 800, color: DEEP }}>✓</span>
-                            )}
-                            {o}
-                          </button>
-                        );
-                      })}
-                    </div>
+                  <Field label="Alamat" placeholder="Contoh: Jl. Merpati No. 5, Surakarta" value={form.alamat} onChange={set("alamat")} />
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <SelectField label="Status Orang Tua" options={STATUS_ORTU_OPTIONS} value={form.statusOrtu} onChange={set("statusOrtu")} />
+                    <Field label="Nama Orang Tua" placeholder="Contoh: Ibu Ratna" value={form.namaOrtu} onChange={set("namaOrtu")} />
                   </div>
 
 
@@ -1205,7 +1173,7 @@ export function AddStudentSheet({
               }}
               className="active:scale-[0.98] transition-all"
             >
-              {firstTime ? `Selesai${savedCount ? ` · ${savedCount} siswa` : ""} → Masuk Aplikasi` : "Selesai"}
+              {firstTime ? `Selesai${savedCount ? ` · ${savedCount} Siswa` : ""} → Masuk Aplikasi` : "Selesai"}
             </button>
           </div>
         )}

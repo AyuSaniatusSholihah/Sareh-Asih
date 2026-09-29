@@ -488,25 +488,25 @@ export function ExportPanel({list,adaSeleksi,namaSekolah,onDone,judul}:{
       </p>
 
       <button
-        onClick={()=>{ exportSpreadsheet(list,namaSekolah); onDone(`Spreadsheet ${list.length} siswa diunduh.`); }}
+        onClick={()=>{ exportSpreadsheet(list,namaSekolah); onDone(`Spreadsheet ${list.length} PDBK diunduh.`); }}
         disabled={!list.length}
         style={{width:"100%",background:list.length?"#15803D":"#E5E7EB",color:list.length?"#fff":"#9CA3AF",fontFamily:IPS,minHeight:48,marginBottom:8}}
         className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
         <FileSpreadsheet size={15}/>Ekspor ke Spreadsheet (.csv)
       </button>
       <p className="text-xs mb-3 leading-relaxed" style={{color:MUTED}}>
-        Berisi identitas, profil ABK, hasil pemetaan, rekomendasi lomba, dan kode akses. Langsung terbuka di Excel maupun Google Sheets.
+        Berisi identitas, NISN, profil kebutuhan PDBK, hasil pemetaan, rekomendasi ajang talenta, dan kode akses. Langsung terbuka di Excel maupun Google Sheets.
       </p>
 
       <button
-        onClick={()=>{ exportLaporanPemetaan(list,namaSekolah); onDone(`Laporan pemetaan ${list.length} siswa diunduh.`); }}
+        onClick={()=>{ exportLaporanPemetaan(list,namaSekolah); onDone(`Laporan pemetaan ${list.length} PDBK diunduh.`); }}
         disabled={!list.length}
         style={{width:"100%",background:list.length?T:"#E5E7EB",color:list.length?"#fff":"#9CA3AF",fontFamily:IPS,minHeight:48}}
         className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
         <FileText size={15}/>Unduh Laporan Pemetaan (.doc)
       </button>
       <p className="text-xs mt-2 leading-relaxed" style={{color:MUTED}}>
-        Dokumen ringkasan per anak: profil kebutuhan, hasil pemetaan bakat beserta alasannya, rekomendasi pembelajaran, rekomendasi lomba, dan kolom tanda tangan guru. Bila memilih beberapa siswa, setiap anak mendapat halaman sendiri.
+        Dokumen ringkasan per PDBK: profil kebutuhan, hasil pemetaan bakat beserta alasannya, rekomendasi pembelajaran, rekomendasi ajang talenta, dan kolom tanda tangan guru. Bila memilih beberapa PDBK, setiap anak mendapat halaman sendiri.
       </p>
     </div>
   );
@@ -522,7 +522,7 @@ export function StudentPicker({pilih,setPilih}:{pilih:Set<number>;setPilih:(s:Se
   return (
     <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-3">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs font-bold" style={{color:TEXT,fontFamily:PJS}}>Pilih siswa</p>
+        <p className="text-xs font-bold" style={{color:TEXT,fontFamily:PJS}}>Pilih PDBK</p>
         <button onClick={()=>setPilih(semua ? new Set() : new Set(students.map(s=>s.id)))}
           className="text-xs font-bold flex items-center gap-1" style={{color:T}}>
           {semua ? <Square size={12}/> : <CheckSquare size={12}/>}
@@ -545,7 +545,7 @@ export function StudentPicker({pilih,setPilih}:{pilih:Set<number>;setPilih:(s:Se
           );
         })}
       </div>
-      <p className="text-xs mt-2" style={{color:MUTED}}>{pilih.size} dari {students.length} siswa dipilih</p>
+      <p className="text-xs mt-2" style={{color:MUTED}}>{pilih.size} dari {students.length} PDBK dipilih</p>
     </div>
   );
 }

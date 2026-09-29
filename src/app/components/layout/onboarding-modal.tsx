@@ -37,7 +37,7 @@ export const OBS_STEPS: OStep[] = [
   {
     targetScreen: "competition", ring: { x: 234, y: 788, w: 78, h: 56, r: 0 }, cardPlacement: "top",
     icon: "📅", title: "Menu Agenda",
-    desc: "AI mencocokkan bakat siswa ke 3 ajang resmi: O2SN Diksus, FLS2N-PDBK, dan LKS. Muncul alasan kecocokannya, bukan sekadar daftar nama lomba.",
+    desc: "AI mencocokkan bakat PDBK ke 3 ajang resmi: O2SN Diksus, FLS3N PDBK, dan LKSN Diksus. Muncul alasan kecocokannya, bukan sekadar daftar nama.",
     badge: "Nav Agenda",
   },
   {
@@ -64,7 +64,7 @@ export const P_OBS_STEPS: OStep[] = [
   {
     targetScreen: "parent-calendar", ring: { x: 204, y: 788, w: 78, h: 56, r: 0 }, cardPlacement: "top",
     icon: "📅", title: "Menu Kalender",
-    desc: "Temukan jadwal kegiatan inklusif seperti lomba, festival, atau acara komunitas yang bisa diikuti oleh anak berkebutuhan khusus.",
+    desc: "Temukan jadwal kegiatan inklusif seperti O2SN, FLS3N, atau acara komunitas yang bisa diikuti oleh PDBK.",
     badge: "Nav Kalender",
   },
   {

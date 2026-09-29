@@ -17,23 +17,28 @@ const stempel = () => new Date().toISOString().slice(0,10);
 
 /* ── 1. Ekspor spreadsheet (CSV, siap dibuka Excel / Google Sheets) ── */
 const KOLOM: {h:string; get:(s:Student)=>string}[] = [
-  {h:"Nama Siswa",       get:s=>s.name},
-  {h:"Kelas",            get:s=>s.kelas},
-  {h:"Umur",             get:s=>s.age?String(s.age):""},
-  {h:"Jenis ABK",        get:s=>s.abk},
-  {h:"Guru Pendamping",  get:s=>s.teacher},
-  {h:"Status Asesmen", get:s=>s.hasObs?"Sudah didampingi":"Belum didampingi"},
-  {h:"Cara Belajar",     get:s=>s.caraBelajar||""},
-  {h:"Potensi (RIASEC)", get:s=>s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)) : ""},
-  {h:"Kemandirian",    get:s=>s.hasObs ? skorKetekunan(getMockJawaban(s.id)) : ""},
-  {h:"Rekomendasi Lomba",get:s=>s.comps.join(", ")},
-  {h:"Tingkat Dukungan", get:s=>s.tingkatDukungan||""},
-  {h:"Komunikasi",       get:s=>s.komunikasi||""},
-  {h:"Motorik",          get:s=>s.motorik||""},
-  {h:"Rentang Fokus",    get:s=>s.rentang||""},
-  {h:"Minat",            get:s=>s.minat||""},
-  {h:"Riwayat Terapi",   get:s=>s.terapi||""},
-  {h:"Kode Akses Ortu",  get:s=>s.kodeOrtu||"BELUM DIBUAT"},
+  {h:"Nama PDBK",          get:s=>s.name},
+  {h:"NISN",               get:s=>s.nisn||""},
+  {h:"Jenis Kelamin",      get:s=>s.gender === "L" ? "Laki-laki" : "Perempuan"},
+  {h:"Tanggal Lahir",      get:s=>s.tanggalLahir||""},
+  {h:"Alamat",             get:s=>s.alamat||""},
+  {h:"Nama Orang Tua",     get:s=>s.namaOrtu||""},
+  {h:"Status Orang Tua",   get:s=>s.statusOrtu||""},
+  {h:"Kelas",              get:s=>s.kelas},
+  {h:"Jenis Kekhususan",   get:s=>s.abk},
+  {h:"Guru Pendamping",    get:s=>s.teacher},
+  {h:"Status Asesmen",     get:s=>s.hasObs?"Sudah didampingi":"Belum didampingi"},
+  {h:"Cara Belajar",       get:s=>s.caraBelajar||""},
+  {h:"Potensi (RIASEC)",   get:s=>s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)) : ""},
+  {h:"Kemandirian",        get:s=>s.hasObs ? skorKetekunan(getMockJawaban(s.id)) : ""},
+  {h:"Rekomendasi Ajang",  get:s=>s.comps.join(", ")},
+  {h:"Tingkat Dukungan",   get:s=>s.tingkatDukungan||""},
+  {h:"Komunikasi",         get:s=>s.komunikasi||""},
+  {h:"Motorik",            get:s=>s.motorik||""},
+  {h:"Rentang Fokus",      get:s=>s.rentang||""},
+  {h:"Minat",              get:s=>s.minat||""},
+  {h:"Riwayat Terapi",     get:s=>s.terapi||""},
+  {h:"Kode Akses Ortu",    get:s=>s.kodeOrtu||"BELUM DIBUAT"},
 ];
 
 /** Pemisah titik-koma dipakai agar langsung rapi di Excel berlokal Indonesia. */
@@ -115,9 +120,15 @@ function bagianSiswa(s:Student, index:number, total:number) {
     <h2>${index+1}. ${esc(s.name)}</h2>
     <p class="sub">Kelas ${esc(s.kelas)}${s.age?` &middot; ${s.age} tahun`:""} &middot; ${esc(s.abk)} &middot; Guru pendamping: ${esc(s.teacher)}</p>
 
-    <h3>A. Profil Kebutuhan</h3>
+    <h3>A. Identitas & Profil Kebutuhan PDBK</h3>
     <table>
-      ${baris("Jenis ABK", s.abk)}
+      ${baris("NISN", s.nisn||"")}
+      ${baris("Jenis Kelamin", s.gender === "L" ? "Laki-laki" : "Perempuan")}
+      ${baris("Tanggal Lahir", s.tanggalLahir||"")}
+      ${baris("Alamat", s.alamat||"")}
+      ${baris("Nama Orang Tua", s.namaOrtu||"")}
+      ${baris("Status Orang Tua", s.statusOrtu||"")}
+      ${baris("Jenis Kekhususan (PDBK)", s.abk)}
       ${baris("Tingkat Dukungan", s.tingkatDukungan||"")}
       ${baris("Kemampuan Komunikasi", s.komunikasi||"")}
       ${baris("Kemampuan Motorik", s.motorik||"")}
@@ -147,13 +158,13 @@ function bagianSiswa(s:Student, index:number, total:number) {
       : `<p class="kosong">Gaya belajar belum teridentifikasi, sehingga rekomendasi belum dapat disusun.</p>`
     }
 
-    <h3>D. Rekomendasi Lomba</h3>
+    <h3>D. Rekomendasi Ajang Talenta (O2SN, FLS3N, LKSN Diksus)</h3>
     ${lomba.length
       ? `<table class="rinci">
           <tr><th>Ajang</th><th>Cabang</th><th>Kecocokan</th><th>Status</th><th>Alasan</th></tr>
           ${lomba.map(x=>`<tr><td>${esc(x.c)}</td><td>${esc(x.d!.cabang)}</td><td class="mid">${x.d!.match}%</td><td>${esc(x.d!.status)}</td><td>${esc(x.d!.alasan)}</td></tr>`).join("")}
         </table>`
-      : `<p class="kosong">Belum ada rekomendasi lomba untuk siswa ini.</p>`
+      : `<p class="kosong">Belum ada rekomendasi ajang talenta untuk PDBK ini.</p>`
     }
 
     <h3>E. Akses Orang Tua</h3>

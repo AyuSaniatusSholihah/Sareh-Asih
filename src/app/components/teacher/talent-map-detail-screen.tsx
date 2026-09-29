@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Trophy, ChevronRight, FileText, Share2, CheckCircle, Brain
+  Trophy, ChevronRight, FileText, Share2, CheckCircle, Brain, Briefcase, Users, Lightbulb
 } from "lucide-react";
 import {
   A, CARD, TEXT, MUTED, PJS, IPS, DMM, TBar, BDR, DEEP
@@ -8,15 +8,16 @@ import {
 import { useStudents, type Screen } from "../data";
 import { ProfilFungsionalRadar, ProfilKecenderunganBar, getMockJawaban, kodeTigaHuruf, skorKetekunan } from "../shared-charts";
 import { exportLaporanPemetaan } from "../export";
+import { ImageWithFallback } from "../figma/ImageWithFallback";
 
 export function SuggestedCompetitions({ studentId, go }: { studentId: number; go?: (s: Screen) => void }) {
   const comps = studentId === 2 ? [
-    { title: "FLS2N Menyanyi Solo", type: "Seni & Suara", level: "Kabupaten", match: 95 },
-    { title: "Lomba Cipta Puisi", type: "Literasi", level: "Provinsi", match: 88 },
+    { title: "FLS3N Menyanyi Solo", type: "Seni & Suara", level: "Kabupaten", match: 95 },
+    { title: "FLS3N Cipta Puisi", type: "Literasi", level: "Provinsi", match: 88 },
     { title: "O2SN Bocce", type: "Olahraga", level: "Nasional", match: 75 },
   ] : [
-    { title: "LKSN Kriya Kayu", type: "Keterampilan", level: "Provinsi", match: 92 },
-    { title: "LKSN Merangkai Bunga", type: "Keterampilan", level: "Kabupaten", match: 85 },
+    { title: "LKSN Diksus Kriya Kayu", type: "Keterampilan", level: "Provinsi", match: 92 },
+    { title: "LKSN Diksus Merangkai Bunga", type: "Keterampilan", level: "Kabupaten", match: 85 },
     { title: "O2SN Lari 100m", type: "Olahraga", level: "Nasional", match: 78 },
   ];
 
@@ -26,7 +27,7 @@ export function SuggestedCompetitions({ studentId, go }: { studentId: number; go
         <div className="flex items-center gap-2">
           <Trophy size={18} style={{ color: "#F59E0B" }} />
           <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT }}>
-            Lomba yang Disarankan
+            Agenda yang Disarankan
           </h3>
         </div>
       </div>
@@ -52,8 +53,112 @@ export function SuggestedCompetitions({ studentId, go }: { studentId: number; go
         style={{ width: '100%', marginTop: 12, padding: "10px 0", background: A, color: "#fff", borderRadius: 12, fontFamily: PJS, fontWeight: 700, fontSize: 13, border: "none", cursor: "pointer" }}
         className="flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
       >
-        Lihat Semua Lomba <ChevronRight size={14} />
+        Lihat Semua Agenda <ChevronRight size={14} />
       </button>
+    </div>
+  );
+}
+
+export function SuggestedVocation({ studentId }: { studentId: number }) {
+  const vocations = studentId === 2 ? [
+    { title: "Batik", desc: "Melatih ketelitian dan kreativitas seni.", match: "Tinggi", tags: ["Kreatif", "Praktis"], img: "https://images.unsplash.com/photo-1762111908782-fabda1a1fe1e?w=160&auto=format&fit=crop&q=80" },
+    { title: "Tata Busana", desc: "Keterampilan menjahit dan mendesain.", match: "Cukup", tags: ["Realistis", "Mandiri"], img: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=160&auto=format&fit=crop&q=80" },
+  ] : [
+    { title: "Kriya Kayu", desc: "Melatih kreativitas, ketelitian, dan kemampuan motorik halus.", match: "Tinggi", tags: ["Kreatif", "Praktis"], img: "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=160&auto=format&fit=crop&q=80" },
+    { title: "Otomotif", desc: "Mengembangkan keterampilan dasar mekanik dan problem solving.", match: "Cukup", tags: ["Realistis", "Mandiri"], img: "https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?w=160&auto=format&fit=crop&q=80" },
+  ];
+
+  return (
+    <div style={{ background: "#F0FDF4", borderRadius: 24, padding: "20px 14px", border: "1px solid #DCFCE7", boxShadow: "0 2px 12px rgba(91,122,104,0.04)" }}>
+      <div className="flex items-center justify-between mb-4 px-2">
+        <div className="flex items-center gap-3">
+          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#059669", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 4px 10px rgba(5,150,105,0.2)" }}>
+            <Briefcase size={16} style={{ color: "#FFFFFF" }} />
+          </div>
+          <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: "#166534" }}>
+            Rekomendasi Vokasi
+          </h3>
+        </div>
+        <button className="flex items-center gap-1 active:scale-95 transition-transform" style={{ background: "none", border: "none", color: "#15803D", fontFamily: PJS, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+          Lihat semua <ChevronRight size={14} />
+        </button>
+      </div>
+      <div className="space-y-3">
+        {vocations.map((v, i) => (
+          <div key={i} className="flex p-3 rounded-2xl" style={{ border: `1px solid ${BDR}`, background: "#FFFFFF", boxShadow: "0 4px 14px rgba(0,0,0,0.03)" }}>
+            <ImageWithFallback src={v.img} alt={v.title} style={{ width: 72, height: 72, borderRadius: 14, objectFit: "cover", flexShrink: 0, border: "1px solid rgba(0,0,0,0.05)" }} />
+            <div className="min-w-0 flex-1 ml-3 flex flex-col justify-center">
+              <div className="flex items-start justify-between">
+                <p className="font-bold text-[14.5px] truncate leading-tight" style={{ color: TEXT }}>{v.title}</p>
+                <div className="flex flex-col items-end ml-2 flex-shrink-0">
+                  <span className="text-[10px] font-bold" style={{ color: v.match === "Tinggi" ? "#059669" : "#D97706" }}>Kesesuaian</span>
+                  <span className="font-black text-[13px] flex items-center gap-0.5" style={{ color: v.match === "Tinggi" ? "#059669" : "#D97706", fontFamily: DMM }}>{v.match} <ChevronRight size={12} strokeWidth={3} /></span>
+                </div>
+              </div>
+              <p className="text-[11px] mt-1" style={{ color: MUTED, lineHeight: 1.3 }}>{v.desc}</p>
+              <div className="flex gap-2 mt-2">
+                {v.tags.map((t, ti) => (
+                  <span key={ti} className="text-[9.5px] font-extrabold px-2 py-0.5 rounded-full" style={{ background: ti === 0 ? "#F3E8FF" : "#ECFCCB", color: ti === 0 ? "#7E22CE" : "#4D7C0F" }}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function SuggestedExtracurricular({ studentId }: { studentId: number }) {
+  const exkul = studentId === 2 ? [
+    { title: "Seni Suara", desc: "Meningkatkan ekspresi diri.", match: "Tinggi", tags: ["Aktif", "Ekspresif"], img: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=160&auto=format&fit=crop&q=80" },
+    { title: "Sastra", desc: "Melatih imajinasi dan literasi.", match: "Cukup", tags: ["Kreatif", "Fokus"], img: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=160&auto=format&fit=crop&q=80" },
+  ] : [
+    { title: "Olahraga", desc: "Melatih fisik, stamina, dan kerja sama tim.", match: "Tinggi", tags: ["Aktif", "Disiplin"], img: "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=160&auto=format&fit=crop&q=80" },
+    { title: "Seni (Lukis)", desc: "Meningkatkan kreativitas visual dan ekspresi diri.", match: "Cukup", tags: ["Kreatif", "Ekspresif"], img: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=160&auto=format&fit=crop&q=80" },
+  ];
+
+  return (
+    <div style={{ background: "#EFF6FF", borderRadius: 24, padding: "20px 14px", border: "1px solid #DBEAFE", boxShadow: "0 2px 12px rgba(91,122,104,0.04)" }}>
+      <div className="flex items-center justify-between mb-4 px-2">
+        <div className="flex items-center gap-3">
+          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#2563EB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 4px 10px rgba(37,99,235,0.2)" }}>
+            <Users size={16} style={{ color: "#FFFFFF" }} />
+          </div>
+          <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: "#1E3A8A" }}>
+            Rekomendasi Ekstrakurikuler
+          </h3>
+        </div>
+        <button className="flex items-center gap-1 active:scale-95 transition-transform" style={{ background: "none", border: "none", color: "#1D4ED8", fontFamily: PJS, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+          Lihat semua <ChevronRight size={14} />
+        </button>
+      </div>
+      <div className="space-y-3">
+        {exkul.map((v, i) => (
+          <div key={i} className="flex p-3 rounded-2xl" style={{ border: `1px solid ${BDR}`, background: "#FFFFFF", boxShadow: "0 4px 14px rgba(0,0,0,0.03)" }}>
+            <ImageWithFallback src={v.img} alt={v.title} style={{ width: 72, height: 72, borderRadius: 14, objectFit: "cover", flexShrink: 0, border: "1px solid rgba(0,0,0,0.05)" }} />
+            <div className="min-w-0 flex-1 ml-3 flex flex-col justify-center">
+              <div className="flex items-start justify-between">
+                <p className="font-bold text-[14.5px] truncate leading-tight" style={{ color: TEXT }}>{v.title}</p>
+                <div className="flex flex-col items-end ml-2 flex-shrink-0">
+                  <span className="text-[10px] font-bold" style={{ color: v.match === "Tinggi" ? "#059669" : "#D97706" }}>Kesesuaian</span>
+                  <span className="font-black text-[13px] flex items-center gap-0.5" style={{ color: v.match === "Tinggi" ? "#059669" : "#D97706", fontFamily: DMM }}>{v.match} <ChevronRight size={12} strokeWidth={3} /></span>
+                </div>
+              </div>
+              <p className="text-[11px] mt-1" style={{ color: MUTED, lineHeight: 1.3 }}>{v.desc}</p>
+              <div className="flex gap-2 mt-2">
+                {v.tags.map((t, ti) => (
+                  <span key={ti} className="text-[9.5px] font-extrabold px-2 py-0.5 rounded-full" style={{ background: ti === 0 ? "#E0F2FE" : "#DCFCE7", color: ti === 0 ? "#0369A1" : "#166534" }}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -81,7 +186,7 @@ export function TalentMapDetailScreen({
   const handleShareLaporan = async () => {
     const riasec = s.hasObs ? kodeTigaHuruf(jawaban) : "—";
     const kemandirian = s.hasObs ? skorKetekunan(jawaban) : "—";
-    const textShare = `*Laporan Pemetaan Bakat Siswa (AI Talent Mapping)*\n\n👤 *Nama Siswa:* ${s.name}\n🏫 *Kelas:* ${s.kelas} (${s.abk})\n🏫 *Sekolah:* ${namaSekolah}\n\n✨ *Hasil Analisis AI:*\n• Potensi Dominan (RIASEC): *${riasec}*\n• Skor Kemandirian: *${kemandirian}*\n• Gaya Belajar: *${s.caraBelajar || "Visual & Kinestetik"}*\n• Rekomendasi Lomba: *${s.comps && s.comps.length ? s.comps.join(", ") : "LKSN Kriya Kayu"}*\n\nDokumen resmi laporan pemetaan bakat dapat diunduh melalui aplikasi Sareh Asih.`;
+    const textShare = `*Laporan Pemetaan Bakat PDBK (AI Talent Mapping)*\n\n👤 *Nama PDBK:* ${s.name}\n🏫 *Kelas:* ${s.kelas} (${s.abk})\n🏫 *Sekolah:* ${namaSekolah}\n\n✨ *Hasil Analisis AI:*\n• Potensi Dominan (RIASEC): *${riasec}*\n• Skor Kemandirian: *${kemandirian}*\n• Gaya Belajar: *${s.caraBelajar || "Visual & Kinestetik"}*\n• Rekomendasi Ajang Talenta: *${s.comps && s.comps.length ? s.comps.join(", ") : "LKSN Diksus Kriya Kayu"}*\n\nDokumen resmi laporan pemetaan bakat dapat diunduh melalui aplikasi Sareh Asih.`;
 
     if (navigator.share) {
       try {
@@ -176,11 +281,19 @@ export function TalentMapDetailScreen({
 
         <ProfilFungsionalRadar jawaban={jawaban} studentName={firstName} studentId={studentId} />
         <ProfilKecenderunganBar jawaban={jawaban} studentName={firstName} studentId={studentId} onLearningRec={() => go("learning-rec")} />
+        <SuggestedVocation studentId={studentId} />
+        <SuggestedExtracurricular studentId={studentId} />
         <SuggestedCompetitions studentId={studentId} go={go} />
-
-
+        
+        <div className="flex items-start gap-3 p-4 rounded-2xl" style={{ background: "linear-gradient(135deg, #F0FDF4 0%, #ECFCCB 100%)", border: "1px solid #DCFCE7", marginTop: 8 }}>
+          <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#FEF3C7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Lightbulb size={18} style={{ color: "#D97706" }} />
+          </div>
+          <p className="text-xs font-medium leading-relaxed" style={{ color: "#064E3B", fontFamily: IPS }}>
+            Rekomendasi ini berdasarkan hasil asesmen minat dan potensi {firstName}. Aktivitas dapat disesuaikan dengan ketersediaan di sekolah dan minat anak.
+          </p>
+        </div>
       </div>
-
       {toast && (
         <div style={{ position: "fixed", left: 20, right: 20, bottom: 20, zIndex: 75, background: "#2E3E35", borderRadius: 16, padding: "12px 16px", display: "flex", alignItems: "center", gap: 9, boxShadow: "0 10px 28px rgba(0,0,0,0.28)" }}>
           <CheckCircle size={15} style={{ color: "#8BB098", flexShrink: 0 }} />

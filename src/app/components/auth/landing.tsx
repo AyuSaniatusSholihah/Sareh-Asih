@@ -318,7 +318,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                       Raih Prestasi,<br />Jelajahi Lebih Banyak Peluang
                     </h2>
                     <p style={{ fontSize: 12.5, color: "#5B7A68", lineHeight: 1.5, marginBottom: 14 }}>
-                      Rekomendasi lomba resmi serta direktori pelatihan dan terapi sesuai minat anak.
+                      Rekomendasi ajang talenta resmi (O2SN, FLS3N, LKSN Diksus) serta direktori pelatihan dan terapi sesuai bakat PDBK.
                     </p>
                   </div>
 
@@ -330,16 +330,16 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                   }}>
                     <div className="flex justify-between items-center mb-3">
                       <h3 style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 700, color: "#2E3E35", display: "flex", alignItems: "center", gap: 6 }}>
-                        <Trophy size={18} color="#D4A843" /> Lomba & Kompetisi
+                        <Trophy size={18} color="#D4A843" /> Agenda Ajang Talenta Resmi
                       </h3>
                       <span style={{ fontSize: 12, color: "#8BB098", fontWeight: 600 }}>Lihat Semua</span>
                     </div>
 
                     <div className="space-y-3">
                       {[
-                        { icon: "🏆", bg: "#FEF9EC", title: "Olimpiade Sains Nasional (OSN)", tag: "Sains", tagColor: "#3B82F6", tagBg: "#EFF6FF" },
-                        { icon: "🎭", bg: "#FEF2F2", title: "Festival dan Lomba Seni Siswa Nasional (FLS2N)", tag: "Seni", tagColor: "#E8637A", tagBg: "#FDF2F8" },
-                        { icon: "💻", bg: "#EFF6FF", title: "Lomba Kompetensi Siswa (LKS)", tag: "Vokasional", tagColor: "#1D4ED8", tagBg: "#EFF6FF" },
+                        { icon: "🏃", bg: "#FEF9EC", title: "Olimpiade Olahraga Siswa Nasional (O2SN Diksus)", tag: "Olahraga", tagColor: "#2563EB", tagBg: "#EFF6FF" },
+                        { icon: "🎭", bg: "#FEF2F2", title: "Festival Lomba Seni dan Sastra Siswa Nasional (FLS3N PDBK)", tag: "Seni & Literasi", tagColor: "#E8637A", tagBg: "#FDF2F8" },
+                        { icon: "🛠️", bg: "#EFF6FF", title: "Lomba Kompetensi Siswa Nasional Jenjang Pendidikan Khusus (LKSN Diksus)", tag: "Vokasional", tagColor: "#1D4ED8", tagBg: "#EFF6FF" },
                       ].map((item, idx) => (
                         <div key={idx} className="flex items-center gap-3 pb-2.5" style={{ borderBottom: idx < 2 ? "1px solid #F3F4F6" : "none" }}>
                           <div style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: item.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 19, flexShrink: 0 }}>
