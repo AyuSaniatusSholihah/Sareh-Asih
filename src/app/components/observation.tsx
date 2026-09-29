@@ -221,8 +221,8 @@ export function ObservationScreen({
       >
         <TBar title="Asesmen Siswa" sub={student.name} onBack={onBack} />
 
-        {/* Identitas + stepper + progress (terkunci saat scroll) */}
-        <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#F7F5F0", boxShadow: "0 4px 12px rgba(91,122,104,0.08)" }}>
+        {/* Identitas + stepper + progress (TIDAK DIKUNCI / MENYATU DENGAN SCROLL) */}
+        <div style={{ background: "#F7F5F0" }}>
           <div style={{ background: CARD }} className="px-4 pt-2 pb-3">
             <div className="mb-3">
               <div className="min-w-0">
@@ -305,10 +305,11 @@ export function ObservationScreen({
               </div>
             )}
           </div>
+        </div>
 
-          {/* ── CAPSULE FILTER BAR (PERSIS SEPERTI GAMBAR USER) ── */}
-          {tahap === "fungsional" && (
-            <div style={{ background: "#F5F3EF", borderBottom: `1px solid ${BDR}`, paddingTop: 8, paddingBottom: 8 }} className="px-3">
+        {/* ── CAPSULE FILTER BAR (STICKY DI ATAS SAAT SCROLL SEHINGGA HEMAT RUANG) ── */}
+        {tahap === "fungsional" && (
+          <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#F5F3EF", borderBottom: `1px solid ${BDR}`, paddingTop: 7, paddingBottom: 7, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }} className="px-3">
               <div
                 style={{
                   background: "#EDE9E1",
@@ -528,7 +529,7 @@ export function ObservationScreen({
           )}
 
           {tahap === "kecenderungan" && (
-            <div style={{ background: "#F7F5F0", borderBottom: `1px solid ${BDR}`, paddingTop: 6, paddingBottom: 6 }} className="px-4 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#F7F5F0", borderBottom: `1px solid ${BDR}`, paddingTop: 6, paddingBottom: 6, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }} className="px-4 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
               <button
                 type="button"
                 onClick={() => setActiveRiasecFilter("Semua")}
@@ -584,7 +585,6 @@ export function ObservationScreen({
               })}
             </div>
           )}
-        </div>
 
         {/* ── TAHAP 1: PROFIL FUNGSIONAL (6 SLIDES / STEPS GAYA GOOGLE FORM) ── */}
         {tahap === "fungsional" && (
