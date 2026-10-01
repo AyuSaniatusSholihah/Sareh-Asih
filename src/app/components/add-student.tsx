@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import {
   CheckCircle, Info, XCircle, UserPlus, Sparkles, Plus, ArrowLeft,
   Upload, Download, Lightbulb, FileText, AlertCircle, Trash2, Database,
@@ -10,6 +10,7 @@ import {
 } from "./ui-kit";
 import { ABK_OPTIONS, CARA_BELAJAR_OPTIONS, type Student } from "./data";
 import { MOCK_DB_SEKOLAH } from "./auth/tambah-siswa";
+import { cleanClassName } from "./auth/profil-sekolah";
 
 type Step = "choice" | "db-sekolah" | "upload" | "identitas" | "abk" | "success";
 
@@ -60,9 +61,18 @@ export function AddStudentSheet({
   firstTime,
   savedCount,
 }: AddStudentSheetProps) {
-  const kelasOptions = Object.keys(kelasAbkMap);
+  const sanitizedMap = useMemo(() => {
+    const res: Record<string, string> = {};
+    for (const [k, v] of Object.entries(kelasAbkMap || {})) {
+      const cleanKey = cleanClassName(k);
+      if (cleanKey) res[cleanKey] = v;
+    }
+    return res;
+  }, [kelasAbkMap]);
+
+  const kelasOptions = Object.keys(sanitizedMap);
   const defaultKelas = kelasOptions[0] || "";
-  const defaultAbk = (defaultKelas && kelasAbkMap[defaultKelas]) ? kelasAbkMap[defaultKelas] : "Tunanetra";
+  const defaultAbk = (defaultKelas && sanitizedMap[defaultKelas]) ? sanitizedMap[defaultKelas] : "Tunanetra";
 
   const [step, setStep] = useState<Step>("choice");
   const [form, setForm] = useState(() => ({
@@ -97,7 +107,7 @@ export function AddStudentSheet({
 
   // Ketika kelas dipilih, auto-fill jenis_abk dari map
   const onKelasChange = (k: string) => {
-    const abk = kelasAbkMap[k] ?? "Tunanetra";
+    const abk = sanitizedMap[k] ?? "Tunanetra";
     setForm(f => ({ ...f, kelas: k, jenis_abk: abk, extra_abk: [] }));
   };
 
@@ -242,7 +252,7 @@ export function AddStudentSheet({
     const valid = uploadedRows.filter(r => r.valid);
     if (!valid.length || !selectedUploadKelas) return;
     const targetKelas = selectedUploadKelas;
-    const defaultAbk = kelasAbkMap[targetKelas] || "Tunanetra";
+    const defaultAbk = sanitizedMap[targetKelas] || "Tunanetra";
     valid.forEach((s, idx) => {
       const emoji = ["👦", "👧", "🧑"][idx % 3];
       onSave({
@@ -729,7 +739,7 @@ export function AddStudentSheet({
                     <option value="" disabled>-- Pilih salah satu kelas yang didaftarkan --</option>
                     {kelasOptions.map(k => (
                       <option key={k} value={k}>
-                        {k} {kelasAbkMap[k] ? `— (${kelasAbkMap[k]})` : ""}
+                        {k} {sanitizedMap[k] ? `— (${sanitizedMap[k]})` : ""}
                       </option>
                     ))}
                   </select>
@@ -742,7 +752,7 @@ export function AddStudentSheet({
                   <div>
                     <p className="text-[10px] text-gray-500 font-medium">Kelas Tujuan (Otomatis):</p>
                     <p className="text-xs font-bold text-[#2C3531]" style={{ fontFamily: PJS }}>
-                      {kelasOptions[0] || "VII A"} {kelasAbkMap[kelasOptions[0]] ? `— (${kelasAbkMap[kelasOptions[0]]})` : ""}
+                      {kelasOptions[0] || "VII A"} {sanitizedMap[kelasOptions[0]] ? `— (${sanitizedMap[kelasOptions[0]]})` : ""}
                     </p>
                   </div>
                   <span className="text-[10px] bg-[#EAF2EC] text-[#738B7B] px-2.5 py-0.5 rounded-full font-bold">
@@ -850,10 +860,12 @@ export function AddStudentSheet({
                     <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-gray-50 text-xs border border-gray-100">
                       <div>
                         <p className="font-bold text-gray-800">{r.nama}</p>
-                        <p className="text-[10px] text-gray-500">{r.abk || kelasAbkMap[selectedUploadKelas] || "—"}</p>
+                        <p className="text-[10px] text-gray-500">{r.abk || sanitizedMap[selectedUploadKelas] || "—"}</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-[10px] text-[#738B7B] font-bold block">Kelas {selectedUploadKelas}</span>
+                        <span className="text-[10px] text-[#738B7B] font-bold block">
+                          {selectedUploadKelas.startsWith("Kelas") ? selectedUploadKelas : `Kelas ${selectedUploadKelas}`}
+                        </span>
                         <CheckCircle size={14} className="text-green-600 inline-block mt-0.5" />
                       </div>
                     </div>

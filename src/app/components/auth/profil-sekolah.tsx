@@ -6,6 +6,16 @@ import { type GuruProfile } from "./akun-guru";
 import { ModalShell } from "./modal-shell";
 import { SLBSearchInput } from "./slb-search";
 
+export const cleanClassName = (raw: string | undefined | null): string => {
+  if (!raw) return "";
+  return raw
+    .replace(/[·, ]*\bKustom\b[·, ]*/gi, "")
+    .replace(/\(\s*\)/g, "")
+    .replace(/\s*-\s*(SMPLB|SDLB|SMALB)\b/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+};
+
 export function ProfilSekolahModal({
   profile,
   onBack,
@@ -18,7 +28,15 @@ export function ProfilSekolahModal({
   onClose?: () => void;
 }) {
   const [sekolah, setSekolah] = useState(profile.sekolah);
-  const [kelasAbkMap, setKelasAbkMap] = useState<Record<string, string>>(profile.kelasAbkMap ?? {});
+  const [kelasAbkMap, setKelasAbkMap] = useState<Record<string, string>>(() => {
+    const initial = profile.kelasAbkMap ?? {};
+    const sanitized: Record<string, string> = {};
+    for (const [k, v] of Object.entries(initial)) {
+      const cleanKey = cleanClassName(k);
+      if (cleanKey) sanitized[cleanKey] = v;
+    }
+    return sanitized;
+  });
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -91,7 +109,7 @@ export function ProfilSekolahModal({
     setTingkat(JENJANG_MAP[j].defaultTingkat);
   };
 
-  // Helper format nama kelas reguler
+  // Helper format nama kelas reguler (ringkas, tanpa embel-embel berlebihan)
   const getPreviewReguler = () => {
     const selectedObjs = KEKHUSUSAN_LIST.filter(k => selectedKekhususan.includes(k.kode));
     const parts: string[] = [];
@@ -106,19 +124,27 @@ export function ProfilSekolahModal({
         parts.push(gandaLabel);
       }
       if (selectedKekhususan.includes("Lainnya")) {
-        const customLabel = customJenisInput.trim() ? customJenisInput.trim() : "Kustom";
-        parts.push(customLabel);
+        const customLabel = customJenisInput.trim();
+        if (customLabel) {
+          parts.push(customLabel);
+        }
       }
     }
 
-    const labelBagian = parts.length > 0 ? parts.join(" · ") : "Umum";
-    return `Kelas ${tingkat} (${labelBagian}) - ${jenjang}`;
+    if (parts.length > 0) {
+      if (parts.length === 1 && /^[A-Za-z0-9]+$/.test(parts[0])) {
+        return `Kelas ${tingkat} ${parts[0]}`;
+      }
+      return `Kelas ${tingkat} (${parts.join(" · ")})`;
+    }
+
+    return `Kelas ${tingkat}`;
   };
 
-  // Helper format nama kelas vokasional
+  // Helper format nama kelas vokasional (ringkas, tanpa akhiran jenjang)
   const getPreviewVokasi = () => {
     const vObj = VOKASIONAL_LIST.find(v => v.id === vokasiItem || v.ringkas === vokasiItem) || VOKASIONAL_LIST[1];
-    return `${vObj.nama} - ${vokasiJenjang}`;
+    return vObj.nama;
   };
 
   // Handler tambah kelas reguler
@@ -130,7 +156,9 @@ export function ProfilSekolahModal({
       if (k.kode === "Ganda") {
         abkItems.push(detailGanda.trim() ? `Disabilitas Ganda (${detailGanda.trim()})` : "Disabilitas Ganda");
       } else if (k.kode === "Lainnya") {
-        abkItems.push(customJenisInput.trim() || "Lainnya");
+        if (customJenisInput.trim()) {
+          abkItems.push(customJenisInput.trim());
+        }
       } else {
         abkItems.push(k.abk);
       }
@@ -524,7 +552,7 @@ export function ProfilSekolahModal({
                   </div>
                 )}
 
-                {/* Sub-panel Input Kustom Lainnya */}
+                {/* Sub-panel Input Lainnya */}
                 {selectedKekhususan.includes("Lainnya") && (
                   <div
                     className="p-3 rounded-xl space-y-2.5 border"
@@ -532,7 +560,7 @@ export function ProfilSekolahModal({
                     <div className="flex items-center gap-1.5">
                       <span style={{ fontSize: 16 }}>✏️</span>
                       <p className="text-xs font-bold" style={{ color: "#854D0E", fontFamily: IPS }}>
-                        Input Kelas / Layanan Lainnya (Kustom):
+                        Input Kelas / Layanan Tambahan (Opsional):
                       </p>
                     </div>
                     <p className="text-[10px]" style={{ color: "#713F12", fontFamily: IPS }}>
@@ -541,7 +569,7 @@ export function ProfilSekolahModal({
                     <input
                       value={customJenisInput}
                       onChange={e => setCustomJenisInput(e.target.value)}
-                      placeholder="Tuliskan nama jenis kelas di sini..."
+                      placeholder="Tuliskan nama kelas di sini (opsional)..."
                       style={{
                         width: "100%",
                         border: "1.5px solid #FCD34D",

@@ -11,6 +11,7 @@ import {
 import {
   LandingScreen, RoleSelectScreen, GoogleLoginScreen, ParentCodeScreen,
   AkunGuruModal, ProfilSekolahModal, TambahSiswaPromptModal, type GuruProfile,
+  cleanClassName,
 } from "./components/auth";
 import { AddStudentSheet } from "./components/add-student";
 import { ObservationScreen } from "./components/observation";
@@ -391,7 +392,17 @@ export default function App() {
                     profile={guru}
                     onClose={() => setGuruSetup(null)}
                     onBack={() => setGuruSetup("akun")}
-                    onNext={(p) => { setGuru(g => ({ ...g, ...p })); setGuruSetup("siswa"); }}
+                    onNext={(p) => {
+                      const cleanKelas = (p.kelas || []).map(cleanClassName).filter(Boolean);
+                      const cleanMap: Record<string, string> = {};
+                      if (p.kelasAbkMap) {
+                        for (const [k, v] of Object.entries(p.kelasAbkMap)) {
+                          cleanMap[cleanClassName(k)] = v;
+                        }
+                      }
+                      setGuru(g => ({ ...g, ...p, kelas: cleanKelas, kelasAbkMap: cleanMap }));
+                      setGuruSetup("siswa");
+                    }}
                   />
                 )}
                 {guruSetup === "siswa" && (
