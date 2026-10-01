@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell, LabelList
 } from "recharts";
 import {
   FUNGSIONAL_KATEGORI, FUNGSIONAL_META,
-  RIASEC_KATEGORI, RIASEC_META,
+  RIASEC_KATEGORI, RIASEC_META, RIASEC_PENJELASAN, RIASEC_KODE,
   PROFIL_FUNGSIONAL, PROFIL_KECENDERUNGAN,
   FungsionalKategori, RiasecKategori
 } from "./data";
 import { CARD, BDR, TEXT, DEEP, PJS, IPS, DMM, MUTED, A } from "./ui-kit";
-import { Activity, Sparkles, Target, Brain } from "lucide-react";
+import { Activity, Sparkles, Target, Brain, Info, X, Lightbulb, ChevronRight, ListChecks } from "lucide-react";
 import riasecInfographicImg from "@/imports/riasec-infographic.jpg";
 
 // --- Utility Functions for Scoring ---
@@ -265,6 +265,7 @@ export function ProfilKecenderunganBar({
   studentId?: number;
   onLearningRec?: () => void;
 }) {
+  const [openTipe, setOpenTipe] = useState<RiasecKategori | null>(null);
   const data = RIASEC_KATEGORI.map(tipe => ({
     tipe,
     label: RIASEC_META[tipe].letter,
@@ -292,18 +293,20 @@ export function ProfilKecenderunganBar({
 
   // Nama dan teks kesimpulan minat
   const name = studentName || (studentId === 1 ? "Rafi" : studentId === 2 ? "Nisa" : studentId === 3 ? "Arga" : "Siswa");
-  let kesimpulanMinat = "";
-  if (studentId === 1 || name === "Rafi") {
-    kesimpulanMinat = `Menunjukkan minat tertinggi pada tipe Artistic (Seni & Kreativitas) dan Investigative (Eksplorasi). ${name} sangat antusias mengekspresikan ide melalui bunyi audio, musik ritmik, dan kreasi taktil.`;
-  } else if (studentId === 2 || name === "Nisa") {
-    kesimpulanMinat = `Memiliki potensi dan minat kuat pada tipe Artistic dan Realistic. ${name} unggul dalam kepekaan visual, seni rupa, keterampilan tangan, dan tugas yang membutuhkan ketelitian motorik tinggi.`;
-  } else if (studentId === 3 || name === "Arga") {
-    kesimpulanMinat = `Sangat unggul pada tipe Investigative (Analitis) dan Conventional (Keteraturan). ${name} memiliki daya nalar logis tajam, menyukai sains, teknologi, serta pemecahan masalah sistematis.`;
+  const top1 = sortedRiasec[0];
+  const top2 = sortedRiasec[1] || sortedRiasec[0];
+  let kalimatAkhir = "";
+  if (name === "Rafi") {
+    kalimatAkhir = `${name} dapat diberikan kesempatan untuk mengeksplorasi aktivitas kreatif dan kegiatan yang melibatkan pengamatan atau pemecahan masalah.`;
+  } else if (name === "Nisa") {
+    kalimatAkhir = `${name} unggul dalam kepekaan visual, seni rupa, keterampilan tangan, dan tugas yang membutuhkan ketelitian motorik tinggi.`;
+  } else if (name === "Arga") {
+    kalimatAkhir = `${name} memiliki daya nalar logis tajam, menyukai sains, teknologi, serta pemecahan masalah sistematis.`;
   } else {
-    const top1 = sortedRiasec[0];
-    const top2 = sortedRiasec[1] || sortedRiasec[0];
-    kesimpulanMinat = `${name} memiliki kecenderungan minat tertinggi pada aktivitas bertipe ${top1.fullName} (${top1.skor}%) dan ${top2.fullName} (${top2.skor}%). Disarankan diberikan ruang eksplorasi dan pembinaan proyek yang selaras dengan bakat ini.`;
+    kalimatAkhir = `${name} dapat diberikan kesempatan untuk mengeksplorasi ruang belajar dan pembinaan proyek yang selaras dengan bakat ini.`;
   }
+  const kesimpulanMinat = `${name} menunjukkan kecenderungan minat tertinggi pada aktivitas ${top1.fullName} (${top1.skor}%) dan ${top2.fullName} (${top2.skor}%). ${kalimatAkhir}`;
+  const top4 = sortedRiasec.slice(0, 4);
 
   const BarCustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -372,7 +375,7 @@ export function ProfilKecenderunganBar({
         ))}
       </div>
 
-      {/* Panduan Visual 6 Tipe RIASEC (Gambar Ilustrasi) */}
+      {/* Panduan Visual 6 Tipe RIASEC — kartu interaktif, ketuk untuk penjelasan */}
       <div
         style={{
           marginTop: 14,
@@ -383,24 +386,72 @@ export function ProfilKecenderunganBar({
           background: "#FFFFFF",
         }}
       >
-        <div style={{ padding: "10px 14px 8px", background: "#FFF9F5", borderBottom: "1px solid rgba(210, 110, 91, 0.15)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12, color: "#C2410C" }}>
+        <div style={{ padding: "10px 14px 8px", background: "#FFF9F5", borderBottom: "1px solid rgba(210, 110, 91, 0.15)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+          <span className="flex items-center gap-1" style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12, color: "#C2410C", minWidth: 0 }}>
             🎨 Panduan Visual 6 Tipe RIASEC
+            <Info size={11} style={{ color: "#C2410C", opacity: 0.7, flexShrink: 0 }} />
           </span>
-          <span style={{ fontSize: 10, fontWeight: 700, background: "#FFEDD5", color: "#C2410C", padding: "2px 7px", borderRadius: 8, fontFamily: PJS }}>
+          <span style={{ fontSize: 10, fontWeight: 700, background: "#FFEDD5", color: "#C2410C", padding: "2px 7px", borderRadius: 8, fontFamily: PJS, flexShrink: 0 }}>
             Model Minat
           </span>
         </div>
-        <img
-          src={riasecInfographicImg}
-          alt="Panduan Visual 6 Tipe RIASEC"
-          style={{
-            width: "100%",
-            height: "auto",
-            display: "block",
-            objectFit: "cover",
-          }}
-        />
+        <div style={{ padding: "10px 12px 4px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+            {chartData.map((item, i) => {
+              const meta = RIASEC_META[item.tipe];
+              const col = i % 3;
+              const row = Math.floor(i / 3);
+              return (
+                <button
+                  key={item.tipe}
+                  type="button"
+                  onClick={() => setOpenTipe(item.tipe)}
+                  title={`Lihat penjelasan ${item.tipe}`}
+                  className="active:scale-95 transition-transform"
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    aspectRatio: "1",
+                    padding: 0,
+                    cursor: "pointer",
+                    borderRadius: 14,
+                    border: `1.5px solid ${meta.color}45`,
+                    overflow: "hidden",
+                    backgroundColor: meta.bg,
+                    backgroundImage: `url(${riasecInfographicImg})`,
+                    backgroundSize: "300% 200%",
+                    backgroundPosition: `${col * 50}% ${row * 100}%`,
+                    backgroundRepeat: "no-repeat",
+                    boxShadow: "0 2px 6px rgba(91,122,104,0.08)",
+                  }}
+                >
+                  <span
+                    style={{
+                      position: "absolute",
+                      right: 5,
+                      bottom: 5,
+                      background: "#FFFFFF",
+                      border: `1px solid ${meta.color}45`,
+                      color: meta.color,
+                      fontFamily: DMM,
+                      fontWeight: 700,
+                      fontSize: 10,
+                      padding: "2px 7px",
+                      borderRadius: 8,
+                      boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+                    }}
+                  >
+                    {item.skor}%
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex items-center justify-center gap-1.5" style={{ marginTop: 8, marginBottom: 6 }}>
+            <Info size={11} style={{ color: MUTED }} />
+            <span style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED }}>Ketuk tipe untuk melihat penjelasan</span>
+          </div>
+        </div>
       </div>
 
       {/* Keterangan Kesimpulan Ringkas Minat */}
@@ -412,46 +463,91 @@ export function ProfilKecenderunganBar({
           borderRadius: 16,
           padding: "12px 14px",
         }}
-        className="flex items-start gap-2.5"
       >
-        <div
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 8,
-            background: "rgba(210, 110, 91, 0.12)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            marginTop: 1,
-          }}
-        >
-          <Target size={15} style={{ color: A }} />
+        <div className="flex items-start gap-2.5">
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 8,
+              background: "rgba(210, 110, 91, 0.12)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              marginTop: 1,
+            }}
+          >
+            <Target size={15} style={{ color: A }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p
+              style={{
+                fontFamily: PJS,
+                fontWeight: 800,
+                fontSize: 12,
+                color: "#C2410C",
+                marginBottom: 3,
+              }}
+            >
+              Kesimpulan Minat &amp; Kecenderungan:
+            </p>
+            <p
+              style={{
+                fontFamily: IPS,
+                fontSize: 11.5,
+                color: TEXT,
+                lineHeight: 1.45,
+                margin: 0,
+              }}
+            >
+              {kesimpulanMinat}
+            </p>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <p
-            style={{
-              fontFamily: PJS,
-              fontWeight: 800,
-              fontSize: 12,
-              color: "#C2410C",
-              marginBottom: 3,
-            }}
-          >
-            Kesimpulan Minat & Bakat:
-          </p>
-          <p
-            style={{
-              fontFamily: IPS,
-              fontSize: 11.5,
-              color: TEXT,
-              lineHeight: 1.45,
-              margin: 0,
-            }}
-          >
-            {kesimpulanMinat}
-          </p>
+        <div style={{ marginTop: 10, paddingTop: 9, borderTop: "1px solid rgba(210,110,91,0.16)" }}>
+          <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
+            <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 11.5, color: "#C2410C", margin: 0 }}>
+              Kecenderungan utama {name}
+            </p>
+            <button
+              type="button"
+              onClick={() => setOpenTipe(top1.tipe)}
+              title="Lihat penjelasan"
+              className="flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform"
+              style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(210,110,91,0.12)", border: "none", cursor: "pointer", color: "#C2410C" }}
+            >
+              <ChevronRight size={13} />
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-1">
+            {top4.map(c => {
+              const m = RIASEC_META[c.tipe];
+              return (
+                <button
+                  key={c.tipe}
+                  type="button"
+                  onClick={() => setOpenTipe(c.tipe)}
+                  title={`Lihat penjelasan ${c.tipe}`}
+                  className="flex items-center gap-1 flex-shrink-0 active:scale-95 transition-transform"
+                  style={{
+                    background: m.bg,
+                    border: `1px solid ${m.color}35`,
+                    borderRadius: 9,
+                    padding: "3px 6px 3px 3px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span style={{ width: 14, height: 14, borderRadius: "50%", background: m.color, color: "#fff", fontFamily: PJS, fontWeight: 800, fontSize: 8.5, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {m.letter}
+                  </span>
+                  <span style={{ fontFamily: PJS, fontWeight: 700, fontSize: 9, color: m.color, whiteSpace: "nowrap" }}>
+                    {c.tipe}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -478,6 +574,221 @@ export function ProfilKecenderunganBar({
           Rekomendasi Pembelajaran
         </button>
       )}
+
+      {openTipe && (
+        <RiasecTipeSheet
+          tipe={openTipe}
+          skor={skorTipe(jawaban, openTipe) ?? 0}
+          dominant={top1.tipe === openTipe}
+          nama={name}
+          onClose={() => setOpenTipe(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+/** Bottom sheet penjelasan satu tipe RIASEC (dipanggil dari kartu Panduan Visual). */
+function RiasecTipeSheet({ tipe, skor, dominant, nama, onClose }: {
+  tipe: RiasecKategori; skor: number; dominant: boolean; nama: string; onClose: () => void;
+}) {
+  const meta = RIASEC_META[tipe];
+  const penj = RIASEC_PENJELASAN[tipe];
+  const i = RIASEC_KATEGORI.indexOf(tipe);
+  const col = i % 3;
+  const row = Math.floor(i / 3);
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 80,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+      }}
+    >
+      <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.5)" }} />
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          position: "relative",
+          background: CARD,
+          borderRadius: "26px 26px 0 0",
+          padding: "14px 20px 28px",
+          maxHeight: "88%",
+          overflowY: "auto",
+        }}
+      >
+        {/* Drag handle + tombol tutup */}
+        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: "#D1D5DB" }} />
+          <button
+            type="button"
+            onClick={onClose}
+            title="Tutup"
+            className="active:scale-90 transition-transform"
+            style={{
+              position: "absolute", right: 0, top: -4,
+              width: 30, height: 30, borderRadius: "50%",
+              background: "#F1F5F9", border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "#64748B",
+            }}
+          >
+            <X size={16} strokeWidth={2.4} />
+          </button>
+        </div>
+
+        {/* Judul: lingkaran huruf + nama tipe + kode */}
+        <div className="flex items-center gap-3" style={{ marginBottom: 12 }}>
+          <div
+            style={{
+              width: 46, height: 46, borderRadius: "50%",
+              background: meta.color, color: "#fff",
+              fontFamily: PJS, fontWeight: 800, fontSize: 21,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            {meta.letter}
+          </div>
+          <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 19, color: meta.color, margin: 0, flex: 1, minWidth: 0 }}>
+            {tipe}
+          </p>
+          <span
+            style={{
+              fontFamily: DMM, fontWeight: 700, fontSize: 10,
+              color: meta.color, background: meta.bg,
+              border: `1px solid ${meta.color}35`, borderRadius: 8,
+              padding: "3px 8px", flexShrink: 0,
+            }}
+          >
+            {RIASEC_KODE[tipe]}
+          </span>
+        </div>
+
+        {/* Ilustrasi tipe + badge persentase anak */}
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            aspectRatio: "1.55",
+            borderRadius: 16,
+            overflow: "hidden",
+            border: `1.5px solid ${meta.color}35`,
+            background: meta.bg,
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url(${riasecInfographicImg})`,
+              backgroundSize: "300% auto",
+              backgroundPosition: `${3.5 + col * 48.45}% ${27 + row * 70}%`,
+              backgroundRepeat: "no-repeat",
+            }}
+          />
+          <span
+            style={{
+              position: "absolute",
+              right: 10, bottom: 10,
+              background: "#FFFFFF",
+              border: `1px solid ${meta.color}45`,
+              color: meta.color,
+              fontFamily: DMM, fontWeight: 700, fontSize: 12,
+              padding: "3px 10px", borderRadius: 9,
+              boxShadow: "0 2px 6px rgba(0,0,0,0.10)",
+            }}
+          >
+            {skor}%
+          </span>
+        </div>
+
+        {/* Penjelasan */}
+        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: "16px 0 6px" }}>
+          Apa itu {tipe}?
+        </p>
+        <p style={{ fontFamily: IPS, fontSize: 12, color: TEXT, lineHeight: 1.55, margin: 0 }}>
+          {penj.apa}
+        </p>
+
+        {/* Contoh aktivitas */}
+        <div className="flex items-center gap-1.5" style={{ marginTop: 14, marginBottom: 4 }}>
+          <ListChecks size={14} style={{ color: meta.color }} />
+          <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: meta.color, margin: 0 }}>
+            Contoh aktivitas
+          </p>
+        </div>
+        <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+          {penj.contoh.map(c => (
+            <li
+              key={c}
+              className="flex items-start gap-2"
+              style={{ fontFamily: IPS, fontSize: 12, color: TEXT, lineHeight: 1.45, marginTop: 6 }}
+            >
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: meta.color, flexShrink: 0, marginTop: 6 }} />
+              {c}
+            </li>
+          ))}
+        </ul>
+
+        {/* Hasil spesifik untuk anak */}
+        <div
+          style={{
+            marginTop: 16,
+            background: meta.bg,
+            border: `1.5px solid ${meta.color}30`,
+            borderRadius: 14,
+            padding: "11px 13px",
+          }}
+          className="flex items-start gap-2.5"
+        >
+          <div
+            style={{
+              width: 26, height: 26, borderRadius: "50%",
+              background: "#fff", border: `1px solid ${meta.color}35`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0, marginTop: 1,
+            }}
+          >
+            <Lightbulb size={13} style={{ color: meta.color }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12, color: meta.color, marginBottom: 2 }}>
+              Pada {nama}
+            </p>
+            <p style={{ fontFamily: IPS, fontSize: 11.5, color: TEXT, lineHeight: 1.45, margin: 0 }}>
+              Kecenderungan {tipe} {dominant ? `cukup tinggi (${skor}%)` : `sebesar ${skor}%`}.
+            </p>
+          </div>
+        </div>
+
+        {/* Tombol tutup */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="active:scale-95 transition-transform"
+          style={{
+            width: "100%",
+            marginTop: 18,
+            minHeight: 48,
+            borderRadius: 16,
+            border: `1.5px solid ${meta.color}40`,
+            background: meta.bg,
+            color: meta.color,
+            fontFamily: PJS,
+            fontWeight: 800,
+            fontSize: 14,
+            cursor: "pointer",
+          }}
+        >
+          Tutup
+        </button>
+      </div>
     </div>
   );
 }

@@ -6,13 +6,10 @@ import {
   Palette, Target, BookOpen, Settings, TrendingUp,
 } from "lucide-react";
 import {
-  ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-} from "recharts";
-import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar,
 } from "./ui-kit";
 import {
-  AGENDA, KIND_META, LAYANAN, studentTalentDetail, RIASEC_META, FUNGSIONAL_KATEGORI, RIASEC_KATEGORI,
+  AGENDA, KIND_META, LAYANAN, studentTalentDetail, RIASEC_META, FUNGSIONAL_KATEGORI,
   seedRiwayatAsesmen, type AsesmenPeriode, type RiasecKategori,
   type Screen, type Student, type LaporanKirim,
   type AgendaEvent, type EventKind,
@@ -825,7 +822,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
           <>
             <SeksiCollapsible judul="Peta Potensi Anak" defaultTerbuka={true}>
               <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} readOnly={true} />
-              <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} readOnly={true} />
+              <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} studentName={nama} studentId={child.id} readOnly={true} />
               <div style={{background:"#F0FDF4",border:`1px solid #BBF7D0`}} className="rounded-xl px-4 py-3 flex items-start gap-2.5 mt-2">
                 <Info size={14} style={{color:"#15803D",flexShrink:0,marginTop:1}}/>
                 <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
@@ -835,7 +832,6 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
             </SeksiCollapsible>
 
             <SeksiCollapsible judul="Tren & Perkembangan" defaultTerbuka={true}>
-              <TrenKecenderunganAktivitas riwayat={seedRiwayatAsesmen[child.id] ?? []} />
               <PerkembanganKemandirian riwayat={seedRiwayatAsesmen[child.id] ?? []} />
             </SeksiCollapsible>
           </>
@@ -972,51 +968,6 @@ function SeksiCollapsible({
         />
       </button>
       {terbuka && <div className="space-y-3">{children}</div>}
-    </div>
-  );
-}
-
-function TrenKecenderunganAktivitas({ riwayat }: { riwayat: AsesmenPeriode[] }) {
-  if (riwayat.length < 2) {
-    return (
-      <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-        <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tren Kecenderungan Aktivitas</p>
-        <p className="text-xs" style={{color:MUTED}}>Ini asesmen pertama. Tren akan mulai terlihat mulai periode berikutnya.</p>
-      </div>
-    );
-  }
-
-  const chartData = riwayat.map(r => {
-    const row: any = { periode: r.periode };
-    RIASEC_KATEGORI.forEach(tipe => { row[tipe] = r.skorRiasec[tipe]; });
-    return row;
-  });
-
-  return (
-    <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-      <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Tren Kecenderungan Aktivitas</p>
-      <p className="text-xs mb-3" style={{color:MUTED}}>Keenam tipe RIASEC, dari waktu ke waktu.</p>
-      <ResponsiveContainer width="100%" height={190}>
-        <LineChart data={chartData} margin={{top:4,right:4,left:-24,bottom:0}}>
-          <CartesianGrid strokeDasharray="3 3" stroke={BDR}/>
-          <XAxis dataKey="periode" tick={{fontSize:10}}/>
-          <YAxis domain={[0,100]} tick={{fontSize:10}}/>
-          <Tooltip/>
-          {RIASEC_KATEGORI.map(tipe => (
-            <Line key={tipe} type="monotone" dataKey={tipe} 
-                  stroke={RIASEC_META[tipe].color} strokeWidth={2} dot={{r:2.5}} 
-                  name={tipe}/>
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
-      <div className="flex gap-2.5 mt-2 flex-wrap">
-        {RIASEC_KATEGORI.map(tipe => (
-          <div key={tipe} className="flex items-center gap-1.5 text-xs" style={{color:MUTED}}>
-            <span style={{width:8,height:8,borderRadius:99,background:RIASEC_META[tipe].color,display:"inline-block"}}/>
-            {tipe}
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
