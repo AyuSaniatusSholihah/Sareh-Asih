@@ -3,7 +3,7 @@ import {
   Bell, Users, MessageSquare, Sparkles, Lock, Info, Heart, Star,
   Key, Hash, XCircle, ChevronRight, ChevronLeft, MapPin, Phone,
   Clock, Wallet, CalendarDays, CheckCircle, Search, FileText, ChevronDown, X,
-  Palette, Target, BookOpen, Settings, TrendingUp,
+  Palette, Target, BookOpen, Settings, TrendingUp, Lightbulb, Laptop,
 } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar,
@@ -303,80 +303,263 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
               </div>
             )}
 
-            {/* ── Dua kartu info side-by-side ── */}
+            {/* ── Dua kartu info 2 kolom: Agenda Terdekat & Rekomendasi Pelatihan ── */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              {/* Agenda Terdekat */}
-              <button onClick={() => go("parent-calendar")}
-                style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 18, padding: "14px 12px", textAlign: "left", cursor: "pointer", width: "100%", boxShadow: "0 1px 6px rgba(91,122,104,0.04)" }}
-                className="flex flex-col gap-1.5 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <div style={{ width: 22, height: 22, borderRadius: 7, background: "linear-gradient(135deg, #D4E8DA 0%, #B8D8C0 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <CalendarDays size={11} style={{ color: "#3D6B4F" }} />
+              {/* 1. Agenda Terdekat */}
+              <div
+                style={{
+                  background: "#FFFFFF",
+                  border: "1.5px solid rgba(210,125,107,0.25)",
+                  borderRadius: 20,
+                  padding: "13px 12px 12px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  boxShadow: "0 2px 10px rgba(210,125,107,0.05)",
+                  minHeight: 180,
+                }}
+              >
+                <div>
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 9,
+                        background: "rgba(210,125,107,0.14)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}>
+                        <CalendarDays size={16} style={{ color: "#C4695A" }} strokeWidth={2.3} />
+                      </div>
+                      <h4 style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
+                        Agenda Terdekat
+                      </h4>
                     </div>
-                    <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>Agenda Terdekat</p>
+                    <button
+                      onClick={() => go("parent-calendar")}
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: "50%",
+                        background: "rgba(210,125,107,0.12)",
+                        border: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        flexShrink: 0,
+                        padding: 0,
+                      }}
+                      title="Lihat Kalender"
+                    >
+                      <ChevronRight size={13} style={{ color: "#C4695A" }} />
+                    </button>
                   </div>
-                  <ChevronRight size={13} style={{ color: MUTED }} />
-                </div>
-                {upcoming.length > 0 ? (
-                  <>
-                    <p style={{ fontFamily: PJS, fontSize: 11, color: TEXT, margin: "6px 0 0", fontWeight: 700, lineHeight: 1.3 }}>
-                      {upcoming[0].title.length > 24 ? upcoming[0].title.slice(0, 24) + "…" : upcoming[0].title}
-                    </p>
-                    <div className="flex items-center gap-1.5" style={{ marginTop: 4 }}>
-                      <Clock size={10} style={{ color: "#8BA892" }} />
-                      <p style={{ fontFamily: DMM, fontSize: 9.5, color: "#8BA892", margin: 0 }}>
-                        {new Date(upcoming[0].date + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })} · {upcoming[0].jam.split("–")[0].trim()}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <MapPin size={10} style={{ color: "#8BA892" }} />
-                      <p style={{ fontFamily: IPS, fontSize: 9.5, color: "#8BA892", margin: 0 }}>
-                        {upcoming[0].lokasi.length > 20 ? upcoming[0].lokasi.slice(0, 20) + "…" : upcoming[0].lokasi}
-                      </p>
-                    </div>
-                    {hariMenuju > 0 && (
-                      <span style={{ fontFamily: PJS, fontSize: 9.5, fontWeight: 700, color: "#15803D", background: "linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)", border: "1px solid #BBF7D0", borderRadius: 8, padding: "3px 8px", display: "inline-flex", alignItems: "center", width: "fit-content", marginTop: 4 }}>
-                        {hariMenuju} hari lagi
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: "6px 0 0" }}>Belum ada agenda</p>
-                )}
-                <p style={{ fontFamily: PJS, fontSize: 10.5, color: T, margin: "6px 0 0", fontWeight: 700 }}>Lihat Kalender →</p>
-              </button>
 
-              {/* Rekomendasi Pelatihan */}
-              <button onClick={() => go("parent-training")}
-                style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 18, padding: "14px 12px", textAlign: "left", cursor: "pointer", width: "100%", boxShadow: "0 1px 6px rgba(91,122,104,0.04)" }}
-                className="flex flex-col gap-1.5 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <div style={{ width: 22, height: 22, borderRadius: 7, background: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Sparkles size={11} style={{ color: "#7C3AED" }} />
-                    </div>
-                    <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>Rekomendasi Pelatihan</p>
+                  {/* Badge Tanggal */}
+                  <div style={{ marginTop: 10 }}>
+                    <span style={{
+                      background: "rgba(210,125,107,0.14)",
+                      color: "#C4695A",
+                      fontFamily: PJS,
+                      fontSize: 9.5,
+                      fontWeight: 800,
+                      padding: "2.5px 8px",
+                      borderRadius: 6,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 4,
+                    }}>
+                      <CalendarDays size={10} style={{ color: "#C4695A" }} />
+                      {upcoming.length > 0
+                        ? `${new Date(upcoming[0].date + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })} ${new Date(upcoming[0].date + "T00:00:00").getFullYear()}`
+                        : "8 Agu 2026"}
+                    </span>
                   </div>
-                  <ChevronRight size={13} style={{ color: MUTED }} />
+
+                  {/* Event Title */}
+                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "7px 0 0", lineHeight: 1.3 }}>
+                    {upcoming.length > 0
+                      ? (upcoming[0].title.length > 24 ? upcoming[0].title.slice(0, 24) + "…" : upcoming[0].title)
+                      : "Seleksi Kabupaten FLS3N ..."}
+                  </p>
+
+                  {/* Time & Location */}
+                  <div className="flex items-center gap-1.5" style={{ marginTop: 5 }}>
+                    <Clock size={10.5} style={{ color: "#8BA892", flexShrink: 0 }} />
+                    <span style={{ fontFamily: DMM, fontSize: 9.5, color: MUTED }}>
+                      {upcoming.length > 0 ? upcoming[0].jam.split("–")[0].trim() : "08.00"} – {upcoming.length > 0 ? upcoming[0].jam.split("–")[1]?.trim() || "12.00" : "12.00"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5" style={{ marginTop: 3 }}>
+                    <MapPin size={10.5} style={{ color: "#8BA892", flexShrink: 0 }} />
+                    <span style={{ fontFamily: IPS, fontSize: 9.5, color: MUTED }}>
+                      {upcoming.length > 0
+                        ? (upcoming[0].lokasi.length > 20 ? upcoming[0].lokasi.slice(0, 20) + "…" : upcoming[0].lokasi)
+                        : "SLB Negeri 1 Bandung"}
+                    </span>
+                  </div>
                 </div>
-                <p style={{ fontFamily: PJS, fontSize: 11, color: TEXT, margin: "6px 0 0", fontWeight: 700, lineHeight: 1.3 }}>
-                  Kelas Seni Visual
-                </p>
-                <p style={{ fontFamily: IPS, fontSize: 9.5, color: "#8BA892", margin: 0 }}>
-                  Sesuai minat {nama}
-                </p>
-                <div className="flex items-center gap-1.5" style={{ marginTop: 4 }}>
-                  <span style={{ fontFamily: PJS, fontSize: 9.5, fontWeight: 700, color: "#0369A1", background: "linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)", border: "1px solid #BAE6FD", borderRadius: 8, padding: "3px 8px", display: "inline-flex", alignItems: "center", gap: 3 }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0369A1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                    Online
-                  </span>
+
+                {/* Tombol aksi */}
+                <div style={{ marginTop: 12 }}>
+                  <button
+                    onClick={() => go("parent-calendar")}
+                    style={{
+                      background: "#FFFFFF",
+                      border: "1.5px solid rgba(210,125,107,0.45)",
+                      borderRadius: 999,
+                      padding: "6px 12px",
+                      color: "#C4695A",
+                      fontFamily: PJS,
+                      fontSize: 10,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                      gap: 4,
+                      boxShadow: "0 1px 3px rgba(210,125,107,0.08)",
+                    }}
+                    className="hover:bg-orange-50 active:scale-98 transition-all"
+                  >
+                    Lihat Kalender →
+                  </button>
                 </div>
-                <p style={{ fontFamily: IPS, fontSize: 9.5, color: "#8BA892", margin: "4px 0 0", lineHeight: 1.3 }}>
-                  Untuk kemandirian & kreativitas
-                </p>
-                <p style={{ fontFamily: PJS, fontSize: 10.5, color: T, margin: "6px 0 0", fontWeight: 700 }}>Lihat →</p>
-              </button>
+              </div>
+
+              {/* 2. Rekomendasi Pelatihan */}
+              <div
+                style={{
+                  background: "#FFFFFF",
+                  border: "1.5px solid rgba(91,122,104,0.25)",
+                  borderRadius: 20,
+                  padding: "13px 12px 12px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  boxShadow: "0 2px 10px rgba(91,122,104,0.05)",
+                  minHeight: 180,
+                }}
+              >
+                <div>
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 9,
+                        background: "rgba(91,122,104,0.14)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}>
+                        <Lightbulb size={16} style={{ color: "#2D5A43" }} strokeWidth={2.3} />
+                      </div>
+                      <h4 style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
+                        Rekomendasi Pelatihan
+                      </h4>
+                    </div>
+                    <button
+                      onClick={() => go("parent-training")}
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: "50%",
+                        background: "rgba(91,122,104,0.12)",
+                        border: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        flexShrink: 0,
+                        padding: 0,
+                      }}
+                      title="Lihat Pelatihan"
+                    >
+                      <ChevronRight size={13} style={{ color: "#2D5A43" }} />
+                    </button>
+                  </div>
+
+                  {/* Badge Kategori */}
+                  <div style={{ marginTop: 10 }}>
+                    <span style={{
+                      background: "rgba(91,122,104,0.16)",
+                      color: "#2D5A43",
+                      fontFamily: PJS,
+                      fontSize: 9.5,
+                      fontWeight: 800,
+                      padding: "2.5px 8px",
+                      borderRadius: 6,
+                      display: "inline-block",
+                    }}>
+                      Kelas Seni Visual
+                    </span>
+                  </div>
+
+                  {/* Subtitle minat */}
+                  <div className="flex items-center gap-1.5" style={{ marginTop: 7 }}>
+                    <Users size={11} style={{ color: MUTED, flexShrink: 0 }} />
+                    <span style={{ fontFamily: IPS, fontSize: 10, color: MUTED }}>
+                      Sesuai minat {nama}
+                    </span>
+                  </div>
+
+                  {/* Mode Online Tag */}
+                  <div style={{ marginTop: 5 }}>
+                    <span style={{
+                      fontFamily: PJS,
+                      fontSize: 9.5,
+                      fontWeight: 700,
+                      color: "#2D5A43",
+                      background: "#E2EFE6",
+                      border: "1px solid rgba(91,122,104,0.25)",
+                      borderRadius: 5,
+                      padding: "2px 7px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 3,
+                    }}>
+                      <Laptop size={9.5} style={{ color: "#2D5A43" }} />
+                      Online
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tombol aksi */}
+                <div style={{ marginTop: 12 }}>
+                  <button
+                    onClick={() => go("parent-training")}
+                    style={{
+                      background: "#FFFFFF",
+                      border: "1.5px solid rgba(91,122,104,0.45)",
+                      borderRadius: 999,
+                      padding: "6px 12px",
+                      color: "#2D5A43",
+                      fontFamily: PJS,
+                      fontSize: 10,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                      gap: 4,
+                      boxShadow: "0 1px 3px rgba(91,122,104,0.08)",
+                    }}
+                    className="hover:bg-emerald-50 active:scale-98 transition-all"
+                  >
+                    Lihat →
+                  </button>
+                </div>
+              </div>
             </div>
           </>
           );
