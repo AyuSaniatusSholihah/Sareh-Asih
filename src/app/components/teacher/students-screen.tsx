@@ -3,6 +3,7 @@ import { Search, User, Settings, Plus, ArrowLeft, ChevronRight, CheckCircle, Clo
 import { BG, MUTED, PJS, IPS, useUI } from "../ui-kit";
 import { useStudents, type Screen } from "../data";
 import { type GuruProfile } from "../auth";
+import { cleanClassName } from "../auth/profil-sekolah";
 
 export function StudentsScreen({
   go,
@@ -35,7 +36,8 @@ export function StudentsScreen({
     return { bg: "#F3E8FF", color: "#7E22CE" };
   };
 
-  const className = guru?.kelas?.[0] || "Kelas VI A";
+  const rawClass = guru?.kelas?.[0] || "Kelas VI A";
+  const className = cleanClassName(rawClass) || "Kelas VI A";
 
   return (
     <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, background: BG }}>

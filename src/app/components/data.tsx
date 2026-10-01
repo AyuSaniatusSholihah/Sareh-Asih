@@ -227,30 +227,89 @@ export const SKALA_RIASEC = [
 export interface RiasecItem { id:number; text:string; kategori:RiasecKategori }
 
 export const PROFIL_KECENDERUNGAN: RiasecItem[] = [
-  // Realistic
-  {id:1001, kategori:"Realistic", text:"Tertarik membongkar, merakit, atau memperbaiki benda."},
+  // Realistic (12 butir)
+  {id:1001, kategori:"Realistic", text:"Tertarik membongkar, merakit, atau memperbaiki benda (mainan, alat, perangkat sederhana)."},
   {id:1002, kategori:"Realistic", text:"Memilih kegiatan yang menggunakan tangan atau alat (prakarya, kriya, berkebun)."},
-  {id:1003, kategori:"Realistic", text:"Menikmati kegiatan yang melibatkan gerak tubuh atau olahraga."},
-  // Investigative
-  {id:2001, kategori:"Investigative", text:"Mengajukan pertanyaan “mengapa” atau “bagaimana” di luar yang ditanyakan guru."},
-  {id:2002, kategori:"Investigative", text:"Tertarik mencoba-coba untuk menemukan jawaban sendiri."},
-  {id:2003, kategori:"Investigative", text:"Menikmati teka-teki, pola, hitungan, atau tantangan berpikir."},
-  // Artistic
-  {id:3001, kategori:"Artistic", text:"Memilih kegiatan menggambar, mewarnai, membentuk, atau kriya (tunanetra: seni taktil/keramik)."},
-  {id:3002, kategori:"Artistic", text:"Menunjukkan ketertarikan pada musik, ritme, atau gerak/tari."},
-  {id:3003, kategori:"Artistic", text:"Senang bercerita, menulis, atau memerankan sesuatu."},
-  // Social
+  {id:1003, kategori:"Realistic", text:"Menyukai lari, lompat, atau permainan gerak lainnya sesuai kemampuan tubuhnya (dengan atau tanpa alat bantu)."},
+  {id:1004, kategori:"Realistic", text:"Menyukai olahraga atau senam, biasa maupun adaptif (mis. goalball, boccia, voli duduk), sesuai kemampuan tubuhnya."},
+  {id:1005, kategori:"Realistic", text:"Senang merawat tanaman atau hewan (menyiram, memberi makan, membersihkan tempatnya)."},
+  {id:1006, kategori:"Realistic", text:"Senang mengolah bahan nyata dengan tangan (adonan, tanah liat, kain, kayu, tanah)."},
+  {id:1007, kategori:"Realistic", text:"Tertarik praktik boga (mengaduk, menakar, membentuk adonan, memasak sederhana)."},
+  {id:1008, kategori:"Realistic", text:"Tertarik praktik keterampilan berbahan kain atau benang (menjahit, menyulam, menenun, menganyam)."},
+  {id:1009, kategori:"Realistic", text:"Tertarik praktik bengkel atau elektronik sederhana (mengganti ban, memasang kabel, merakit komponen)."},
+  {id:1010, kategori:"Realistic", text:"Mau mencoba memakai alat kerja atau alat berdaya sederhana (gunting, palu, spatula, mesin jahit, blender) dengan pengawasan."},
+  {id:1011, kategori:"Realistic", text:"Tertarik kegiatan kebersihan dan tata graha (menyapu, mengepel, mencuci, menyetrika, laundry)."},
+  {id:1012, kategori:"Realistic", text:"Lebih suka belajar dengan mempraktikkan langsung daripada hanya mendengarkan penjelasan."},
+
+  // Investigative (12 butir)
+  {id:2001, kategori:"Investigative", text:"Bertanya \"mengapa\", \"bagaimana\", atau \"apa ini\" (dengan kata, isyarat, tulisan, gambar, atau alat komunikasi) di luar yang ditanyakan guru."},
+  {id:2002, kategori:"Investigative", text:"Mencoba-coba sendiri untuk menemukan jawaban atau cara."},
+  {id:2003, kategori:"Investigative", text:"Menikmati teka-teki, pola, atau permainan berpikir (puzzle, tebak suara atau raba, sudoku, catur)."},
+  {id:2004, kategori:"Investigative", text:"Menikmati kegiatan berhitung, mengukur, atau membandingkan (banyak-sedikit, besar-kecil, berat-ringan)."},
+  {id:2005, kategori:"Investigative", text:"Memperhatikan dengan saksama benda, hewan, tanaman, atau kejadian di sekitarnya (dengan melihat, meraba, mendengar, atau membaui)."},
+  {id:2006, kategori:"Investigative", text:"Tertarik mengutak-atik benda atau alat untuk mengetahui cara kerjanya."},
+  {id:2007, kategori:"Investigative", text:"Tertarik pada percobaan sederhana (mencampur warna, mengapungkan benda, melarutkan gula)."},
+  {id:2008, kategori:"Investigative", text:"Mencari cara lain (memakai alat bantu, mengubah posisi, meminta contoh) agar suatu tugas tetap bisa diselesaikan."},
+  {id:2009, kategori:"Investigative", text:"Senang mencocokkan, mengelompokkan, atau membandingkan benda, gambar, atau kata untuk menemukan persamaan dan perbedaan."},
+  {id:2010, kategori:"Investigative", text:"Tertarik mencari informasi (buku, buku Braille atau audio, video berisyarat, internet, atau bertanya) tentang hal yang diminati."},
+  {id:2011, kategori:"Investigative", text:"Tertarik memakai komputer, tablet, atau teknologi bantu untuk memecahkan masalah atau mencari tahu sesuatu."},
+  {id:2012, kategori:"Investigative", text:"Tertarik pada strategi permainan atau olahraga (mengapa tim menang, bagaimana mengatur langkah)."},
+
+  // Artistic (12 butir)
+  {id:3001, kategori:"Artistic", text:"Memilih kegiatan seni rupa dan kriya (menggambar, mewarnai, membentuk tanah liat, keramik, kolase tekstur)."},
+  {id:3002, kategori:"Artistic", text:"Tertarik membatik, ecoprint, atau menyablon (bermain motif, warna, dan pola)."},
+  {id:3003, kategori:"Artistic", text:"Menunjukkan ketertarikan pada musik atau ritme (mendengarkan, menabuh, merasakan getaran, mengikuti irama)."},
+  {id:3004, kategori:"Artistic", text:"Senang bernyanyi atau memainkan alat musik (angklung, keyboard, gamelan, drum)."},
+  {id:3005, kategori:"Artistic", text:"Senang bergerak atau menari mengikuti irama, hitungan, atau getaran (termasuk dengan bagian tubuh yang dapat digerakkan)."},
+  {id:3006, kategori:"Artistic", text:"Senang bercerita, menulis, atau mengarang cerita (secara lisan, isyarat, tulisan, atau Braille)."},
+  {id:3007, kategori:"Artistic", text:"Senang memerankan tokoh (drama, bermain peran, pantomim, menirukan gaya orang)."},
+  {id:3008, kategori:"Artistic", text:"Ingin menghias atau mendesain benda supaya tampak lebih indah atau unik."},
+  {id:3009, kategori:"Artistic", text:"Lebih suka membuat sesuatu yang baru daripada menirukan contoh."},
+  {id:3010, kategori:"Artistic", text:"Senang berkarya dengan media digital (aplikasi gambar, desain, fotografi, video, membuat musik atau audio)."},
+  {id:3011, kategori:"Artistic", text:"Tertarik tata rias, menata rambut, atau berdandan."},
+  {id:3012, kategori:"Artistic", text:"Bangga dan senang menunjukkan hasil karyanya kepada orang lain."},
+
+  // Social (12 butir)
   {id:4001, kategori:"Social", text:"Membantu teman yang mengalami kesulitan tanpa diminta."},
-  {id:4002, kategori:"Social", text:"Menjelaskan atau mengajari sesuatu kepada temannya."},
+  {id:4002, kategori:"Social", text:"Menjelaskan atau mengajari sesuatu kepada temannya (dengan kata, isyarat, tulisan, gambar, atau contoh)."},
   {id:4003, kategori:"Social", text:"Memilih mengerjakan sesuatu bersama teman daripada sendirian."},
-  // Enterprising
+  {id:4004, kategori:"Social", text:"Menemani atau menghibur teman yang sedang sedih atau sendirian."},
+  {id:4005, kategori:"Social", text:"Peduli pada orang yang lebih muda atau membutuhkan bantuan (adik kelas, teman yang sakit, orang lanjut usia)."},
+  {id:4006, kategori:"Social", text:"Bersedia berbagi bekal, alat, atau barang miliknya dengan teman."},
+  {id:4007, kategori:"Social", text:"Senang membantu pekerjaan bersama (piket, kerja bakti, gotong royong)."},
+  {id:4008, kategori:"Social", text:"Senang menolong guru (membawakan barang, membagikan buku atau alat)."},
+  {id:4009, kategori:"Social", text:"Menyapa dan menyambut tamu atau teman baru dengan ramah (dengan kata, isyarat, senyum, atau gestur)."},
+  {id:4010, kategori:"Social", text:"Senang bermain atau berolahraga dalam tim (kasti, voli, goalball, boccia, kelompok tari) bersama teman."},
+  {id:4011, kategori:"Social", text:"Senang membantu teman memahami informasi atau instruksi (menceritakan, menunjukkan, menerjemahkan isyarat, menuliskan)."},
+  {id:4012, kategori:"Social", text:"Tertarik kegiatan melayani atau merawat orang (kantin, kafe, toko, pijat, laundry, membantu perawatan)."},
+
+  // Enterprising (12 butir)
   {id:5001, kategori:"Enterprising", text:"Mengambil peran memimpin ketika bekerja dalam kelompok."},
   {id:5002, kategori:"Enterprising", text:"Mengajak teman mengikuti ide atau rencananya."},
-  {id:5003, kategori:"Enterprising", text:"Berani tampil atau menyampaikan sesuatu di depan orang banyak."},
-  // Conventional
+  {id:5003, kategori:"Enterprising", text:"Berani tampil atau menyampaikan sesuatu di depan orang banyak (secara lisan, isyarat, atau dengan alat komunikasi)."},
+  {id:5004, kategori:"Enterprising", text:"Berani memulai kegiatan atau mencoba hal baru tanpa menunggu disuruh."},
+  {id:5005, kategori:"Enterprising", text:"Senang menawarkan hasil karya atau jasanya kepada orang lain (bazar, kantin sekolah, jualan daring)."},
+  {id:5006, kategori:"Enterprising", text:"Mau menjadi ketua kelas, ketua regu, atau perwakilan kelas."},
+  {id:5007, kategori:"Enterprising", text:"Senang mengikuti perlombaan dan ingin menjadi yang terbaik."},
+  {id:5008, kategori:"Enterprising", text:"Berani menyampaikan kebutuhan atau pilihan dan meminta penyesuaian kepada guru atau orang lain."},
+  {id:5009, kategori:"Enterprising", text:"Berani menjadi pembawa acara, pemimpin doa, atau pemberi aba-aba."},
+  {id:5010, kategori:"Enterprising", text:"Senang mengatur teman dalam permainan atau kegiatan (membagi tugas, menentukan giliran)."},
+  {id:5011, kategori:"Enterprising", text:"Tertarik membuat atau mengelola usaha kecil (koperasi, bazar, jualan daring)."},
+  {id:5012, kategori:"Enterprising", text:"Senang mendapat peran khusus atau menjadi pusat perhatian (tampil pertama, memegang tugas penting)."},
+
+  // Conventional (12 butir)
   {id:6001, kategori:"Conventional", text:"Merapikan, menyusun, atau mengurutkan benda atas kemauan sendiri."},
   {id:6002, kategori:"Conventional", text:"Memperbaiki detail dan terganggu bila ada yang tidak rapi atau keliru."},
   {id:6003, kategori:"Conventional", text:"Lebih nyaman pada tugas dengan aturan dan langkah yang jelas."},
+  {id:6004, kategori:"Conventional", text:"Menyukai kegiatan rutin dengan urutan yang sama setiap hari."},
+  {id:6005, kategori:"Conventional", text:"Mengelompokkan benda menurut jenis, warna, atau ukuran."},
+  {id:6006, kategori:"Conventional", text:"Memeriksa kembali pekerjaannya dengan teliti sebelum diserahkan."},
+  {id:6007, kategori:"Conventional", text:"Menyimpan barang di tempat yang tetap dan tahu bila ada yang hilang atau bergeser."},
+  {id:6008, kategori:"Conventional", text:"Mengikuti jadwal atau urutan kegiatan (tertulis, bergambar, berbunyi, atau raba) dengan tepat."},
+  {id:6009, kategori:"Conventional", text:"Mengikuti langkah kerja berurutan (resep, pola jahit, prosedur alat) dengan benar."},
+  {id:6010, kategori:"Conventional", text:"Teliti dalam pekerjaan berulang (menyortir, memberi label, menghitung, mengepak, memasukkan data)."},
+  {id:6011, kategori:"Conventional", text:"Tertarik mencatat atau menghitung uang, stok barang, atau daftar hadir (dengan alat tulis, Braille, atau aplikasi)."},
+  {id:6012, kategori:"Conventional", text:"Merapikan alat dan bahan setelah dipakai dan mengembalikannya ke tempat semula."},
 ];
 
 export interface AsesmenPeriode {

@@ -1,8 +1,9 @@
-import { useState, useRef, useCallback, type MouseEvent } from "react";
+import { useState, useRef, useCallback, useMemo, type MouseEvent } from "react";
 import { Users, Database, Upload, UserPlus, ChevronRight, AlertCircle, Trash2, CheckCircle, Info } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, Field, SelectField } from "../ui-kit";
 import { ABK_OPTIONS, CARA_BELAJAR_OPTIONS } from "../data";
 import { ModalShell } from "./modal-shell";
+import { cleanClassName } from "./profil-sekolah";
 
 const STATUS_ORTU_OPTIONS = [
   "Kandung", "Yatim", "Piatu", "Yatim Piatu", "Wali", "Saudara", "Lainnya",
@@ -83,7 +84,16 @@ export function TambahSiswaPromptModal({
   const [manualStep, setManualStep] = useState<1 | 2>(1);
 
   // Form state untuk manual (menyamakan dengan add-student.tsx)
-  const kelasOptions = Object.keys(kelasAbkMap);
+  const sanitizedMap = useMemo(() => {
+    const res: Record<string, string> = {};
+    for (const [k, v] of Object.entries(kelasAbkMap || {})) {
+      const cleanKey = cleanClassName(k);
+      if (cleanKey) res[cleanKey] = v;
+    }
+    return res;
+  }, [kelasAbkMap]);
+
+  const kelasOptions = Object.keys(sanitizedMap);
   const [manualNama, setManualNama] = useState("");
   const [manualNisn, setManualNisn] = useState("");
   const [manualTanggalLahir, setManualTanggalLahir] = useState("");
@@ -92,7 +102,7 @@ export function TambahSiswaPromptModal({
   const [manualNamaOrtu, setManualNamaOrtu] = useState("");
   const [manualKelas, setManualKelas] = useState(kelasOptions[0] || "");
   const [manualAbkList, setManualAbkList] = useState<string[]>(
-    kelasOptions[0] && kelasAbkMap[kelasOptions[0]] ? [kelasAbkMap[kelasOptions[0]]] : ["Tunanetra"]
+    kelasOptions[0] && sanitizedMap[kelasOptions[0]] ? [sanitizedMap[kelasOptions[0]]] : ["Tunanetra"]
   );
   const [manualEmoji, setManualEmoji] = useState("👦");
   const [manualFoto, setManualFoto] = useState("");
@@ -127,7 +137,7 @@ export function TambahSiswaPromptModal({
     setManualStatusOrtu("");
     setManualNamaOrtu("");
     setManualKelas(kelasOptions[0] || "");
-    setManualAbkList(kelasOptions[0] && kelasAbkMap[kelasOptions[0]] ? [kelasAbkMap[kelasOptions[0]]] : ["Tunanetra"]);
+    setManualAbkList(kelasOptions[0] && sanitizedMap[kelasOptions[0]] ? [sanitizedMap[kelasOptions[0]]] : ["Tunanetra"]);
     setManualEmoji("👦");
     setManualFoto("");
     setManualCustomAbk("");
@@ -145,7 +155,7 @@ export function TambahSiswaPromptModal({
     const resolvedAbkList = manualAbkList.map(x => (x === "Lainnya" ? (manualCustomAbk.trim() || "Lainnya") : x));
     onSaveManual({
       name: manualNama.trim(),
-      abk: resolvedAbkList.join(", ") || kelasAbkMap[manualKelas] || "Tunanetra",
+      abk: resolvedAbkList.join(", ") || sanitizedMap[manualKelas] || "Tunanetra",
       kelas: manualKelas,
       age: 13,
       emoji: manualEmoji,
@@ -342,7 +352,7 @@ export function TambahSiswaPromptModal({
                 value={manualKelas}
                 onChange={k => {
                   setManualKelas(k);
-                  if (kelasAbkMap[k]) setManualAbkList([kelasAbkMap[k]]);
+                  if (sanitizedMap[k]) setManualAbkList([sanitizedMap[k]]);
                 }}
               />
             )}
@@ -829,6 +839,17 @@ export function UploadSiswaModal({
   onClose?: () => void;
   onImport: (s: SiswaImportData[]) => void;
 }) {
+  const sanitizedMap = useMemo(() => {
+    const res: Record<string, string> = {};
+    for (const [k, v] of Object.entries(kelasAbkMap || {})) {
+      const cleanKey = cleanClassName(k);
+      if (cleanKey) res[cleanKey] = v;
+    }
+    return res;
+  }, [kelasAbkMap]);
+
+  const rawOptions = kelasOptions.length ? kelasOptions : Object.keys(sanitizedMap);
+  const sanitizedKelasOptions = rawOptions.map(cleanClassName).filter(Boolean);
   const fileRef = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState<SiswaCSV[]>([]);
   const [err, setErr] = useState("");
@@ -837,7 +858,7 @@ export function UploadSiswaModal({
 
   // Kelas yang dipilih dari kelas-kelas awal
   const [selectedKelas, setSelectedKelas] = useState<string>(
-    kelasOptions.length === 1 ? kelasOptions[0] : ""
+    sanitizedKelasOptions.length === 1 ? sanitizedKelasOptions[0] : ""
   );
 
   const parseCSV = (text: string): SiswaCSV[] => {
@@ -919,9 +940,9 @@ export function UploadSiswaModal({
                   }}
                 >
                   <option value="" disabled>-- Pilih salah satu kelas yang didaftarkan --</option>
-                  {kelasOptions.map(k => (
+                  {sanitizedKelasOptions.map(k => (
                     <option key={k} value={k}>
-                      {k} {kelasAbkMap[k] ? `— (${kelasAbkMap[k]})` : ""}
+                      {k} {sanitizedMap[k] ? `— (${sanitizedMap[k]})` : ""}
                     </option>
                   ))}
                 </select>
@@ -942,7 +963,7 @@ export function UploadSiswaModal({
                 <div>
                   <p style={{ fontSize: 10, color: MUTED, fontFamily: IPS }}>Kelas Tujuan (Otomatis):</p>
                   <p style={{ fontSize: 13, fontWeight: 700, color: DEEP, fontFamily: PJS, margin: 0 }}>
-                    {kelasOptions[0] || "VII A"} {kelasAbkMap[kelasOptions[0]] ? `— ${kelasAbkMap[kelasOptions[0]]}` : ""}
+                    {sanitizedKelasOptions[0] || "VII A"} {sanitizedMap[sanitizedKelasOptions[0]] ? `— ${sanitizedMap[sanitizedKelasOptions[0]]}` : ""}
                   </p>
                 </div>
                 <span style={{ fontSize: 10, fontWeight: 700, background: SEC, color: T, padding: "3px 8px", borderRadius: 20 }}>
@@ -951,7 +972,7 @@ export function UploadSiswaModal({
               </div>
             )}
 
-            {kelasOptions.length > 1 && !selectedKelas && (
+            {sanitizedKelasOptions.length > 1 && !selectedKelas && (
               <p style={{ fontSize: 11, color: "#B91C1C", marginTop: 5, fontFamily: IPS, display: "flex", alignItems: "center", gap: 4 }}>
                 <AlertCircle size={12} /> Silakan pilih kelas tujuan di dropdown sebelum mengunggah file.
               </p>
@@ -1094,7 +1115,7 @@ export function UploadSiswaModal({
                     {selectedKelas}
                   </p>
                   <p style={{ fontSize: 12, color: MUTED, fontFamily: IPS, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {r.abk || kelasAbkMap[selectedKelas] || "—"}
+                    {r.abk || sanitizedMap[selectedKelas] || "—"}
                   </p>
                 </div>
               ))}
@@ -1108,7 +1129,7 @@ export function UploadSiswaModal({
             </button>
             <button
               onClick={() => {
-                const defaultAbk = kelasAbkMap[selectedKelas] || "Tunanetra";
+                const defaultAbk = sanitizedMap[selectedKelas] || "Tunanetra";
                 const mappedSiswa: SiswaImportData[] = validRows.map(r => ({
                   nama: r.nama,
                   abk: r.abk || defaultAbk,
