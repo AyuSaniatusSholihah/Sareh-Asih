@@ -361,7 +361,7 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
 
             {/* ── CTA Button ── */}
             <button onClick={() => go("parent-detail")}
-              style={{ background: "linear-gradient(135deg, #D27D6B 0%, #C4695A 100%)", color: "#fff", fontFamily: PJS, minHeight: 52, width: "100%", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 6px 18px rgba(210,125,107,0.4)" }}
+              style={{ background: "linear-gradient(135deg, #3B7A57 0%, #2D5E43 100%)", color: "#fff", fontFamily: PJS, minHeight: 52, width: "100%", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 6px 18px rgba(59,122,87,0.35)" }}
               className="rounded-2xl text-sm font-bold hover:opacity-95 active:scale-[0.98] transition-all">
               <TrendingUp size={17} strokeWidth={2.5} />
               Cek Perkembangan {nama} <ChevronRight size={17} strokeWidth={2.5} />

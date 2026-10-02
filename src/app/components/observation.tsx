@@ -3,7 +3,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import {
   Sparkles, CheckCircle, ChevronRight, ChevronDown, Info, ClipboardList, Gauge, X, ArrowLeft,
-  AlertCircle, ArrowRight, Check, Users,
+  AlertCircle, ArrowRight, Check, Users, Lightbulb, Play, Eye,
 } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, PBtn, TBar,
@@ -11,6 +11,7 @@ import {
 import {
   FUNGSIONAL_KATEGORI, FUNGSIONAL_META, SKALA_FUNGSIONAL, PROFIL_FUNGSIONAL,
   RIASEC_KATEGORI, RIASEC_META, SKALA_RIASEC, PROFIL_KECENDERUNGAN,
+  PANDUAN_UNJUK_KERJA, PANDUAN_RIASEC,
   useStudents, type FungsionalKategori, type RiasecKategori,
 } from "./data";
 import { VoiceTextarea } from "./voice-input";
@@ -72,6 +73,11 @@ export function ObservationScreen({
   const [highlightUnansweredRiasec, setHighlightUnansweredRiasec] = useState<boolean>(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState<boolean>(false);
   const contentScrollRef = useRef<HTMLDivElement>(null);
+
+  // ── Panduan Unjuk Kerja ──
+  const [expandedGuide, setExpandedGuide] = useState<FungsionalKategori | null>(null);
+  const [expandedRiasecGuide, setExpandedRiasecGuide] = useState<RiasecKategori | null>(null);
+  const [aktivitasHariIni, setAktivitasHariIni] = useState<string>("");
   
   // --- FIREBASE LOAD & AUTO SAVE ---
   const [isLoaded, setIsLoaded] = useState(false);
@@ -87,6 +93,7 @@ export function ObservationScreen({
           if (data.skorFungsional) setSkorFungsional(data.skorFungsional);
           if (data.skorRiasec) setSkorRiasec(data.skorRiasec);
           if (data.catatan) setCatatan(data.catatan);
+          if (data.aktivitasHariIni) setAktivitasHariIni(data.aktivitasHariIni);
           if (data.tahap) setTahap(data.tahap);
           if (data.fungsionalStep !== undefined) setFungsionalStep(data.fungsionalStep);
           if (data.riasecStep !== undefined) setRiasecStep(data.riasecStep);
@@ -109,6 +116,7 @@ export function ObservationScreen({
           skorFungsional,
           skorRiasec,
           catatan,
+          aktivitasHariIni,
           tahap,
           fungsionalStep,
           riasecStep,
@@ -122,7 +130,7 @@ export function ObservationScreen({
     // Debounce 1.5 detik untuk menghindari terlalu banyak write ke database
     const timeoutId = setTimeout(saveProgress, 1500);
     return () => clearTimeout(timeoutId);
-  }, [skorFungsional, skorRiasec, catatan, tahap, fungsionalStep, riasecStep, isLoaded, student]);
+  }, [skorFungsional, skorRiasec, catatan, aktivitasHariIni, tahap, fungsionalStep, riasecStep, isLoaded, student]);
   // ---------------------------------
 
   const currentCategory = FUNGSIONAL_KATEGORI[fungsionalStep] || FUNGSIONAL_KATEGORI[0];
@@ -715,7 +723,211 @@ export function ObservationScreen({
               </div>
             </div>
 
-            {/* 4. Card Pertanyaan Berlatar Putih dengan Rounded Corners */}
+            {/* 4. Panduan Aktivitas Unjuk Kerja (Collapsible) */}
+            {(() => {
+              const panduan = PANDUAN_UNJUK_KERJA[currentCategory];
+              const isExpanded = expandedGuide === currentCategory;
+              // Filter activities relevant to student's ABK type
+              const relevanPanduan = panduan.filter(
+                a => !a.cocokUntuk || a.cocokUntuk.length === 0 || a.cocokUntuk.includes(student.abk)
+              );
+              const hasRelevant = relevanPanduan.length > 0;
+
+              return (
+                <div
+                  style={{
+                    background: "linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)",
+                    borderRadius: 20,
+                    border: "1.5px solid #FDE68A",
+                    boxShadow: "0 2px 12px rgba(217, 119, 6, 0.08)",
+                    overflow: "hidden",
+                  }}
+                >
+                  {/* Header — always visible */}
+                  <button
+                    type="button"
+                    onClick={() => setExpandedGuide(isExpanded ? null : currentCategory)}
+                    style={{
+                      width: "100%",
+                      padding: "14px 18px",
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                    }}
+                    className="active:opacity-80 transition-opacity"
+                  >
+                    <div
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 12,
+                        background: "#FEF3C7",
+                        border: "1.5px solid #FDE68A",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Lightbulb size={18} style={{ color: "#D97706" }} />
+                    </div>
+                    <div style={{ flex: 1, textAlign: "left", minWidth: 0 }}>
+                      <p style={{
+                        fontFamily: PJS, fontSize: 13.5, fontWeight: 800,
+                        color: "#92400E", margin: 0, lineHeight: 1.25,
+                      }}>
+                        💡 Ide Aktivitas Unjuk Kerja
+                      </p>
+                      <p style={{
+                        fontFamily: IPS, fontSize: 11.5, fontWeight: 500,
+                        color: "#B45309", margin: "2px 0 0", lineHeight: 1.3,
+                      }}>
+                        {hasRelevant ? `${relevanPanduan.length} aktivitas cocok untuk ${student.abk}` : `${panduan.length} aktivitas tersedia`}
+                      </p>
+                    </div>
+                    <ChevronDown
+                      size={18}
+                      style={{
+                        color: "#B45309",
+                        flexShrink: 0,
+                        transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                        transition: "transform 0.2s ease",
+                      }}
+                    />
+                  </button>
+
+                  {/* Expanded content */}
+                  {isExpanded && (
+                    <div style={{ padding: "0 14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
+                      {(hasRelevant ? relevanPanduan : panduan).map((akt, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            background: "#FFFFFF",
+                            borderRadius: 16,
+                            border: "1px solid #FDE68A",
+                            padding: "14px 16px",
+                            boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                            <Play size={13} style={{ color: "#D97706", flexShrink: 0 }} />
+                            <h5 style={{
+                              fontFamily: PJS, fontSize: 13, fontWeight: 800,
+                              color: "#1E293B", margin: 0,
+                            }}>
+                              {akt.judul}
+                            </h5>
+                            {akt.cocokUntuk && akt.cocokUntuk.includes(student.abk) && (
+                              <span style={{
+                                fontSize: 10, fontWeight: 700, fontFamily: PJS,
+                                padding: "2px 8px", borderRadius: 9999,
+                                background: "#D1FAE5", color: "#065F46", flexShrink: 0,
+                              }}>
+                                Cocok
+                              </span>
+                            )}
+                          </div>
+                          <p style={{
+                            fontFamily: IPS, fontSize: 12, fontWeight: 400,
+                            color: "#475569", margin: "0 0 10px", lineHeight: 1.45,
+                          }}>
+                            {akt.deskripsi}
+                          </p>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                            <Eye size={12} style={{ color: "#64748B" }} />
+                            <span style={{
+                              fontFamily: PJS, fontSize: 11, fontWeight: 700, color: "#64748B",
+                            }}>
+                              Perilaku yang diamati:
+                            </span>
+                          </div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                            {akt.perilakuDiamati.map((p, j) => (
+                              <span
+                                key={j}
+                                style={{
+                                  fontSize: 10.5, fontWeight: 600, fontFamily: PJS,
+                                  padding: "3px 10px", borderRadius: 9999,
+                                  background: "#F0F9FF", color: "#0369A1",
+                                  border: "1px solid #BAE6FD",
+                                }}
+                              >
+                                {p}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      {/* Info box */}
+                      <div style={{
+                        display: "flex", alignItems: "flex-start", gap: 8,
+                        padding: "10px 14px", borderRadius: 12,
+                        background: "rgba(217, 119, 6, 0.08)",
+                      }}>
+                        <Info size={13} style={{ color: "#B45309", flexShrink: 0, marginTop: 1 }} />
+                        <p style={{
+                          fontFamily: IPS, fontSize: 11, fontWeight: 500,
+                          color: "#92400E", margin: 0, lineHeight: 1.4,
+                        }}>
+                          Berikan aktivitas di atas kepada anak, lalu <strong>amati perilaku yang muncul</strong> dan catat di indikator-indikator di bawah ini. Anda juga bisa menggunakan aktivitas lain yang sesuai.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* 5. Input Aktivitas yang Digunakan Hari Ini */}
+            <div
+              style={{
+                background: "#FFFFFF",
+                borderRadius: 16,
+                border: `1.5px solid ${aktivitasHariIni.trim() ? "#A7F3D0" : "#E2E8F0"}`,
+                padding: "12px 16px",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                transition: "border-color 0.2s ease",
+              }}
+            >
+              <div style={{
+                width: 32, height: 32, borderRadius: 10,
+                background: aktivitasHariIni.trim() ? "#D1FAE5" : "#F1F5F9",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0, transition: "background 0.2s ease",
+              }}>
+                <ClipboardList size={15} style={{ color: aktivitasHariIni.trim() ? "#065F46" : "#64748B" }} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <label style={{
+                  fontFamily: PJS, fontSize: 11, fontWeight: 700,
+                  color: "#64748B", display: "block", marginBottom: 4,
+                }}>
+                  Aktivitas yang digunakan hari ini (opsional)
+                </label>
+                <input
+                  value={aktivitasHariIni}
+                  onChange={(e) => setAktivitasHariIni(e.target.value)}
+                  placeholder="Contoh: Permainan stiker warna-warni, puzzle 6 keping..."
+                  style={{
+                    width: "100%", border: "none", outline: "none",
+                    fontFamily: IPS, fontSize: 13, fontWeight: 500,
+                    color: "#1E293B", background: "transparent",
+                    padding: 0,
+                  }}
+                />
+              </div>
+              {aktivitasHariIni.trim() && (
+                <CheckCircle size={16} style={{ color: "#059669", flexShrink: 0 }} />
+              )}
+            </div>
+
+            {/* 6. Card Pertanyaan Berlatar Putih dengan Rounded Corners */}
             <div
               style={{
                 background: "#FFFFFF",
@@ -1111,6 +1323,164 @@ export function ObservationScreen({
                 ))}
               </div>
             </div>
+
+            {/* 3.5. Card Panduan Unjuk Kerja Observasi Minat RIASEC */}
+            {(() => {
+              const panduan = PANDUAN_RIASEC[currentRiasecCategory] || [];
+              const isExpanded = expandedRiasecGuide === currentRiasecCategory;
+              const relevanPanduan = panduan.filter(
+                (p) => !p.cocokUntuk || p.cocokUntuk.includes(student.abk)
+              );
+              const hasRelevant = relevanPanduan.length > 0 && panduan.some((p) => p.cocokUntuk?.includes(student.abk));
+
+              return (
+                <div
+                  style={{
+                    background: "linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)",
+                    borderRadius: 20,
+                    border: "1.5px solid #FDE68A",
+                    boxShadow: "0 2px 12px rgba(217, 119, 6, 0.08)",
+                    overflow: "hidden",
+                  }}
+                >
+                  {/* Header — always visible */}
+                  <button
+                    type="button"
+                    onClick={() => setExpandedRiasecGuide(isExpanded ? null : currentRiasecCategory)}
+                    style={{
+                      width: "100%",
+                      padding: "14px 18px",
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                    }}
+                    className="active:opacity-80 transition-opacity"
+                  >
+                    <div
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 12,
+                        background: "#FEF3C7",
+                        border: "1.5px solid #FDE68A",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Lightbulb size={18} style={{ color: "#D97706" }} />
+                    </div>
+                    <div style={{ flex: 1, textAlign: "left", minWidth: 0 }}>
+                      <p style={{
+                        fontFamily: PJS, fontSize: 13.5, fontWeight: 800,
+                        color: "#92400E", margin: 0, lineHeight: 1.25,
+                      }}>
+                        💡 Ide Aktivitas Observasi Minat ({currentRiasecCategory})
+                      </p>
+                      <p style={{
+                        fontFamily: IPS, fontSize: 11.5, fontWeight: 500,
+                        color: "#B45309", margin: "2px 0 0", lineHeight: 1.3,
+                      }}>
+                        {hasRelevant ? `${relevanPanduan.length} aktivitas cocok untuk ${student.abk}` : `${panduan.length} aktivitas pemicu minat`}
+                      </p>
+                    </div>
+                    <ChevronDown
+                      size={18}
+                      style={{
+                        color: "#B45309",
+                        flexShrink: 0,
+                        transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                        transition: "transform 0.2s ease",
+                      }}
+                    />
+                  </button>
+
+                  {/* Expanded content */}
+                  {isExpanded && (
+                    <div style={{ padding: "0 14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
+                      {(hasRelevant ? relevanPanduan : panduan).map((akt, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            background: "#FFFFFF",
+                            borderRadius: 16,
+                            border: "1px solid #FDE68A",
+                            padding: "14px 16px",
+                            boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                            <Play size={13} style={{ color: "#D97706", flexShrink: 0 }} />
+                            <h5 style={{
+                              fontFamily: PJS, fontSize: 13, fontWeight: 800,
+                              color: "#1E293B", margin: 0,
+                            }}>
+                              {akt.judul}
+                            </h5>
+                            {akt.cocokUntuk && akt.cocokUntuk.includes(student.abk) && (
+                              <span style={{
+                                fontSize: 10, fontWeight: 700, fontFamily: PJS,
+                                padding: "2px 8px", borderRadius: 9999,
+                                background: "#D1FAE5", color: "#065F46", flexShrink: 0,
+                              }}>
+                                Cocok
+                              </span>
+                            )}
+                          </div>
+                          <p style={{
+                            fontFamily: IPS, fontSize: 12, fontWeight: 400,
+                            color: "#475569", margin: "0 0 10px", lineHeight: 1.45,
+                          }}>
+                            {akt.deskripsi}
+                          </p>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                            <Eye size={12} style={{ color: "#64748B" }} />
+                            <span style={{
+                              fontFamily: PJS, fontSize: 11, fontWeight: 700, color: "#64748B",
+                            }}>
+                              Kecenderungan yang diamati:
+                            </span>
+                          </div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                            {akt.perilakuDiamati.map((p, j) => (
+                              <span
+                                key={j}
+                                style={{
+                                  fontSize: 10.5, fontWeight: 600, fontFamily: PJS,
+                                  padding: "3px 10px", borderRadius: 9999,
+                                  background: "#FEF3C7", color: "#B45309",
+                                  border: "1px solid #FDE68A",
+                                }}
+                              >
+                                {p}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      {/* Info box */}
+                      <div style={{
+                        display: "flex", alignItems: "flex-start", gap: 8,
+                        padding: "10px 14px", borderRadius: 12,
+                        background: "rgba(217, 119, 6, 0.08)",
+                      }}>
+                        <Info size={13} style={{ color: "#B45309", flexShrink: 0, marginTop: 1 }} />
+                        <p style={{
+                          fontFamily: IPS, fontSize: 11, fontWeight: 500,
+                          color: "#92400E", margin: 0, lineHeight: 1.4,
+                        }}>
+                          Berikan aktivitas pemicu minat di atas kepada anak, lalu <strong>amati antusiasme dan responnya</strong> untuk mengisi skala frekuensi minat di bawah.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* 4. Card Pertanyaan Berlatar Putih dengan Rounded Corners */}
             <div

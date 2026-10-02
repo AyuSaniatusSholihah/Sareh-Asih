@@ -44,14 +44,14 @@ export const kodeOrtuBaru = (nama: string, kelas: string, tahun: string | number
 export const KODE_ORTU_REGEX = /^[A-Z0-9]+-[A-Z]+-\d{4}(-[A-Z0-9]+)?$/;
 
 export const seedStudents: Student[] = [
-  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","LKSN Diksus"],  caraBelajar:"Visual",                kodeOrtu:"VIIA-RAFI-2026",  tanggalLahir:"12 Maret 2013", nisn:"0012345601", alamat:"Jl. Merpati No. 5, Surakarta", statusOrtu:"Kandung", namaOrtu:"Ibu Ratna" },
-  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIIB-NISA-2026",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
+  { id:1, name:"Rafi Pratama",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","LKSN Diksus"],  caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-RAFI-2026",  tanggalLahir:"12 Maret 2013", nisn:"0012345601", alamat:"Jl. Merpati No. 5, Surakarta", statusOrtu:"Kandung", namaOrtu:"Ibu Ratna" },
+  { id:2, name:"Nisa Aulia",     abk:"Tunadaksa",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIIB-NISA-2026",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
   { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, comps:[],                            caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-ARGA-2026",  tanggalLahir:"20 Nov 2014",   nisn:"0012345603", alamat:"Jl. Dahlia No. 8, Depok",     statusOrtu:"Yatim",   namaOrtu:"Ibu Sinta" },
-  { id:4, name:"Dina Maharani",  abk:"Tunanetra",   kelas:"IX C",   age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"IXC-DINA-2026",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
+  { id:4, name:"Dina Maharani",  abk:"Tunadaksa",   kelas:"IX C",   age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"IXC-DINA-2026",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
   { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, comps:["FLS3N PDBK"],                caraBelajar:"Visual",                kodeOrtu:"VIIA-BUDI-2026",  tanggalLahir:"15 Agu 2013",   nisn:"0012345605", alamat:"Jl. Anggrek No. 1, Solo",     statusOrtu:"Piatu",   namaOrtu:"Bapak Joko" },
-  { id:6, name:"Maya Dewi",      abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIIB-MAYA-2026",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
+  { id:6, name:"Maya Dewi",      abk:"Tunadaksa",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIIB-MAYA-2026",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
   { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"IX A",   age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  comps:["LKSN Diksus"],               caraBelajar:"Visual & Kinestetik",   kodeOrtu:"IXA-TONI-2026",  tanggalLahir:"30 Jan 2011",   nisn:"0012345607", alamat:"Jl. Flamboyan No. 7, Jogja",  statusOrtu:"Kandung", namaOrtu:"Bapak Rudi" },
-  { id:8, name:"Sari Indah",     abk:"Tunarungu",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIIA-SARI-2026",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
+  { id:8, name:"Sari Indah",     abk:"Tunadaksa",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIIA-SARI-2026",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
 ];
 
 // ─── Contoh foto profil siswa (dummy dari Pexels, untuk seed) ─────────
@@ -97,11 +97,15 @@ export const useAddStudent = () => useContext(StudentsCtx).add;
 
 // ─── Pilihan form ────────────────────────────────────────────────────
 export const ABK_OPTIONS = [
-  "Tunanetra",
-  "Tuna Rungu",
+  "Tunadaksa",
   "Tuna Daksa Ringan",
   "Tuna Daksa Sedang",
+  "Tunanetra",
+  "Tuna Rungu",
   "Tuna Wicara",
+  "Autis (ASD)",
+  "Tunagrahita Ringan",
+  "Tunagrahita Sedang",
   "Lainnya",
 ];
 export const KELAS_OPTIONS = [
@@ -146,11 +150,11 @@ export const PROFIL_FUNGSIONAL: FungsionalItem[] = [
   {id:105, kode:"D1.05", kategori:"Kognisi", text:"Membaca dan memahami bacaan sesuai jenjang kelas."},
   {id:106, kode:"D1.06", kategori:"Kognisi", text:"Memahami konsep bilangan dan operasi hitung sesuai jenjang kelas."},
   {id:107, kode:"D1.07", kategori:"Kognisi", text:"Menyelesaikan tugas berpikir melalui jawaban lisan ketika menulis sulit dilakukan."},
-  {id:108, kode:"D1.08", kategori:"Kognisi", text:"Mengelompokkan, membandingkan, dan mengurutkan benda atau informasi."},
-  {id:109, kode:"D1.09", kategori:"Kognisi", text:"Memecahkan masalah sederhana dalam kehidupan sehari-hari."},
-  {id:110, kode:"D1.10", kategori:"Kognisi", text:"Menyampaikan ide atau jawaban dengan cara yang dapat diakses (lisan, ketikan)."},
-  {id:111, kode:"D1.11", kategori:"Kognisi", text:"Mengenali batas kemampuan fisik saat memilih cara mengerjakan tugas."},
-  {id:112, kode:"D1.12", kategori:"Kognisi", text:"Menerapkan hal yang telah dipelajari pada situasi baru."},
+  {id:108, kode:"D1.08", kategori:"Kognisi", text:"Menyampaikan ide atau jawaban dengan cara yang dapat diakses (lisan, ketikan)."},
+  {id:109, kode:"D1.09", kategori:"Kognisi", text:"Mengenali batas kemampuan fisik saat memilih cara mengerjakan tugas."},
+  {id:110, kode:"D1.10", kategori:"Kognisi", text:"Merencanakan langkah-langkah untuk menyelesaikan tugas atau proyek sederhana (mis. praktik keterampilan) sebelum mengerjakannya."},
+  {id:111, kode:"D1.11", kategori:"Kognisi", text:"Membandingkan dua pilihan dan menyebutkan alasan memilih salah satunya."},
+  {id:112, kode:"D1.12", kategori:"Kognisi", text:"Menerapkan konsep pelajaran pada situasi nyata (mis. mengukur bahan, menghitung uang, membaca petunjuk)."},
 
   // D2 Mobilitas
   {id:201, kode:"D2.01", kategori:"Mobilitas", text:"Berpindah tempat di dalam ruang kelas (berjalan, kruk, walker, atau kursi roda) dengan aman."},
@@ -158,27 +162,27 @@ export const PROFIL_FUNGSIONAL: FungsionalItem[] = [
   {id:203, kode:"D2.03", kategori:"Mobilitas", text:"Mengikuti kegiatan yang melibatkan gerak fisik dalam bentuk yang dimodifikasi (senam adaptif)."},
   {id:204, kode:"D2.04", kategori:"Mobilitas", text:"Menyesuaikan diri ketika ada perubahan tata letak atau rute (mencari jalur landai, jalur alternatif)."},
   {id:205, kode:"D2.05", kategori:"Mobilitas", text:"Berpindah posisi (duduk-berdiri, pindah dari kursi roda ke kursi) secara mandiri."},
-  {id:206, kode:"D2.06", kategori:"Mobilitas", text:"Menjaga keseimbangan dan postur saat duduk maupun berdiri dalam waktu yang wajar."},
-  {id:207, kode:"D2.07", kategori:"Mobilitas", text:"Menggunakan tangga atau ramp dengan aman."},
-  {id:208, kode:"D2.08", kategori:"Mobilitas", text:"Menggunakan alat mobilitas (kruk, tongkat, kursi roda, ortosis) dengan benar."},
-  {id:209, kode:"D2.09", kategori:"Mobilitas", text:"Mengatur kecepatan dan waktu istirahat sesuai tingkat kelelahan."},
-  {id:210, kode:"D2.10", kategori:"Mobilitas", text:"Menjangkau, mengambil, dan membawa benda dengan cara yang aman."},
-  {id:211, kode:"D2.11", kategori:"Mobilitas", text:"Melewati pintu, koridor, dan ruang sempit."},
-  {id:212, kode:"D2.12", kategori:"Mobilitas", text:"Meminta bantuan dengan tepat ketika menghadapi rintangan fisik."},
+  {id:206, kode:"D2.06", kategori:"Mobilitas", text:"Menggunakan tangga atau ramp dengan aman."},
+  {id:207, kode:"D2.07", kategori:"Mobilitas", text:"Menggunakan alat mobilitas (kruk, tongkat, kursi roda, ortosis) dengan benar."},
+  {id:208, kode:"D2.08", kategori:"Mobilitas", text:"Menjangkau, mengambil, dan membawa benda dengan cara yang aman."},
+  {id:209, kode:"D2.09", kategori:"Mobilitas", text:"Meminta bantuan dengan tepat ketika menghadapi rintangan fisik."},
+  {id:210, kode:"D2.10", kategori:"Mobilitas", text:"Berpindah antar ruang pelajaran tepat waktu melalui jalur yang aksesibel (ramp, lift, koridor)."},
+  {id:211, kode:"D2.11", kategori:"Mobilitas", text:"Mencapai sekolah dan pulang dengan aman (berjalan, kursi roda, atau kendaraan antar-jemput yang aksesibel), dengan atau tanpa pendamping."},
+  {id:212, kode:"D2.12", kategori:"Mobilitas", text:"Berpartisipasi dalam kegiatan fisik atau ekstrakurikuler (olahraga, pramuka, senam) dengan alat bantu atau modifikasi bila perlu."},
 
   // D3 Perawatan Diri
   {id:301, kode:"D3.01", kategori:"Perawatan Diri", text:"Makan dan minum sendiri saat istirahat (dengan alat makan adaptif bila perlu)."},
   {id:302, kode:"D3.02", kategori:"Perawatan Diri", text:"Ke toilet dan membersihkan diri sendiri."},
   {id:303, kode:"D3.03", kategori:"Perawatan Diri", text:"Menjaga kerapian diri dan seragam."},
   {id:304, kode:"D3.04", kategori:"Perawatan Diri", text:"Menjaga dan mengelola barang miliknya sendiri."},
-  {id:305, kode:"D3.05", kategori:"Perawatan Diri", text:"Mencuci tangan dengan langkah yang benar."},
-  {id:306, kode:"D3.06", kategori:"Perawatan Diri", text:"Menyikat gigi, mandi, dan menyisir rambut secara mandiri."},
-  {id:307, kode:"D3.07", kategori:"Perawatan Diri", text:"Mengenakan dan melepas pakaian serta sepatu (dengan modifikasi bila perlu)."},
-  {id:308, kode:"D3.08", kategori:"Perawatan Diri", text:"Mengancingkan pakaian, menarik resleting, atau mengikat tali."},
-  {id:309, kode:"D3.09", kategori:"Perawatan Diri", text:"Membuka bekal, botol minum, dan kemasan makanan sendiri."},
-  {id:310, kode:"D3.10", kategori:"Perawatan Diri", text:"Merawat dan memasang alat bantu pribadi (ortosis, kruk, kursi roda)."},
-  {id:311, kode:"D3.11", kategori:"Perawatan Diri", text:"Berpindah ke dan dari toilet dengan aman."},
-  {id:312, kode:"D3.12", kategori:"Perawatan Diri", text:"Menjaga kenyamanan dan keselamatan tubuh (mengubah posisi duduk, menyampaikan rasa nyeri atau lelah)."},
+  {id:305, kode:"D3.05", kategori:"Perawatan Diri", text:"Mengenakan dan melepas pakaian serta sepatu (dengan modifikasi bila perlu)."},
+  {id:306, kode:"D3.06", kategori:"Perawatan Diri", text:"Mengancingkan pakaian, menarik resleting, atau mengikat tali."},
+  {id:307, kode:"D3.07", kategori:"Perawatan Diri", text:"Merawat dan memasang alat bantu pribadi (ortosis, kruk, kursi roda)."},
+  {id:308, kode:"D3.08", kategori:"Perawatan Diri", text:"Berpindah ke dan dari toilet dengan aman."},
+  {id:309, kode:"D3.09", kategori:"Perawatan Diri", text:"Menjaga kenyamanan dan keselamatan tubuh (mengubah posisi duduk, menyampaikan rasa nyeri atau lelah)."},
+  {id:310, kode:"D3.10", kategori:"Perawatan Diri", text:"Menjaga kebersihan diri sesuai perubahan masa remaja (memakai deodoran, merawat rambut dan kuku, mengganti pakaian dalam)."},
+  {id:311, kode:"D3.11", kategori:"Perawatan Diri", text:"Mengelola kebutuhan pribadi masa pubertas (mis. kebersihan saat menstruasi atau mimpi basah) dengan bantuan minimal atau meminta bantuan orang yang tepat."},
+  {id:312, kode:"D3.12", kategori:"Perawatan Diri", text:"Mengelola uang saku sederhana (membawa, membelanjakan, menyimpan) untuk kebutuhan sekolah atau jajan."},
 
   // D4 Interaksi dengan Orang Lain
   {id:401, kode:"D4.01", kategori:"Interaksi dengan Orang Lain", text:"Memulai komunikasi dengan teman atau guru."},
@@ -189,10 +193,10 @@ export const PROFIL_FUNGSIONAL: FungsionalItem[] = [
   {id:406, kode:"D4.06", kategori:"Interaksi dengan Orang Lain", text:"Bermain bersama teman dalam permainan yang dimodifikasi."},
   {id:407, kode:"D4.07", kategori:"Interaksi dengan Orang Lain", text:"Menjelaskan kondisinya kepada teman dengan percaya diri."},
   {id:408, kode:"D4.08", kategori:"Interaksi dengan Orang Lain", text:"Menolak ejekan atau perundungan dengan tegas atau melaporkannya."},
-  {id:409, kode:"D4.09", kategori:"Interaksi dengan Orang Lain", text:"Menyatakan perasaan dengan kata-kata."},
-  {id:410, kode:"D4.10", kategori:"Interaksi dengan Orang Lain", text:"Bekerja sama dengan teman yang membantunya."},
-  {id:411, kode:"D4.11", kategori:"Interaksi dengan Orang Lain", text:"Menghargai giliran dan aturan dalam kelompok."},
-  {id:412, kode:"D4.12", kategori:"Interaksi dengan Orang Lain", text:"Menjalin pertemanan dengan teman dari berbagai kondisi."},
+  {id:409, kode:"D4.09", kategori:"Interaksi dengan Orang Lain", text:"Bekerja sama dengan teman yang membantunya."},
+  {id:410, kode:"D4.10", kategori:"Interaksi dengan Orang Lain", text:"Menjaga hubungan pertemanan sebaya (menepati janji, berbagi cerita, menyelesaikan salah paham)."},
+  {id:411, kode:"D4.11", kategori:"Interaksi dengan Orang Lain", text:"Menolak ajakan berisiko atau tidak sesuai dari teman sebaya (mis. bolos, mengambil barang orang lain, ajakan tidak pantas) dan melapor kepada orang dewasa yang dipercaya."},
+  {id:412, kode:"D4.12", kategori:"Interaksi dengan Orang Lain", text:"Berkomunikasi dengan guru mata pelajaran dan staf sekolah yang berbeda sesuai kesantunan masing-masing."},
 
   // D5 Aktivitas Sehari-hari
   {id:501, kode:"D5.01", kategori:"Aktivitas Sehari-hari", text:"Memulai tugas tanpa harus diminta berulang."},
@@ -202,11 +206,11 @@ export const PROFIL_FUNGSIONAL: FungsionalItem[] = [
   {id:505, kode:"D5.05", kategori:"Aktivitas Sehari-hari", text:"Menulis atau menggambar dengan alat yang sesuai (pegangan pensil adaptif, papan ketik)."},
   {id:506, kode:"D5.06", kategori:"Aktivitas Sehari-hari", text:"Menggunakan gunting, penggaris, dan alat lain yang dimodifikasi."},
   {id:507, kode:"D5.07", kategori:"Aktivitas Sehari-hari", text:"Membawa tas dan buku (tas ransel, tas pada kursi roda, troli)."},
-  {id:508, kode:"D5.08", kategori:"Aktivitas Sehari-hari", text:"Mengatur ritme kerja dan waktu istirahat."},
-  {id:509, kode:"D5.09", kategori:"Aktivitas Sehari-hari", text:"Merapikan meja dan barang miliknya."},
-  {id:510, kode:"D5.10", kategori:"Aktivitas Sehari-hari", text:"Melaksanakan piket kelas sesuai kemampuan."},
-  {id:511, kode:"D5.11", kategori:"Aktivitas Sehari-hari", text:"Menyelesaikan tugas keterampilan atau prakarya dengan cara yang sesuai."},
-  {id:512, kode:"D5.12", kategori:"Aktivitas Sehari-hari", text:"Mengikuti rutinitas kelas (berdoa, memberi salam, berbaris) tanpa diingatkan."},
+  {id:508, kode:"D5.08", kategori:"Aktivitas Sehari-hari", text:"Melaksanakan piket kelas sesuai kemampuan."},
+  {id:509, kode:"D5.09", kategori:"Aktivitas Sehari-hari", text:"Menyelesaikan tugas keterampilan atau prakarya dengan cara yang sesuai."},
+  {id:510, kode:"D5.10", kategori:"Aktivitas Sehari-hari", text:"Mengatur perlengkapan sesuai jadwal pelajaran harian (membawa buku dan alat hari itu) dengan bantuan minimal."},
+  {id:511, kode:"D5.11", kategori:"Aktivitas Sehari-hari", text:"Mengerjakan tugas rumah atau tugas mandiri dan mengumpulkannya tepat waktu."},
+  {id:512, kode:"D5.12", kategori:"Aktivitas Sehari-hari", text:"Mengerjakan tugas keterampilan dasar (mis. boga, kriya, berkebun, membatik) sesuai langkah kerja dan aturan keselamatan."},
 
   // D6 Partisipasi
   {id:601, kode:"D6.01", kategori:"Partisipasi", text:"Terlibat aktif dalam kegiatan kelompok di kelas."},
@@ -215,15 +219,280 @@ export const PROFIL_FUNGSIONAL: FungsionalItem[] = [
   {id:604, kode:"D6.04", kategori:"Partisipasi", text:"Menyampaikan kebutuhan atau meminta penyesuaian (posisi meja, ramp, waktu tambahan) ketika menghadapi hambatan."},
   {id:605, kode:"D6.05", kategori:"Partisipasi", text:"Berpartisipasi dalam diskusi kelas dengan menyampaikan pendapat."},
   {id:606, kode:"D6.06", kategori:"Partisipasi", text:"Ikut serta dalam olahraga atau permainan adaptif."},
-  {id:607, kode:"D6.07", kategori:"Partisipasi", text:"Mengikuti upacara dan kegiatan keagamaan dengan penyesuaian posisi."},
-  {id:608, kode:"D6.08", kategori:"Partisipasi", text:"Tampil di depan umum (bernyanyi, membaca, drama)."},
-  {id:609, kode:"D6.09", kategori:"Partisipasi", text:"Berpartisipasi dalam kegiatan masyarakat di lingkungan sekitar."},
-  {id:610, kode:"D6.10", kategori:"Partisipasi", text:"Menerima peran atau tanggung jawab dalam kelompok sesuai kemampuan."},
-  {id:611, kode:"D6.11", kategori:"Partisipasi", text:"Mengidentifikasi hambatan aksesibilitas dan menyampaikannya kepada guru."},
-  {id:612, kode:"D6.12", kategori:"Partisipasi", text:"Menunjukkan kepercayaan diri untuk mencoba kegiatan baru."},
+  {id:607, kode:"D6.07", kategori:"Partisipasi", text:"Tampil di depan umum (bernyanyi, membaca, drama)."},
+  {id:608, kode:"D6.08", kategori:"Partisipasi", text:"Mengidentifikasi hambatan aksesibilitas dan menyampaikannya kepada guru."},
+  {id:609, kode:"D6.09", kategori:"Partisipasi", text:"Menunjukkan kepercayaan diri untuk mencoba kegiatan baru."},
+  {id:610, kode:"D6.10", kategori:"Partisipasi", text:"Ikut serta dalam organisasi atau kegiatan kelompok sekolah (OSIS, pramuka, ekstrakurikuler)."},
+  {id:611, kode:"D6.11", kategori:"Partisipasi", text:"Menyampaikan pendapat, kebutuhan, atau keberatan kepada guru dengan cara sopan dan jelas."},
+  {id:612, kode:"D6.12", kategori:"Partisipasi", text:"Berpartisipasi dalam kegiatan keterampilan, pentas, atau pameran karya di sekolah dan lingkungan sekitar."},
 ];
 
-// ─── Profil Kecenderungan Aktivitas / RIASEC (Tahap 2) ─────────────────────────
+// ─── Panduan Aktivitas Unjuk Kerja (Performance-Based Assessment) ───────
+export interface AktivitasUnjukKerja {
+  judul: string;
+  deskripsi: string;
+  perilakuDiamati: string[];
+  cocokUntuk?: string[];    // ABK spesifik, kosong = semua
+}
+
+export const PANDUAN_UNJUK_KERJA: Record<FungsionalKategori, AktivitasUnjukKerja[]> = {
+  "Kognisi": [
+    {
+      judul: "Menyusun Rencana Proyek Keterampilan",
+      deskripsi: "Berikan bahan prakarya sederhana. Minta siswa merencanakan tahapan kerja dan membandingkan dua pilihan bahan/alat secara lisan atau ketikan sebelum mulai mengerjakan.",
+      perilakuDiamati: ["Memahami instruksi 2-3 langkah (D1.01)", "Merencanakan langkah tugas (D1.10)", "Membandingkan pilihan (D1.11)", "Menyampaikan ide lisan/ketikan (D1.08)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Kuis Berpikir Adaptif (Jawaban Lisan / Keyboard)",
+      deskripsi: "Berikan teks bacaan dan soal hitungan kontekstual. Berikan pilihan menjawab secara lisan atau mengetik bila motorik tangan lelah saat menulis.",
+      perilakuDiamati: ["Membaca & memahami (D1.05)", "Konsep hitungan (D1.06)", "Jawaban lisan saat sulit menulis (D1.07)", "Mencari cara alternatif (D1.04)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Simulasi Nyata: Mengukur Bahan & Menghitung Uang",
+      deskripsi: "Sediakan simulasi belanja atau takaran resep praktis. Amati bagaimana siswa menerapkan konsep nyata dan mengenali batas kemampuan fisiknya saat lelah.",
+      perilakuDiamati: ["Penerapan konsep nyata (D1.12)", "Mengenali batas fisik (D1.09)", "Fokus saat mulai lelah (D1.03)", "Mengingat materi sebelumnya (D1.02)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Mobilitas": [
+    {
+      judul: "Navigasi Rute Kelas & Luar Kelas (Ramp & Koridor)",
+      deskripsi: "Minta siswa berpindah dari dalam kelas menuju kantin, toilet, atau lapangan melewati jalur landai (ramp) dengan kursi roda, kruk, atau walker secara aman.",
+      perilakuDiamati: ["Berpindah di kelas (D2.01)", "Navigasi luar kelas (D2.02)", "Menggunakan ramp/jalur landai (D2.06)", "Berpindah tepat waktu (D2.10)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Simulasi Transfer Posisi Mandiri",
+      deskripsi: "Amati teknik siswa saat berpindah posisi duduk ke berdiri atau berpindah dari kursi roda ke kursi meja belajar secara mandiri dan aman.",
+      perilakuDiamati: ["Berpindah posisi mandiri (D2.05)", "Menggunakan alat mobilitas (D2.07)", "Meminta bantuan tepat saat rintangan (D2.09)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Menjangkau Benda & Olahraga Adaptif (Boccia / Senam Kursi)",
+      deskripsi: "Ajak siswa menjangkau benda di rak, membawanya di pangkuan/tas kursi roda, lalu berpartisipasi dalam senam adaptif atau permainan boccia.",
+      perilakuDiamati: ["Menjangkau & membawa benda (D2.08)", "Senam/olahraga adaptif (D2.03)", "Ikut kegiatan fisik/ekskul (D2.12)", "Menyesuaikan rute (D2.04)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Perawatan Diri": [
+    {
+      judul: "Makan & Minum dengan Alat Adaptif",
+      deskripsi: "Sediakan bekal istirahat. Amati kemandirian membuka wadah bekal/botol minum dan penggunaan alat makan adaptif (sendok bertali/pegangan besar).",
+      perilakuDiamati: ["Makan & minum mandiri (D3.01)", "Menjaga kerapian diri (D3.03)", "Mengelola barang milik sendiri (D3.04)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Kemandirian Berpakaian & Alat Bantu Pribadi",
+      deskripsi: "Amati siswa mengenakan/melepas jaket/rompi, mengancingkan, menarik resleting, atau memasang strap velcro ortosis/kruk secara mandiri.",
+      perilakuDiamati: ["Memakai/melepas pakaian & sepatu (D3.05)", "Kancing/resleting/tali (D3.06)", "Memasang & merawat ortosis/alat bantu (D3.07)", "Menjaga kenyamanan & posisi duduk (D3.09)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Akses Toilet & Kebersihan Remaja",
+      deskripsi: "Amati kemandirian navigasi ke toilet difabel, transfer posisi toilet dengan handrail, kebersihan diri remaja, dan pengelolaan uang saku jajan.",
+      perilakuDiamati: ["Ke toilet mandiri (D3.02)", "Transfer toilet aman (D3.08)", "Kebersihan masa remaja (D3.10)", "Mengelola uang saku (D3.12)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Interaksi dengan Orang Lain": [
+    {
+      judul: "Proyek Kolaboratif & Meminta Bantuan Sopan",
+      deskripsi: "Dua sampai tiga siswa bekerja sama menyelesaikan puzzle atau poster. Amati kemampuan siswa meminta bantuan fisik dengan sopan dan interaksi dua arah.",
+      perilakuDiamati: ["Memulai komunikasi (D4.01)", "Interaksi dua arah (D4.03)", "Meminta bantuan fisik dengan sopan (D4.05)", "Bekerja sama dengan teman (D4.09)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Diskusi & Menjelaskan Kondisi Diri",
+      deskripsi: "Siswa diajak menceritakan hobi atau menjelaskan fungsi alat bantunya kepada teman dalam suasana yang positif dan percaya diri.",
+      perilakuDiamati: ["Menjelaskan kondisi dengan percaya diri (D4.07)", "Menolak ejekan/bullying tegas (D4.08)", "Menjaga pertemanan sebaya (D4.10)", "Komunikasi santun dengan guru/staf (D4.12)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Bermain Peran: Asertif Terhadap Ajakan Berisiko",
+      deskripsi: "Simulasi situasi pertemanan untuk mengamati keberanian siswa menyelesaikan kesalahpahaman dan menolak ajakan tidak baik dari teman sebaya.",
+      perilakuDiamati: ["Menyelesaikan perselisihan mandiri (D4.04)", "Menolak ajakan berisiko (D4.11)", "Bermain dalam permainan modifikasi (D4.06)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Aktivitas Sehari-hari": [
+    {
+      judul: "Menyiapkan Meja Belajar & Alat Adaptif",
+      deskripsi: "Siswa mengeluarkan buku, pensil bergrip adaptif, dan perlengkapan dari tas kursi roda/ransel, lalu menyusun di meja belajar secara mandiri.",
+      perilakuDiamati: ["Memulai tugas mandiri (D5.01)", "Menyiapkan alat belajar (D5.03)", "Menulis/menggambar dengan alat adaptif (D5.05)", "Membawa tas & buku (D5.07)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Prakarya Keterampilan Sesuai SOP",
+      deskripsi: "Siswa membuat prakarya (menggunakan gunting adaptif, memotong bahan, membatik/kriya) sesuai langkah keselamatan kerja.",
+      perilakuDiamati: ["Menggunakan gunting/alat modifikasi (D5.06)", "Menyelesaikan prakarya cara sesuai (D5.09)", "Keterampilan dasar & SOP (D5.12)", "Selesai tepat waktu (D5.02)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Piket Kelas & Pengaturan Jadwal Pelajaran",
+      deskripsi: "Siswa menjalankan tugas piket (merapikan meja, menyortir buku) dan mengecek perlengkapan buku sesuai jadwal pelajaran esok hari.",
+      perilakuDiamati: ["Piket kelas sesuai kemampuan (D5.08)", "Mengatur perlengkapan jadwal (D5.10)", "Berpindah jadwal mandiri (D5.04)", "Tugas mandiri tepat waktu (D5.11)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Partisipasi": [
+    {
+      judul: "Diskusi Kelas & Advokasi Aksesibilitas",
+      deskripsi: "Siswa berpartisipasi dalam musyawarah kelas dan berani menyampaikan kebutuhan penyesuaian (posisi meja, akses ramp, waktu tambahan).",
+      perilakuDiamati: ["Terlibat aktif di kelompok (D6.01)", "Partisipasi diskusi kelas (D6.05)", "Menyampaikan kebutuhan penyesuaian (D6.04)", "Identifikasi hambatan aksesibilitas (D6.08)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Olahraga / Ekstrakurikuler Adaptif",
+      deskripsi: "Siswa bergabung dalam kegiatan ekstrakurikuler (pramuka, OSIS, olahraga adaptif seperti boccia/voli duduk) dengan alat bantunya.",
+      perilakuDiamati: ["Olahraga adaptif (D6.06)", "Menggunakan alat bantu mandiri (D6.03)", "Ikut organisasi/ekskul (D6.10)", "Kegiatan luar jam sekolah (D6.02)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Pentas Seni & Pameran Karya",
+      deskripsi: "Siswa menampilkan hasil karya atau tampil di depan umum (bernyanyi/presentasi) dan menyampaikan pendapat santun kepada guru.",
+      perilakuDiamati: ["Tampil di depan umum (D6.07)", "Percaya diri hal baru (D6.09)", "Partisipasi pameran karya (D6.12)", "Menyampaikan pendapat santun ke guru (D6.11)"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+};
+
+
+
+export const PANDUAN_RIASEC: Record<RiasecKategori, AktivitasUnjukKerja[]> = {
+  "Realistic": [
+    {
+      judul: "Merakit Komponen / Balok Besar",
+      deskripsi: "Sediakan balok atau komponen rakit dengan pegangan mudah digenggam. Amati apakah siswa antusias membongkar-pasang dan mencoba alat kerja praktis.",
+      perilakuDiamati: ["Tertarik membongkar/merakit", "Memilih kegiatan tangan/alat", "Lebih suka praktik langsung"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Berkebun Meja Adaptif / Menanam Benih",
+      deskripsi: "Ajak siswa menanam biji di pot kecil di atas meja kerja: mengisi media tanam, menabur benih, dan menyiram dengan semprotan ringan.",
+      perilakuDiamati: ["Merawat tanaman/hewan", "Mengolah bahan nyata", "Senang aktivitas praktik lingkungan"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Praktik Tata Boga dengan Alat Adaptif",
+      deskripsi: "Membuat roti isi atau jus dengan sendok/alat potong adaptif, menakar bahan, dan menyajikan secara rapi.",
+      perilakuDiamati: ["Tertarik praktik boga", "Mau memakai alat kerja", "Mengolah bahan nyata"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Investigative": [
+    {
+      judul: "Percobaan Sains Sederhana",
+      deskripsi: "Mencampur warna larutan, mengamati reaksi benda apung-tenggelam, atau melarutkan bahan. Amati rasa ingin tahu dan ketelitian siswa.",
+      perilakuDiamati: ["Bertanya mengapa/bagaimana", "Mencoba-coba sendiri", "Tertarik pada percobaan"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Teka-teki Pola & Permainan Logika",
+      deskripsi: "Berikan puzzle magnetik, tebak pola, atau teka-teki logika sederhana. Amati persistensi dan strategi pemecahan masalah.",
+      perilakuDiamati: ["Menikmati teka-teki/pola", "Mencari cara lain", "Senang membandingkan konsep"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Eksplorasi Alam & Observasi Lingkungan",
+      deskripsi: "Siswa diajak mengamati spesimen daun, batuan, atau tanaman menggunakan lup/kaca pembesar dari posisi duduk yang nyaman.",
+      perilakuDiamati: ["Memperhatikan detail benda/tanaman", "Tertarik mencari informasi", "Bertanya di luar materi dasar"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Artistic": [
+    {
+      judul: "Menggambar / Melukis dengan Alat Adaptif",
+      deskripsi: "Sediakan kuas/pensil dengan pegangan tebal atau media digital. Biarkan siswa mengekspresikan karya seni visual secara bebas.",
+      perilakuDiamati: ["Memilih kegiatan seni rupa", "Ingin menghias/mendesain", "Bangga menunjukkan karya"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Bermain Musik / Ritme Adaptif",
+      deskripsi: "Sediakan instrumen musik yang mudah dimainkan (keyboard sentuh, perkusi ringan, marakas). Amati respon dan kepekaan ritmis siswa.",
+      perilakuDiamati: ["Tertarik pada musik/ritme", "Menikmati irama musik", "Senang bernyanyi/memainkan alat musik"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Bercerita & Bermain Peran (Role Play)",
+      deskripsi: "Ajak siswa mengekspresikan karakter cerita rakyat atau profesi favorit melalui dialog ekspresif dan gestur dramatis.",
+      perilakuDiamati: ["Senang memerankan tokoh", "Senang bercerita", "Lebih suka membuat karya imajinatif"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Social": [
+    {
+      judul: "Simulasi Menolong & Berbagi dengan Teman",
+      deskripsi: "Berikan situasi berbagi alat belajar atau membantu teman yang membutuhkan arahan. Amati spontanitas empati dan komunikasi.",
+      perilakuDiamati: ["Membantu tanpa diminta", "Peduli pada orang lain", "Senang membantu guru & teman"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Proyek Kolaboratif Kelompok Kecil",
+      deskripsi: "Tiga sampai empat siswa menyelesaikan tugas poster atau majalah dinding mini bersama. Amati kerjasama dan keterlibatan sosial.",
+      perilakuDiamati: ["Memilih kerja tim daripada sendiri", "Berbagi bekal/alat", "Senang berinteraksi dalam kelompok"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Simulasi Pelayanan & Keramahan",
+      deskripsi: "Siswa menjadi koordinator penerima tamu atau menyambut teman di kelas. Amati keramahan dan antusiasme melayani sesama.",
+      perilakuDiamati: ["Menyapa teman baru dengan ramah", "Tertarik merawat/melayani", "Senang kerja bakti bersama"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Enterprising": [
+    {
+      judul: "Simulasi Bazar Mini / Penjualan Karya",
+      deskripsi: "Buat simulasi meja bazar. Siswa memajang hasil karya, menentukan harga, dan menawarkan produk ke teman/guru.",
+      perilakuDiamati: ["Senang menawarkan hasil karya", "Mengambil inisiatif berbicara", "Berani tampil percaya diri"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Permainan Koordinator / Pemimpin Regu",
+      deskripsi: "Tunjuk siswa memimpin kelompok kecil untuk menentukan giliran dan membagi tugas diskusi secara adil.",
+      perilakuDiamati: ["Mengajak teman mengikuti ide", "Berani memulai kegiatan baru", "Senang memimpin tim"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Presentasi Karya & Ide di Depan Kelas",
+      deskripsi: "Minta siswa mempresentasikan ide proyeknya kepada teman-teman dengan gaya komunikasi persuasif.",
+      perilakuDiamati: ["Berani tampil di depan umum", "Senang mendapat peran representatif", "Menyampaikan ide dengan percaya diri"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+
+  "Conventional": [
+    {
+      judul: "Sortir & Klasifikasi Komponen Terstruktur",
+      deskripsi: "Sediakan bahan campuran (kancing, manik, alat tulis). Minta siswa mengelompokkan berdasarkan kategori, warna, atau ukuran ke wadah rapi.",
+      perilakuDiamati: ["Merapikan & menyusun benda", "Mengelompokkan menurut aturan", "Teliti pada keteraturan"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Menjalankan Prosedur / SOP Kerja Berurutan",
+      deskripsi: "Berikan lembar panduan kerja langkah-demi-langkah (resep/urutan pelipatan). Amati kepatuhan terhadap urutan dan ketelitian hasil.",
+      perilakuDiamati: ["Nyaman dengan aturan jelas", "Mengikuti langkah berurutan", "Memeriksa pekerjaan sebelum selesai"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+    {
+      judul: "Pencatatan & Inventarisasi Alat Kelas",
+      deskripsi: "Siswa diminta memeriksa ketersediaan buku atau spidol kelas, mencatatnya dalam daftar tabel sederhana.",
+      perilakuDiamati: ["Teliti dalam pencatatan berulang", "Tertarik mencatat & menghitung", "Menyimpan barang di tempat tetap"],
+      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+    },
+  ],
+};
+
 export type RiasecKategori = "Realistic" | "Investigative" | "Artistic" | "Social" | "Enterprising" | "Conventional";
 
 export const RIASEC_KATEGORI: RiasecKategori[] = [
