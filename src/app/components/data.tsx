@@ -90,7 +90,7 @@ export const seedLaporan: LaporanKirim[] = [
 ];
 
 // ─── Students store (guru dapat menambah siswa sendiri) ──────────────
-interface StudentsStore { list:Student[]; add:(s:Omit<Student,"id">)=>Student; }
+interface StudentsStore { list:Student[]; add:(s:Omit<Student,"id">)=>Promise<Student>|Student; }
 export const StudentsCtx = createContext<StudentsStore>({ list:seedStudents, add:()=>seedStudents[0] });
 export const useStudents = () => useContext(StudentsCtx).list;
 export const useAddStudent = () => useContext(StudentsCtx).add;
