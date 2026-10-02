@@ -44,7 +44,6 @@ export function KodeAksesCard({onOpen}:{onOpen:()=>void}) {
       <div className="space-y-1.5 mb-3">
         {students.slice(0,3).map(s=>(
           <div key={s.id} className="flex items-center gap-2 px-2.5 py-2 rounded-xl" style={{background:BG}}>
-            <span style={{fontSize:15}}>{s.emoji}</span>
             <span className="text-xs font-semibold flex-1 min-w-0 truncate" style={{color:TEXT}}>{s.name}</span>
             {s.kodeOrtu
               ? <span className="text-xs font-bold" style={{color:DEEP,fontFamily:DMM}}>{s.kodeOrtu}</span>
@@ -273,7 +272,6 @@ export function KodeAksesScreen({onBack,onBuat,onHapus,namaSekolah}:{
                       {on ? <CheckSquare size={19} style={{color:T,flexShrink:0}}/> : <Square size={19} style={{color:"#C4CBC6",flexShrink:0}}/>}
                     </div>
 
-                    <span style={{fontSize:20,flexShrink:0}}>{s.emoji}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <p className="font-semibold text-sm truncate" style={{color:TEXT,fontFamily:IPS}}>{s.name}</p>
@@ -537,7 +535,6 @@ export function StudentPicker({pilih,setPilih}:{pilih:Set<number>;setPilih:(s:Se
               style={{background:on?SEC:BG,border:`1px solid ${on?T:BDR}`,width:"100%",textAlign:"left",minHeight:46}}
               className="rounded-xl px-2.5 py-2 flex items-center gap-2.5">
               {on ? <CheckSquare size={16} style={{color:T,flexShrink:0}}/> : <Square size={16} style={{color:"#C4CBC6",flexShrink:0}}/>}
-              <span style={{fontSize:16,flexShrink:0}}>{s.emoji}</span>
               <span className="text-xs font-semibold flex-1 min-w-0 truncate" style={{color:TEXT}}>{s.name}</span>
               <span className="text-xs flex-shrink-0" style={{color:MUTED}}>{s.kelas}</span>
               {!s.hasObs && <span className="text-xs flex-shrink-0" style={{color:"#92400E"}}>belum asesmen</span>}

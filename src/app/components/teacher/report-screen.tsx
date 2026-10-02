@@ -7,13 +7,26 @@ import {
   Globe, ExternalLink, ShieldCheck, Smartphone, Sparkles, Settings,
 } from "lucide-react";
 import { CARD, TEXT, MUTED, SEC, T, A, DEEP, PJS, IPS, BG, BDR, DMM, useUI } from "../ui-kit";
-import { useStudents, type Student } from "../data";
+import { useStudents, fotoSiswa, type Student } from "../data";
 import { exportSpreadsheet, exportLaporanPemetaan, printReportPDF } from "../export";
 import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
 
 type ReportView = "main" | "detail" | "web-connect";
 type FilterScope = "semua" | "kelas" | "anak";
 type OverviewTab = "kelas" | "anak";
+
+// Foto profil siswa (dummy) — fallback ke emoji bila tidak ada foto
+function AvatarSiswa({ s, size, emojiSize }: { s: Student; size: number; emojiSize: number }) {
+  const src = fotoSiswa(s);
+  if (!src) return <span style={{ fontSize: emojiSize, flexShrink: 0 }}>{s.emoji}</span>;
+  return (
+    <img
+      src={src}
+      alt={`Foto profil ${s.name}`}
+      style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "1px solid rgba(91,122,104,0.18)" }}
+    />
+  );
+}
 
 interface ConnectedDeviceInfo {
   name: string;
@@ -536,7 +549,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
                         <div style={{ width: 20, height: 20, borderRadius: 6, border: checked ? `2px solid ${DEEP}` : "2px solid #CBD5E1", background: checked ? DEEP : "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
                           {checked && <Check size={12} strokeWidth={3} color="#FFFFFF" />}
                         </div>
-                        <span style={{ fontSize: 18, flexShrink: 0 }}>{s.emoji}</span>
+                        <AvatarSiswa s={s} size={26} emojiSize={18} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: checked ? 800 : 700, color: checked ? DEEP : TEXT, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
                           <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0 }}>Kelas {s.kelas} · {s.abk}</p>
@@ -566,7 +579,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
             <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 160, overflowY: "auto" }}>
               {filteredList.map(s => (
                 <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", borderRadius: 10, background: "#F8FAFC", border: "1px solid #EDF2F7" }}>
-                  <span style={{ fontSize: 18, flexShrink: 0 }}>{s.emoji}</span>
+                  <AvatarSiswa s={s} size={26} emojiSize={18} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: TEXT, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
                     <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0 }}>Kelas {s.kelas}</p>
@@ -885,7 +898,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
             <div style={{ display: "flex", flexDirection: "column", gap: 7, maxHeight: 300, overflowY: "auto", paddingRight: 2 }}>
               {students.map(s => (
                 <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "#F8FAFC", borderRadius: 12, padding: "9px 12px", border: "1px solid #EDF2F7" }}>
-                  <span style={{ fontSize: 20, flexShrink: 0 }}>{s.emoji}</span>
+                  <AvatarSiswa s={s} size={30} emojiSize={20} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
                     <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>Kelas {s.kelas} · {s.abk}</p>

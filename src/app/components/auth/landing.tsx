@@ -263,7 +263,6 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                               <div style={{ fontSize: 11, color: "#6B8070", marginTop: 1, lineHeight: 1.3 }}>{item.desc}</div>
                             </div>
                           </div>
-                          <ChevronRight size={15} color="#9CA3AF" className="flex-shrink-0 ml-1" />
                         </div>
                       ))}
                     </div>
@@ -471,18 +470,35 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                   />
                 ))}
               </div>
-              <button
-                onClick={goNext}
-                className="active:scale-95 transition-transform flex justify-center items-center pointer-events-auto"
-                style={{
-                  width: 50, height: 50, background: "#D27D6B", color: "#FFF", borderRadius: "50%",
-                  border: "none", cursor: "pointer",
-                  boxShadow: "0 8px 16px rgba(210,125,107,0.4)"
-                }}
-                title={step === 5 ? "Selesai" : "Berikutnya"}
-              >
-                <MoveRight size={22} strokeWidth={2.5} />
-              </button>
+              {step === 5 ? (
+                <button
+                  onClick={goNext}
+                  className="active:scale-95 transition-transform flex justify-center items-center gap-2 pointer-events-auto"
+                  style={{
+                    height: 50, padding: "0 22px", background: "#D27D6B", color: "#FFF",
+                    borderRadius: 25, border: "none", cursor: "pointer",
+                    fontFamily: PJS, fontWeight: 700, fontSize: 15,
+                    boxShadow: "0 8px 16px rgba(210,125,107,0.4)"
+                  }}
+                  title="Selesai"
+                >
+                  <span>Mulai</span>
+                  <MoveRight size={20} strokeWidth={2.5} />
+                </button>
+              ) : (
+                <button
+                  onClick={goNext}
+                  className="active:scale-95 transition-transform flex justify-center items-center pointer-events-auto"
+                  style={{
+                    width: 50, height: 50, background: "#D27D6B", color: "#FFF", borderRadius: "50%",
+                    border: "none", cursor: "pointer",
+                    boxShadow: "0 8px 16px rgba(210,125,107,0.4)"
+                  }}
+                  title="Berikutnya"
+                >
+                  <MoveRight size={22} strokeWidth={2.5} />
+                </button>
+              )}
             </div>
 
             {/* Background Ornamen Daun untuk Halaman 2-5 */}
