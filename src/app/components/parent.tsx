@@ -10,7 +10,9 @@ import {
 } from "./ui-kit";
 import {
   AGENDA, KIND_META, LAYANAN, studentTalentDetail, RIASEC_META, FUNGSIONAL_KATEGORI,
-  seedRiwayatAsesmen, fotoSiswa, type AsesmenPeriode, type RiasecKategori,
+  FUNGSIONAL_META, SKALA_FUNGSIONAL, KAPTION_ASPEK, WARNA_LEVEL, WARNA_LEVEL_TEKS,
+  PROFIL_FUNGSIONAL, SARAN_RUMAH, seedPerkembangan, PERIODE_LIST,
+  fotoSiswa, type PeriodePerkembangan, type FungsionalKategori, type RiasecKategori,
   type Screen, type Student, type LaporanKirim,
   type AgendaEvent, type EventKind,
 } from "./data";
@@ -63,7 +65,7 @@ export function LinkCodeModal({onClose,onLinked,students}:{onClose:()=>void;onLi
         <div className="relative">
           <Hash size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{color:MUTED}}/>
           <input autoFocus value={kode} onChange={e=>{setKode(e.target.value);setErr("");}}
-            placeholder="ABK-2025-RAFI"
+            placeholder="VIIA-RAFI-2026"
             style={{width:"100%",border:`1.5px solid ${err?"#B91C1C":BDR}`,borderRadius:12,padding:"12px 12px 12px 36px",fontSize:15,color:TEXT,fontFamily:DMM,background:BG,outline:"none",minHeight:50,letterSpacing:"0.08em",textTransform:"uppercase"}}/>
         </div>
         {err && (
@@ -210,7 +212,8 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
             {/* ── Kartu Profil Anak ── */}
             <div style={{ background: CARD, borderRadius: 20, padding: "18px 16px 16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
               {/* Profile row */}
-              <div className="flex items-center gap-3" style={{ marginBottom: 14 }}>
+              <button onClick={() => go("parent-detail")} className="flex items-center gap-3 w-full"
+                style={{ marginBottom: 14, background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left" }}>
                 <FotoAnak child={child} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.25 }}>{child.name}</p>
@@ -218,32 +221,21 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
                     Kelas {child.kelas} · SLB Negeri 1
                   </p>
                 </div>
-                <div style={{ flexShrink: 0, background: BG, borderRadius: 10, padding: "6px 10px", border: `1px solid ${BDR}` }}>
-                  <div className="flex items-center gap-1.5">
-                    <CalendarDays size={11} style={{ color: MUTED }} />
-                    <p style={{ fontFamily: DMM, fontSize: 9, color: MUTED, margin: 0, whiteSpace: "nowrap" }}>Terakhir diperbarui</p>
-                  </div>
-                  <p style={{ fontFamily: PJS, fontSize: 10.5, fontWeight: 700, color: TEXT, margin: "2px 0 0", whiteSpace: "nowrap" }}>18 Jun 2026</p>
-                </div>
-              </div>
+                <ChevronRight size={18} style={{ color: MUTED, flexShrink: 0 }} />
+              </button>
 
-              {/* Kecenderungan Aktivitas */}
+              {/* Kecenderungan utama */}
               {utama && (
-                <div style={{ marginBottom: 10 }}>
-                  <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: "0 0 8px", fontWeight: 600 }}>Kecenderungan Aktivitas</p>
-                  <div style={{ background: BG, borderRadius: 16, padding: "14px 14px", border: `1px solid ${BDR}` }}>
-                    <div className="flex items-center gap-3">
-                      <div style={{ width: 44, height: 44, borderRadius: 14, background: RIASEC_META[utama.t as keyof typeof RIASEC_META]?.bg ?? SEC, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>
-                        {RIASEC_META[utama.t as keyof typeof RIASEC_META]?.icon ?? "🎨"}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: PJS, fontSize: 14, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.3 }}>
-                          {utama.t === "Artistic" ? "Seni & Kreativitas" : utama.t}
-                        </p>
-                        <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: "3px 0 0", lineHeight: 1.35 }}>
-                          Menonjol dalam eksplorasi ide dan ekspresi diri
-                        </p>
-                      </div>
+                <div style={{ background: BG, borderRadius: 16, padding: "13px 14px", border: `1px solid ${BDR}`, marginBottom: 12 }}>
+                  <div className="flex items-center gap-3">
+                    <div style={{ width: 40, height: 40, borderRadius: 12, background: RIASEC_META[utama.t as keyof typeof RIASEC_META]?.bg ?? SEC, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 20 }}>
+                      {RIASEC_META[utama.t as keyof typeof RIASEC_META]?.icon ?? "🎨"}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0, fontWeight: 600 }}>Kecenderungan utama</p>
+                      <p style={{ fontFamily: PJS, fontSize: 14, fontWeight: 800, color: TEXT, margin: "2px 0 0", lineHeight: 1.3 }}>
+                        {utama.t === "Artistic" ? "Seni & Kreativitas" : utama.t}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -251,22 +243,32 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
 
               {/* Kecenderungan pendukung */}
               {pendukung && (
-                <div className="flex items-center gap-2" style={{ flexWrap: "wrap" }}>
-                  <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0, fontWeight: 500 }}>Kecenderungan pendukung:</p>
-                  <span style={{
-                    background: RIASEC_META[pendukung.t as keyof typeof RIASEC_META]?.bg ?? SEC,
-                    color: RIASEC_META[pendukung.t as keyof typeof RIASEC_META]?.color ?? DEEP,
-                    border: `1px solid ${RIASEC_META[pendukung.t as keyof typeof RIASEC_META]?.color ?? DEEP}30`,
-                    fontFamily: PJS, fontWeight: 700, fontSize: 11,
-                  }} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full">
-                    <Search size={10} />
-                    {pendukung.t === "Investigative" ? "Investigasi" : pendukung.t}
-                  </span>
-                  <button onClick={() => go("parent-detail")} style={{ fontFamily: IPS, fontSize: 10.5, color: T, fontWeight: 700, background: "none", border: "none", cursor: "pointer", padding: 0, marginLeft: "auto" }}>
-                    Lihat profil &gt;
-                  </button>
+                <div style={{ marginBottom: 12 }}>
+                  <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: "0 0 7px", fontWeight: 600 }}>Kecenderungan pendukung</p>
+                  <div className="flex items-center gap-2" style={{ flexWrap: "wrap" }}>
+                    <span style={{
+                      background: RIASEC_META[pendukung.t as keyof typeof RIASEC_META]?.bg ?? SEC,
+                      color: RIASEC_META[pendukung.t as keyof typeof RIASEC_META]?.color ?? DEEP,
+                      border: `1px solid ${RIASEC_META[pendukung.t as keyof typeof RIASEC_META]?.color ?? DEEP}30`,
+                      fontFamily: PJS, fontWeight: 700, fontSize: 11,
+                    }} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full">
+                      <Search size={10} />
+                      {pendukung.t === "Investigative" ? "Investigasi" : pendukung.t}
+                    </span>
+                    {domains.length > 2 && (
+                      <span style={{ background: BG, color: MUTED, border: `1px solid ${BDR}`, fontFamily: PJS, fontWeight: 700, fontSize: 11 }}
+                        className="inline-flex items-center px-2.5 py-1 rounded-full">
+                        +{domains.length - 2} lainnya
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
+
+              <button onClick={() => go("parent-detail")} className="flex items-center gap-1.5"
+                style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: T, background: "none", border: "none", padding: 0, cursor: "pointer" }}>
+                Lihat profil <span>→</span>
+              </button>
             </div>
 
             {/* ── CTA Button ── */}
@@ -280,18 +282,28 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
             {/* ── Laporan Terbaru dari Guru ── */}
             {latestLaporan && (
               <div style={{ background: CARD, borderRadius: 20, padding: "16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
-                <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
+                <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
                   <div className="flex items-center gap-2.5">
                     <div style={{ width: 34, height: 34, borderRadius: 11, background: "linear-gradient(135deg, #FFE8E0 0%, #FFD5C8 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <FileText size={16} style={{ color: "#C4695A" }} strokeWidth={2.2} />
                     </div>
                     <p style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>Laporan Terbaru dari Guru</p>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <button onClick={() => go("riwayat-laporan")} className="flex items-center gap-1.5"
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                     <span style={{ fontFamily: DMM, fontSize: 10, color: MUTED }}>{latestLaporan.dikirimPada}</span>
                     <ChevronRight size={14} style={{ color: MUTED }} />
-                  </div>
+                  </button>
                 </div>
+
+                {/* Guru pengirim */}
+                <div className="flex items-center gap-1.5" style={{ marginBottom: 8 }}>
+                  <Users size={13} style={{ color: MUTED, flexShrink: 0 }} />
+                  <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: 0 }}>
+                    {child.teacher} · Guru Pendamping
+                  </p>
+                </div>
+
                 <p style={{ fontFamily: IPS, fontSize: 12, color: "#8BA892", lineHeight: 1.55, margin: "0 0 12px" }}>
                   {latestLaporan.isi.length > 100 ? latestLaporan.isi.slice(0, 100) + "…" : latestLaporan.isi}
                 </p>
@@ -307,15 +319,10 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between" style={{ paddingTop: 12, marginTop: 12, borderTop: `1px solid ${BDR}` }}>
-                  <div className="flex items-center gap-2">
-                    <div style={{ width: 22, height: 22, borderRadius: "50%", background: "linear-gradient(135deg, #D4E8DA 0%, #B8D8C0 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Users size={11} style={{ color: "#3D6B4F" }} />
-                    </div>
-                    <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>{child.teacher}, Guru Pendamping</p>
-                  </div>
-                  <ChevronRight size={15} style={{ color: MUTED, flexShrink: 0 }} />
-                </div>
+                <button onClick={() => go("riwayat-laporan")} className="flex items-center gap-1.5"
+                  style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: T, background: "none", border: "none", padding: "12px 0 0", cursor: "pointer" }}>
+                  Lihat laporan lengkap <span>→</span>
+                </button>
               </div>
             )}
 
@@ -572,7 +579,7 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
                     }}
                     className="hover:bg-emerald-50 active:scale-98 transition-all"
                   >
-                    Lihat →
+                    Lihat Semua →
                   </button>
                 </div>
               </div>
@@ -1034,7 +1041,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
             </SeksiCollapsible>
 
             <SeksiCollapsible judul="Tren & Perkembangan" defaultTerbuka={true}>
-              <PerkembanganKemandirian riwayat={seedRiwayatAsesmen[child.id] ?? []} />
+              <KartuMasukPerkembangan nama={nama} data={seedPerkembangan[child.id]} onLihat={() => go("riwayat-perkembangan")} />
             </SeksiCollapsible>
           </>
         )}
@@ -1174,58 +1181,368 @@ function SeksiCollapsible({
   );
 }
 
-function PerkembanganKemandirian({ riwayat }: { riwayat: AsesmenPeriode[] }) {
-  if (riwayat.length < 2) {
+const NAMA_ASPEK: Record<FungsionalKategori, string> = {
+  "Kognisi": "Kognisi",
+  "Mobilitas": "Mobilitas",
+  "Perawatan Diri": "Perawatan diri",
+  "Interaksi dengan Orang Lain": "Interaksi dengan orang lain",
+  "Aktivitas Sehari-hari": "Aktivitas sehari-hari",
+  "Partisipasi": "Partisipasi",
+};
+
+/* Bar komposisi abstrak: jumlah indikator per level, tanpa angka/legenda */
+function BarDistribusi({ counts, height = 8 }: { counts: number[]; height?: number }) {
+  const total = counts.reduce((a, b) => a + b, 0) || 1;
+  return (
+    <div className="flex items-center" style={{ gap: 3, marginTop: 6, height }}>
+      {counts.map((c, i) =>
+        c > 0 ? (
+          <span key={i} style={{ flex: c / total, height, borderRadius: 99, background: WARNA_LEVEL[i] }} />
+        ) : null
+      )}
+    </div>
+  );
+}
+
+/* Kartu pintu masuk: "Lihat perkembangan ›" */
+function KartuMasukPerkembangan({ nama, data, onLihat }: {
+  nama: string; data?: PeriodePerkembangan; onLihat: () => void;
+}) {
+  return (
+    <div style={{ background: CARD, border: `1px solid ${BDR}` }} className="rounded-2xl p-4">
+      <div className="flex items-center gap-2.5 mb-2">
+        <span className="flex items-center justify-center flex-shrink-0"
+          style={{ width: 34, height: 34, borderRadius: 12, background: "#E4F1E9", fontSize: 16 }}>🌱</span>
+        <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>Perkembangan {nama}</p>
+      </div>
+      <p className="text-xs leading-relaxed mb-3" style={{ color: MUTED }}>
+        {data
+          ? `Ada beberapa perubahan pada kemampuan ${nama} sejak periode sebelumnya. ${data.perubahan.kategori} menunjukkan perubahan paling terlihat.`
+          : `Belum ada riwayat perkembangan untuk ${nama}. Perbandingan akan muncul mulai periode berikutnya.`}
+      </p>
+      <button onClick={onLihat}
+        className="w-full flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
+        style={{ background: "#E7F2EB", color: T, fontFamily: IPS, fontSize: 13, fontWeight: 700, padding: "11px 16px", borderRadius: 14, border: "none", cursor: "pointer" }}>
+        Lihat perkembangan <ChevronRight size={14} />
+      </button>
+    </div>
+  );
+}
+
+/* Halaman "Perkembangan {nama}" — screen riwayat-perkembangan */
+export function PerkembanganScreen({ onBack, child, onPilihAspek }: {
+  onBack: () => void; child: Student | null; onPilihAspek: (k: FungsionalKategori) => void;
+}) {
+  const nama = child ? child.name.split(" ")[0] : "";
+  const data = child ? seedPerkembangan[child.id] : undefined;
+  const [periode, setPeriode] = useState(data?.label ?? "");
+  const [bukaPeriode, setBukaPeriode] = useState(false);
+  useEffect(() => {
+    if (data) setPeriode(data.label);
+    setBukaPeriode(false);
+  }, [data?.label]);
+
+  if (!data) {
     return (
-      <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-        <p className="font-bold text-sm mb-1" style={{fontFamily:PJS,color:TEXT}}>Perkembangan Kemandirian</p>
-        <p className="text-xs" style={{color:MUTED}}>Ini asesmen pertama. Perbandingan akan muncul mulai periode berikutnya.</p>
+      <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+        <TBar title={`Perkembangan ${nama}`} onBack={onBack} />
+        <div className="px-4 pt-4 pb-6">
+          <div style={{ background: CARD, border: `1px dashed ${BDR}` }} className="rounded-2xl px-4 py-6 text-center">
+            <p className="font-bold text-sm mb-1" style={{ fontFamily: PJS, color: TEXT }}>Belum ada data perkembangan</p>
+            <p className="text-xs leading-relaxed" style={{ color: MUTED }}>
+              Riwayat perkembangan {nama} akan muncul setelah guru menyelesaikan asesmen pada periode berikutnya.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const sebelum = riwayat[riwayat.length - 2].skorFungsional;
-  const sekarang = riwayat[riwayat.length - 1].skorFungsional;
-
-  const deltas = FUNGSIONAL_KATEGORI
-    .map(domain => ({
-      domain,
-      delta: (sekarang[domain] ?? 0) - (sebelum[domain] ?? 0),
-      tersedia: sekarang[domain] !== null && sebelum[domain] !== null,
-    }))
-    .filter(d => d.tersedia);
-
-  // Aturan: selisih <10 poin = "relatif stabil", bukan naik/turun
-  const berkembang = deltas.filter(d => d.delta >= 10).sort((a,b)=>b.delta-a.delta);
-  const stabil = deltas.filter(d => Math.abs(d.delta) < 10);
+  const skala = (v: number) => SKALA_FUNGSIONAL.find(s => s.v === v) ?? SKALA_FUNGSIONAL[1];
+  const p = data.perubahan;
 
   return (
-    <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-      <p className="font-bold text-sm mb-3" style={{fontFamily:PJS,color:TEXT}}>Perkembangan Kemandirian</p>
-      
-      {berkembang.length > 0 && (
-        <div className="mb-3">
-          <p className="text-xs font-semibold mb-1.5" style={{color:"#2E7A5C"}}>Yang berkembang sejak periode lalu</p>
-          {berkembang.map(d => (
-            <div key={d.domain} className="flex justify-between text-sm py-1">
-              <span style={{color:TEXT}}>↑ {d.domain}</span>
-              <span className="font-semibold" style={{color:"#2E7A5C"}}>+{d.delta} poin</span>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+      <TBar title={`Perkembangan ${nama}`} onBack={onBack} />
+      <div className="px-4 pt-4 pb-6 space-y-3">
 
-      {stabil.length > 0 && (
+        {/* Pill periode + dropdown */}
         <div>
-          <p className="text-xs font-semibold mb-1.5" style={{color:MUTED}}>Yang masih perlu dipantau</p>
-          {stabil.map(d => (
-            <div key={d.domain} className="flex justify-between text-sm py-1">
-              <span style={{color:TEXT}}>→ {d.domain}</span>
-              <span style={{color:MUTED}}>relatif stabil</span>
+          <button onClick={() => setBukaPeriode(v => !v)}
+            className="w-full flex items-center gap-2.5 px-4 py-3"
+            style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 14, cursor: "pointer", textAlign: "left" }}>
+            <CalendarDays size={16} style={{ color: T, flexShrink: 0 }} />
+            <span className="flex-1 text-sm font-semibold" style={{ color: TEXT, fontFamily: IPS }}>{periode}</span>
+            <ChevronDown size={16} style={{ color: MUTED, flexShrink: 0, transform: bukaPeriode ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} />
+          </button>
+          {bukaPeriode && (
+            <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 14, marginTop: 6, overflow: "hidden" }}>
+              {PERIODE_LIST.map((o, i) => {
+                const aktif = o.label === periode;
+                return (
+                  <button key={o.label} onClick={() => { setPeriode(o.label); setBukaPeriode(false); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-left"
+                    style={{
+                      background: aktif ? "#E7F2EB" : "transparent", border: "none",
+                      borderBottom: i < PERIODE_LIST.length - 1 ? `1px solid ${BDR}` : "none",
+                      cursor: "pointer",
+                    }}>
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-sm font-semibold" style={{ color: TEXT, fontFamily: IPS }}>{o.label}</span>
+                      <span className="block text-xs" style={{ color: MUTED }}>{o.semester}</span>
+                    </span>
+                    {aktif && <CheckCircle size={16} style={{ color: T, flexShrink: 0 }} />}
+                  </button>
+                );
+              })}
             </div>
-          ))}
+          )}
         </div>
-      )}
+
+        {/* Card: Perubahan yang terlihat */}
+        <div style={{ background: "#EEF6F0", border: `1px solid #D4E8DA` }} className="rounded-2xl p-4">
+          <div className="flex items-start gap-3 mb-3">
+            <span className="flex items-center justify-center flex-shrink-0"
+              style={{ width: 40, height: 40, borderRadius: "50%", background: "#D9EDDF", fontSize: 18 }}>🌱</span>
+            <div className="min-w-0">
+              <p className="font-bold text-sm" style={{ fontFamily: PJS, color: "#2E6B4F" }}>Perubahan yang terlihat</p>
+              <p className="text-xs leading-relaxed mt-0.5" style={{ color: MUTED }}>
+                Ada beberapa perubahan pada kemampuan {nama} sejak periode sebelumnya.
+              </p>
+            </div>
+          </div>
+          <div style={{ background: CARD, border: `1px solid #D4E8DA` }} className="rounded-xl p-3 flex items-start gap-2.5">
+            <span className="flex items-center justify-center flex-shrink-0"
+              style={{ width: 34, height: 34, borderRadius: "50%", background: FUNGSIONAL_META[p.kategori].bg, fontSize: 16 }}>
+              {FUNGSIONAL_META[p.kategori].icon}
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="text-sm font-bold" style={{ fontFamily: PJS, color: TEXT }}>{p.kategori}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, whiteSpace: "nowrap", flexShrink: 0 }}>
+                  <span className="font-bold" style={{ fontSize: 11, padding: "2px 8px", borderRadius: 99, background: skala(p.dari).bg, color: skala(p.dari).color }}>{skala(p.dari).l}</span>
+                  <span className="text-xs" style={{ color: MUTED }}>→</span>
+                  <span className="font-bold" style={{ fontSize: 11, padding: "2px 8px", borderRadius: 99, background: skala(p.ke).bg, color: skala(p.ke).color }}>{skala(p.ke).l}</span>
+                </span>
+              </div>
+              <p className="text-xs leading-relaxed mt-1.5" style={{ color: MUTED }}>{p.teks.replace(/{nama}/g, nama)}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Kondisi saat ini pada 6 aspek */}
+        <div className="pt-1">
+          <p style={{ fontFamily: PJS, fontSize: 17, fontWeight: 800, color: TEXT, margin: 0 }}>Kondisi saat ini pada 6 aspek</p>
+          <p className="text-xs mt-1" style={{ color: MUTED }}>Gambaran singkat kondisi {nama} berdasarkan hasil asesmen.</p>
+        </div>
+
+        {FUNGSIONAL_KATEGORI.map(k => {
+          const meta = FUNGSIONAL_META[k];
+          return (
+            <button key={k} onClick={() => onPilihAspek(k)}
+              className="w-full flex items-center gap-3 px-3.5 py-3 text-left active:scale-[0.99] transition-transform"
+              style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 16, cursor: "pointer" }}>
+              <span className="flex items-center justify-center flex-shrink-0"
+                style={{ width: 42, height: 42, borderRadius: "50%", background: meta.bg, fontSize: 19 }}>{meta.icon}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold" style={{ fontFamily: PJS, color: TEXT, margin: 0 }}>{NAMA_ASPEK[k]}</p>
+                <BarDistribusi counts={data.aspek[k].sesudah} />
+                <p className="text-xs mt-1.5" style={{ color: MUTED, margin: 0 }}>{KAPTION_ASPEK[k]}</p>
+              </div>
+              <ChevronRight size={16} style={{ color: MUTED, flexShrink: 0 }} />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* Halaman detail satu aspek (mis. Kognisi) — screen detail-aspek */
+export function AspekDetailScreen({ onBack, child, aspek, onLihatKemampuan }: {
+  onBack: () => void; child: Student | null; aspek: FungsionalKategori; onLihatKemampuan: () => void;
+}) {
+  const [bukaSaran, setBukaSaran] = useState(false);
+  const nama = child ? child.name.split(" ")[0] : "";
+  const data = child ? seedPerkembangan[child.id] : undefined;
+  const meta = FUNGSIONAL_META[aspek];
+  const jumlah = PROFIL_FUNGSIONAL.filter(i => i.kategori === aspek).length;
+
+  if (!data) {
+    return (
+      <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+        <TBar title={aspek} onBack={onBack} />
+        <div className="px-4 pt-4 pb-6">
+          <div style={{ background: CARD, border: `1px dashed ${BDR}` }} className="rounded-2xl px-4 py-6 text-center">
+            <p className="font-bold text-sm mb-1" style={{ fontFamily: PJS, color: TEXT }}>Belum ada data perkembangan</p>
+            <p className="text-xs leading-relaxed" style={{ color: MUTED }}>
+              Gambaran {aspek} akan muncul setelah guru menyelesaikan asesmen pada periode berikutnya.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const a = data.aspek[aspek];
+  const beban = (c: number[]) => c.reduce((s, v, i) => s + v * i, 0);
+  const delta = beban(a.sesudah) - beban(a.sebelum);
+  const teksPerubahan = delta > 0
+    ? "Beberapa kemampuan kini dapat dilakukan dengan bantuan yang lebih sedikit."
+    : delta === 0
+      ? "Gambaran kemampuan saat ini mirip dengan periode sebelumnya."
+      : "Beberapa kemampuan kini membutuhkan lebih banyak pendampingan.";
+  const saran = SARAN_RUMAH[aspek].map(s => s.replace(/{nama}/g, nama));
+
+  return (
+    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+      <TBar title={aspek} onBack={onBack} right={
+        <span className="font-bold" style={{ fontSize: 11, padding: "4px 10px", borderRadius: 99, background: SEC, color: T, whiteSpace: "nowrap" }}>
+          {jumlah} indikator
+        </span>
+      } />
+      <div className="px-4 pt-4 pb-6 space-y-3">
+
+        {/* Pengantar aspek */}
+        <div className="flex items-center gap-3 p-4" style={{ background: meta.bg, borderRadius: 16 }}>
+          <span className="flex items-center justify-center flex-shrink-0"
+            style={{ width: 46, height: 46, borderRadius: "50%", background: "#FFFFFF", fontSize: 22 }}>{meta.icon}</span>
+          <div className="min-w-0">
+            <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT, margin: 0 }}>{aspek}</p>
+            <p className="text-xs leading-relaxed mt-0.5" style={{ color: MUTED }}>{meta.desc}</p>
+          </div>
+        </div>
+
+        {/* Gambaran kondisi saat ini */}
+        <div style={{ background: CARD, border: `1px solid ${BDR}` }} className="rounded-2xl p-4">
+          <p className="font-bold text-sm mb-3" style={{ fontFamily: PJS, color: TEXT }}>Gambaran kondisi saat ini</p>
+          <BarDistribusi counts={a.sesudah} height={14} />
+          <div className="flex items-start mt-3">
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
+                <span className="font-bold"
+                  style={{ fontSize: 11, padding: "3px 8px", borderRadius: 99, background: `${WARNA_LEVEL[i]}66`, color: WARNA_LEVEL_TEKS[i], whiteSpace: "nowrap" }}>
+                  {SKALA_FUNGSIONAL[i + 1].l}
+                </span>
+                <span className="font-bold" style={{ fontSize: 15, color: WARNA_LEVEL_TEKS[i] }}>{a.sesudah[i]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Perubahan dari periode sebelumnya */}
+        <div style={{ background: "#EEF6F0", border: `1px solid #D4E8DA` }} className="rounded-2xl p-4 flex items-start gap-3">
+          <span className="flex items-center justify-center flex-shrink-0"
+            style={{ width: 36, height: 36, borderRadius: "50%", background: "#D9EDDF", fontSize: 16 }}>🌱</span>
+          <div className="min-w-0">
+            <p className="font-bold text-sm" style={{ fontFamily: PJS, color: "#2E6B4F", margin: 0 }}>
+              {delta !== 0 ? "Ada perubahan" : "Belum ada perubahan yang terlihat"}
+            </p>
+            <p className="text-xs leading-relaxed mt-1" style={{ color: MUTED }}>{teksPerubahan}</p>
+          </div>
+        </div>
+
+        {/* Yang bisa dilakukan di rumah */}
+        <div style={{ background: CARD, border: `1px solid ${BDR}` }} className="rounded-2xl p-4">
+          <div className="flex items-start gap-3">
+            <span className="flex items-center justify-center flex-shrink-0"
+              style={{ width: 36, height: 36, borderRadius: "50%", background: "#FEF3C7", fontSize: 16 }}>💡</span>
+            <div className="min-w-0">
+              <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT, margin: 0 }}>Yang bisa dilakukan di rumah</p>
+              <p className="text-xs leading-relaxed mt-1" style={{ color: MUTED }}>{saran[0]}</p>
+            </div>
+          </div>
+          {bukaSaran && (
+            <ul className="mt-3 space-y-2">
+              {saran.slice(1).map(s => (
+                <li key={s} className="flex items-start gap-2 text-xs leading-relaxed" style={{ color: MUTED }}>
+                  <span style={{ color: T }}>•</span>{s}
+                </li>
+              ))}
+            </ul>
+          )}
+          <button onClick={() => setBukaSaran(v => !v)}
+            className="w-full flex items-center justify-center gap-1.5 mt-3"
+            style={{ background: "transparent", color: T, fontFamily: IPS, fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer" }}>
+            {bukaSaran ? "Sembunyikan saran" : "Lihat saran lainnya"} <span>{bukaSaran ? "↑" : "→"}</span>
+          </button>
+        </div>
+
+        {/* Aksi bawah → daftar kemampuan yang diamati */}
+        <button onClick={onLihatKemampuan}
+          className="w-full flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
+          style={{ background: "#E7F2EB", color: T, fontFamily: IPS, fontSize: 14, fontWeight: 700, padding: "13px 16px", borderRadius: 16, border: "none", cursor: "pointer" }}>
+          Lihat kemampuan yang diamati <span>→</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* Halaman "Kemampuan yang Diamati" — screen kemampuan-diamati */
+export function KemampuanDiamatiScreen({ onBack, child, aspek }: {
+  onBack: () => void; child: Student | null; aspek: FungsionalKategori;
+}) {
+  const data = child ? seedPerkembangan[child.id] : undefined;
+  const meta = FUNGSIONAL_META[aspek];
+  const items = PROFIL_FUNGSIONAL.filter(i => i.kategori === aspek);
+  const namaPendek = (t: string) => t.split(" (")[0].replace(/\.$/, "");
+
+  if (!data) {
+    return (
+      <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+        <TBar title="Kemampuan yang Diamati" sub={NAMA_ASPEK[aspek]} onBack={onBack} />
+        <div className="px-4 pt-4 pb-6">
+          <div style={{ background: CARD, border: `1px dashed ${BDR}` }} className="rounded-2xl px-4 py-6 text-center">
+            <p className="font-bold text-sm mb-1" style={{ fontFamily: PJS, color: TEXT }}>Belum ada data kemampuan</p>
+            <p className="text-xs leading-relaxed" style={{ color: MUTED }}>
+              Daftar kemampuan akan muncul setelah guru menyelesaikan asesmen pada periode berikutnya.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Sebaran level per indikator mengikuti distribusi pada halaman aspek
+  const level: number[] = [];
+  data.aspek[aspek].sesudah.forEach((c, lvl) => {
+    for (let j = 0; j < c; j++) level.push(lvl);
+  });
+
+  return (
+    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+      <TBar title="Kemampuan yang Diamati" sub={`${NAMA_ASPEK[aspek]} · ${items.length} kemampuan yang diamati`} onBack={onBack} />
+      <div className="px-4 pt-4 pb-6 space-y-3">
+        <div>
+          <p className="text-sm leading-relaxed" style={{ color: TEXT, margin: 0 }}>
+            Berikut kemampuan yang diamati guru dalam aspek {NAMA_ASPEK[aspek].toLowerCase()}.
+          </p>
+          <p className="text-xs mt-1" style={{ color: MUTED, margin: 0 }}>Setiap kemampuan dapat memiliki kondisi yang berbeda.</p>
+        </div>
+
+        <div style={{ background: CARD, border: `1px solid ${BDR}` }} className="rounded-2xl overflow-hidden">
+          {items.map((it, idx) => {
+            const s = SKALA_FUNGSIONAL[(level[idx] ?? 1) + 1];
+            const terakhir = idx === items.length - 1;
+            return (
+              <div key={it.id} className="flex items-center gap-3 px-4 py-3"
+                style={{ borderBottom: terakhir ? "none" : `1px solid ${BDR}` }}>
+                <span className="flex items-center justify-center flex-shrink-0"
+                  style={{ width: 32, height: 32, borderRadius: 10, background: meta.bg, fontSize: 15 }}>{meta.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm" style={{ fontFamily: PJS, fontWeight: 600, color: TEXT, margin: 0 }}>{namaPendek(it.text)}</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="text-xs" style={{ color: MUTED }}>Saat ini:</span>
+                    <span className="font-bold" style={{ fontSize: 11, padding: "2px 8px", borderRadius: 99, background: s.bg, color: s.color }}>{s.l}</span>
+                  </div>
+                </div>
+                <ChevronRight size={16} style={{ color: MUTED, flexShrink: 0 }} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

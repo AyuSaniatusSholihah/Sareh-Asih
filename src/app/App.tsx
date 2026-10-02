@@ -5,8 +5,8 @@ import {
   T, A, BG, PJS, IPS, UI, type UICtx,
 } from "./components/ui-kit";
 import {
-  seedStudents, StudentsCtx, seedLaporan,
-  type Role, type Screen, type Student, type LaporanKirim,
+  seedStudents, StudentsCtx, seedLaporan, kodeOrtuBaru,
+  type Role, type Screen, type Student, type LaporanKirim, type FungsionalKategori,
 } from "./components/data";
 import {
   LandingScreen, RoleSelectScreen, GoogleLoginScreen, ParentCodeScreen,
@@ -18,7 +18,7 @@ import { ObservationScreen } from "./components/observation";
 import { KodeAksesScreen } from "./components/kode-manager";
 import {
   ParentDashboard, ParentDetailScreen, ParentCalendarScreen,
-  ParentTrainingScreen, LinkCodeModal, RiwayatLaporanScreen,
+  ParentTrainingScreen, LinkCodeModal, RiwayatLaporanScreen, PerkembanganScreen, AspekDetailScreen, KemampuanDiamatiScreen,
 } from "./components/parent";
 
 // Layout components
@@ -86,6 +86,7 @@ export default function App() {
 
   // Seleksi & UI global
   const [selectedStudentId, setSelectedStudentId] = useState<number>(1);
+  const [aspekTerpilih, setAspekTerpilih] = useState<FungsionalKategori>("Kognisi");
   const [fontSize, setFontSize] = useState(1);
   const [tts, setTts] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -169,7 +170,7 @@ export default function App() {
   const regenKode = (id: number) => setList(prev => prev.map(s => {
     if (s.id !== id) return s;
     const seri = Math.random().toString(36).slice(2, 6).toUpperCase();
-    return { ...s, kodeOrtu: `ABK-2026-${s.name.split(" ")[0].toUpperCase()}-${seri}` };
+    return { ...s, kodeOrtu: kodeOrtuBaru(s.name, s.kelas, 2026, seri) };
   }));
 
   // Laporan satu arah: guru mengirim, orang tua hanya membaca.
@@ -191,7 +192,7 @@ export default function App() {
   const buatKode = (ids: number[]) => setList(prev => prev.map(s => {
     if (!ids.includes(s.id)) return s;
     const seri = Math.random().toString(36).slice(2, 6).toUpperCase();
-    return { ...s, kodeOrtu: `ABK-2026-${s.name.split(" ")[0].toUpperCase()}-${seri}` };
+    return { ...s, kodeOrtu: kodeOrtuBaru(s.name, s.kelas, 2026, seri) };
   }));
 
   const hapusKode = (ids: number[]) =>
@@ -293,7 +294,10 @@ export default function App() {
 
       case "parent-dashboard": return <ParentDashboard go={go} child={child} namaOrtu={namaOrtu} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} />;
       case "parent-detail": return <ParentDetailScreen onBack={goBack} child={child} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} onBaca={tandaiDibaca} onLihatRiwayat={() => go("riwayat-laporan")} go={go} />;
-      case "riwayat-laporan": return <RiwayatLaporanScreen onBack={() => go("parent-detail")} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} namaAnak={child ? child.name.split(" ")[0] : ""} />;
+      case "riwayat-laporan": return <RiwayatLaporanScreen onBack={goBack} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} namaAnak={child ? child.name.split(" ")[0] : ""} />;
+      case "riwayat-perkembangan": return <PerkembanganScreen onBack={goBack} child={child} onPilihAspek={(k) => { setAspekTerpilih(k); go("detail-aspek"); }} />;
+      case "detail-aspek": return <AspekDetailScreen onBack={goBack} child={child} aspek={aspekTerpilih} onLihatKemampuan={() => go("kemampuan-diamati")} />;
+      case "kemampuan-diamati": return <KemampuanDiamatiScreen onBack={goBack} child={child} aspek={aspekTerpilih} />;
       case "parent-calendar": return <ParentCalendarScreen linked={!!child} sekolah={guru.sekolah} onOpenCode={() => setShowLinkCode(true)} go={go} />;
       case "parent-training": return <ParentTrainingScreen go={go} />;
       default: return null;
@@ -427,7 +431,7 @@ export default function App() {
                         teacher: guru.nama,
                         hasObs: false,
                         comps: [],
-                        kodeOrtu: `ABK-2026-${s.name.trim().split(" ")[0].toUpperCase()}`,
+                        kodeOrtu: kodeOrtuBaru(s.name, s.kelas),
                         caraBelajar: s.caraBelajar || "",
                         komunikasi: s.komunikasi || "",
                         motorik: s.motorik || "",

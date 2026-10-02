@@ -8,7 +8,7 @@ import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM,
   Field, SelectField,
 } from "./ui-kit";
-import { ABK_OPTIONS, CARA_BELAJAR_OPTIONS, type Student } from "./data";
+import { ABK_OPTIONS, CARA_BELAJAR_OPTIONS, kodeOrtuBaru, type Student } from "./data";
 import { MOCK_DB_SEKOLAH } from "./auth/tambah-siswa";
 import { cleanClassName } from "./auth/profil-sekolah";
 
@@ -161,7 +161,7 @@ export function AddStudentSheet({
       rentang: form.rentang,
       minat: form.minat,
       terapi: form.terapi,
-      kodeOrtu: `ABK-2026-${form.nama.trim().split(" ")[0].toUpperCase()}`,
+      kodeOrtu: kodeOrtuBaru(form.nama, form.kelas || kelasOptions[0] || "Umum"),
       tanggalLahir: form.tanggalLahir,
       nisn: form.nisn,
       alamat: form.alamat,
@@ -275,7 +275,7 @@ export function AddStudentSheet({
         rentang: "15 menit",
         minat: "Menggambar",
         terapi: "",
-        kodeOrtu: `ABK-2026-${s.nama.trim().split(" ")[0].toUpperCase()}`,
+        kodeOrtu: kodeOrtuBaru(s.nama, targetKelas),
       });
     });
     setLastName(`${valid.length} Siswa (Kelas ${targetKelas})`);
@@ -323,7 +323,7 @@ export function AddStudentSheet({
         rentang: "15 menit",
         minat: "Menggambar",
         terapi: "",
-        kodeOrtu: `ABK-2026-${s.nama.trim().split(" ")[0].toUpperCase()}`,
+        kodeOrtu: kodeOrtuBaru(s.nama, s.kelasName),
       });
     });
 

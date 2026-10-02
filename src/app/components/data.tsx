@@ -14,7 +14,7 @@ export type Screen =
   | "report"
   | "parent-dashboard" | "parent-detail"
   | "parent-calendar" | "parent-training"
-  | "riwayat-laporan";
+  | "riwayat-laporan" | "riwayat-perkembangan" | "detail-aspek" | "kemampuan-diamati";
 
 export interface Student {
   id:number; name:string; abk:string; kelas:string; age:number; emoji:string;
@@ -35,15 +35,23 @@ export interface Student {
 }
 
 // ─── Seed data ───────────────────────────────────────────────────────
+// Kode akses orang tua: format <KELAS>-<NAMA>-<TAHUN> (contoh: VIIA-RAFI-2026)
+export const kodeOrtuBaru = (nama: string, kelas: string, tahun: string | number = 2026, seri?: string) => {
+  const kepala = (kelas.trim() || "KLS").replace(/\s+/g, "").toUpperCase();
+  const anak = (nama.trim().split(" ")[0] || "SISWA").toUpperCase();
+  return `${kepala}-${anak}-${tahun}${seri ? `-${seri}` : ""}`;
+};
+export const KODE_ORTU_REGEX = /^[A-Z0-9]+-[A-Z]+-\d{4}(-[A-Z0-9]+)?$/;
+
 export const seedStudents: Student[] = [
-  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","LKSN Diksus"],  caraBelajar:"Visual",                kodeOrtu:"ABK-2025-RAFI",  tanggalLahir:"12 Maret 2013", nisn:"0012345601", alamat:"Jl. Merpati No. 5, Surakarta", statusOrtu:"Kandung", namaOrtu:"Ibu Ratna" },
-  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-NISA",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
-  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, comps:[],                            caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-ARGA",  tanggalLahir:"20 Nov 2014",   nisn:"0012345603", alamat:"Jl. Dahlia No. 8, Depok",     statusOrtu:"Yatim",   namaOrtu:"Ibu Sinta" },
-  { id:4, name:"Dina Maharani",  abk:"Tunanetra",   kelas:"IX C",   age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-DINA",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
-  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, comps:["FLS3N PDBK"],                caraBelajar:"Visual",                kodeOrtu:"ABK-2025-BUDI",  tanggalLahir:"15 Agu 2013",   nisn:"0012345605", alamat:"Jl. Anggrek No. 1, Solo",     statusOrtu:"Piatu",   namaOrtu:"Bapak Joko" },
-  { id:6, name:"Maya Dewi",      abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"ABK-2025-MAYA",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
-  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"IX A",   age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  comps:["LKSN Diksus"],               caraBelajar:"Visual & Kinestetik",   kodeOrtu:"ABK-2025-TONI",  tanggalLahir:"30 Jan 2011",   nisn:"0012345607", alamat:"Jl. Flamboyan No. 7, Jogja",  statusOrtu:"Kandung", namaOrtu:"Bapak Rudi" },
-  { id:8, name:"Sari Indah",     abk:"Tunarungu",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
+  { id:1, name:"Rafi Pratama",   abk:"Tunanetra",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","LKSN Diksus"],  caraBelajar:"Visual",                kodeOrtu:"VIIA-RAFI-2026",  tanggalLahir:"12 Maret 2013", nisn:"0012345601", alamat:"Jl. Merpati No. 5, Surakarta", statusOrtu:"Kandung", namaOrtu:"Ibu Ratna" },
+  { id:2, name:"Nisa Aulia",     abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIIB-NISA-2026",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
+  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, comps:[],                            caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-ARGA-2026",  tanggalLahir:"20 Nov 2014",   nisn:"0012345603", alamat:"Jl. Dahlia No. 8, Depok",     statusOrtu:"Yatim",   namaOrtu:"Ibu Sinta" },
+  { id:4, name:"Dina Maharani",  abk:"Tunanetra",   kelas:"IX C",   age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"IXC-DINA-2026",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
+  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, comps:["FLS3N PDBK"],                caraBelajar:"Visual",                kodeOrtu:"VIIA-BUDI-2026",  tanggalLahir:"15 Agu 2013",   nisn:"0012345605", alamat:"Jl. Anggrek No. 1, Solo",     statusOrtu:"Piatu",   namaOrtu:"Bapak Joko" },
+  { id:6, name:"Maya Dewi",      abk:"Tunarungu",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIIB-MAYA-2026",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
+  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"IX A",   age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  comps:["LKSN Diksus"],               caraBelajar:"Visual & Kinestetik",   kodeOrtu:"IXA-TONI-2026",  tanggalLahir:"30 Jan 2011",   nisn:"0012345607", alamat:"Jl. Flamboyan No. 7, Jogja",  statusOrtu:"Kandung", namaOrtu:"Bapak Rudi" },
+  { id:8, name:"Sari Indah",     abk:"Tunarungu",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIIA-SARI-2026",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
 ];
 
 // ─── Contoh foto profil siswa (dummy dari Pexels, untuk seed) ─────────
@@ -379,6 +387,91 @@ export const seedRiwayatAsesmen: Record<number, AsesmenPeriode[]> = {
       skorFungsional:{Kognisi:65,Mobilitas:73,"Perawatan Diri":70,"Interaksi dengan Orang Lain":68,"Aktivitas Sehari-hari":60,Partisipasi:58},
       skorRiasec:{Realistic:35,Investigative:42,Artistic:85,Social:65,Enterprising:30,Conventional:45} },
   ],
+};
+
+// ─── Perkembangan anak — overview "Tren & Perkembangan" (tab Anak) ────
+// 4 warna pastel per level, urutan: Belum, Dibantu, Sebagian, Mandiri
+export const WARNA_LEVEL = ["#F2B18F", "#F7DEA9", "#B5DCC4", "#AFCDF2"];
+// Warna teks yang tetap terbaca di atas warna pastel tersebut
+export const WARNA_LEVEL_TEKS = ["#C9704F", "#A8801F", "#2E7D57", "#4A72CC"];
+
+export const KAPTION_ASPEK: Record<FungsionalKategori, string> = {
+  "Kognisi": "Lebih banyak membutuhkan bantuan.",
+  "Mobilitas": "Sebagian besar sudah mampu.",
+  "Perawatan Diri": "Mayoritas sudah mandiri.",
+  "Interaksi dengan Orang Lain": "Kemampuan cukup beragam.",
+  "Aktivitas Sehari-hari": "Masih membutuhkan bantuan.",
+  "Partisipasi": "Banyak yang sudah mampu.",
+};
+
+// Saran yang bisa dilakukan orang tua di rumah — {nama} diganti nama anak
+export const SARAN_RUMAH: Record<FungsionalKategori, string[]> = {
+  "Kognisi": [
+    "Berikan instruksi sederhana 1–2 langkah terlebih dahulu dan beri waktu {nama} untuk mencoba.",
+    "Gunakan permainan sederhana seperti menyusun puzzle atau mencocokkan gambar untuk melatih ingatan.",
+    "Ulangi kegiatan yang sudah dikuasai secara berkala agar {nama} tetap percaya diri.",
+  ],
+  "Mobilitas": [
+    "Sediakan jalur yang aman dan bebas barang agar {nama} bisa bergerak tanpa halangan.",
+    "Dorong {nama} berpindah tempat dengan caranya sendiri, dampingi dari dekat bila diperlukan.",
+    "Beri waktu tambahan saat berpindah kegiatan agar {nama} tidak terburu-buru.",
+  ],
+  "Perawatan Diri": [
+    "Biarkan {nama} mencoba mandiri lebih dulu, bantu hanya ketika benar-benar diperlukan.",
+    "Sediakan alat makan atau pakaian yang mudah dipegang dan dipakai sendiri.",
+    "Jaga rutinitas yang sama setiap hari supaya {nama} mudah mengingat urutannya.",
+  ],
+  "Interaksi dengan Orang Lain": [
+    "Mulai percakapan singkat dengan pertanyaan sederhana dan beri waktu {nama} untuk menjawab.",
+    "Ajak {nama} bermain berpasangan dengan teman yang sabar dan suportif.",
+    "Puji setiap usaha {nama} dalam menyapa atau menjawab, sekalipun dengan singkat.",
+  ],
+  "Aktivitas Sehari-hari": [
+    "Pecah tugas menjadi langkah kecil dan tunjukkan satu per satu kepada {nama}.",
+    "Sediakan tempat alat belajar yang selalu mudah dijangkau {nama}.",
+    "Gunakan pengingat visual seperti jadwal bergambar untuk rutinitas harian.",
+  ],
+  "Partisipasi": [
+    "Libatkan {nama} dalam kegiatan kelompok kecil dengan peran yang jelas.",
+    "Beri kesempatan {nama} memilih kegiatan yang ingin diikutinya terlebih dahulu.",
+    "Diskusikan bersama guru bila ada hambatan akses yang menghalangi {nama} ikut kegiatan.",
+  ],
+};
+
+// Opsi periode untuk dropdown "Perkembangan {nama}"
+export const PERIODE_LIST = [
+  { label: "Juli – Desember 2026",  semester: "Semester Ganjil" },
+  { label: "Januari – Juni 2026",    semester: "Semester Genap" },
+  { label: "Juli – Desember 2025",  semester: "Semester Ganjil" },
+  { label: "Januari – Juni 2025",    semester: "Semester Genap" },
+  { label: "Juli – Desember 2024",  semester: "Semester Ganjil" },
+];
+
+// Jumlah indikator per level [Belum, Dibantu, Sebagian, Mandiri] — total = 12
+export interface AspekPerkembangan { sebelum: number[]; sesudah: number[] }
+
+export interface PeriodePerkembangan {
+  label: string;
+  aspek: Record<FungsionalKategori, AspekPerkembangan>;
+  perubahan: { kategori: FungsionalKategori; dari: number; ke: number; teks: string };
+}
+
+export const seedPerkembangan: Record<number, PeriodePerkembangan> = {
+  1: {
+    label: "Juli – Desember 2026",
+    aspek: {
+      "Kognisi":                { sebelum:[4,4,2,2], sesudah:[2,5,4,1] },
+      "Mobilitas":              { sebelum:[1,3,5,3], sesudah:[0,3,5,4] },
+      "Perawatan Diri":         { sebelum:[1,2,4,5], sesudah:[0,2,3,7] },
+      "Interaksi dengan Orang Lain": { sebelum:[2,5,3,2], sesudah:[2,4,3,3] },
+      "Aktivitas Sehari-hari":  { sebelum:[3,5,2,2], sesudah:[2,5,3,2] },
+      "Partisipasi":            { sebelum:[1,3,4,4], sesudah:[0,2,5,5] },
+    },
+    perubahan: {
+      kategori: "Interaksi dengan Orang Lain", dari: 1, ke: 2,
+      teks: "{nama} mulai dapat berinteraksi dengan bantuan yang lebih sedikit.",
+    },
+  },
 };
 
 // ─── Kelompok belajar ────────────────────────────────────────────────

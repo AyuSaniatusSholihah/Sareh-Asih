@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, CheckCircle, Hash, XCircle, Key, Info } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, PJS, IPS, DMM } from "../ui-kit";
+import { KODE_ORTU_REGEX } from "../data";
 
 // ─── ORANG TUA: Kode akses (dengan opsi lewati) ───────────────────────
 export function ParentCodeScreen({
@@ -23,7 +24,7 @@ export function ParentCodeScreen({
       setErr("Kode akses belum diisi.");
       return;
     }
-    if (!/^ABK-\d{4}-[A-Z]+$/.test(k)) {
+    if (!KODE_ORTU_REGEX.test(k)) {
       setErr("Kode tidak valid atau sudah kedaluwarsa. Hubungi guru pendamping anak Anda.");
       return;
     }
@@ -61,7 +62,7 @@ export function ParentCodeScreen({
             <div className="relative">
               <Hash size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: MUTED }} />
               <input value={kode} onChange={e => { setKode(e.target.value); setErr(""); }}
-                placeholder="ABK-2025-RAFI"
+                placeholder="VIIA-RAFI-2026"
                 style={{ width: "100%", border: `1.5px solid ${err ? "#B91C1C" : BDR}`, borderRadius: 12, padding: "12px 12px 12px 36px", fontSize: 15, color: TEXT, fontFamily: DMM, background: BG, outline: "none", minHeight: 50, letterSpacing: "0.08em", textTransform: "uppercase" }} />
             </div>
             {err && (
@@ -78,7 +79,7 @@ export function ParentCodeScreen({
             <Key size={15} />Hubungkan Sekarang
           </button>
 
-          <p className="text-xs text-center" style={{ color: MUTED }}>Contoh kode aktif: <strong style={{ fontFamily: DMM, color: T }}>ABK-2025-RAFI</strong></p>
+          <p className="text-xs text-center" style={{ color: MUTED }}>Contoh kode aktif: <strong style={{ fontFamily: DMM, color: T }}>VIIA-RAFI-2026</strong></p>
         </div>
 
         {/* Opsi masuk tanpa kode */}
