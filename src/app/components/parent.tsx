@@ -3,7 +3,7 @@ import {
   Bell, Users, MessageSquare, Sparkles, Lock, Info, Heart, Star,
   Key, Hash, XCircle, ChevronRight, ChevronLeft, MapPin, Phone,
   Clock, Wallet, CalendarDays, CheckCircle, Search, FileText, ChevronDown, X,
-  Palette, Target, BookOpen, Settings, TrendingUp, Lightbulb, Laptop,
+  Palette, Target, BookOpen, Settings, TrendingUp, Lightbulb, Laptop, Plus,
 } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar, useUI,
@@ -19,17 +19,46 @@ import {
 import { ProfilFungsionalRadar, ProfilKecenderunganBar, getMockJawaban, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
 
 // ─── Modal: masukkan kode akses dari dalam aplikasi ───────────────────
-export function LinkCodeModal({onClose,onLinked,students}:{onClose:()=>void;onLinked:(s:Student)=>void;students:Student[]}) {
+export function LinkCodeModal({onClose,onLinked,students,linkedIds=[]}:{onClose:()=>void;onLinked:(s:Student)=>void;students:Student[];linkedIds?:number[]}) {
   const [kode, setKode] = useState("");
   const [err,  setErr]  = useState("");
+  const [sukses, setSukses] = useState<Student | null>(null);
 
   const submit = () => {
     if (!kode.trim()) { setErr("Masukkan kode akses terlebih dahulu"); return; }
     const k = kode.trim().toUpperCase();
     const found = students.find(s=>s.kodeOrtu?.toUpperCase()===k);
     if (!found) { setErr("Kode tidak dikenali. Pastikan kode sesuai yang diberikan guru pendamping."); return; }
-    onLinked(found);
+    if (linkedIds.includes(found.id)) { setErr(`${found.name.split(" ")[0]} sudah ditambahkan ke akun Anda.`); return; }
+    setSukses(found);
   };
+
+  // ── Tampilan setelah berhasil: "Rafi berhasil ditambahkan!" ──
+  if (sukses) {
+    const nama = sukses.name.split(" ")[0];
+    return (
+      <div style={{position:"absolute",inset:0,zIndex:70,display:"flex",flexDirection:"column",justifyContent:"flex-end"}} onClick={onClose}>
+        <div style={{position:"absolute",inset:0,background:"rgba(46,62,53,0.5)"}}/>
+        <div onClick={e=>e.stopPropagation()} style={{position:"relative",background:CARD,borderRadius:"26px 26px 0 0",padding:"14px 20px 28px",textAlign:"center"}}>
+          <div className="flex justify-center mb-4"><div style={{width:36,height:4,borderRadius:2,background:"#D1D5DB"}}/></div>
+          <div className="flex flex-col items-center">
+            <div style={{width:64,height:64,background:SEC,borderRadius:"50%"}} className="flex items-center justify-center mb-3">
+              <CheckCircle size={30} style={{color:T}}/>
+            </div>
+            <p className="font-bold" style={{fontFamily:PJS,fontSize:18,color:TEXT,margin:"0 0 6px"}}>{nama} berhasil ditambahkan!</p>
+            <p className="text-xs leading-relaxed" style={{color:MUTED,fontFamily:IPS,margin:"0 0 18px"}}>
+              Anda dapat melihat perkembangan {nama} dari Beranda, dan menambahkan anak lain kapan saja.
+            </p>
+            <button onClick={()=>onLinked(sukses)} style={{width:"100%",background:A,color:"#fff",fontFamily:IPS,minHeight:50}}
+              className="rounded-2xl text-sm font-bold">Masuk ke Beranda</button>
+            <button onClick={()=>{ setSukses(null); setKode(""); }}
+              style={{width:"100%",color:T,fontFamily:IPS,minHeight:42,background:"transparent"}}
+              className="text-xs font-semibold mt-1">Tambah anak lain</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{position:"absolute",inset:0,zIndex:70,display:"flex",flexDirection:"column",justifyContent:"flex-end"}} onClick={onClose}>
@@ -129,14 +158,72 @@ function FotoAnak({ child }: { child: Student }) {
   );
 }
 
-export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] }: {
-  go: (s: Screen) => void; child: Student | null; namaOrtu: string; onOpenCode: () => void;
+// ─── Sheet: pilih anak (satu akun orang tua bisa banyak anak) ─────────
+function PilihAnakSheet({ daftar, activeId, onPilih, onTambah, onClose }: {
+  daftar: Student[]; activeId: number | null;
+  onPilih: (id: number) => void; onTambah: () => void; onClose: () => void;
+}) {
+  return (
+    <div style={{ position: "absolute", inset: 0, zIndex: 65, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} onClick={onClose}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.5)" }} />
+      <div onClick={e => e.stopPropagation()} style={{ position: "relative", background: CARD, borderRadius: "26px 26px 0 0", padding: "14px 20px 28px" }}>
+        <div className="flex items-center justify-center mb-3" style={{ position: "relative" }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: "#D1D5DB" }} />
+          <button onClick={onClose}
+            style={{ position: "absolute", right: 0, top: -4, width: 30, height: 30, borderRadius: "50%", background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748B" }}
+            className="active:scale-90 transition-transform" title="Tutup">
+            <X size={16} strokeWidth={2.4} />
+          </button>
+        </div>
+
+        <p className="font-bold" style={{ fontFamily: PJS, fontSize: 16, color: TEXT, margin: "0 0 10px" }}>Pilih anak</p>
+
+        <div className="flex flex-col gap-1">
+          {daftar.map(s => {
+            const aktif = s.id === activeId;
+            return (
+              <button key={s.id} onClick={() => onPilih(s.id)}
+                className="flex items-center gap-3 w-full"
+                style={{
+                  background: aktif ? SEC : "transparent",
+                  border: `1.5px solid ${aktif ? T : "transparent"}`,
+                  borderRadius: 16, padding: "10px 12px", cursor: "pointer", textAlign: "left",
+                }}>
+                <span style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${aktif ? T : BDR}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {aktif && <span style={{ width: 8, height: 8, borderRadius: "50%", background: T }} />}
+                </span>
+                <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1 }}>{s.emoji}</span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontFamily: PJS, fontSize: 14, fontWeight: 800, color: TEXT, lineHeight: 1.25 }}>{s.name.split(" ")[0]}</span>
+                  <span style={{ display: "block", fontFamily: IPS, fontSize: 11.5, color: MUTED, marginTop: 1 }}>Kelas {s.kelas}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ height: 1, background: BDR, margin: "12px 0" }} />
+
+        <button onClick={onTambah}
+          className="flex items-center justify-center gap-2"
+          style={{ width: "100%", background: BG, border: `1.5px solid ${T}`, borderRadius: 14, minHeight: 46, color: T, fontFamily: PJS, fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>
+          <Plus size={16} /> Tambahkan anak
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, onOpenCode, laporan = [] }: {
+  go: (s: Screen) => void; child: Student | null; anakList: Student[]; onPilihAnak: (id: number) => void;
+  namaOrtu: string; onOpenCode: () => void;
   laporan: LaporanKirim[];
 }) {
   const upcoming = AGENDA.slice(0, 1);
   const latestLaporan = laporan.length > 0 ? laporan[laporan.length - 1] : null;
   const ibuName = namaOrtu.split(" ")[0];
   const { openSettings } = useUI();
+  const [pilihOpen, setPilihOpen] = useState(false);
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
@@ -211,9 +298,10 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
           <>
             {/* ── Kartu Profil Anak ── */}
             <div style={{ background: CARD, borderRadius: 20, padding: "18px 16px 16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
-              {/* Profile row */}
-              <button onClick={() => go("parent-detail")} className="flex items-center gap-3 w-full"
-                style={{ marginBottom: 14, background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left" }}>
+              {/* Profile row — pemilih anak */}
+              <button onClick={() => setPilihOpen(true)} className="flex items-center gap-3 w-full"
+                style={{ marginBottom: 14, background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left" }}
+                title="Pilih anak">
                 <FotoAnak child={child} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.25 }}>{child.name}</p>
@@ -221,7 +309,7 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
                     Kelas {child.kelas} · SLB Negeri 1
                   </p>
                 </div>
-                <ChevronRight size={18} style={{ color: MUTED, flexShrink: 0 }} />
+                <ChevronDown size={18} style={{ color: MUTED, flexShrink: 0 }} />
               </button>
 
               {/* Kecenderungan utama */}
@@ -587,6 +675,17 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
           </>
           );
         })()}
+
+        {/* Sheet pilih anak (multi-anak) */}
+        {pilihOpen && (
+          <PilihAnakSheet
+            daftar={anakList}
+            activeId={child ? child.id : null}
+            onPilih={(id) => { onPilihAnak(id); setPilihOpen(false); }}
+            onTambah={() => { setPilihOpen(false); onOpenCode(); }}
+            onClose={() => setPilihOpen(false)}
+          />
+        )}
       </div>
     </div>
   );
@@ -957,7 +1056,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
         <div style={{background:"#FFFFFF",padding:"14px 20px 12px",flexShrink:0}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
             <div style={{flex:1,minWidth:0}}>
-                <h1 style={{fontFamily:PJS,fontSize:22,fontWeight:800,color:TEXT,margin:0,lineHeight:1.15}}>Perkembangan Anak</h1>
+                <h1 style={{fontFamily:PJS,fontSize:22,fontWeight:800,color:TEXT,margin:0,lineHeight:1.15}}>Anak</h1>
               </div>
             <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0,marginTop:2}}>
               <button style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Cari">
@@ -998,7 +1097,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
       <div style={{background:"#FFFFFF",padding:"14px 20px 12px",flexShrink:0}}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
           <div style={{flex:1,minWidth:0}}>
-            <h1 style={{fontFamily:PJS,fontSize:22,fontWeight:800,color:TEXT,margin:0,lineHeight:1.15}}>Detail Perkembangan</h1>
+            <h1 style={{fontFamily:PJS,fontSize:22,fontWeight:800,color:TEXT,margin:0,lineHeight:1.15}}>Anak</h1>
             <p style={{fontFamily:IPS,fontSize:12.5,color:MUTED,margin:"2px 0 0",fontWeight:500}}>{child.name}</p>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0,marginTop:2}}>

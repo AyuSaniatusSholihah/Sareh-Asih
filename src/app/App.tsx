@@ -81,8 +81,16 @@ export default function App() {
   // Orang tua
   const [namaOrtu] = useState("Ani Rahmawati");
   const [childId, setChildId] = useState<number | null>(null);
+  const [childIds, setChildIds] = useState<number[]>([]); // semua anak yang terhubung
   const [showLinkCode, setShowLinkCode] = useState(false);
   const child = childId !== null ? (list.find(s => s.id === childId) ?? null) : null;
+  const anakTerkirim = list.filter(s => childIds.includes(s.id));
+
+  /** Tambahkan anak ke akun (tanpa duplikat) & jadikan anak aktif. */
+  const linkChild = (id: number) => {
+    setChildIds(prev => (prev.includes(id) ? prev : [...prev, id]));
+    setChildId(id);
+  };
 
   // Seleksi & UI global
   const [selectedStudentId, setSelectedStudentId] = useState<number>(1);
@@ -124,7 +132,7 @@ export default function App() {
   };
 
   const enterParent = (linkedId: number | null) => {
-    setRole("ortu"); setChildId(linkedId);
+    setRole("ortu"); setChildId(linkedId); setChildIds(linkedId ? [linkedId] : []);
     setScreen("parent-dashboard"); setTab("parent-dashboard");
     setShowOnboarding(true);
   };
@@ -134,6 +142,8 @@ export default function App() {
     setScreen("landing");
     setGuruSetup(null);
     setShowSettings(false);
+    setChildId(null);
+    setChildIds([]);
     setScreenHistory([]);
   };
 
@@ -142,12 +152,17 @@ export default function App() {
     setRole(r);
     setScreenHistory([]);
     if (r === "guru") { setGuruSetup(null); setShowOnboarding(false); goTab("dashboard"); }
-    else { setChildId(id => id ?? 1); goTab("parent-dashboard"); }
+    else {
+      const id = childId ?? 1;
+      setChildId(id);
+      setChildIds(prev => (prev.length ? prev : [id]));
+      goTab("parent-dashboard");
+    }
   };
 
   const logout = () => {
     setRole(null); setGuruSetup(null); setShowOnboarding(false);
-    setChildId(null); setScreen("landing"); setScreenHistory([]);
+    setChildId(null); setChildIds([]); setScreen("landing"); setScreenHistory([]);
   };
 
   const startObs = (id: number) => { setSelectedStudentId(id); go("observation"); };
@@ -241,8 +256,9 @@ export default function App() {
           onBack={() => go("google-login")}
           onLinked={(kode) => {
             const found = list.find(s => s.kodeOrtu?.toUpperCase() === kode);
-            enterParent(found ? found.id : 1);
+            return found ? { id: found.id, nama: found.name.split(" ")[0] } : null;
           }}
+          onEnter={(id) => enterParent(id)}
           onSkip={() => enterParent(null)}
         />
       );
@@ -292,7 +308,7 @@ export default function App() {
         />
       );
 
-      case "parent-dashboard": return <ParentDashboard go={go} child={child} namaOrtu={namaOrtu} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} />;
+      case "parent-dashboard": return <ParentDashboard go={go} child={child} anakList={anakTerkirim} onPilihAnak={setChildId} namaOrtu={namaOrtu} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} />;
       case "parent-detail": return <ParentDetailScreen onBack={goBack} child={child} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} onBaca={tandaiDibaca} onLihatRiwayat={() => go("riwayat-laporan")} go={go} />;
       case "riwayat-laporan": return <RiwayatLaporanScreen onBack={goBack} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} namaAnak={child ? child.name.split(" ")[0] : ""} />;
       case "riwayat-perkembangan": return <PerkembanganScreen onBack={goBack} child={child} onPilihAspek={(k) => { setAspekTerpilih(k); go("detail-aspek"); }} />;
@@ -378,8 +394,13 @@ export default function App() {
                 {showLinkCode && (
                   <LinkCodeModal
                     students={list}
+                    linkedIds={childIds}
                     onClose={() => setShowLinkCode(false)}
-                    onLinked={(s) => { setChildId(s.id); setShowLinkCode(false); goTab("parent-detail"); }}
+                    onLinked={(s) => {
+                      linkChild(s.id);
+                      setShowLinkCode(false);
+                      if (screen !== "parent-dashboard") goTab("parent-dashboard");
+                    }}
                   />
                 )}
 

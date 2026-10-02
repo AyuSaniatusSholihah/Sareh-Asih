@@ -7,16 +7,19 @@ import { KODE_ORTU_REGEX } from "../data";
 export function ParentCodeScreen({
   onBack,
   onLinked,
+  onEnter,
   onSkip,
   namaOrtu,
 }: {
   onBack: () => void;
-  onLinked: (kode: string) => void;
+  onLinked: (kode: string) => { id: number; nama: string } | null;
+  onEnter: (id: number) => void;
   onSkip: () => void;
   namaOrtu: string;
 }) {
   const [kode, setKode] = useState("");
   const [err, setErr] = useState("");
+  const [sukses, setSukses] = useState<{ id: number; nama: string } | null>(null);
 
   const submit = () => {
     const k = kode.trim().toUpperCase();
@@ -28,8 +31,42 @@ export function ParentCodeScreen({
       setErr("Kode tidak valid atau sudah kedaluwarsa. Hubungi guru pendamping anak Anda.");
       return;
     }
-    onLinked(k);
+    const hasil = onLinked(k);
+    if (!hasil) {
+      setErr("Kode tidak dikenali. Pastikan kode sesuai yang diberikan guru pendamping.");
+      return;
+    }
+    setSukses(hasil);
   };
+
+  // ── Tampilan setelah berhasil: "Rafi berhasil ditambahkan!" ──
+  if (sukses) {
+    return (
+      <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+        <div className="px-4 pt-2 pb-1">
+          <button onClick={onBack} style={{ minWidth: 44, minHeight: 44 }} className="flex items-center justify-center rounded-2xl">
+            <ArrowLeft size={20} style={{ color: TEXT }} />
+          </button>
+        </div>
+        <div className="px-5 pt-10 pb-8 flex flex-col items-center text-center">
+          <div style={{ width: 76, height: 76, background: SEC, borderRadius: "50%" }} className="flex items-center justify-center mb-4">
+            <CheckCircle size={36} style={{ color: T }} />
+          </div>
+          <h1 className="font-bold mb-2" style={{ fontFamily: PJS, fontSize: 21, color: TEXT }}>
+            {sukses.nama} berhasil ditambahkan!
+          </h1>
+          <p className="text-sm leading-relaxed mb-6" style={{ color: MUTED }}>
+            Anda dapat menambahkan anak lain setelah masuk ke Beranda.
+          </p>
+          <button onClick={() => onEnter(sukses.id)}
+            style={{ width: "100%", background: A, color: "#fff", fontFamily: IPS, minHeight: 50 }}
+            className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
+            Masuk ke Beranda
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
@@ -98,7 +135,7 @@ export function ParentCodeScreen({
         <div style={{ background: SEC, border: `1px solid rgba(91,122,104,0.2)` }} className="rounded-2xl p-3.5 flex items-start gap-2.5 mt-3">
           <Info size={14} style={{ color: T, flexShrink: 0, marginTop: 1 }} />
           <p className="text-xs leading-relaxed" style={{ color: T }}>
-            Tanpa kode, Anda tetap bisa membuka <strong>kalender event & lomba ABK</strong> serta <strong>info pelatihan dan terapi terdekat</strong>. Kode bisa dimasukkan kapan saja dari halaman Beranda.
+            Anda dapat <strong>menambahkan anak lain</strong> setelah masuk ke Beranda. Satu akun orang tua bisa terhubung ke banyak anak sekaligus.
           </p>
         </div>
       </div>
