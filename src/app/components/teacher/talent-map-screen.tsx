@@ -6,7 +6,7 @@ import {
 import {
   TEXT, MUTED, BDR, DEEP, A, PJS, IPS, DMM, useUI, BG,
 } from "../ui-kit";
-import { useStudents, type Screen, type Student } from "../data";
+import { useStudents, fotoSiswa, type Screen, type Student } from "../data";
 import { exportSpreadsheet } from "../export";
 
 type FilterStatus = "semua" | "perlu" | "terpetakan";
@@ -182,9 +182,17 @@ export function TalentMapScreen({
                     {classStudents.map(s => (
                       <div key={s.id} style={{ padding: "14px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, background: s.hasObs ? "#FFFFFF" : "rgba(251,241,239,0.35)" }}>
                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                          <div style={{ width: 42, height: 42, borderRadius: "50%", background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF", border: ("1.5px solid " + (s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)")), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            <User size={20} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
-                          </div>
+                          {fotoSiswa(s) ? (
+                            <img
+                              src={fotoSiswa(s)}
+                              alt={`Foto profil ${s.name}`}
+                              style={{ width: 42, height: 42, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: ("1.5px solid " + (s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)")) }}
+                            />
+                          ) : (
+                            <div style={{ width: 42, height: 42, borderRadius: "50%", background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF", border: ("1.5px solid " + (s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)")), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                              <User size={20} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
+                            </div>
+                          )}
                           <div className="min-w-0 flex-1">
                             <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: 0, lineHeight: 1.25 }} className="truncate">{s.name}</p>
                             <p style={{ color: MUTED, fontSize: 11, margin: "2px 0 0", fontFamily: IPS, fontWeight: 500 }} className="truncate">{s.abk}</p>
@@ -233,7 +241,11 @@ export function TalentMapScreen({
             <div style={{ background: "#FFFBEB", border: "1px solid rgba(217,119,6,0.2)", borderRadius: 14, padding: "10px 12px", margin: "12px 0 16px", maxHeight: 120, overflowY: "auto" }}>
               {unassessedInScope.slice(0, 5).map(s => (
                 <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 0", borderBottom: "1px solid rgba(217,119,6,0.08)" }}>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><User size={12} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} /></div>
+                  {fotoSiswa(s) ? (
+                    <img src={fotoSiswa(s)} alt="" style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                  ) : (
+                    <div style={{ width: 22, height: 22, borderRadius: "50%", background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><User size={12} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} /></div>
+                  )}
                   <span style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: "#92400E", flex: 1 }}>{s.name}</span>
                   <span style={{ fontFamily: IPS, fontSize: 10.5, color: "#B45309", flexShrink: 0 }}>{s.kelas}</span>
                 </div>

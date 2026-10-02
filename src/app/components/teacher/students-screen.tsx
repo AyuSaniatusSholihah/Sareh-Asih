@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, User, Settings, Plus, ArrowLeft, ChevronRight, CheckCircle, Clock, X } from "lucide-react";
 import { BG, MUTED, PJS, IPS, useUI } from "../ui-kit";
-import { useStudents, type Screen } from "../data";
+import { useStudents, fotoSiswa, type Screen } from "../data";
 import { type GuruProfile } from "../auth";
 import { cleanClassName } from "../auth/profil-sekolah";
 
@@ -126,9 +126,17 @@ export function StudentsScreen({
               style={{ background: "#FFFFFF", borderRadius: 20, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, boxShadow: "0 2px 10px rgba(91,122,104,0.06)", border: "1px solid rgba(91,122,104,0.10)", cursor: "pointer", position: "relative" }}
               className="active:scale-[0.99] transition-all hover:shadow-md"
             >
-              <div style={{ width: 44, height: 44, borderRadius: "50%", background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF", border: `1.5px solid ${s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <User size={21} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
-              </div>
+              {fotoSiswa(s) ? (
+                <img
+                  src={fotoSiswa(s)}
+                  alt={`Foto profil ${s.name}`}
+                  style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: `1.5px solid ${s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}` }}
+                />
+              ) : (
+                <div style={{ width: 44, height: 44, borderRadius: "50%", background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF", border: `1.5px solid ${s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <User size={21} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
+                </div>
+              )}
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <h3 style={{ fontFamily: PJS, fontSize: 15.5, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.25 }}>

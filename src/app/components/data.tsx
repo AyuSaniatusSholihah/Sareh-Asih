@@ -46,6 +46,21 @@ export const seedStudents: Student[] = [
   { id:8, name:"Sari Indah",     abk:"Tunarungu",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"ABK-2025-SARI",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
 ];
 
+// ─── Contoh foto profil siswa (dummy dari Pexels, untuk seed) ─────────
+export const FOTO_DUMMY: Record<number, string> = {
+  1: "https://images.pexels.com/photos/36998127/pexels-photo-36998127.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
+  2: "https://images.pexels.com/photos/8727434/pexels-photo-8727434.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
+  3: "https://images.pexels.com/photos/15024341/pexels-photo-15024341.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
+  4: "https://images.pexels.com/photos/13010404/pexels-photo-13010404.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
+  5: "https://images.pexels.com/photos/38245944/pexels-photo-38245944.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
+  6: "https://images.pexels.com/photos/38399819/pexels-photo-38399819.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
+  7: "https://images.pexels.com/photos/12727671/pexels-photo-12727671.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
+  8: "https://images.pexels.com/photos/33041091/pexels-photo-33041091.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
+};
+// Foto unggahan siswa diutamakan, kalau kosong pakai foto dummy di atas
+export const fotoSiswa = (s: Pick<Student, "id" | "foto">): string | undefined =>
+  s.foto || FOTO_DUMMY[s.id];
+
 // ─── Laporan ke orang tua ────────────────────────────────────────────
 /**
  * Laporan bersifat SATU ARAH: hanya guru yang mengirim, orang tua tidak

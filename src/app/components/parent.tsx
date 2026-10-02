@@ -6,11 +6,11 @@ import {
   Palette, Target, BookOpen, Settings, TrendingUp, Lightbulb, Laptop,
 } from "lucide-react";
 import {
-  T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar,
+  T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar, useUI,
 } from "./ui-kit";
 import {
   AGENDA, KIND_META, LAYANAN, studentTalentDetail, RIASEC_META, FUNGSIONAL_KATEGORI,
-  seedRiwayatAsesmen, type AsesmenPeriode, type RiasecKategori,
+  seedRiwayatAsesmen, fotoSiswa, type AsesmenPeriode, type RiasecKategori,
   type Screen, type Student, type LaporanKirim,
   type AgendaEvent, type EventKind,
 } from "./data";
@@ -112,6 +112,21 @@ function ChildAvatar({ name }: { name: string }) {
   );
 }
 
+// Foto profil anak (dummy) — fallback ke ChildAvatar jika tidak ada/gagal load
+function FotoAnak({ child }: { child: Student }) {
+  const [gagal, setGagal] = useState(false);
+  const src = fotoSiswa(child);
+  if (!src || gagal) return <ChildAvatar name={child.name} />;
+  return (
+    <img
+      src={src}
+      alt={`Foto profil ${child.name}`}
+      onError={() => setGagal(true)}
+      style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "2.5px solid #FFD6B8" }}
+    />
+  );
+}
+
 export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] }: {
   go: (s: Screen) => void; child: Student | null; namaOrtu: string; onOpenCode: () => void;
   laporan: LaporanKirim[];
@@ -119,6 +134,7 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
   const upcoming = AGENDA.slice(0, 1);
   const latestLaporan = laporan.length > 0 ? laporan[laporan.length - 1] : null;
   const ibuName = namaOrtu.split(" ")[0];
+  const { openSettings } = useUI();
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
@@ -146,7 +162,7 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
               <span style={{ position: "absolute", top: 6, right: 6, width: 7, height: 7, borderRadius: "50%", background: A, border: "1.5px solid #fff" }} />
             </button>
             <button
-              onClick={() => go("parent-training")}
+              onClick={openSettings}
               style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
               className="active:scale-95 transition-transform" title="Pengaturan">
               <Settings size={16} style={{ color: DEEP }} />
@@ -195,7 +211,7 @@ export function ParentDashboard({ go, child, namaOrtu, onOpenCode, laporan = [] 
             <div style={{ background: CARD, borderRadius: 20, padding: "18px 16px 16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
               {/* Profile row */}
               <div className="flex items-center gap-3" style={{ marginBottom: 14 }}>
-                <ChildAvatar name={child.name} />
+                <FotoAnak child={child} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.25 }}>{child.name}</p>
                   <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: "3px 0 0", lineHeight: 1.3 }}>
@@ -581,6 +597,7 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
   const [cursor,setCursor] = useState({y:today.getFullYear(), m:today.getMonth()});
   const [selected,setSelected] = useState<string|null>(null);
   const [filter,setFilter] = useState<EventKind|"semua">("semua");
+  const { openSettings } = useUI();
 
   // Kalender memuat kegiatan umum/terbuka (lomba, terapi, pelatihan)
   const list = AGENDA.filter(e=>filter==="semua"||e.kind===filter);
@@ -627,7 +644,7 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
               <Bell size={16} style={{color:DEEP}}/>
               <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
             </button>
-            <button onClick={()=>go("parent-training")} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
+            <button onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
               <Settings size={16} style={{color:DEEP}}/>
             </button>
           </div>
@@ -790,6 +807,7 @@ function EventCard({e}:{e:AgendaEvent}) {
 export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
   const [tab,setTab] = useState<"terbuka"|"layanan">("terbuka");
   const [q,setQ] = useState("");
+  const { openSettings } = useUI();
 
   const match = (l:typeof LAYANAN[number]) =>
     l.nama.toLowerCase().includes(q.toLowerCase()) || l.kategori.toLowerCase().includes(q.toLowerCase());
@@ -814,7 +832,7 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
               <Bell size={14} style={{color:DEEP}}/>
               <span style={{position:"absolute",top:5,right:5,width:6,height:6,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
             </button>
-            <button onClick={()=>go("parent-calendar")} style={{width:32,height:32,background:BG,borderRadius:8,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Kalender">
+            <button onClick={openSettings} style={{width:32,height:32,background:BG,borderRadius:8,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
               <Settings size={14} style={{color:DEEP}}/>
             </button>
           </div>
@@ -924,6 +942,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
   onBack:()=>void; child:Student|null; onOpenCode:()=>void;
   laporan:LaporanKirim[]; onBaca:(id:number)=>void; onLihatRiwayat?:()=>void; go:(s:Screen)=>void;
 }) {
+  const { openSettings } = useUI();
   if (!child) {
     return (
       <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS,background:BG}}>
@@ -941,9 +960,9 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
                 <Bell size={16} style={{color:DEEP}}/>
                 <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
               </button>
-              <button onClick={()=>go("parent-training")} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
-                <Settings size={16} style={{color:DEEP}}/>
-              </button>
+            <button onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
+              <Settings size={16} style={{color:DEEP}}/>
+            </button>
             </div>
           </div>
         </div>
@@ -983,7 +1002,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
               <Bell size={16} style={{color:DEEP}}/>
               <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
             </button>
-            <button onClick={()=>go("parent-training")} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
+            <button onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
               <Settings size={16} style={{color:DEEP}}/>
             </button>
           </div>
