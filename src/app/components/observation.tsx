@@ -1,4 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 import {
   Sparkles, CheckCircle, ChevronRight, ChevronDown, Info, ClipboardList, Gauge, X, ArrowLeft,
   AlertCircle, ArrowRight, Check, Users,
@@ -70,6 +72,58 @@ export function ObservationScreen({
   const [highlightUnansweredRiasec, setHighlightUnansweredRiasec] = useState<boolean>(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState<boolean>(false);
   const contentScrollRef = useRef<HTMLDivElement>(null);
+  
+  // --- FIREBASE LOAD & AUTO SAVE ---
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    async function loadProgress() {
+      if (!student) return;
+      try {
+        const docRef = doc(db, "assessments", student.id.toString());
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.skorFungsional) setSkorFungsional(data.skorFungsional);
+          if (data.skorRiasec) setSkorRiasec(data.skorRiasec);
+          if (data.catatan) setCatatan(data.catatan);
+          if (data.tahap) setTahap(data.tahap);
+          if (data.fungsionalStep !== undefined) setFungsionalStep(data.fungsionalStep);
+          if (data.riasecStep !== undefined) setRiasecStep(data.riasecStep);
+        }
+      } catch (err) {
+        console.error("Failed to load assessment progress", err);
+      } finally {
+        setIsLoaded(true);
+      }
+    }
+    loadProgress();
+  }, [student]);
+
+  useEffect(() => {
+    if (!isLoaded || !student) return;
+    const saveProgress = async () => {
+      try {
+        const docRef = doc(db, "assessments", student.id.toString());
+        await setDoc(docRef, {
+          skorFungsional,
+          skorRiasec,
+          catatan,
+          tahap,
+          fungsionalStep,
+          riasecStep,
+          lastUpdated: new Date()
+        }, { merge: true });
+      } catch (err) {
+        console.error("Failed to save progress", err);
+      }
+    };
+    
+    // Debounce 1.5 detik untuk menghindari terlalu banyak write ke database
+    const timeoutId = setTimeout(saveProgress, 1500);
+    return () => clearTimeout(timeoutId);
+  }, [skorFungsional, skorRiasec, catatan, tahap, fungsionalStep, riasecStep, isLoaded, student]);
+  // ---------------------------------
 
   const currentCategory = FUNGSIONAL_KATEGORI[fungsionalStep] || FUNGSIONAL_KATEGORI[0];
   const currentMeta = FUNGSIONAL_META[currentCategory];

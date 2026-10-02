@@ -1,5 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { LogOut } from "lucide-react";
+import {
+  saveStudentToFirestore,
+  loadStudentsFromFirestore,
+  updateStudentInFirestore,
+} from "./components/firestore-students";
 
 import {
   T, A, BG, PJS, IPS, UI, type UICtx,
@@ -64,11 +69,38 @@ export default function App() {
   const [screenHistory, setScreenHistory] = useState<Screen[]>([]);
 
   const [list, setList] = useState<Student[]>(() => seedStudents.map(s => ({ ...s })));
-  const addStudent = (s: Omit<Student, "id">) => {
-    const created: Student = { ...s, id: Math.max(0, ...list.map(x => x.id)) + 1 };
+  const [isLoadingStudents, setIsLoadingStudents] = useState(true);
+
+  // Load siswa dari Firestore saat aplikasi pertama kali dibuka
+  useEffect(() => {
+    async function loadStudents() {
+      try {
+        const fromDB = await loadStudentsFromFirestore();
+        if (fromDB.length > 0) {
+          setList(fromDB);
+        }
+        // Jika kosong, tetap pakai seedStudents (data awal demo)
+      } catch (err) {
+        console.error("Gagal memuat data siswa:", err);
+      } finally {
+        setIsLoadingStudents(false);
+      }
+    }
+    loadStudents();
+  }, []);
+
+  const addStudent = useCallback(async (s: Omit<Student, "id">) => {
+    const newId = Math.max(0, ...list.map(x => x.id)) + 1;
+    const created: Student = { ...s, id: newId };
     setList(prev => [...prev, created]);
+    // Simpan ke Firestore di background
+    try {
+      await saveStudentToFirestore(created);
+    } catch (err) {
+      console.error("Gagal menyimpan siswa baru ke database:", err);
+    }
     return created;
-  };
+  }, [list]);
 
   // Guru
   const [laporan, setLaporan] = useState<LaporanKirim[]>(seedLaporan);
@@ -175,6 +207,9 @@ export default function App() {
         caraBelajar: s.caraBelajar || "Visual & Kinestetik"
       }
       : s));
+    // Simpan perubahan hasObs ke Firestore
+    updateStudentInFirestore(id, { hasObs: true, caraBelajar: list.find(s => s.id === id)?.caraBelajar || "Visual & Kinestetik" })
+      .catch(err => console.error("Gagal update hasObs:", err));
     setSelectedStudentId(id);
     go("talent-map-detail");
   };
@@ -185,7 +220,11 @@ export default function App() {
   const regenKode = (id: number) => setList(prev => prev.map(s => {
     if (s.id !== id) return s;
     const seri = Math.random().toString(36).slice(2, 6).toUpperCase();
-    return { ...s, kodeOrtu: kodeOrtuBaru(s.name, s.kelas, 2026, seri) };
+    const newKode = kodeOrtuBaru(s.name, s.kelas, 2026, seri);
+    // Simpan kode baru ke Firestore
+    updateStudentInFirestore(id, { kodeOrtu: newKode })
+      .catch(err => console.error("Gagal update kodeOrtu:", err));
+    return { ...s, kodeOrtu: newKode };
   }));
 
   // Laporan satu arah: guru mengirim, orang tua hanya membaca.
