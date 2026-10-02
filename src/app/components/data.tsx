@@ -216,6 +216,38 @@ export const RIASEC_META: Record<RiasecKategori,{icon:string;color:string;bg:str
   "Conventional":  {icon:"📋", color:"#4338CA", bg:"#E0E7FF", desc:"Ketelitian, keteraturan, prosedur yang jelas", letter:"C"},
 };
 
+export const RIASEC_KODE: Record<RiasecKategori, string> = {
+  "Realistic": "RIA", "Investigative": "INV", "Artistic": "ART",
+  "Social": "SOC", "Enterprising": "ENT", "Conventional": "CON",
+};
+
+export const RIASEC_PENJELASAN: Record<RiasecKategori, { apa: string; contoh: string[] }> = {
+  "Realistic": {
+    apa: "Anak dengan kecenderungan Realistic menyukai aktivitas yang melibatkan pekerjaan fisik, alat, mesin, dan kegiatan yang membutuhkan ketelitian serta keterampilan praktis.",
+    contoh: ["Memperbaiki atau merakit benda", "Berkebun atau bertani", "Eksplorasi alam", "Menggunakan alat dan mesin"],
+  },
+  "Investigative": {
+    apa: "Anak dengan kecenderungan Investigative menyukai aktivitas yang melibatkan pengamatan, analisis, pemecahan masalah, dan rasa ingin tahu terhadap hal baru.",
+    contoh: ["Bereksperimen dan mengamati", "Membaca dan mencari informasi", "Memecahkan teka-teki", "Menjelajahi ilmu pengetahuan"],
+  },
+  "Artistic": {
+    apa: "Anak dengan kecenderungan Artistic biasanya menikmati aktivitas yang melibatkan kreativitas, imajinasi, dan ekspresi diri. Mereka cenderung peka terhadap keindahan, suka mencoba hal baru, dan senang mengekspresikan ide melalui seni, musik, atau media kreatif lainnya.",
+    contoh: ["Menggambar atau melukis", "Membuat kerajinan tangan", "Bermain musik", "Membuat cerita atau menulis"],
+  },
+  "Social": {
+    apa: "Anak dengan kecenderungan Social menyukai aktivitas yang melibatkan interaksi dengan orang lain, membantu, memberi dukungan, dan bekerja dalam tim.",
+    contoh: ["Mengajar atau membimbing", "Bekerja dalam kelompok", "Membantu orang lain", "Menjadi relawan"],
+  },
+  "Enterprising": {
+    apa: "Anak dengan kecenderungan Enterprising menyukai aktivitas yang melibatkan kepemimpinan, komunikasi, kreativitas bisnis, dan pengambilan keputusan.",
+    contoh: ["Membuat rencana atau proyek", "Berkomunikasi dan presentasi", "Mencoba hal baru", "Mengelola kegiatan atau bisnis kecil"],
+  },
+  "Conventional": {
+    apa: "Anak dengan kecenderungan Conventional menyukai aktivitas yang terstruktur, teratur, dan melibatkan data, angka, serta pekerjaan yang sistematis.",
+    contoh: ["Mencatat dan mengelola data", "Bekerja dengan angka", "Mengikuti aturan dan prosedur", "Organisasi dan administrasi"],
+  },
+};
+
 export const SKALA_RIASEC = [
   {v:-1, l:"N/A", d:"Tidak dapat dijawab / diamati", color:"#94A3B8", bg:"#F1F5F9"},
   {v:0, l:"Tidak Pernah", d:"0 Tidak pernah",       color:"#64748B", bg:"#F1F5F9"},
