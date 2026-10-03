@@ -48,10 +48,10 @@ export function AsesmenPendingScreen({
         {/* Banner notifikasi */}
         {pending.length > 0 && (
           <div style={{
-            background: "linear-gradient(135deg, #3B7A57 0%, #25583B 100%)",
+            background: "#D27D6B",
             borderRadius: 20, padding: "13px 15px",
             display: "flex", alignItems: "center", gap: 10,
-            boxShadow: "0 8px 24px rgba(37,88,59,0.25)", color: "#FFFFFF"
+            boxShadow: "0 6px 18px rgba(210,125,107,0.30)", color: "#FFFFFF"
           }}>
             <div style={{ width: 40, height: 40, borderRadius: 13, background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <Clock size={19} style={{ color: "#FFFFFF" }} />
@@ -244,14 +244,14 @@ export function AsesmenPendingScreen({
                           </p>
                           <span
                             style={{
-                              background: "#ECFDF5",
-                              color: "#065F46",
+                              background: "#FFF1EE",
+                              color: "#D27D6B",
                               fontFamily: PJS,
                               fontSize: 10,
                               fontWeight: 700,
                               padding: "2px 7px",
                               borderRadius: 8,
-                              border: "1px solid rgba(16,185,129,0.25)",
+                              border: "1px solid rgba(210,125,107,0.25)",
                             }}
                           >
                             {s.abk}
@@ -267,7 +267,7 @@ export function AsesmenPendingScreen({
                         type="button"
                         onClick={() => onStartObs(s.id)}
                         style={{
-                          background: "linear-gradient(135deg, #3B7A57 0%, #25583B 100%)",
+                          background: "#D27D6B",
                           border: "none",
                           borderRadius: 16,
                           padding: "9px 13px",
@@ -276,7 +276,7 @@ export function AsesmenPendingScreen({
                           gap: 6,
                           cursor: "pointer",
                           flexShrink: 0,
-                          boxShadow: "0 3px 12px rgba(37,88,59,0.28)",
+                          boxShadow: "0 3px 10px rgba(210,125,107,0.30)",
                           transition: "all 0.15s ease",
                         }}
                         className="active:scale-95 hover:brightness-105"

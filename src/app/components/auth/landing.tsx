@@ -475,10 +475,10 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                   onClick={goNext}
                   className="active:scale-95 transition-transform flex justify-center items-center gap-2 pointer-events-auto"
                   style={{
-                    height: 50, padding: "0 22px", background: "#3B7A57", color: "#FFF",
+                    height: 50, padding: "0 22px", background: "#D27D6B", color: "#FFF",
                     borderRadius: 25, border: "none", cursor: "pointer",
                     fontFamily: PJS, fontWeight: 700, fontSize: 15,
-                    boxShadow: "0 8px 16px rgba(59,122,87,0.38)"
+                    boxShadow: "0 6px 18px rgba(210,125,107,0.35)"
                   }}
                   title="Selesai"
                 >
@@ -490,9 +490,9 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                   onClick={goNext}
                   className="active:scale-95 transition-transform flex justify-center items-center pointer-events-auto"
                   style={{
-                    width: 50, height: 50, background: "#3B7A57", color: "#FFF", borderRadius: "50%",
+                    width: 50, height: 50, background: "#D27D6B", color: "#FFF", borderRadius: "50%",
                     border: "none", cursor: "pointer",
-                    boxShadow: "0 8px 16px rgba(59,122,87,0.38)"
+                    boxShadow: "0 6px 18px rgba(210,125,107,0.35)"
                   }}
                   title="Berikutnya"
                 >

@@ -152,14 +152,14 @@ export function DashboardGuru({
         {pendingObs.length > 0 && (
           <div onClick={() => go("asesmen-pending")}
             style={{
-              background: "linear-gradient(135deg, #3B7A57 0%, #25583B 100%)",
+              background: "#D27D6B",
               borderRadius: 22,
               padding: "14px 16px",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               gap: 12,
-              boxShadow: "0 8px 24px rgba(37,88,59,0.25)",
+              boxShadow: "0 6px 18px rgba(210,125,107,0.30)",
               color: "#FFFFFF",
               cursor: "pointer",
             }}
@@ -176,7 +176,7 @@ export function DashboardGuru({
             <button onClick={() => go("asesmen-pending")}
               style={{
                 background: "#FFFFFF",
-                color: "#25583B",
+                color: "#D27D6B",
                 border: "none",
                 borderRadius: 14,
                 padding: "9px 13px",

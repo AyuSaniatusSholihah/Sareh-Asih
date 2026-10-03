@@ -4,21 +4,21 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-// ─── Tokens ─────────────────────────────────────────────────────────
-export const T    = "#5B7A68";   // Primary Sage Green (#5B7A68)
-export const A    = "#3B7A57";   // Deep Emerald Sage — positive action / CTA
-export const TERRACOTTA = "#D27D6B"; // Muted warm terracotta — specific accents
-export const BG   = "#EBF3ED";   // Mint White — background
-export const CARD = "#FFFFFF";   // Card surface
-export const TEXT = "#2E3E35";   // Dark Charcoal Green — text
-export const MUTED= "#6B8070";   // Muted sage — secondary text
-export const SEC  = "#D4E8DA";   // Light sage tint — secondary bg
-export const BDR  = "rgba(91,122,104,0.45)"; // Prominent sage stroke
-export const DEEP = "#5B7A68";   // Deep Forest — supporting components
-export const TEAL = "#0D9488";   // Fresh teal accent
-export const PJS  = "'Plus Jakarta Sans', sans-serif";
-export const IPS  = "'IBM Plex Sans', sans-serif";
-export const DMM  = "'DM Mono', monospace";
+// ─── Official Sareh Asih Color Palette ──────────────────────────────
+export const BG         = "#EBF3ED";   // Mint White — Background
+export const SAGE       = "#8BB098";   // Sage Green — Primary
+export const DEEP       = "#5B7A68";   // Deep Forest — Secondary / Positive Actions
+export const T          = "#5B7A68";   // Deep Forest alias
+export const TEXT       = "#2E3E35";   // Dark Charcoal — Text / Dark BG
+export const TERRACOTTA = "#D27D6B";   // Muted Terracotta — Attention / Alerts
+export const A          = "#5B7A68";   // Positive CTA / Next / Save (Deep Forest solid)
+export const SEC        = "#D4E8DA";   // Light Sage — Secondary BG
+export const CARD       = "#FFFFFF";   // Card surface
+export const MUTED      = "#6B8070";   // Muted sage — secondary text
+export const BDR        = "rgba(91,122,104,0.30)"; // Deep Forest stroke
+export const PJS        = "'Plus Jakarta Sans', sans-serif";
+export const IPS        = "'IBM Plex Sans', sans-serif";
+export const DMM        = "'DM Mono', monospace";
 
 // ─── Global UI Context (font size, TTS, search, settings) ────────────
 export interface UICtx {
@@ -56,11 +56,11 @@ export function SBadge({ s }: { s:StatusType }) {
     "Berjalan":        {bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)",I:Clock},
     "Tercapai":        {bg:"#D4E8DA",tx:"#2E3E35",bdr:"#8BB098",I:CheckCircle},
     "Tidak Tercapai":  {bg:"rgba(210,125,107,0.15)",tx:TERRACOTTA,bdr:"rgba(210,125,107,0.35)",I:XCircle},
-    "Direkomendasikan":{bg:"#D4E8DA",tx:A,bdr:"rgba(59,122,87,0.35)",I:Sparkles},
+    "Direkomendasikan":{bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)",I:Sparkles},
     "Didaftarkan":     {bg:"#D4E8DA",tx:"#2E3E35",bdr:"#8BB098",I:CheckCircle},
     "Selesai":         {bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)",I:Trophy},
     "Sudah Dibaca":    {bg:"#D4E8DA",tx:"#2E3E35",bdr:"#8BB098",I:Eye},
-    "Belum Dibaca":    {bg:"rgba(245,158,11,0.15)",tx:"#D97706",bdr:"rgba(245,158,11,0.35)",I:Bell},
+    "Belum Dibaca":    {bg:"rgba(210,125,107,0.15)",tx:TERRACOTTA,bdr:"rgba(210,125,107,0.35)",I:Bell},
   };
   const {bg,tx,bdr,I}=m[s]??{bg:SEC,tx:DEEP,bdr:BDR,I:Circle};
   return <span style={{background:bg,color:tx,border:`1px solid ${bdr}`,fontFamily:PJS}} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold"><I size={11} strokeWidth={2.2}/>{s}</span>;
@@ -97,16 +97,16 @@ export function PBtn({
   let bg = A;
   let color = "#FFFFFF";
   let border = "none";
-  let shadow = "0 6px 20px rgba(59,122,87,0.35)";
+  let shadow = "0 6px 18px rgba(91,122,104,0.30)";
 
   if (disabled) {
     bg = "#CBD5E1";
     color = "#94A3B8";
     shadow = "none";
   } else if (variant === "light") {
-    bg = "rgba(59,122,87,0.14)";
+    bg = "rgba(91,122,104,0.14)";
     color = A;
-    border = "1.5px solid rgba(59,122,87,0.35)";
+    border = "1.5px solid rgba(91,122,104,0.35)";
     shadow = "none";
   } else if (variant === "outline") {
     bg = "transparent";
