@@ -4,20 +4,21 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
-// ─── Tokens ─────────────────────────────────────────────────────────
-export const T    = "#5B7A68";   // Primary Sage Green (#5B7A68)
-export const A    = "#D27D6B";   // Muted Terracotta — accent / CTA
-export const BG   = "#EBF3ED";   // Mint White — background
-export const CARD = "#FFFFFF";   // Card surface
-export const TEXT = "#2E3E35";   // Dark Charcoal Green — text
-export const MUTED= "#6B8070";   // Muted sage — secondary text
-export const SEC  = "#D4E8DA";   // Light sage tint — secondary bg
-export const BDR  = "rgba(91,122,104,0.45)"; // Prominent sage stroke
-export const DEEP = "#5B7A68";   // Deep Forest — supporting components
-export const TEAL = "#5B7A68";   // Deep sage — complement
-export const PJS  = "'Plus Jakarta Sans', sans-serif";
-export const IPS  = "'IBM Plex Sans', sans-serif";
-export const DMM  = "'DM Mono', monospace";
+// ─── Official Sareh Asih Color Palette ──────────────────────────────
+export const BG         = "#EBF3ED";   // Mint White — Background
+export const SAGE       = "#8BB098";   // Sage Green — Primary
+export const DEEP       = "#5B7A68";   // Deep Forest — Secondary / Positive Actions
+export const T          = "#5B7A68";   // Deep Forest alias
+export const TEXT       = "#2E3E35";   // Dark Charcoal — Text / Dark BG
+export const TERRACOTTA = "#D27D6B";   // Muted Terracotta — Attention / Alerts
+export const A          = "#5B7A68";   // Positive CTA / Next / Save (Deep Forest solid)
+export const SEC        = "#D4E8DA";   // Light Sage — Secondary BG
+export const CARD       = "#FFFFFF";   // Card surface
+export const MUTED      = "#6B8070";   // Muted sage — secondary text
+export const BDR        = "rgba(91,122,104,0.30)"; // Deep Forest stroke
+export const PJS        = "'Plus Jakarta Sans', sans-serif";
+export const IPS        = "'IBM Plex Sans', sans-serif";
+export const DMM        = "'DM Mono', monospace";
 
 // ─── Global UI Context (font size, TTS, search, settings) ────────────
 export interface UICtx {
@@ -40,8 +41,8 @@ export function Chip({ label, color }: { label:string; color:"purple"|"blue"|"or
   const m={
     purple:{bg:"rgba(91,122,104,0.14)",tx:DEEP,bdr:"rgba(91,122,104,0.3)"},
     blue:{bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)"},
-    orange:{bg:"rgba(210,125,107,0.14)",tx:A,bdr:"rgba(210,125,107,0.35)"},
-    pink:{bg:"rgba(210,125,107,0.18)",tx:A,bdr:"rgba(210,125,107,0.4)"},
+    orange:{bg:"rgba(210,125,107,0.14)",tx:TERRACOTTA,bdr:"rgba(210,125,107,0.35)"},
+    pink:{bg:"rgba(210,125,107,0.18)",tx:TERRACOTTA,bdr:"rgba(210,125,107,0.4)"},
     gray:{bg:"#EBF3ED",tx:TEXT,bdr:"rgba(91,122,104,0.22)"}
   };
   const c=m[color]??m.gray;
@@ -54,12 +55,12 @@ export function SBadge({ s }: { s:StatusType }) {
   const m:Record<StatusType,{bg:string;tx:string;bdr:string;I:typeof CheckCircle}> = {
     "Berjalan":        {bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)",I:Clock},
     "Tercapai":        {bg:"#D4E8DA",tx:"#2E3E35",bdr:"#8BB098",I:CheckCircle},
-    "Tidak Tercapai":  {bg:"rgba(210,125,107,0.15)",tx:A,bdr:"rgba(210,125,107,0.35)",I:XCircle},
-    "Direkomendasikan":{bg:"rgba(210,125,107,0.15)",tx:A,bdr:"rgba(210,125,107,0.35)",I:Sparkles},
+    "Tidak Tercapai":  {bg:"rgba(210,125,107,0.15)",tx:TERRACOTTA,bdr:"rgba(210,125,107,0.35)",I:XCircle},
+    "Direkomendasikan":{bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)",I:Sparkles},
     "Didaftarkan":     {bg:"#D4E8DA",tx:"#2E3E35",bdr:"#8BB098",I:CheckCircle},
     "Selesai":         {bg:"#D4E8DA",tx:DEEP,bdr:"rgba(91,122,104,0.35)",I:Trophy},
     "Sudah Dibaca":    {bg:"#D4E8DA",tx:"#2E3E35",bdr:"#8BB098",I:Eye},
-    "Belum Dibaca":    {bg:"rgba(210,125,107,0.15)",tx:A,bdr:"rgba(210,125,107,0.35)",I:Bell},
+    "Belum Dibaca":    {bg:"rgba(210,125,107,0.15)",tx:TERRACOTTA,bdr:"rgba(210,125,107,0.35)",I:Bell},
   };
   const {bg,tx,bdr,I}=m[s]??{bg:SEC,tx:DEEP,bdr:BDR,I:Circle};
   return <span style={{background:bg,color:tx,border:`1px solid ${bdr}`,fontFamily:PJS}} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold"><I size={11} strokeWidth={2.2}/>{s}</span>;
@@ -96,16 +97,16 @@ export function PBtn({
   let bg = A;
   let color = "#FFFFFF";
   let border = "none";
-  let shadow = "0 6px 20px rgba(210,125,107,0.45)";
+  let shadow = "0 6px 18px rgba(91,122,104,0.30)";
 
   if (disabled) {
     bg = "#CBD5E1";
     color = "#94A3B8";
     shadow = "none";
   } else if (variant === "light") {
-    bg = "rgba(210,125,107,0.16)";
+    bg = "rgba(91,122,104,0.14)";
     color = A;
-    border = "1.5px solid rgba(210,125,107,0.35)";
+    border = "1.5px solid rgba(91,122,104,0.35)";
     shadow = "none";
   } else if (variant === "outline") {
     bg = "transparent";

@@ -212,7 +212,7 @@ export function TalentMapScreen({
                             <ChevronRight size={13} style={{ color: DEEP, flexShrink: 0 }} strokeWidth={2.5} />
                           </button>
                         ) : (
-                          <button type="button" onClick={() => onStartObs(s.id)} style={{ background: ("linear-gradient(135deg, " + A + " 0%, #C45F4B 100%)"), border: "none", borderRadius: 16, padding: "9px 13px", display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0, boxShadow: "0 3px 12px rgba(210,110,91,0.32)", transition: "all 0.15s ease" }} className="active:scale-95 hover:brightness-105">
+                          <button type="button" onClick={() => onStartObs(s.id)} style={{ background: "#D27D6B", border: "none", borderRadius: 16, padding: "9px 13px", display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0, boxShadow: "0 3px 10px rgba(210,125,107,0.30)", transition: "all 0.15s ease" }} className="active:scale-95 hover:brightness-105">
                             <span style={{ fontSize: 11.5, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, whiteSpace: "nowrap" }}>Mulai asesmen</span>
                             <ChevronRight size={13} style={{ color: "#FFFFFF", flexShrink: 0 }} strokeWidth={2.5} />
                           </button>

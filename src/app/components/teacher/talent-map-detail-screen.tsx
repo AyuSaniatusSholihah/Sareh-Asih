@@ -232,7 +232,7 @@ export function TalentMapDetailScreen({
       
       <div className="px-4 pt-4 pb-8 space-y-4">
         {/* Tombol Unduh & Bagikan Laporan Pemetaan Siswa */}
-        <div className="flex gap-2">
+        <div style={{ display: "flex", gap: "10px", alignItems: "stretch" }}>
           <button
             type="button"
             onClick={() => {
@@ -246,15 +246,41 @@ export function TalentMapDetailScreen({
               color: DEEP,
               fontFamily: PJS,
               fontWeight: 800,
-              minHeight: 48,
+              minHeight: 52,
               borderRadius: 16,
               cursor: "pointer",
               boxShadow: "0 2px 8px rgba(91,122,104,0.08)",
+              padding: "8px 12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 9,
             }}
-            className="text-xs flex items-center justify-center gap-2 active:scale-95 transition-transform"
+            className="active:scale-95 transition-transform"
           >
-            <FileText size={15} />
-            <span>Unduh Laporan Pemetaan {firstName}</span>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 10,
+                background: "rgba(91,122,104,0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                color: DEEP,
+              }}
+            >
+              <FileText size={16} strokeWidth={2.4} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left", minWidth: 0 }}>
+              <span style={{ fontSize: 12, fontWeight: 800, lineHeight: 1.25, color: DEEP }}>
+                Unduh Laporan
+              </span>
+              <span style={{ fontSize: 10, fontWeight: 600, opacity: 0.75, lineHeight: 1.15, color: DEEP }} className="truncate max-w-full">
+                Pemetaan {firstName}
+              </span>
+            </div>
           </button>
 
           <button
@@ -267,15 +293,41 @@ export function TalentMapDetailScreen({
               color: "#FFFFFF",
               fontFamily: PJS,
               fontWeight: 800,
-              minHeight: 48,
+              minHeight: 52,
               borderRadius: 16,
               cursor: "pointer",
               boxShadow: "0 3px 10px rgba(91,122,104,0.22)",
+              padding: "8px 12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
             }}
-            className="text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
+            className="active:scale-95 transition-transform"
           >
-            <Share2 size={14} />
-            <span>Bagikan</span>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 10,
+                background: "rgba(255, 255, 255, 0.18)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                color: "#FFFFFF",
+              }}
+            >
+              <Share2 size={15} strokeWidth={2.4} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left" }}>
+              <span style={{ fontSize: 12, fontWeight: 800, lineHeight: 1.25, color: "#FFFFFF" }}>
+                Bagikan
+              </span>
+              <span style={{ fontSize: 10, fontWeight: 600, opacity: 0.85, lineHeight: 1.15, color: "#FFFFFF" }}>
+                Laporan
+              </span>
+            </div>
           </button>
         </div>
 

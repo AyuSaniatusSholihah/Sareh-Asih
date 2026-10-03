@@ -478,7 +478,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                     height: 50, padding: "0 22px", background: "#D27D6B", color: "#FFF",
                     borderRadius: 25, border: "none", cursor: "pointer",
                     fontFamily: PJS, fontWeight: 700, fontSize: 15,
-                    boxShadow: "0 8px 16px rgba(210,125,107,0.4)"
+                    boxShadow: "0 6px 18px rgba(210,125,107,0.35)"
                   }}
                   title="Selesai"
                 >
@@ -492,7 +492,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                   style={{
                     width: 50, height: 50, background: "#D27D6B", color: "#FFF", borderRadius: "50%",
                     border: "none", cursor: "pointer",
-                    boxShadow: "0 8px 16px rgba(210,125,107,0.4)"
+                    boxShadow: "0 6px 18px rgba(210,125,107,0.35)"
                   }}
                   title="Berikutnya"
                 >
