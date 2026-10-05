@@ -2,11 +2,12 @@ import React, { useState, useRef } from "react";
 import {
   Key, Copy, RefreshCw, CheckCircle, Mic, MicOff, Send,
   ClipboardList, Edit3, FileText, Sparkles, Brain, CalendarClock, RotateCcw,
+  CloudUpload, FileSpreadsheet, ChevronRight,
 } from "lucide-react";
 import {
   T, A, CARD, TEXT, MUTED, SEC, BDR, DEEP, BG, PJS, IPS, DMM, TBar, Chip, SBadge,
 } from "../ui-kit";
-import { useStudents, type Student, type LaporanKirim, type Screen } from "../data";
+import { useStudents, fotoSiswa, type Student, type LaporanKirim, type Screen } from "../data";
 import { exportLaporanPemetaan } from "../export";
 import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
 /** Kartu kode orang tua — guru yang membuat & membagikannya (peran admin ada di guru). */
@@ -342,6 +343,41 @@ export function JurnalTab({
   );
 }
 
+/** Foto profil siswa: foto unggahan > foto dummy, fallback ke emoji. */
+function FotoProfil({ s, size }: { s: Student; size: number }) {
+  const src = fotoSiswa(s);
+  const [gagal, setGagal] = useState(false);
+
+  if (!src || gagal) {
+    return (
+      <span
+        aria-hidden
+        style={{
+          width: size, height: size, borderRadius: "50%",
+          background: "rgba(91,122,104,0.12)", border: `1px dashed ${BDR}`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: Math.round(size * 0.46), flexShrink: 0, lineHeight: 1,
+        }}
+      >
+        {s.emoji}
+      </span>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={`Foto profil ${s.name}`}
+      onError={() => setGagal(true)}
+      style={{
+        width: size, height: size, borderRadius: "50%", objectFit: "cover",
+        flexShrink: 0, border: `2px solid rgba(91,122,104,0.35)`,
+        boxShadow: "0 3px 10px rgba(91,122,104,0.18)", background: "rgba(91,122,104,0.08)",
+      }}
+    />
+  );
+}
+
 export function ProfileScreen({
   onBack,
   go,
@@ -437,11 +473,12 @@ export function ProfileScreen({
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS }}>
       <TBar title="Profil Siswa" sub={s.name} onBack={onBack} right={asesmenBtn} />
-      <div style={{ background: CARD, borderBottom: `1px solid ${BDR}` }} className="px-5 py-3.5">
-        <div>
+      <div style={{ background: CARD, borderBottom: `1px solid ${BDR}` }} className="px-5 py-3.5 flex items-center gap-3.5">
+        <FotoProfil s={s} size={68} />
+        <div className="flex-1 min-w-0">
           <p className="font-bold text-lg" style={{ fontFamily: PJS, color: TEXT }}>{s.name}</p>
           <p className="text-xs" style={{ color: MUTED }}>Kelas {s.kelas}{s.age ? ` · ${s.age} tahun` : ""} · {s.teacher}</p>
-          <div className="flex gap-1.5 mt-1.5"><Chip label={s.abk} color="purple" /><SBadge s={s.hasObs ? "Berjalan" : "Belum Dibaca"} /></div>
+          <div className="flex gap-1.5 mt-1.5 flex-wrap"><Chip label={s.abk} color="purple" /><SBadge s={s.hasObs ? "Berjalan" : "Belum Dibaca"} /></div>
         </div>
       </div>
       <div className="flex" style={{ background: CARD, borderBottom: `1px solid ${BDR}` }}>
@@ -464,6 +501,46 @@ export function ProfileScreen({
               <Edit3 size={15} style={{ color: "#D4E8DA", flexShrink: 0 }} />
               <p className="text-xs" style={{ color: "#FFFFFF" }}>Data diinput oleh guru — dapat diperbarui kapan saja.</p>
             </div>
+
+            {/* ── Asesmen Custom (sebelum asesmen bawaan aplikasi) ── */}
+            <button
+              type="button"
+              onClick={() => go("asesmen-custom")}
+              style={{
+                width: "100%",
+                background: CARD,
+                border: `1.5px solid ${DEEP}`,
+                borderRadius: 16,
+                padding: "13px 14px",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                cursor: "pointer",
+                textAlign: "left",
+                boxShadow: "0 2px 8px rgba(91,122,104,0.08)",
+                marginBottom: 6,
+              }}
+              className="active:scale-[0.99] transition-transform"
+            >
+              <div style={{ width: 40, height: 40, borderRadius: 13, background: SEC, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <CloudUpload size={20} style={{ color: DEEP }} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: 0 }}>
+                  Asesmen Custom
+                </p>
+                <p style={{ fontSize: 11.5, color: MUTED, margin: "2px 0 0" }}>
+                  Gunakan instrumen milik guru
+                </p>
+                <div className="flex items-center gap-1.5" style={{ marginTop: 5 }}>
+                  <FileSpreadsheet size={11} style={{ color: DEEP, flexShrink: 0 }} />
+                  <p style={{ fontSize: 10.5, color: DEEP, fontWeight: 700, fontFamily: PJS, margin: 0 }}>
+                    XLSX · Template tersedia
+                  </p>
+                </div>
+              </div>
+              <ChevronRight size={17} style={{ color: DEEP, flexShrink: 0 }} />
+            </button>
             {rows.map(([l, v]) => (
               <div key={l} style={{ background: CARD, border: `1.5px solid rgba(91,122,104,0.35)`, borderRadius: 16, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }} className="px-4 py-3">
                 <p style={{ fontSize: 11, fontWeight: 800, color: DEEP, fontFamily: PJS, textTransform: "uppercase", letterSpacing: "0.05em" }}>{l}</p>

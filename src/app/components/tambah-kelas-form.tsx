@@ -17,9 +17,12 @@ export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }:
   const tags = [
     'Tunanetra',
     'Tuna Rungu',
+    'Tunagrahita Ringan',
+    'Tunagrahita Sedang',
     'Tuna Daksa Ringan',
     'Tuna Daksa Sedang',
     'Tuna Wicara',
+    'Autis (ASD)',
     'Lainnya',
   ];
 

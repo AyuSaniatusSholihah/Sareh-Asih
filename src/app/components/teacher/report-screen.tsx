@@ -4,11 +4,11 @@ import {
   School, Check, MessageCircle, Printer, X, Share2,
   ChevronRight, BarChart3, Clock, ArrowLeft, Search,
   Laptop, QrCode, Monitor, RefreshCw, Copy, LogOut,
-  Globe, ExternalLink, ShieldCheck, Smartphone, Sparkles, Settings,
+  Globe, ExternalLink, ShieldCheck, Smartphone, Sparkles, Settings, PenLine,
 } from "lucide-react";
 import { CARD, TEXT, MUTED, SEC, T, A, DEEP, PJS, IPS, BG, BDR, DMM, useUI } from "../ui-kit";
 import { useStudents, fotoSiswa, type Student } from "../data";
-import { exportSpreadsheet, exportLaporanPemetaan, printReportPDF } from "../export";
+import { exportSpreadsheet, exportLaporanPemetaan, printReportPDF, muatParafGuru, simpanParafGuru } from "../export";
 import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
 
 type ReportView = "main" | "detail" | "web-connect";
@@ -36,10 +36,13 @@ interface ConnectedDeviceInfo {
   lastActive: string;
 }
 
-export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; onProfile?: () => void }) {
+export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah: string; namaGuru?: string; onProfile?: () => void }) {
   const { openSearch, openSettings } = useUI();
   const students = useStudents();
   const [view, setView] = useState<ReportView>("main");
+  // Paraf guru: ikut tercetak di blok tanda tangan laporan (.doc / PDF)
+  const [parafGuru, setParafGuru] = useState<string>(() => muatParafGuru() || namaGuru || "");
+  const ubahParaf = (v: string) => { setParafGuru(v); simpanParafGuru(v); };
   const [overviewTab, setOverviewTab] = useState<OverviewTab>("kelas");
   const [filterScope, setFilterScope] = useState<FilterScope>("semua");
   const [selectedClass, setSelectedClass] = useState<string>("Semua");
@@ -122,12 +125,12 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
 
   const showToast = (msg: string) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 3200); };
   const handleDownloadExcel = () => { exportSpreadsheet(filteredList, namaSekolah); showToast(`Rekap Excel (${scopeShortText}) berhasil diunduh!`); };
-  const handleDownloadWord = () => { exportLaporanPemetaan(filteredList, namaSekolah); showToast(`Rapor ${scopeBadgeText} berhasil diunduh!`); };
-  const handleDownloadPDF = () => { printReportPDF(filteredList, namaSekolah); showToast(`Format PDF ${scopeShortText} disiapkan untuk dicetak/disimpan!`); };
+  const handleDownloadWord = () => { exportLaporanPemetaan(filteredList, namaSekolah, parafGuru); showToast(`Rapor ${scopeBadgeText} berhasil diunduh!`); };
+  const handleDownloadPDF = () => { printReportPDF(filteredList, namaSekolah, parafGuru); showToast(`Format PDF ${scopeShortText} disiapkan untuk dicetak/disimpan!`); };
 
   const handleShareWA = () => {
     // 1. Output dokumen PDF resmi secara otomatis
-    printReportPDF(filteredList, namaSekolah);
+    printReportPDF(filteredList, namaSekolah, parafGuru);
 
     // 2. Format teks WhatsApp untuk dibagikan
     const isPerAnak = filterScope === "anak" && selectedStudentIds.size === 1;
@@ -435,7 +438,7 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
                   </button>
                   <button
                     type="button"
-                    onClick={() => { printReportPDF(students, namaSekolah); showToast("Dokumen Rapor PDF dicetak!"); }}
+                    onClick={() => { printReportPDF(students, namaSekolah, parafGuru); showToast("Dokumen Rapor PDF dicetak!"); }}
                     style={{ padding: "10px 12px", borderRadius: 12, border: "1.5px solid #1D4ED8", background: "#EFF6FF", color: "#1D4ED8", fontFamily: PJS, fontSize: 11.5, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
                   >
                     <Printer size={15} />
@@ -594,6 +597,29 @@ export function ReportScreen({ namaSekolah, onProfile }: { namaSekolah: string; 
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Paraf Guru (tercetak di blok tanda tangan laporan) */}
+          <div style={{ background: "#FFFFFF", borderRadius: 18, padding: "14px", border: "1px solid rgba(91,122,104,0.12)", boxShadow: "0 2px 8px rgba(91,122,104,0.04)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+              <div style={{ width: 30, height: 30, borderRadius: 10, background: "rgba(91,122,104,0.10)", display: "flex", alignItems: "center", justifyContent: "center", color: DEEP }}>
+                <PenLine size={16} />
+              </div>
+              <div>
+                <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 800, color: TEXT, margin: 0 }}>Paraf Guru</p>
+                <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0 }}>Dicetak pada kolom tanda tangan tiap halaman laporan</p>
+              </div>
+            </div>
+            <input
+              type="text"
+              value={parafGuru}
+              onChange={e => ubahParaf(e.target.value)}
+              placeholder="Tulis paraf guru, mis. Sari D., S.Pd."
+              style={{ width: "100%", border: "1.5px solid #E2E8F0", borderRadius: 12, padding: "9px 12px", fontSize: 12.5, fontFamily: PJS, fontWeight: 700, color: TEXT, background: "#F8FAFC", outline: "none", boxSizing: "border-box" }}
+            />
+            {parafGuru.trim() && (
+              <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: "7px 2px 0" }}>Paraf tersimpan otomatis di perangkat ini.</p>
+            )}
           </div>
 
           {/* Shortcut Ekspor via PC */}

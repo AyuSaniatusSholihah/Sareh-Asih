@@ -1,12 +1,12 @@
 import { useState, useMemo } from "react";
 import {
-  Users, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, ChevronRight,
-  Search, User, Settings, BarChart2, School,
+  Users, CheckCircle2, AlertCircle, ChevronRight,
+  Search, User, Settings, BarChart2,
 } from "lucide-react";
 import {
-  TEXT, MUTED, BDR, DEEP, A, PJS, IPS, DMM, useUI, BG,
+  TEXT, MUTED, BDR, DEEP, A, PJS, IPS, useUI, BG,
 } from "../ui-kit";
-import { useStudents, fotoSiswa, type Screen, type Student } from "../data";
+import { useStudents, fotoSiswa, type Screen } from "../data";
 import { exportSpreadsheet } from "../export";
 
 type FilterStatus = "semua" | "perlu" | "terpetakan";
@@ -26,45 +26,28 @@ export function TalentMapScreen({
 }) {
   const students = useStudents();
   const { openSearch, openSettings } = useUI();
-  const [selectedClass, setSelectedClass] = useState<string>("Semua");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("semua");
-  const [collapsedClasses, setCollapsedClasses] = useState<Record<string, boolean>>({});
   const [showDownloadModal, setShowDownloadModal] = useState(false);
 
-  const classes = useMemo(() => Array.from(new Set(students.map(s => s.kelas))).sort(), [students]);
-
-  const classFiltered = useMemo(() => {
-    if (selectedClass === "Semua") return students;
-    return students.filter(s => s.kelas === selectedClass);
-  }, [students, selectedClass]);
-
-  const totalCount = classFiltered.length;
-  const mappedCount = classFiltered.filter(s => s.hasObs).length;
-  const unmappedCount = classFiltered.filter(s => !s.hasObs).length;
-  const unassessedInScope = classFiltered.filter(s => !s.hasObs);
+  const totalCount = students.length;
+  const mappedCount = students.filter(s => s.hasObs).length;
+  const unmappedCount = students.filter(s => !s.hasObs).length;
+  const unassessedInScope = students.filter(s => !s.hasObs);
   const allAssessed = unassessedInScope.length === 0;
-  const filterLabel = selectedClass === "Semua" ? "Semua Kelas" : ("Kelas " + selectedClass);
+
+  const classList = useMemo(() => Array.from(new Set(students.map(s => s.kelas))), [students]);
+  const filterLabel = classList.length === 1
+    ? (classList[0].startsWith("Kelas") ? classList[0] : "Kelas " + classList[0])
+    : "Semua Siswa";
 
   const statusFiltered = useMemo(() => {
-    if (filterStatus === "terpetakan") return classFiltered.filter(s => s.hasObs);
-    if (filterStatus === "perlu") return classFiltered.filter(s => !s.hasObs);
-    return classFiltered;
-  }, [classFiltered, filterStatus]);
-
-  const groupedByClass = useMemo(() => {
-    return classes.reduce((acc, k) => {
-      const list = statusFiltered.filter(s => s.kelas === k);
-      if (list.length > 0) acc[k] = list;
-      return acc;
-    }, {} as Record<string, Student[]>);
-  }, [classes, statusFiltered]);
-
-  const toggleClassCollapse = (k: string) => {
-    setCollapsedClasses(prev => ({ ...prev, [k]: !prev[k] }));
-  };
+    if (filterStatus === "terpetakan") return students.filter(s => s.hasObs);
+    if (filterStatus === "perlu") return students.filter(s => !s.hasObs);
+    return students;
+  }, [students, filterStatus]);
 
   const doDownload = () => {
-    exportSpreadsheet(classFiltered, namaSekolah || "SLB");
+    exportSpreadsheet(students, namaSekolah || "SLB");
     setShowDownloadModal(false);
   };
 
@@ -111,14 +94,6 @@ export function TalentMapScreen({
 
         {/* Filter Row */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-          <div className="relative flex-shrink-0">
-            <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)} style={{ appearance: "none", WebkitAppearance: "none", background: "#FFFFFF", border: ("1px solid " + BDR), borderRadius: 16, padding: "8px 30px 8px 34px", fontFamily: PJS, fontWeight: 700, fontSize: 12, color: TEXT, cursor: "pointer", boxShadow: "0 1px 4px rgba(91,122,104,0.05)" }}>
-              <option value="Semua">Semua Kelas</option>
-              {classes.map(k => <option key={k} value={k}>{k.startsWith("Kelas") ? k : ("Kelas " + k)}</option>)}
-            </select>
-            <School size={14} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: DEEP, pointerEvents: "none" }} />
-            <ChevronDown size={14} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", color: MUTED, pointerEvents: "none" }} />
-          </div>
           <div className="flex items-center gap-1.5 flex-1 overflow-x-auto no-scrollbar">
             <button onClick={() => setFilterStatus("semua")} className="active:scale-95" style={{ padding: "8px 14px", borderRadius: 16, fontSize: 11.5, fontWeight: 700, fontFamily: PJS, background: filterStatus === "semua" ? DEEP : "#FFFFFF", color: filterStatus === "semua" ? "#FFFFFF" : MUTED, border: filterStatus === "semua" ? "none" : ("1px solid " + BDR), cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.15s ease" }}>Semua ({totalCount})</button>
             <button onClick={() => setFilterStatus("perlu")} className="active:scale-95" style={{ padding: "8px 14px", borderRadius: 16, fontSize: 11.5, fontWeight: 700, fontFamily: PJS, background: filterStatus === "perlu" ? A : "#FBF1EF", color: filterStatus === "perlu" ? "#FFFFFF" : A, border: filterStatus === "perlu" ? "none" : "1px solid rgba(210,110,91,0.3)", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.15s ease" }}>Perlu asesmen ({unmappedCount})</button>
@@ -139,7 +114,7 @@ export function TalentMapScreen({
             <div style={{ textAlign: "left" }}>
               <p style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: "#FFFFFF", margin: 0, lineHeight: 1.2 }}>Unduh Rekapan Excel</p>
               <p style={{ fontFamily: IPS, fontSize: 11, color: "rgba(255,255,255,0.75)", margin: "3px 0 0" }}>
-                {filterLabel} · {classFiltered.length} siswa{unmappedCount > 0 ? (" · ") : ""}
+                {filterLabel} · {students.length} siswa{unmappedCount > 0 ? (" · ") : ""}
                 {unmappedCount > 0 && <span style={{ color: "#FFD87A", fontWeight: 600 }}>{unmappedCount} belum asesmen</span>}
               </p>
             </div>
@@ -154,76 +129,57 @@ export function TalentMapScreen({
           </div>
         </button>
 
-        {/* Accordion Kelas */}
-        {Object.keys(groupedByClass).length === 0 ? (
+        {/* Daftar Siswa (rata, satu kelas) */}
+        {statusFiltered.length === 0 ? (
           <div style={{ background: "#FFFFFF", border: "1.5px dashed rgba(91,122,104,0.25)", borderRadius: 20, padding: 32, textAlign: "center" }}>
             <p className="text-sm font-semibold" style={{ color: MUTED }}>Tidak ada siswa yang sesuai dengan filter ini.</p>
-            <button onClick={() => { setSelectedClass("Semua"); setFilterStatus("semua"); }} style={{ marginTop: 12, background: DEEP, color: "#FFFFFF", padding: "8px 16px", borderRadius: 12, border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Reset Filter</button>
+            <button onClick={() => setFilterStatus("semua")} style={{ marginTop: 12, background: DEEP, color: "#FFFFFF", padding: "8px 16px", borderRadius: 12, border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Reset Filter</button>
           </div>
         ) : (
-          Object.entries(groupedByClass).map(([kelasName, classStudents]) => {
-            const mappedInClass = classStudents.filter(s => s.hasObs);
-            const labelKelas = kelasName.startsWith("Kelas") ? kelasName : ("Kelas " + kelasName);
-            const isCollapsed = !!collapsedClasses[kelasName];
-            return (
-              <div key={kelasName} style={{ background: "#FFFFFF", borderRadius: 20, border: ("1px solid " + BDR), boxShadow: "0 2px 8px rgba(91,122,104,0.05)", overflow: "hidden" }}>
-                <div onClick={() => toggleClassCollapse(kelasName)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", cursor: "pointer", background: "#FAFCFA", borderBottom: isCollapsed ? "none" : ("1px solid " + BDR) }} className="hover:bg-[#F2F6F3] transition-colors">
-                  <div className="flex items-center gap-2.5">
-                    <div style={{ width: 30, height: 30, background: "rgba(91,122,104,0.12)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: DEEP }}><School size={16} /></div>
-                    <span style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT }}>{labelKelas}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span style={{ background: mappedInClass.length === classStudents.length ? "#EBF4EE" : "#FBF1EF", color: mappedInClass.length === classStudents.length ? DEEP : A, border: mappedInClass.length === classStudents.length ? "1px solid rgba(45,84,62,0.18)" : "1px solid rgba(210,110,91,0.25)", fontSize: 11, fontWeight: 700, fontFamily: PJS, padding: "3px 10px", borderRadius: 12 }}>{mappedInClass.length}/{classStudents.length} terpetakan</span>
-                    {isCollapsed ? <ChevronDown size={17} style={{ color: MUTED }} /> : <ChevronUp size={17} style={{ color: MUTED }} />}
-                  </div>
-                </div>
-                {!isCollapsed && (
-                  <div className="divide-y divide-[rgba(91,122,104,0.08)]">
-                    {classStudents.map(s => (
-                      <div key={s.id} style={{ padding: "14px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, background: s.hasObs ? "#FFFFFF" : "rgba(251,241,239,0.35)" }}>
-                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                          {fotoSiswa(s) ? (
-                            <img
-                              src={fotoSiswa(s)}
-                              alt={`Foto profil ${s.name}`}
-                              style={{ width: 42, height: 42, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: ("1.5px solid " + (s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)")) }}
-                            />
-                          ) : (
-                            <div style={{ width: 42, height: 42, borderRadius: "50%", background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF", border: ("1.5px solid " + (s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)")), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                              <User size={20} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
-                            </div>
-                          )}
-                          <div className="min-w-0 flex-1">
-                            <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: 0, lineHeight: 1.25 }} className="truncate">{s.name}</p>
-                            <p style={{ color: MUTED, fontSize: 11, margin: "2px 0 0", fontFamily: IPS, fontWeight: 500 }} className="truncate">{s.abk}</p>
-                            <div className="mt-1.5 flex items-center">
-                              {s.hasObs ? (
-                                <span style={{ background: "#EBF4EE", color: DEEP, border: "1px solid rgba(45,84,62,0.18)", fontSize: 10.5, fontWeight: 700, fontFamily: PJS, padding: "2.5px 8px", borderRadius: 8, display: "inline-block" }}>{(s as any).talent || "Artistic"}</span>
-                              ) : (
-                                <span style={{ background: "#FBF1EF", color: A, border: "1px solid rgba(210,110,91,0.25)", fontSize: 10, fontWeight: 700, fontFamily: PJS, padding: "2.5px 8px", borderRadius: 8, display: "inline-flex", alignItems: "center", gap: 3.5 }}><AlertCircle size={11} style={{ color: A }} />Belum ada asesmen</span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
+          <div style={{ background: "#FFFFFF", borderRadius: 20, border: ("1px solid " + BDR), boxShadow: "0 2px 8px rgba(91,122,104,0.05)", overflow: "hidden" }}>
+            <div className="divide-y divide-[rgba(91,122,104,0.08)]">
+              {statusFiltered.map(s => (
+                <div key={s.id} style={{ padding: "14px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, background: s.hasObs ? "#FFFFFF" : "rgba(251,241,239,0.35)" }}>
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {fotoSiswa(s) ? (
+                      <img
+                        src={fotoSiswa(s)}
+                        alt={`Foto profil ${s.name}`}
+                        style={{ width: 42, height: 42, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: ("1.5px solid " + (s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)")) }}
+                      />
+                    ) : (
+                      <div style={{ width: 42, height: 42, borderRadius: "50%", background: s.gender === "L" ? "#EBF4EE" : "#FBF1EF", border: ("1.5px solid " + (s.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)")), display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <User size={20} style={{ color: s.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: 0, lineHeight: 1.25 }} className="truncate">{s.name}</p>
+                      <p style={{ color: MUTED, fontSize: 11, margin: "2px 0 0", fontFamily: IPS, fontWeight: 500 }} className="truncate">{s.abk}</p>
+                      <div className="mt-1.5 flex items-center">
                         {s.hasObs ? (
-                          <button type="button" onClick={() => { onSelect(s.id); go("talent-map-detail"); }} style={{ background: "#EBF4EE", border: "1px solid rgba(45,84,62,0.22)", borderRadius: 16, padding: "7px 11px", display: "flex", alignItems: "center", gap: 7, cursor: "pointer", flexShrink: 0, boxShadow: "0 2px 6px rgba(45,84,62,0.08)", transition: "all 0.15s ease" }} className="active:scale-95 hover:bg-[#DEECE2]">
-                            <BarChart2 size={16} style={{ color: DEEP, flexShrink: 0 }} />
-                            <div className="text-left leading-[1.12]"><p style={{ fontSize: 10.5, fontWeight: 700, color: DEEP, fontFamily: PJS, margin: 0 }}>Lihat hasil</p><p style={{ fontSize: 10.5, fontWeight: 700, color: DEEP, fontFamily: PJS, margin: 0 }}>asesmen</p></div>
-                            <ChevronRight size={13} style={{ color: DEEP, flexShrink: 0 }} strokeWidth={2.5} />
-                          </button>
+                          <span style={{ background: "#EBF4EE", color: DEEP, border: "1px solid rgba(45,84,62,0.18)", fontSize: 10.5, fontWeight: 700, fontFamily: PJS, padding: "2.5px 8px", borderRadius: 8, display: "inline-block" }}>{(s as any).talent || "Artistic"}</span>
                         ) : (
-                          <button type="button" onClick={() => onStartObs(s.id)} style={{ background: "#D27D6B", border: "none", borderRadius: 16, padding: "9px 13px", display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0, boxShadow: "0 3px 10px rgba(210,125,107,0.30)", transition: "all 0.15s ease" }} className="active:scale-95 hover:brightness-105">
-                            <span style={{ fontSize: 11.5, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, whiteSpace: "nowrap" }}>Mulai asesmen</span>
-                            <ChevronRight size={13} style={{ color: "#FFFFFF", flexShrink: 0 }} strokeWidth={2.5} />
-                          </button>
+                          <span style={{ background: "#FBF1EF", color: A, border: "1px solid rgba(210,110,91,0.25)", fontSize: 10, fontWeight: 700, fontFamily: PJS, padding: "2.5px 8px", borderRadius: 8, display: "inline-flex", alignItems: "center", gap: 3.5 }}><AlertCircle size={11} style={{ color: A }} />Belum ada asesmen</span>
                         )}
                       </div>
-                    ))}
+                    </div>
                   </div>
-                )}
-              </div>
-            );
-          })
+                  {s.hasObs ? (
+                    <button type="button" onClick={() => { onSelect(s.id); go("talent-map-detail"); }} style={{ background: "#EBF4EE", border: "1px solid rgba(45,84,62,0.22)", borderRadius: 16, padding: "7px 11px", display: "flex", alignItems: "center", gap: 7, cursor: "pointer", flexShrink: 0, boxShadow: "0 2px 6px rgba(45,84,62,0.08)", transition: "all 0.15s ease" }} className="active:scale-95 hover:bg-[#DEECE2]">
+                        <BarChart2 size={16} style={{ color: DEEP, flexShrink: 0 }} />
+                        <div className="text-left leading-[1.12]"><p style={{ fontSize: 10.5, fontWeight: 700, color: DEEP, fontFamily: PJS, margin: 0 }}>Lihat hasil</p><p style={{ fontSize: 10.5, fontWeight: 700, color: DEEP, fontFamily: PJS, margin: 0 }}>asesmen</p></div>
+                        <ChevronRight size={13} style={{ color: DEEP, flexShrink: 0 }} strokeWidth={2.5} />
+                      </button>
+                    ) : (
+                      <button type="button" onClick={() => onStartObs(s.id)} style={{ background: "#D27D6B", border: "none", borderRadius: 16, padding: "9px 13px", display: "flex", alignItems: "center", gap: 6, cursor: "pointer", flexShrink: 0, boxShadow: "0 3px 10px rgba(210,125,107,0.30)", transition: "all 0.15s ease" }} className="active:scale-95 hover:brightness-105">
+                        <span style={{ fontSize: 11.5, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, whiteSpace: "nowrap" }}>Mulai asesmen</span>
+                        <ChevronRight size={13} style={{ color: "#FFFFFF", flexShrink: 0 }} strokeWidth={2.5} />
+                      </button>
+                    )}
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 

@@ -15,6 +15,21 @@ function unduh(nama:string, isi:string, mime:string) {
 const tanggal = () => new Date().toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"});
 const stempel = () => new Date().toISOString().slice(0,10);
 
+/* ── Paraf guru: disimpan lokal, otomatis ikut tercetak di laporan ─── */
+const PARAF_KEY = "sareh-asih.parafGuru";
+
+export function simpanParafGuru(nilai: string) {
+  try {
+    const v = nilai.trim();
+    if (v) localStorage.setItem(PARAF_KEY, v);
+    else localStorage.removeItem(PARAF_KEY);
+  } catch { /* storage tidak tersedia (mode privat) — abaikan */ }
+}
+
+export function muatParafGuru(): string {
+  try { return localStorage.getItem(PARAF_KEY) || ""; } catch { return ""; }
+}
+
 /* ── 1. Ekspor spreadsheet (CSV, siap dibuka Excel / Google Sheets) ── */
 const KOLOM: {h:string; get:(s:Student)=>string}[] = [
   {h:"Nama PDBK",          get:s=>s.name},
@@ -105,7 +120,7 @@ export async function shareSpreadsheet(list:Student[], namaSekolah:string): Prom
 /* ── 2. Ekspor laporan dokumen pemetaan (.doc, dibuka Word/Docs) ───── */
 const esc = (v:string) => v.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
-function bagianSiswa(s:Student, index:number, total:number) {
+function bagianSiswa(s:Student, index:number, total:number, paraf:string) {
   const gaya = s.caraBelajar ? GAYA_META[s.caraBelajar] : undefined;
   const talent = studentTalentDetail[s.id];
   const lomba = s.comps
@@ -171,14 +186,22 @@ function bagianSiswa(s:Student, index:number, total:number) {
     <table>${baris("Kode Akses", s.kodeOrtu||"Belum dibuat")}</table>
 
     <div class="ttd">
-      <p>Guru Pendamping,</p>
-      <div class="garis"></div>
-      <p>${esc(s.teacher)}</p>
+      <div class="kolom">
+        <p>Guru Pendamping,</p>
+        <div class="garis"></div>
+        <p>${esc(s.teacher)}</p>
+      </div>
+      <div class="kolom">
+        <p>Paraf Guru,</p>
+        <div class="garis"></div>
+        <p class="nilai">${paraf ? esc(paraf) : "&nbsp;"}</p>
+      </div>
     </div>
   </div>`;
 }
 
-export function buildLaporanHTML(list:Student[], namaSekolah:string) {
+export function buildLaporanHTML(list:Student[], namaSekolah:string, parafGuru?: string) {
+  const paraf = (parafGuru ?? muatParafGuru()).trim();
   const satu = list.length === 1;
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Laporan Pemetaan Bakat</title>
@@ -202,9 +225,11 @@ export function buildLaporanHTML(list:Student[], namaSekolah:string) {
   td.mid{text-align:center}
   ul{margin:4px 0 10px 18px;padding:0}
   li{margin-bottom:3px}
-  .ttd{margin-top:22px;font-size:10pt;page-break-inside:avoid}
+  .ttd{margin-top:22px;font-size:10pt;page-break-inside:avoid;display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
+  .ttd .kolom{min-width:190px}
+  .ttd .kolom p:last-child{border-top:1px solid #2E3E35;display:inline-block;padding-top:3px;min-width:190px}
+  .ttd .kolom p.nilai{font-style:italic;color:#5B7A68}
   .garis{height:44px}
-  .ttd p:last-child{border-top:1px solid #2E3E35;display:inline-block;padding-top:3px;min-width:190px}
   .catatan{background:#F3F8F4;border-left:3px solid #8BB098;padding:9px 12px;font-size:9.5pt;color:#5B7A68;margin-top:26px}
 </style></head>
 <body>
@@ -213,13 +238,13 @@ export function buildLaporanHTML(list:Student[], namaSekolah:string) {
     <p class="meta">${esc(namaSekolah)} &middot; Dicetak ${tanggal()} &middot; ${list.length} siswa</p>
   </div>
   ${satu ? "" : `<p class="meta">Daftar siswa: ${list.map(s=>esc(s.name)).join(", ")}</p>`}
-  ${list.map((s,i)=>bagianSiswa(s,i,list.length)).join("")}
+  ${list.map((s,i)=>bagianSiswa(s,i,list.length,paraf)).join("")}
   <p class="catatan">Laporan ini dihasilkan Sareh Asih dari data asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen tenaga ahli.</p>
 </body></html>`;
 }
 
-export function printReportPDF(list: Student[], namaSekolah: string) {
-  const html = buildLaporanHTML(list, namaSekolah);
+export function printReportPDF(list: Student[], namaSekolah: string, parafGuru?: string) {
+  const html = buildLaporanHTML(list, namaSekolah, parafGuru);
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
   iframe.style.right = "0";
@@ -254,9 +279,9 @@ export function printReportPDF(list: Student[], namaSekolah: string) {
   }
 }
 
-export function exportLaporanPemetaan(list:Student[], namaSekolah:string) {
+export function exportLaporanPemetaan(list:Student[], namaSekolah:string, parafGuru?: string) {
   const satu = list.length === 1;
-  const html = buildLaporanHTML(list, namaSekolah);
+  const html = buildLaporanHTML(list, namaSekolah, parafGuru);
   const nama = satu
     ? `laporan-pemetaan-${list[0].name.toLowerCase().replace(/\s+/g,"-")}-${stempel()}.doc`
     : `laporan-pemetaan-${list.length}-siswa-${stempel()}.doc`;

@@ -5,5 +5,6 @@ export * from "./student-profile-screen";
 export * from "./talent-map-screen";
 export * from "./talent-map-detail-screen";
 export * from "./learning-rec-screen";
+export * from "./asesmen-custom-screen";
 export * from "./competition-screen";
 export * from "./report-screen";

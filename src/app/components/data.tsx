@@ -1,5 +1,13 @@
 import { createContext, useContext } from "react";
 import type { StatusType } from "./ui-kit";
+import fotoSiswa1 from "@/imports/foto-siswa-1.jpg";
+import fotoSiswa2 from "@/imports/foto-siswa-2.jpg";
+import fotoSiswa3 from "@/imports/foto-siswa-3.jpg";
+import fotoSiswa4 from "@/imports/foto-siswa-4.jpg";
+import fotoSiswa5 from "@/imports/foto-siswa-5.jpg";
+import fotoSiswa6 from "@/imports/foto-siswa-6.jpg";
+import fotoSiswa7 from "@/imports/foto-siswa-7.jpg";
+import fotoSiswa8 from "@/imports/foto-siswa-8.jpg";
 
 // ─── Types ───────────────────────────────────────────────────────────
 export type Role   = "guru" | "ortu";
@@ -7,7 +15,7 @@ export type Role   = "guru" | "ortu";
 export type Screen =
   | "landing" | "role-select" | "google-login" | "parent-code"
   | "dashboard" | "students" | "profile" | "observation" | "kode-akses"
-  | "asesmen-pending"
+  | "asesmen-pending" | "asesmen-custom"
   | "talent-map" | "talent-map-detail"
   | "learning-rec"
   | "competition"
@@ -43,31 +51,41 @@ export const kodeOrtuBaru = (nama: string, kelas: string, tahun: string | number
 };
 export const KODE_ORTU_REGEX = /^[A-Z0-9]+-[A-Z]+-\d{4}(-[A-Z0-9]+)?$/;
 
+// Semua siswa demo berada di satu kelas yang sama (satu guru mengampu satu kelas).
 export const seedStudents: Student[] = [
   { id:1, name:"Rafi Pratama",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","LKSN Diksus"],  caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-RAFI-2026",  tanggalLahir:"12 Maret 2013", nisn:"0012345601", alamat:"Jl. Merpati No. 5, Surakarta", statusOrtu:"Kandung", namaOrtu:"Ibu Ratna" },
-  { id:2, name:"Nisa Aulia",     abk:"Tunadaksa",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIIB-NISA-2026",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
+  { id:2, name:"Nisa Aulia",     abk:"Tunadaksa",   kelas:"VII A",  age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIA-NISA-2026",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
   { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, comps:[],                            caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-ARGA-2026",  tanggalLahir:"20 Nov 2014",   nisn:"0012345603", alamat:"Jl. Dahlia No. 8, Depok",     statusOrtu:"Yatim",   namaOrtu:"Ibu Sinta" },
-  { id:4, name:"Dina Maharani",  abk:"Tunadaksa",   kelas:"IX C",   age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"IXC-DINA-2026",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
+  { id:4, name:"Dina Maharani",  abk:"Tunadaksa",   kelas:"VII A",  age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIA-DINA-2026",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
   { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, comps:["FLS3N PDBK"],                caraBelajar:"Visual",                kodeOrtu:"VIIA-BUDI-2026",  tanggalLahir:"15 Agu 2013",   nisn:"0012345605", alamat:"Jl. Anggrek No. 1, Solo",     statusOrtu:"Piatu",   namaOrtu:"Bapak Joko" },
-  { id:6, name:"Maya Dewi",      abk:"Tunadaksa",   kelas:"VIII B", age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIIB-MAYA-2026",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
-  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"IX A",   age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  comps:["LKSN Diksus"],               caraBelajar:"Visual & Kinestetik",   kodeOrtu:"IXA-TONI-2026",  tanggalLahir:"30 Jan 2011",   nisn:"0012345607", alamat:"Jl. Flamboyan No. 7, Jogja",  statusOrtu:"Kandung", namaOrtu:"Bapak Rudi" },
-  { id:8, name:"Sari Indah",     abk:"Tunadaksa",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIIA-SARI-2026",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
+  { id:6, name:"Maya Dewi",      abk:"Tunadaksa",   kelas:"VII A",  age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIA-MAYA-2026",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
+  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"VII A",  age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  comps:["LKSN Diksus"],               caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-TONI-2026",  tanggalLahir:"30 Jan 2011",   nisn:"0012345607", alamat:"Jl. Flamboyan No. 7, Jogja",  statusOrtu:"Kandung", namaOrtu:"Bapak Rudi" },
+  { id:8, name:"Sari Indah",     abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIA-SARI-2026",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
 ];
 
-// ─── Contoh foto profil siswa (dummy dari Pexels, untuk seed) ─────────
+// ─── Contoh foto profil siswa (dummy, disimpan lokal di src/imports) ──
+// Foto tiap id dibuat cocok dengan `gender` pada data seed di atas.
+// Sumber: Pexels — lisensi bebas (https://www.pexels.com/license/).
 export const FOTO_DUMMY: Record<number, string> = {
-  1: "https://images.pexels.com/photos/36998127/pexels-photo-36998127.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-  2: "https://images.pexels.com/photos/8727434/pexels-photo-8727434.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-  3: "https://images.pexels.com/photos/15024341/pexels-photo-15024341.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-  4: "https://images.pexels.com/photos/13010404/pexels-photo-13010404.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-  5: "https://images.pexels.com/photos/38245944/pexels-photo-38245944.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-  6: "https://images.pexels.com/photos/38399819/pexels-photo-38399819.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-  7: "https://images.pexels.com/photos/12727671/pexels-photo-12727671.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
-  8: "https://images.pexels.com/photos/33041091/pexels-photo-33041091.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
+  1: fotoSiswa1, // Rafi (L)
+  2: fotoSiswa2, // Nisa (P)
+  3: fotoSiswa3, // Arga (L)
+  4: fotoSiswa4, // Dina (P)
+  5: fotoSiswa5, // Budi (L)
+  6: fotoSiswa6, // Maya (P)
+  7: fotoSiswa7, // Toni (L)
+  8: fotoSiswa8, // Sari (P)
 };
-// Foto unggahan siswa diutamakan, kalau kosong pakai foto dummy di atas
-export const fotoSiswa = (s: Pick<Student, "id" | "foto">): string | undefined =>
-  s.foto || FOTO_DUMMY[s.id];
+// Pool foto cadangan untuk siswa di luar data seed (mis. data dari Firestore),
+// dipilih otomatis sesuai gender agar tetap ada foto profil.
+const FOTO_POOL_L: string[] = [fotoSiswa1, fotoSiswa3, fotoSiswa5, fotoSiswa7];
+const FOTO_POOL_P: string[] = [fotoSiswa2, fotoSiswa4, fotoSiswa6, fotoSiswa8];
+
+// Urutan pemilihan: foto unggahan guru → foto dummy sesuai id → pool gender
+export const fotoSiswa = (s: Pick<Student, "id" | "foto" | "gender">): string | undefined =>
+  s.foto ||
+  FOTO_DUMMY[s.id] ||
+  (s.gender === "P" ? FOTO_POOL_P : FOTO_POOL_L)[Math.abs(s.id || 0) % 4];
 
 // ─── Laporan ke orang tua ────────────────────────────────────────────
 /**

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useMemo, type MouseEvent } from "react";
-import { Users, Database, Upload, UserPlus, ChevronRight, AlertCircle, Trash2, CheckCircle, Info } from "lucide-react";
+import { Users, Database, Upload, UserPlus, ChevronRight, AlertCircle, Trash2, Info } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, Field, SelectField } from "../ui-kit";
 import { ABK_OPTIONS, CARA_BELAJAR_OPTIONS } from "../data";
 import { ModalShell } from "./modal-shell";
@@ -1209,20 +1209,18 @@ export function PilihKelasDBModal({
   onClose?: () => void;
   onImport: (s: SiswaImportData[]) => void;
 }) {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  // Satu guru hanya mengampu satu kelas → pilihannya tunggal (radio).
+  const [selected, setSelected] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const toggleKelas = (k: string) => setSelected(s => {
-    const n = new Set(s);
-    n.has(k) ? n.delete(k) : n.add(k);
-    return n;
-  });
+  const toggleKelas = (k: string) => setSelected(prev => (prev === k ? null : k));
 
-  const siswaSelected = [...selected].flatMap(k => {
-    const list = MOCK_DB_SEKOLAH[k] || [];
-    const kelasName = k.split(" – ")[0] || k;
-    return list.map(s => ({ ...s, kelas: kelasName }));
-  });
+  const siswaSelected = selected
+    ? (MOCK_DB_SEKOLAH[selected] || []).map(s => ({
+        ...s,
+        kelas: selected.split(" – ")[0] || selected,
+      }))
+    : [];
 
   return (
     <ModalShell step={3} total={3} title="Database Sekolah" desc={`${sekolah} · Pilih kelas yang ingin diimpor`} onSkip={onSkip} skipLabel="Lewati →" onClose={onClose || onSkip}>
@@ -1230,13 +1228,13 @@ export function PilihKelasDBModal({
       <div style={{ background: SEC, border: `1px solid rgba(91,122,104,0.2)`, borderRadius: 14, padding: "10px 12px", display: "flex", gap: 8, marginBottom: 12 }}>
         <Database size={13} style={{ color: T, flexShrink: 0, marginTop: 1 }} />
         <p style={{ fontSize: 12, color: DEEP, fontFamily: IPS, lineHeight: 1.5 }}>
-          Data kelas di bawah tersedia dari sistem dapodik / basis data sekolah. Centang kelas yang ingin Anda ajar.
+          Data kelas di bawah tersedia dari sistem dapodik / basis data sekolah. Pilih 1 kelas yang ingin Anda ajar.
         </p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, marginBottom: 14 }}>
         {Object.entries(MOCK_DB_SEKOLAH).map(([kelas, siswas]) => {
-          const isSelected = selected.has(kelas);
+          const isSelected = selected === kelas;
           const isExpanded = expanded === kelas;
           const [namaKelas, jenisAbk] = kelas.includes(" – ") ? kelas.split(" – ") : [kelas, ""];
 
@@ -1259,13 +1257,13 @@ export function PilihKelasDBModal({
             >
               <div>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                  {/* Checkbox */}
+                  {/* Radio (pilihan tunggal) */}
                   <div style={{
-                    width: 18, height: 18, borderRadius: 6, border: `2px solid ${isSelected ? T : BDR}`,
+                    width: 18, height: 18, borderRadius: "50%", border: `2px solid ${isSelected ? T : BDR}`,
                     background: isSelected ? T : "transparent", flexShrink: 0,
                     display: "flex", alignItems: "center", justifyContent: "center"
                   }}>
-                    {isSelected && <CheckCircle size={12} style={{ color: "#fff" }} />}
+                    {isSelected && <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff" }} />}
                   </div>
                   <span style={{ fontSize: 10, fontWeight: 700, color: DEEP, background: "rgba(91,122,104,0.12)", padding: "2px 6px", borderRadius: 10 }}>
                     {siswas.length} siswa
@@ -1310,11 +1308,11 @@ export function PilihKelasDBModal({
         })}
       </div>
 
-      {selected.size > 0 && (
+      {selected && (
         <div style={{ background: SEC, borderRadius: 12, padding: "8px 12px", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
           <Users size={13} style={{ color: T }} />
           <p style={{ fontSize: 12, color: DEEP, fontFamily: IPS, fontWeight: 600 }}>
-            {selected.size} kelas · {siswaSelected.length} siswa akan diimpor
+            1 kelas · {siswaSelected.length} siswa akan diimpor
           </p>
         </div>
       )}
@@ -1325,8 +1323,8 @@ export function PilihKelasDBModal({
           Kembali
         </button>
         <button onClick={() => onImport(siswaSelected)}
-          disabled={selected.size === 0}
-          style={{ flex: 2, background: selected.size ? A : "#D1D5DB", color: "#fff", fontFamily: IPS, minHeight: 48, borderRadius: 14, fontSize: 13, fontWeight: 700, border: "none", cursor: selected.size ? "pointer" : "default" }}>
+          disabled={!selected}
+          style={{ flex: 2, background: selected ? A : "#D1D5DB", color: "#fff", fontFamily: IPS, minHeight: 48, borderRadius: 14, fontSize: 13, fontWeight: 700, border: "none", cursor: selected ? "pointer" : "default" }}>
           Import {siswaSelected.length > 0 ? `${siswaSelected.length} Siswa` : "Siswa"} →
         </button>
       </div>

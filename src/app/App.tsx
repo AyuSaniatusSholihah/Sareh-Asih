@@ -36,7 +36,7 @@ import {
 import {
   DashboardGuru, AsesmenPendingScreen, StudentsScreen,
   StudentProfileScreen, TalentMapScreen, TalentMapDetailScreen,
-  LearningRecScreen, CompetitionScreen, ReportScreen,
+  LearningRecScreen, CompetitionScreen, ReportScreen, AsesmenCustomScreen,
 } from "./components/teacher";
 
 import guruIcon from "@/imports/guru-icon.png";
@@ -77,7 +77,14 @@ export default function App() {
       try {
         const fromDB = await loadStudentsFromFirestore();
         if (fromDB.length > 0) {
-          setList(fromDB);
+          // Digabung dengan seed: data input guru (Firestore) menimpa id yang
+          // sama, sisanya ditambahkan — data demo lengkap (potensi, rekomendasi)
+          // tetap tampil untuk id 1–8.
+          setList(prev => {
+            const tergabung = new Map<number, Student>(prev.map(s => [s.id, s]));
+            fromDB.forEach(s => tergabung.set(s.id, s));
+            return Array.from(tergabung.values()).sort((a, b) => a.id - b.id);
+          });
         }
         // Jika kosong, tetap pakai seedStudents (data awal demo)
       } catch (err) {
@@ -334,10 +341,12 @@ export default function App() {
       case "talent-map": return <TalentMapScreen go={go} onStartObs={startObs} onSelect={setSelectedStudentId} namaSekolah={guru.sekolah} onGoAsesmenPending={() => go("asesmen-pending")} />;
       case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} namaSekolah={guru.sekolah} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
+      case "asesmen-custom": return <AsesmenCustomScreen onBack={goBack} studentId={selectedStudentId} />;
       case "competition": return <CompetitionScreen onStartObs={startObs} />;
       case "report": return (
         <ReportScreen
           namaSekolah={guru.sekolah}
+          namaGuru={guru.nama}
           onProfile={() => {
             if (list.length > 0) {
               setSelectedStudentId(list[0].id);
