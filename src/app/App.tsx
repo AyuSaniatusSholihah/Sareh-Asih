@@ -60,7 +60,18 @@ const DEFAULT_GURU: GuruProfile = {
   kelasAbkMap: {},
 };
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 500);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= 500);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isMobile;
+}
+
 export default function App() {
+  const isMobile = useIsMobile();
   // Auth & navigasi
   const [role, setRole] = useState<Role | null>(null);
   const [pendingRole, setPending] = useState<Role>("guru");
@@ -379,15 +390,20 @@ export default function App() {
   return (
     <StudentsCtx.Provider value={{ list, add: addStudent }}>
       <UI.Provider value={uiCtx}>
-        <div className="min-h-screen w-full flex items-center justify-center" style={{ background: "#EBF3ED", fontFamily: PJS }}>
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-16 left-16 w-72 h-72 rounded-full opacity-30 blur-3xl" style={{ background: `${T}25` }} />
-            <div className="absolute bottom-16 right-16 w-80 h-80 rounded-full opacity-30 blur-3xl" style={{ background: `${A}18` }} />
-          </div>
+        <div
+          className="min-h-screen w-full flex items-center justify-center"
+          style={{ background: "#EBF3ED", fontFamily: PJS }}
+        >
+          {!isMobile && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute top-16 left-16 w-72 h-72 rounded-full opacity-30 blur-3xl" style={{ background: `${T}25` }} />
+              <div className="absolute bottom-16 right-16 w-80 h-80 rounded-full opacity-30 blur-3xl" style={{ background: `${A}18` }} />
+            </div>
+          )}
 
-          <div className="relative z-10 flex flex-col items-center gap-5 py-8">
-            {/* Demo switcher */}
-            {!!role && (
+          <div className={isMobile ? "w-full h-full" : "relative z-10 flex flex-col items-center gap-5 py-8"}>
+            {/* Demo switcher — hanya di desktop */}
+            {!!role && !isMobile && (
               <div className="flex items-center gap-1 p-1 rounded-2xl" style={{ background: "rgba(255,255,255,0.85)", border: `1px solid rgba(91,122,104,0.12)` }}>
                 {(["guru", "ortu"] as Role[]).map(r => (
                   <button key={r} onClick={() => demoSwitch(r)} style={{ background: role === r ? T : "transparent", color: role === r ? "#fff" : "#6B8070", fontFamily: IPS, minHeight: 38 }} className="px-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
@@ -401,18 +417,24 @@ export default function App() {
               </div>
             )}
 
-            {/* Phone frame */}
-            <div style={{
+            {/* Phone frame: tampil di desktop, hilang di HP sungguhan */}
+            <div style={isMobile ? {
+              width: "100%", height: "100vh", background: BG, borderRadius: 0,
+              display: "flex", flexDirection: "column", overflow: "hidden",
+              position: "relative",
+            } : {
               width: 393, height: 852, background: BG, borderRadius: 47,
               display: "flex", flexDirection: "column", overflow: "hidden",
               boxShadow: "0 40px 80px rgba(91,122,104,0.22), 0 0 0 8px #1A1F23, 0 0 0 9.5px #2E3438",
               position: "relative",
             }}>
-              {/* Notch */}
-              <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 126, height: 34, background: "#1A1F23", borderRadius: "0 0 20px 20px", zIndex: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#2E3438" }} />
-                <div style={{ width: 48, height: 6, borderRadius: 3, background: "#2E3438" }} />
-              </div>
+              {/* Notch — hanya di desktop */}
+              {!isMobile && (
+                <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 126, height: 34, background: "#1A1F23", borderRadius: "0 0 20px 20px", zIndex: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#2E3438" }} />
+                  <div style={{ width: 48, height: 6, borderRadius: 3, background: "#2E3438" }} />
+                </div>
+              )}
 
               {screen !== "landing" && (
                 <div style={{ background: "#FFFFFF", paddingTop: 36, flexShrink: 0 }}>
@@ -579,7 +601,7 @@ export default function App() {
               )}
             </div>
 
-            <p className="text-xs font-semibold" style={{ color: T, fontFamily: IPS, opacity: 0.8 }}>Sareh Asih · GEMASTIK XVII · UX Design</p>
+            {!isMobile && <p className="text-xs font-semibold" style={{ color: T, fontFamily: IPS, opacity: 0.8 }}>Sareh Asih · GEMASTIK XVII · UX Design</p>}
           </div>
         </div>
       </UI.Provider>
