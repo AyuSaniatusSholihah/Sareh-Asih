@@ -1,19 +1,19 @@
 import { useState, useMemo } from "react";
 import {
   CheckCircle, FileSpreadsheet, FileText, Download, Users, User,
-  School, Check, MessageCircle, Printer, X, Share2,
+  Check, MessageCircle, Printer, X, Share2,
   ChevronRight, BarChart3, Clock, ArrowLeft, Search,
   Laptop, QrCode, Monitor, RefreshCw, Copy, LogOut,
   Globe, ExternalLink, ShieldCheck, Smartphone, Sparkles, Settings, PenLine,
 } from "lucide-react";
 import { CARD, TEXT, MUTED, SEC, T, A, DEEP, PJS, IPS, BG, BDR, DMM, useUI } from "../ui-kit";
 import { useStudents, fotoSiswa, type Student } from "../data";
-import { exportSpreadsheet, exportLaporanPemetaan, printReportPDF, muatParafGuru, simpanParafGuru } from "../export";
+import { exportSpreadsheet, exportLaporanPemetaan, printReportPDF, muatParafGuru, simpanParafGuru, muatTtdGuru, simpanTtdGuru } from "../export";
+import { SignaturePad } from "../signature-pad";
 import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
 
 type ReportView = "main" | "detail" | "web-connect";
-type FilterScope = "semua" | "kelas" | "anak";
-type OverviewTab = "kelas" | "anak";
+type FilterScope = "semua" | "anak";
 
 // Foto profil siswa (dummy) — fallback ke emoji bila tidak ada foto
 function AvatarSiswa({ s, size, emojiSize }: { s: Student; size: number; emojiSize: number }) {
@@ -43,9 +43,10 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
   // Paraf guru: ikut tercetak di blok tanda tangan laporan (.doc / PDF)
   const [parafGuru, setParafGuru] = useState<string>(() => muatParafGuru() || namaGuru || "");
   const ubahParaf = (v: string) => { setParafGuru(v); simpanParafGuru(v); };
-  const [overviewTab, setOverviewTab] = useState<OverviewTab>("kelas");
+  // Tanda tangan guru (gambar): data URL PNG, ikut tercetak di kolom Paraf Guru
+  const [ttdGuru, setTtdGuru] = useState<string>(() => muatTtdGuru());
+  const ubahTtd = (v: string) => { setTtdGuru(v); simpanTtdGuru(v); };
   const [filterScope, setFilterScope] = useState<FilterScope>("semua");
-  const [selectedClass, setSelectedClass] = useState<string>("Semua");
   const [selectedStudentIds, setSelectedStudentIds] = useState<Set<number>>(new Set());
   const [searchAnak, setSearchAnak] = useState("");
   const [toastMsg, setToastMsg] = useState("");
@@ -64,25 +65,16 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
   const [showPCPreviewModal, setShowPCPreviewModal] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
 
-  const classes = useMemo(() => Array.from(new Set(students.map(s => s.kelas))).sort(), [students]);
   const totalObs = students.filter(s => s.hasObs).length;
   const totalNotObs = students.length - totalObs;
-  const byClass = useMemo(() => classes.map(k => {
-    const ss = students.filter(s => s.kelas === k);
-    return { kelas: k, total: ss.length, obs: ss.filter(s => s.hasObs).length };
-  }), [classes, students]);
 
   const filteredList = useMemo(() => {
-    if (filterScope === "semua") return students;
-    if (filterScope === "kelas") {
-      if (selectedClass === "Semua") return students;
-      return students.filter(s => s.kelas.toLowerCase().replace(/\s+/g, "") === selectedClass.toLowerCase().replace(/\s+/g, ""));
-    }
     if (filterScope === "anak") {
       if (selectedStudentIds.size === 0) return students;
       return students.filter(s => selectedStudentIds.has(s.id));
     }
-  }, [students, filterScope, selectedClass, selectedStudentIds]);
+    return students;
+  }, [students, filterScope, selectedStudentIds]);
 
   const searchedAnakList = useMemo(() => {
     if (!searchAnak.trim()) return students;
@@ -106,7 +98,6 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
 
   const scopeBadgeText = useMemo(() => {
     if (filterScope === "semua") return `Semua Kelas (${filteredList.length} Siswa)`;
-    if (filterScope === "kelas") return selectedClass === "Semua" ? `Semua Kelas (${filteredList.length} Siswa)` : `Kelas ${selectedClass} (${filteredList.length} Siswa)`;
     if (filterScope === "anak") {
       if (selectedStudentIds.size === 1) {
         const student = filteredList[0];
@@ -115,22 +106,21 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
       return `${selectedStudentIds.size} Siswa Dipilih`;
     }
     return `${filteredList.length} Siswa`;
-  }, [filterScope, selectedClass, selectedStudentIds, filteredList]);
+  }, [filterScope, selectedStudentIds, filteredList]);
 
   const scopeShortText = useMemo(() => {
-    if (filterScope === "kelas") return selectedClass === "Semua" ? "Semua Kelas" : `Kelas ${selectedClass}`;
     if (filterScope === "anak") return `${selectedStudentIds.size} Siswa`;
     return "Semua Kelas";
-  }, [filterScope, selectedClass, selectedStudentIds]);
+  }, [filterScope, selectedStudentIds]);
 
   const showToast = (msg: string) => { setToastMsg(msg); setTimeout(() => setToastMsg(""), 3200); };
   const handleDownloadExcel = () => { exportSpreadsheet(filteredList, namaSekolah); showToast(`Rekap Excel (${scopeShortText}) berhasil diunduh!`); };
-  const handleDownloadWord = () => { exportLaporanPemetaan(filteredList, namaSekolah, parafGuru); showToast(`Rapor ${scopeBadgeText} berhasil diunduh!`); };
-  const handleDownloadPDF = () => { printReportPDF(filteredList, namaSekolah, parafGuru); showToast(`Format PDF ${scopeShortText} disiapkan untuk dicetak/disimpan!`); };
+  const handleDownloadWord = () => { exportLaporanPemetaan(filteredList, namaSekolah, parafGuru, ttdGuru); showToast(`Rapor ${scopeBadgeText} berhasil diunduh!`); };
+  const handleDownloadPDF = () => { printReportPDF(filteredList, namaSekolah, parafGuru, ttdGuru); showToast(`Format PDF ${scopeShortText} disiapkan untuk dicetak/disimpan!`); };
 
   const handleShareWA = () => {
     // 1. Output dokumen PDF resmi secara otomatis
-    printReportPDF(filteredList, namaSekolah, parafGuru);
+    printReportPDF(filteredList, namaSekolah, parafGuru, ttdGuru);
 
     // 2. Format teks WhatsApp untuk dibagikan
     const isPerAnak = filterScope === "anak" && selectedStudentIds.size === 1;
@@ -153,7 +143,7 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
         "_Sareh Asih - Sistem Pemetaan Bakat ABK_",
       ].filter(Boolean);
     } else {
-      const scopeLabel = filterScope === "kelas" && selectedClass !== "Semua" ? `Kelas ${selectedClass}` : `${filteredList.length} Siswa`;
+      const scopeLabel = `${filteredList.length} Siswa`;
       lines = [
         `*Laporan Rekap Pemetaan Bakat (Format PDF)*`,
         `*${namaSekolah}*`,
@@ -438,7 +428,7 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
                   </button>
                   <button
                     type="button"
-                    onClick={() => { printReportPDF(students, namaSekolah, parafGuru); showToast("Dokumen Rapor PDF dicetak!"); }}
+                    onClick={() => { printReportPDF(students, namaSekolah, parafGuru, ttdGuru); showToast("Dokumen Rapor PDF dicetak!"); }}
                     style={{ padding: "10px 12px", borderRadius: 12, border: "1.5px solid #1D4ED8", background: "#EFF6FF", color: "#1D4ED8", fontFamily: PJS, fontSize: 11.5, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
                   >
                     <Printer size={15} />
@@ -501,7 +491,7 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
           <div style={{ background: "#FFFFFF", borderRadius: 18, padding: "14px", border: "1px solid rgba(91,122,104,0.12)", boxShadow: "0 2px 8px rgba(91,122,104,0.04)" }}>
             <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 800, color: DEEP, margin: "0 0 10px" }}>Pilih Cakupan Laporan</p>
             <div style={{ display: "flex", background: "#D4DFD9", borderRadius: 12, padding: 3, gap: 3 }}>
-              {([{ id: "semua" as FilterScope, label: "Semua", icon: <Users size={13} /> }, { id: "kelas" as FilterScope, label: "Per Kelas", icon: <School size={13} /> }, { id: "anak" as FilterScope, label: "Per Anak", icon: <User size={13} /> }]).map(tab => {
+              {([{ id: "semua" as FilterScope, label: "Semua", icon: <Users size={13} /> }, { id: "anak" as FilterScope, label: "Per Anak", icon: <User size={13} /> }]).map(tab => {
                 const active = filterScope === tab.id;
                 return (
                   <button key={tab.id} type="button" onClick={() => setFilterScope(tab.id)} style={{ flex: 1, minHeight: 34, borderRadius: 9, border: "none", background: active ? DEEP : "rgba(255,255,255,0.40)", color: active ? "#FFFFFF" : DEEP, fontFamily: PJS, fontWeight: active ? 800 : 600, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, boxShadow: active ? "0 2px 8px rgba(45,84,62,0.20)" : "none", transition: "all 0.15s ease" }} className="active:scale-[0.98]">
@@ -510,22 +500,6 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
                 );
               })}
             </div>
-
-            {filterScope === "kelas" && (
-              <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(91,122,104,0.18)" }}>
-                <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 700, color: MUTED, margin: "0 0 8px" }}>Pilih Kelas:</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  <button type="button" onClick={() => setSelectedClass("Semua")} style={{ padding: "7px 13px", borderRadius: 12, border: selectedClass === "Semua" ? `1.5px solid ${DEEP}` : "1px solid #E2E8F0", background: selectedClass === "Semua" ? DEEP : "#F8FAFC", color: selectedClass === "Semua" ? "#FFFFFF" : TEXT, fontFamily: PJS, fontSize: 12, fontWeight: 700, cursor: "pointer" }} className="active:scale-95 transition-all">Semua ({students.length})</button>
-                  {classes.map(k => {
-                    const count = students.filter(s => s.kelas === k).length;
-                    const active = selectedClass === k;
-                    return (
-                      <button key={k} type="button" onClick={() => setSelectedClass(k)} style={{ padding: "7px 13px", borderRadius: 12, border: active ? `1.5px solid ${DEEP}` : "1px solid #E2E8F0", background: active ? DEEP : "#F8FAFC", color: active ? "#FFFFFF" : TEXT, fontFamily: PJS, fontSize: 12, fontWeight: 700, cursor: "pointer" }} className="active:scale-95 transition-all">{k} ({count})</button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
             {filterScope === "anak" && (
               <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(91,122,104,0.18)" }}>
@@ -607,7 +581,7 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
               </div>
               <div>
                 <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 800, color: TEXT, margin: 0 }}>Paraf Guru</p>
-                <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0 }}>Dicetak pada kolom tanda tangan tiap halaman laporan</p>
+                <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: 0 }}>Nama & tanda tangan tercetak pada kolom tanda tangan tiap halaman laporan</p>
               </div>
             </div>
             <input
@@ -620,6 +594,11 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
             {parafGuru.trim() && (
               <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: "7px 2px 0" }}>Paraf tersimpan otomatis di perangkat ini.</p>
             )}
+
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(91,122,104,0.18)" }}>
+              <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 700, color: MUTED, margin: "0 0 8px" }}>Tanda Tangan (gambar tangan):</p>
+              <SignaturePad value={ttdGuru} onChange={ubahTtd} />
+            </div>
           </div>
 
           {/* Shortcut Ekspor via PC */}
@@ -860,21 +839,9 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
               <div style={{ height: "100%", borderRadius: 99, background: "linear-gradient(90deg, #3F6851, #5B9A6E)", width: `${students.length > 0 ? (totalObs / students.length) * 100 : 0}%`, transition: "width 0.4s ease" }} />
             </div>
           </div>
-          <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px dashed rgba(91,122,104,0.18)" }}>
-            <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 700, color: MUTED, margin: "0 0 8px" }}>{classes.length} Kelas Terdaftar</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {byClass.map(c => (
-                <div key={c.kelas} style={{ background: "#F1F5F9", borderRadius: 10, padding: "5px 10px", display: "flex", alignItems: "center", gap: 5 }}>
-                  <School size={11} style={{ color: DEEP }} />
-                  <span style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 700, color: TEXT }}>{c.kelas}</span>
-                  <span style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED }}>· {c.total} siswa</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* Overview Laporan (Per Kelas / Per Anak) */}
+        {/* Overview Laporan (Per Anak) */}
         <div style={{ background: "#FFFFFF", borderRadius: 20, padding: "16px", border: "1px solid rgba(91,122,104,0.12)", boxShadow: "0 2px 8px rgba(91,122,104,0.04)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
             <div style={{ width: 30, height: 30, borderRadius: 10, background: "rgba(91,122,104,0.10)", display: "flex", alignItems: "center", justifyContent: "center", color: DEEP }}>
@@ -882,65 +849,26 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
             </div>
             <h2 style={{ fontFamily: PJS, fontSize: 14, fontWeight: 800, color: TEXT, margin: 0 }}>Overview Laporan</h2>
           </div>
-          <div style={{ display: "flex", background: "#D4DFD9", borderRadius: 12, padding: 3, gap: 3, marginBottom: 12 }}>
-            {([{ id: "kelas" as OverviewTab, label: "Per Kelas", icon: <School size={13} /> }, { id: "anak" as OverviewTab, label: "Per Anak", icon: <User size={13} /> }]).map(tab => {
-              const active = overviewTab === tab.id;
-              return (
-                <button key={tab.id} type="button" onClick={() => setOverviewTab(tab.id)} style={{ flex: 1, minHeight: 34, borderRadius: 9, border: "none", background: active ? DEEP : "rgba(255,255,255,0.40)", color: active ? "#FFFFFF" : DEEP, fontFamily: PJS, fontWeight: active ? 800 : 600, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, boxShadow: active ? "0 2px 8px rgba(45,84,62,0.20)" : "none", transition: "all 0.15s ease" }} className="active:scale-[0.98]">
-                  {tab.icon}<span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
 
-          {overviewTab === "kelas" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {byClass.map(c => {
-                const pct = c.total > 0 ? Math.round((c.obs / c.total) * 100) : 0;
-                return (
-                  <div key={c.kelas} style={{ background: "#F8FAFC", borderRadius: 14, padding: "12px 14px", border: "1px solid #EDF2F7" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                        <School size={13} style={{ color: DEEP }} />
-                        <span style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT }}>Kelas {c.kelas}</span>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ fontFamily: IPS, fontSize: 11, color: MUTED }}>{c.obs}/{c.total}</span>
-                        <span style={{ fontFamily: PJS, fontSize: 10.5, fontWeight: 700, background: pct === 100 ? "#ECFDF5" : pct >= 50 ? "#EFF6FF" : "#FFFBEB", color: pct === 100 ? "#059669" : pct >= 50 ? "#2563EB" : "#B45309", padding: "2px 7px", borderRadius: 8 }}>{pct}%</span>
-                      </div>
-                    </div>
-                    <div style={{ height: 6, background: "#E2E8F0", borderRadius: 99, overflow: "hidden" }}>
-                      <div style={{ height: "100%", borderRadius: 99, background: pct === 100 ? "#059669" : pct >= 50 ? "#3B82F6" : "#F59E0B", width: `${pct}%`, transition: "width 0.4s ease" }} />
-                    </div>
-                    <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: "5px 0 0" }}>{c.obs} terpetakan · {c.total - c.obs} belum diamati</p>
-                  </div>
-                );
-              })}
-              {byClass.length === 0 && <p style={{ textAlign: "center", color: MUTED, fontSize: 12, padding: "16px 0", margin: 0 }}>Belum ada data kelas.</p>}
-            </div>
-          )}
-
-          {overviewTab === "anak" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 7, maxHeight: 300, overflowY: "auto", paddingRight: 2 }}>
-              {students.map(s => (
-                <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "#F8FAFC", borderRadius: 12, padding: "9px 12px", border: "1px solid #EDF2F7" }}>
-                  <AvatarSiswa s={s} size={30} emojiSize={20} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
-                    <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>Kelas {s.kelas} · {s.abk}</p>
-                  </div>
-                  {s.hasObs ? (
-                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0 }}>{kodeTigaHuruf(getMockJawaban(s.id))}</span>
-                  ) : (
-                    <span style={{ background: "#FFFBEB", color: "#B45309", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0, display: "flex", alignItems: "center", gap: 3 }}>
-                      <Clock size={10} />Belum
-                    </span>
-                  )}
+          <div style={{ display: "flex", flexDirection: "column", gap: 7, maxHeight: 300, overflowY: "auto", paddingRight: 2 }}>
+            {students.map(s => (
+              <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "#F8FAFC", borderRadius: 12, padding: "9px 12px", border: "1px solid #EDF2F7" }}>
+                <AvatarSiswa s={s} size={30} emojiSize={20} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
+                  <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>Kelas {s.kelas} · {s.abk}</p>
                 </div>
-              ))}
-              {students.length === 0 && <p style={{ textAlign: "center", color: MUTED, fontSize: 12, padding: "16px 0", margin: 0 }}>Belum ada data siswa.</p>}
-            </div>
-          )}
+                {s.hasObs ? (
+                  <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0 }}>{kodeTigaHuruf(getMockJawaban(s.id))}</span>
+                ) : (
+                  <span style={{ background: "#FFFBEB", color: "#B45309", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 10, fontFamily: PJS, flexShrink: 0, display: "flex", alignItems: "center", gap: 3 }}>
+                    <Clock size={10} />Belum
+                  </span>
+                )}
+              </div>
+            ))}
+            {students.length === 0 && <p style={{ textAlign: "center", color: MUTED, fontSize: 12, padding: "16px 0", margin: 0 }}>Belum ada data siswa.</p>}
+          </div>
         </div>
       </div>
 
