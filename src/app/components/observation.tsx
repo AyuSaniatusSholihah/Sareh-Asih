@@ -15,6 +15,7 @@ import {
   useStudents, type FungsionalKategori, type RiasecKategori,
 } from "./data";
 import { VoiceTextarea } from "./voice-input";
+import { updateStudentInFirestore } from "./firestore-students";
 
 type Tahap = "fungsional" | "kecenderungan" | "catatan";
 
@@ -109,6 +110,9 @@ export function ObservationScreen({
 
   useEffect(() => {
     if (!isLoaded || !student) return;
+    const hasAnyInput = Object.keys(skorFungsional).length > 0 || Object.keys(skorRiasec).length > 0 || catatan.trim().length > 0;
+    if (!hasAnyInput) return;
+
     const saveProgress = async () => {
       try {
         const docRef = doc(db, "assessments", student.id.toString());
@@ -122,6 +126,14 @@ export function ObservationScreen({
           riasecStep,
           lastUpdated: new Date()
         }, { merge: true });
+
+        // Update status di Firestore dan localStorage jika belum selesai
+        if (!student.hasObs) {
+          updateStudentInFirestore(student.id, { obsStatus: "in_progress" }).catch(() => {});
+        }
+        try {
+          localStorage.setItem(`assessment_draft_${student.id}`, JSON.stringify({ inProgress: true, time: Date.now() }));
+        } catch (e) {}
       } catch (err) {
         console.error("Failed to save progress", err);
       }

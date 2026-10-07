@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Search, User, Settings, Plus, ArrowLeft, ChevronRight, CheckCircle, Clock, X } from "lucide-react";
+import { Search, User, Settings, Plus, ArrowLeft, ChevronRight, CheckCircle, Clock, X, Users } from "lucide-react";
 import { BG, MUTED, PJS, IPS, useUI } from "../ui-kit";
 import { useStudents, fotoSiswa, type Screen } from "../data";
 import { type GuruProfile } from "../auth";
 import { cleanClassName } from "../auth/profil-sekolah";
+import { getStudentAsesmenStatus } from "./student-profile-screen";
 
 export function StudentsScreen({
   go,
@@ -149,20 +150,34 @@ export function StudentsScreen({
                 )}
 
                 <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, marginTop: s.id === 4 ? 0 : 5 }}>
-                  <span style={{ background: abkPill.bg, color: abkPill.color, fontSize: 11, fontWeight: 700, fontFamily: PJS, padding: "3.5px 10px", borderRadius: 14, display: "inline-block", whiteSpace: "nowrap" }}>
+                  <span style={{ background: abkPill.bg, color: abkPill.color, fontSize: 10.5, fontWeight: 700, fontFamily: PJS, padding: "3px 9px", borderRadius: 12, display: "inline-block", whiteSpace: "nowrap" }}>
                     {s.abk}
                   </span>
-                  {s.hasObs ? (
-                    <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 11, fontWeight: 700, fontFamily: PJS, padding: "3.5px 10px", borderRadius: 14, display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
-                      <CheckCircle size={12} strokeWidth={2.5} />
-                      <span>Asesmen ada</span>
-                    </span>
-                  ) : (
-                    <span style={{ background: "#FFFBEB", color: "#B45309", fontSize: 11, fontWeight: 700, fontFamily: PJS, padding: "3.5px 10px", borderRadius: 14, display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
-                      <Clock size={11} strokeWidth={2.5} />
-                      <span>Belum asesmen</span>
-                    </span>
-                  )}
+                  {(() => {
+                    const st = getStudentAsesmenStatus(s);
+                    if (st === "completed") {
+                      return (
+                        <span style={{ background: "#ECFDF5", color: "#059669", fontSize: 10.5, fontWeight: 700, fontFamily: PJS, padding: "3px 9px", borderRadius: 12, display: "inline-flex", alignItems: "center", gap: 3.5, whiteSpace: "nowrap" }}>
+                          <CheckCircle size={11} strokeWidth={2.5} />
+                          <span>Selesai</span>
+                        </span>
+                      );
+                    }
+                    if (st === "in_progress") {
+                      return (
+                        <span style={{ background: "#EFF6FF", color: "#2563EB", fontSize: 10.5, fontWeight: 700, fontFamily: PJS, padding: "3px 9px", borderRadius: 12, display: "inline-flex", alignItems: "center", gap: 3.5, whiteSpace: "nowrap" }}>
+                          <Clock size={11} strokeWidth={2.5} />
+                          <span>Berjalan</span>
+                        </span>
+                      );
+                    }
+                    return (
+                      <span style={{ background: "#FFFBEB", color: "#B45309", fontSize: 10.5, fontWeight: 700, fontFamily: PJS, padding: "3px 9px", borderRadius: 12, display: "inline-flex", alignItems: "center", gap: 3.5, whiteSpace: "nowrap" }}>
+                        <Clock size={11} strokeWidth={2.5} />
+                        <span>Belum asesmen</span>
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
 

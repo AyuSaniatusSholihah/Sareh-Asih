@@ -222,15 +222,27 @@ export default function App() {
       ? {
         ...s,
         hasObs: true,
+        obsStatus: "completed",
         caraBelajar: s.caraBelajar || "Visual & Kinestetik"
       }
       : s));
-    // Simpan perubahan hasObs ke Firestore
-    updateStudentInFirestore(id, { hasObs: true, caraBelajar: list.find(s => s.id === id)?.caraBelajar || "Visual & Kinestetik" })
-      .catch(err => console.error("Gagal update hasObs:", err));
+    // Simpan perubahan hasObs & obsStatus ke Firestore
+    updateStudentInFirestore(id, {
+      hasObs: true,
+      obsStatus: "completed",
+      caraBelajar: list.find(s => s.id === id)?.caraBelajar || "Visual & Kinestetik"
+    }).catch(err => console.error("Gagal update hasObs:", err));
+    try {
+      localStorage.removeItem(`assessment_draft_${id}`);
+    } catch (e) {}
     setSelectedStudentId(id);
     go("talent-map-detail");
   };
+
+  const updateStudent = useCallback((id: number, updates: Partial<Student>) => {
+    setList(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+    updateStudentInFirestore(id, updates).catch(err => console.error("Gagal update student:", err));
+  }, []);
 
   const openAddStudent = (firstTime = false) => { setAddFirstTime(firstTime); setShowAddStudent(true); };
 
@@ -331,7 +343,7 @@ export default function App() {
       );
       case "asesmen-pending": return <AsesmenPendingScreen onBack={goBack} onStartObs={startObs} />;
       case "students": return <StudentsScreen go={go} onAddStudent={() => openAddStudent(false)} onSelect={(id) => { setSelectedStudentId(id); go("profile"); }} guru={guru} />;
-      case "profile": return <StudentProfileScreen onBack={goBack} go={go} studentId={selectedStudentId} onStartObs={startObs} onRegenKode={regenKode} namaSekolah={guru.sekolah} laporan={laporan} onKirim={kirimLaporan} />;
+      case "profile": return <StudentProfileScreen onBack={goBack} go={go} studentId={selectedStudentId} onStartObs={startObs} onRegenKode={regenKode} onUpdateStudent={updateStudent} namaSekolah={guru.sekolah} laporan={laporan} onKirim={kirimLaporan} />;
       case "kode-akses": return <KodeAksesScreen onBack={goBack} onBuat={buatKode} onHapus={hapusKode} namaSekolah={guru.sekolah} />;
       case "observation": return (
         <ObservationScreen
@@ -388,7 +400,7 @@ export default function App() {
   const [title, sub] = headerTitle();
 
   return (
-    <StudentsCtx.Provider value={{ list, add: addStudent }}>
+    <StudentsCtx.Provider value={{ list, add: addStudent, update: updateStudent }}>
       <UI.Provider value={uiCtx}>
         <div
           className="min-h-screen w-full flex items-center justify-center"
