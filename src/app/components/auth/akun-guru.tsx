@@ -19,6 +19,7 @@ export interface GuruProfile {
   teacherRole?: TeacherRole;     // peran guru: SLB, GPK, atau homeschool
   namaRuangBelajar?: string;     // nama ruang belajar (untuk homeschool)
   setupDone?: boolean;           // true setelah setup selesai
+  kelasKekhususan?: string[];    // daftar jenis kekhususan dalam kelas
 }
 
 // SRS-F-002: Profil guru lengkap — nama, email, jabatan, noHp
@@ -41,8 +42,8 @@ export function AkunGuruModal({
 
   return (
     <ModalShell
-      step={1}
-      total={3}
+      step={0}
+      total={0}
       title="Konfirmasi Profil Anda"
       desc="Data diambil dari akun Google."
       onClose={onClose}
@@ -171,7 +172,7 @@ export function AkunGuruModal({
               Data Akun Disimpan!
             </>
           ) : (
-            "Lanjut ke Profil Sekolah →"
+            "Konfirmasi & Mulai"
           )}
         </button>
       </div>

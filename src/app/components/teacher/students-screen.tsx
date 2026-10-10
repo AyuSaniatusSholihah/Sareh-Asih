@@ -44,17 +44,27 @@ export function StudentsScreen({
   const rawClass = guru?.kelas?.[0] || "Kelas VI A";
   const className = cleanClassName(rawClass) || "Kelas VI A";
 
-  const headerTitle = role === "homeschool"
-    ? (guru?.namaRuangBelajar || "Ruang Belajar Saya")
-    : role === "gpk"
-    ? (guru?.sekolah || "Sekolah Dampingan")
-    : className;
-
-  const headerSubLabel = role === "homeschool"
+  const countSuffix = role === "homeschool"
     ? `${students.length} Anak`
-    : role === "gpk"
-    ? `${students.length} Anak Dampingan`
     : `${students.length} Siswa`;
+
+  const headerTitle = role === "homeschool"
+    ? `${guru?.namaRuangBelajar || "Ruang Belajar Saya"} · ${countSuffix}`
+    : `${className} · ${countSuffix}`;
+
+  const kekhususanList: string[] = (() => {
+    if (role === "homeschool") return [];
+    if (guru?.kelasKekhususan && guru.kelasKekhususan.length > 0) {
+      return guru.kelasKekhususan;
+    }
+    if (guru?.kelasAbkMap && rawClass && guru.kelasAbkMap[rawClass]) {
+      return guru.kelasAbkMap[rawClass].split(",").map(s => s.trim()).filter(Boolean);
+    }
+    if (guru?.abk && guru.abk.length > 0) {
+      return guru.abk;
+    }
+    return [];
+  })();
 
   const addBtnLabel = getLabel(role, "tambahSiswa");
 
@@ -74,14 +84,46 @@ export function StudentsScreen({
             </button>
 
             <div style={{ minWidth: 0 }}>
-              <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.25 }}>
                 {isSetupDone ? headerTitle : getLabel(role, "tabSiswa")}
               </h1>
-              {isSetupDone && (
-                <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "3px 0 0", fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>
-                  <User size={13} style={{ color: "#5A6E63" }} />
-                  {headerSubLabel}
-                </p>
+              {isSetupDone && kekhususanList.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 4, marginTop: 4 }}>
+                  {kekhususanList.slice(0, 2).map((k, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        fontSize: 10.5,
+                        fontWeight: 600,
+                        fontFamily: IPS,
+                        padding: "2px 8px",
+                        borderRadius: 8,
+                        background: "rgba(91,122,104,0.10)",
+                        color: DEEP,
+                        border: "1px solid rgba(91,122,104,0.18)",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {k}
+                    </span>
+                  ))}
+                  {kekhususanList.length > 2 && (
+                    <span
+                      style={{
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        fontFamily: IPS,
+                        padding: "2px 7px",
+                        borderRadius: 8,
+                        background: "rgba(91,122,104,0.10)",
+                        color: DEEP,
+                        border: "1px solid rgba(91,122,104,0.18)",
+                      }}
+                    >
+                      +{kekhususanList.length - 2}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
           </div>
