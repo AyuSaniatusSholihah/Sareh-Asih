@@ -22,7 +22,8 @@ export type Screen =
   | "report"
   | "parent-dashboard" | "parent-detail"
   | "parent-calendar" | "parent-training"
-  | "riwayat-laporan" | "riwayat-perkembangan" | "detail-aspek" | "kemampuan-diamati";
+  | "riwayat-laporan" | "riwayat-perkembangan" | "detail-aspek" | "kemampuan-diamati"
+  | "setup-ruang-belajar";
 
 export interface Student {
   id:number; name:string; abk:string; kelas:string; age:number; emoji:string;
@@ -41,6 +42,9 @@ export interface Student {
   stars?:number;
   foto?:string; // base64 data URL dari upload foto profil
   obsStatus?: "not_started" | "in_progress" | "completed";
+  // ─ Field baru (backward-compatible, opsional) ─
+  jenjangOpsional?: string;       // "PAUD/usia dini" | "Tanpa jenjang formal" | "SD" dsb
+  statusDiagnosis?: string;       // "Belum ada diagnosis / sedang observasi" | nama diagnosis
 }
 
 // ─── Seed data ───────────────────────────────────────────────────────

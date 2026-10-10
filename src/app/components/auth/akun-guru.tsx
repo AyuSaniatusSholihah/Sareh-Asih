@@ -3,6 +3,7 @@ import { Briefcase, CheckCircle, ArrowLeft } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, Field } from "../ui-kit";
 import { ModalShell } from "./modal-shell";
 import { GoogleMark } from "./illustrations";
+import { type TeacherRole } from "../role-labels";
 
 // ─── GURU: POP-UP 1 — Konfirmasi akun Google ──────────────────────────
 export interface GuruProfile {
@@ -14,6 +15,10 @@ export interface GuruProfile {
   kelas: string[];           // derived from kelasAbkMap keys
   abk: string[];             // derived from kelasAbkMap values (unique)
   kelasAbkMap: Record<string, string>; // "VII A" → "Tunanetra"
+  // ─ Field baru (backward-compatible) ─
+  teacherRole?: TeacherRole;     // peran guru: SLB, GPK, atau homeschool
+  namaRuangBelajar?: string;     // nama ruang belajar (untuk homeschool)
+  setupDone?: boolean;           // true setelah setup selesai
 }
 
 // SRS-F-002: Profil guru lengkap — nama, email, jabatan, noHp

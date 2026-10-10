@@ -6,6 +6,7 @@ import {
   T, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, useUI,
 } from "../ui-kit";
 import { type Role } from "../data";
+import { type TeacherRole, TEACHER_ROLE_OPTIONS } from "../role-labels";
 
 export const INFO_PANELS = [
   {
@@ -44,15 +45,23 @@ export const INFO_PANELS = [
 export function SettingsSheet({
   onClose,
   onLogout,
+  onEditSetup,
   role,
+  teacherRole,
 }: {
   onClose: () => void;
   onLogout?: () => void;
+  onEditSetup?: () => void;
   role?: Role | null;
+  teacherRole?: TeacherRole;
 }) {
   const { fontSize, setFontSize, tts, setTts } = useUI();
   const [info, setInfo] = useState<string | null>(null);
   const [confirmLogout, setConfirmLogout] = useState(false);
+
+  const roleLabel = teacherRole
+    ? TEACHER_ROLE_OPTIONS.find(t => t.value === teacherRole)?.label || "Guru SLB"
+    : "Guru SLB";
 
   return (
     <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.45)", zIndex: 80, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} onClick={onClose}>
@@ -88,17 +97,26 @@ export function SettingsSheet({
         {/* Akun & Logout */}
         {role && onLogout && (
           <div style={{ marginBottom: 18, padding: "14px", background: BG, borderRadius: 16, border: `1.5px solid ${BDR}`, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: role === "guru" ? 8 : 10 }}>
               <div>
                 <p style={{ fontSize: 10, fontWeight: 700, color: MUTED, fontFamily: DMM, textTransform: "uppercase" }}>Akun Aktif</p>
                 <p style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: PJS }}>
-                  {role === "guru" ? "Guru SLB (Sari Dewi, S.Pd.)" : "Orang Tua Siswa"}
+                  {role === "guru" ? `Guru (${roleLabel})` : "Orang Tua Siswa"}
                 </p>
               </div>
               <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20, background: SEC, color: DEEP, fontFamily: IPS, border: `1px solid ${BDR}` }}>
-                {role === "guru" ? "Guru" : "Orang Tua"}
+                {role === "guru" ? roleLabel : "Orang Tua"}
               </span>
             </div>
+
+            {role === "guru" && onEditSetup && (
+              <button
+                onClick={() => { onClose(); onEditSetup(); }}
+                style={{ width: "100%", padding: "8px 12px", borderRadius: 10, border: `1px solid ${BDR}`, background: CARD, color: DEEP, fontFamily: IPS, fontSize: 12, fontWeight: 700, marginBottom: 10, cursor: "pointer", textAlign: "center" }}
+              >
+                ⚙ Ubah Peran & Setup Ruang Belajar
+              </button>
+            )}
 
             {!confirmLogout ? (
               <button onClick={() => setConfirmLogout(true)}

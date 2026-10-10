@@ -15,8 +15,7 @@ import {
 } from "./components/data";
 import {
   LandingScreen, RoleSelectScreen, GoogleLoginScreen, ParentCodeScreen,
-  AkunGuruModal, ProfilSekolahModal, TambahSiswaPromptModal, type GuruProfile,
-  cleanClassName,
+  type GuruProfile, cleanClassName,
 } from "./components/auth";
 import { AddStudentSheet } from "./components/add-student";
 import { ObservationScreen } from "./components/observation";
@@ -28,7 +27,7 @@ import {
 
 // Layout components
 import {
-  StatusBar, SearchOverlay, SettingsSheet, GlobalHeader, BotNav, OnboardingModal,
+  StatusBar, SearchOverlay, SettingsSheet, GlobalHeader, BotNav,
 } from "./components/layout";
 
 
@@ -37,6 +36,7 @@ import {
   DashboardGuru, AsesmenPendingScreen, StudentsScreen,
   StudentProfileScreen, TalentMapScreen, TalentMapDetailScreen,
   LearningRecScreen, CompetitionScreen, ReportScreen, AsesmenCustomScreen,
+  SetupRuangBelajar,
 } from "./components/teacher";
 
 import guruIcon from "@/imports/guru-icon.png";
@@ -47,17 +47,17 @@ const MAIN_SCREENS: Screen[] = [
   "parent-dashboard", "parent-detail", "parent-calendar", "parent-training",
 ];
 
-type GuruSetup = null | "akun" | "sekolah" | "siswa";
-
 const DEFAULT_GURU: GuruProfile = {
   nama: "Sari Dewi, S.Pd.",
   email: "sari.dewi@gmail.com",
-  sekolah: "",
+  sekolah: "SLB Negeri 1 Kota Bandung",
   jabatan: "Guru Kelas / Wali Kelas",
   noHp: "081234567890",
-  kelas: [],
-  abk: [],
-  kelasAbkMap: {},
+  kelas: ["Kelas VII A"],
+  abk: ["Tunadaksa"],
+  kelasAbkMap: { "Kelas VII A": "Tunadaksa" },
+  teacherRole: "guru_slb",
+  setupDone: true,
 };
 
 function useIsMobile() {
@@ -123,10 +123,8 @@ export default function App() {
   // Guru
   const [laporan, setLaporan] = useState<LaporanKirim[]>(seedLaporan);
   const [guru, setGuru] = useState<GuruProfile>(DEFAULT_GURU);
-  const [guruSetup, setGuruSetup] = useState<GuruSetup>(null);
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [addFirstTime, setAddFirstTime] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Orang tua
   const [namaOrtu] = useState("Ani Rahmawati");
@@ -170,27 +168,19 @@ export default function App() {
   const googleSuccess = () => {
     if (pendingRole === "guru") {
       setRole("guru"); setScreen("dashboard"); setTab("dashboard");
-      setGuruSetup("akun");
     } else {
       go("parent-code");
     }
   };
 
-  const finishGuruSetup = () => {
-    setGuruSetup(null);
-    setShowOnboarding(true);
-  };
-
   const enterParent = (linkedId: number | null) => {
     setRole("ortu"); setChildId(linkedId); setChildIds(linkedId ? [linkedId] : []);
     setScreen("parent-dashboard"); setTab("parent-dashboard");
-    setShowOnboarding(true);
   };
 
   const handleLogout = () => {
     setRole(null);
     setScreen("landing");
-    setGuruSetup(null);
     setShowSettings(false);
     setChildId(null);
     setChildIds([]);
@@ -201,7 +191,7 @@ export default function App() {
   const demoSwitch = (r: Role) => {
     setRole(r);
     setScreenHistory([]);
-    if (r === "guru") { setGuruSetup(null); setShowOnboarding(false); goTab("dashboard"); }
+    if (r === "guru") { goTab("dashboard"); }
     else {
       const id = childId ?? 1;
       setChildId(id);
@@ -211,7 +201,7 @@ export default function App() {
   };
 
   const logout = () => {
-    setRole(null); setGuruSetup(null); setShowOnboarding(false);
+    setRole(null);
     setChildId(null); setChildIds([]); setScreen("landing"); setScreenHistory([]);
   };
 
@@ -283,7 +273,7 @@ export default function App() {
     setList(prev => prev.map(s => ids.includes(s.id) ? { ...s, kodeOrtu: undefined } : s));
 
   const isMain = MAIN_SCREENS.includes(screen);
-  const showNav = !!role && isMain && !guruSetup;
+  const showNav = !!role && isMain;
 
   const goBack = () => {
     setScreenHistory(prev => {
@@ -300,10 +290,10 @@ export default function App() {
 
   const headerTitle = (): [string, string] => {
     switch (screen) {
-      case "dashboard": return ["Beranda", `${guru.nama.split(" ")[0]} · ${guru.sekolah}`];
+      case "dashboard": return ["Beranda", `${guru.nama.split(" ")[0]} · ${guru.sekolah || guru.namaRuangBelajar || "Sareh Asih"}`];
       case "asesmen-pending": return ["Asesmen Perlu Diperiksa", "Daftar siswa yang belum dinilai"];
       case "students": return ["Kelas Saya", "Kelola Siswa dengan Mudah"];
-      case "talent-map": return ["Peta Bakat", guru.sekolah];
+      case "talent-map": return ["Peta Bakat", guru.sekolah || guru.namaRuangBelajar || "Sareh Asih"];
       case "competition": return ["Agenda Ajang Talenta", "Jadwal O2SN, FLS3N & LKSN Diksus"];
       case "report": return ["Laporan", "Rekap data siswa & pemetaan bakat"];
       case "parent-dashboard": return ["Beranda ♡", child ? `Orang Tua · ${child.name}` : "Orang Tua · belum terhubung"];
@@ -343,6 +333,49 @@ export default function App() {
       );
       case "asesmen-pending": return <AsesmenPendingScreen onBack={goBack} onStartObs={startObs} />;
       case "students": return <StudentsScreen go={go} onAddStudent={() => openAddStudent(false)} onSelect={(id) => { setSelectedStudentId(id); go("profile"); }} guru={guru} />;
+      case "setup-ruang-belajar": return (
+        <SetupRuangBelajar
+          guru={guru}
+          onBack={goBack}
+          onDone={(result) => {
+            setGuru(g => ({
+              ...g,
+              teacherRole: result.teacherRole,
+              sekolah: result.sekolah,
+              namaRuangBelajar: result.namaRuangBelajar,
+              kelas: result.kelas.length > 0 ? result.kelas : (result.teacherRole === "homeschool" ? [result.namaRuangBelajar || "Ruang Belajar Saya"] : g.kelas),
+              kelasAbkMap: Object.keys(result.kelasAbkMap).length > 0 ? result.kelasAbkMap : g.kelasAbkMap,
+              setupDone: true,
+            }));
+
+            if (result.anakList && result.anakList.length > 0) {
+              result.anakList.forEach(anak => {
+                addStudent({
+                  name: anak.nama,
+                  abk: anak.abk || "Belum ada diagnosis / sedang observasi",
+                  kelas: result.teacherRole === "homeschool"
+                    ? (result.namaRuangBelajar || "Ruang Belajar Saya")
+                    : result.teacherRole === "gpk"
+                    ? (anak.sekolahAsal || result.sekolah || "Sekolah Dampingan")
+                    : (result.kelas[0] || "Kelas VI A"),
+                  age: parseInt(anak.usia) || 10,
+                  emoji: "👦",
+                  gender: "L",
+                  teacher: guru.nama,
+                  hasObs: false,
+                  comps: [],
+                  caraBelajar: "Visual & Kinestetik",
+                  jenjangOpsional: anak.jenjang,
+                  statusDiagnosis: anak.abk,
+                });
+              });
+            }
+
+            setScreen("students");
+            setTab("students");
+          }}
+        />
+      );
       case "profile": return <StudentProfileScreen onBack={goBack} go={go} studentId={selectedStudentId} onStartObs={startObs} onRegenKode={regenKode} onUpdateStudent={updateStudent} namaSekolah={guru.sekolah} laporan={laporan} onKirim={kirimLaporan} />;
       case "kode-akses": return <KodeAksesScreen onBack={goBack} onBuat={buatKode} onHapus={hapusKode} namaSekolah={guru.sekolah} />;
       case "observation": return (
@@ -470,7 +503,7 @@ export default function App() {
                 {renderScreen()}
 
                 {showSearch && <SearchOverlay onClose={() => setShowSearch(false)} />}
-                {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} onLogout={handleLogout} role={role} />}
+                {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} onLogout={handleLogout} onEditSetup={() => go("setup-ruang-belajar")} role={role} teacherRole={guru.teacherRole} />}
 
                 {/* Modal orang tua: kode akses */}
                 {showLinkCode && (
@@ -486,99 +519,6 @@ export default function App() {
                   />
                 )}
 
-                {/* Pop-up setup guru bertahap */}
-                {guruSetup === "akun" && (
-                  <AkunGuruModal
-                    profile={guru}
-                    onClose={() => setGuruSetup(null)}
-                    onNext={(p) => { setGuru(g => ({ ...g, ...p })); setGuruSetup("sekolah"); }}
-                  />
-                )}
-                {guruSetup === "sekolah" && (
-                  <ProfilSekolahModal
-                    profile={guru}
-                    onClose={() => setGuruSetup(null)}
-                    onBack={() => setGuruSetup("akun")}
-                    onNext={(p) => {
-                      const cleanKelas = (p.kelas || []).map(cleanClassName).filter(Boolean);
-                      const cleanMap: Record<string, string> = {};
-                      if (p.kelasAbkMap) {
-                        for (const [k, v] of Object.entries(p.kelasAbkMap)) {
-                          cleanMap[cleanClassName(k)] = v;
-                        }
-                      }
-                      setGuru(g => ({ ...g, ...p, kelas: cleanKelas, kelasAbkMap: cleanMap }));
-                      setGuruSetup("siswa");
-                    }}
-                  />
-                )}
-                {guruSetup === "siswa" && (
-                  <TambahSiswaPromptModal
-                    sekolah={guru.sekolah}
-                    jumlahKelas={guru.kelas.length}
-                    kelasAbkMap={guru.kelasAbkMap}
-                    teacher={guru.nama}
-                    onClose={() => setGuruSetup(null)}
-                    onBack={() => setGuruSetup("sekolah")}
-                    onSaveManual={(s) => {
-                      addStudent({
-                        name: s.name,
-                        abk: s.abk || "Belum Ditentukan",
-                        kelas: s.kelas,
-                        age: s.age,
-                        emoji: s.emoji,
-                        gender: s.gender ?? (s.emoji === "👦" ? "L" : "P"),
-                        talent: "",
-                        talentScore: 0,
-                        stars: 0,
-                        teacher: guru.nama,
-                        hasObs: false,
-                        comps: [],
-                        kodeOrtu: kodeOrtuBaru(s.name, s.kelas),
-                        caraBelajar: s.caraBelajar || "",
-                        komunikasi: s.komunikasi || "",
-                        motorik: s.motorik || "",
-                        tingkatDukungan: s.tingkatDukungan || "",
-                        rentang: s.rentang || "",
-                        minat: s.minat || "",
-                        terapi: s.terapi || "",
-                        nisn: s.nisn,
-                        tanggalLahir: s.tanggalLahir,
-                        alamat: s.alamat,
-                        statusOrtu: s.statusOrtu,
-                        namaOrtu: s.namaOrtu,
-                        foto: s.foto,
-                      });
-                      // Tidak langsung finishGuruSetup — modal handle kembali ke choice screen
-                    }}
-                    onImportSiswa={(importedSiswa) => {
-                      const kelasKeys = guru.kelas.length ? guru.kelas : Object.keys(guru.kelasAbkMap);
-                      const defaultKelas = kelasKeys[0] || "VII A";
-                      importedSiswa.forEach((s, idx) => {
-                        const emoji = ["👦", "👧", "🧑"][idx % 3];
-                        const targetKelas = s.kelas || defaultKelas;
-                        addStudent({
-                          name: s.nama,
-                          abk: s.abk || guru.kelasAbkMap[targetKelas] || "Belum Ditentukan",
-                          kelas: targetKelas,
-                          age: 0,
-                          emoji,
-                          gender: emoji === "👧" ? "P" : "L",
-                          talent: "", talentScore: 0, stars: 0,
-                          teacher: guru.nama,
-                          hasObs: false, comps: [],
-                          kodeOrtu: undefined,
-                          caraBelajar: "",
-                          komunikasi: "", motorik: "",
-                          tingkatDukungan: "",
-                          rentang: "", minat: "", terapi: "",
-                        });
-                      });
-                    }}
-                    onDone={finishGuruSetup}
-                  />
-                )}
-
                 {/* Sheet tambah siswa */}
                 {showAddStudent && (
                   <AddStudentSheet
@@ -589,28 +529,15 @@ export default function App() {
                     onSave={addStudent}
                     onClose={() => {
                       setShowAddStudent(false);
-                      if (addFirstTime) { setAddFirstTime(false); finishGuruSetup(); }
                     }}
                     onBack={() => {
                       setShowAddStudent(false);
-                      if (addFirstTime) { setGuruSetup("sekolah"); }
                     }}
                   />
                 )}
               </div>
 
               {showNav && <BotNav role={role!} screen={screen} go={goTab} />}
-
-              {showOnboarding && (
-                <OnboardingModal
-                  role={role!}
-                  onClose={() => {
-                    setShowOnboarding(false);
-                    goTab(role === "guru" ? "dashboard" : "parent-dashboard");
-                  }}
-                  goTab={goTab}
-                />
-              )}
             </div>
 
             {!isMobile && <p className="text-xs font-semibold" style={{ color: T, fontFamily: IPS, opacity: 0.8 }}>Sareh Asih · GEMASTIK XVII · UX Design</p>}
