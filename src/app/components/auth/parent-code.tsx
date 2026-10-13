@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, CheckCircle, Hash, XCircle, Key, Info } from "lucide-react";
+import { ArrowLeft, CheckCircle, Hash, XCircle, Key, Info, X } from "lucide-react";
 import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, PJS, IPS, DMM } from "../ui-kit";
 import { KODE_ORTU_REGEX } from "../data";
 
@@ -39,37 +39,145 @@ export function ParentCodeScreen({
     setSukses(hasil);
   };
 
-  // ── Tampilan setelah berhasil: "Rafi berhasil ditambahkan!" ──
-  if (sukses) {
-    return (
-      <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
-        <div className="px-4 pt-2 pb-1">
-          <button onClick={onBack} style={{ minWidth: 44, minHeight: 44 }} className="flex items-center justify-center rounded-2xl">
-            <ArrowLeft size={20} style={{ color: TEXT }} />
-          </button>
-        </div>
-        <div className="px-5 pt-10 pb-8 flex flex-col items-center text-center">
-          <div style={{ width: 76, height: 76, background: SEC, borderRadius: "50%" }} className="flex items-center justify-center mb-4">
-            <CheckCircle size={36} style={{ color: T }} />
-          </div>
-          <h1 className="font-bold mb-2" style={{ fontFamily: PJS, fontSize: 21, color: TEXT }}>
-            {sukses.nama} berhasil ditambahkan!
-          </h1>
-          <p className="text-sm leading-relaxed mb-6" style={{ color: MUTED }}>
-            Anda dapat menambahkan anak lain setelah masuk ke Beranda.
-          </p>
-          <button onClick={() => onEnter(sukses.id)}
-            style={{ width: "100%", background: A, color: "#fff", fontFamily: IPS, minHeight: 50 }}
-            className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
-            Masuk ke Beranda
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+    <div className="relative flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+      {/* Pop-up Notifikasi Berhasil */}
+      {sukses && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 70,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+          }}
+          onClick={() => {
+            setSukses(null);
+            setKode("");
+          }}
+        >
+          {/* Backdrop Overlay */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(46, 62, 53, 0.5)",
+              backdropFilter: "blur(3px)",
+            }}
+          />
+
+          {/* Modal Pop-up Card */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "relative",
+              width: "100%",
+              maxWidth: 360,
+              background: CARD,
+              borderRadius: 24,
+              border: `1px solid ${BDR}`,
+              boxShadow: "0 20px 40px -10px rgba(46, 62, 53, 0.25)",
+              padding: "24px 20px 20px",
+              textAlign: "center",
+            }}
+          >
+            {/* Tombol Tutup */}
+            <button
+              type="button"
+              onClick={() => {
+                setSukses(null);
+                setKode("");
+              }}
+              style={{
+                position: "absolute",
+                top: 14,
+                right: 14,
+                width: 30,
+                height: 30,
+                borderRadius: "50%",
+                background: "#F1F5F9",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#64748B",
+              }}
+              className="active:scale-95 transition-transform"
+              title="Tutup"
+            >
+              <X size={16} strokeWidth={2.4} />
+            </button>
+
+            {/* Ikon Sukses */}
+            <div
+              style={{
+                width: 68,
+                height: 68,
+                background: SEC,
+                borderRadius: "50%",
+                margin: "4px auto 14px",
+              }}
+              className="flex items-center justify-center"
+            >
+              <CheckCircle size={34} style={{ color: T }} strokeWidth={2.2} />
+            </div>
+
+            {/* Judul Notifikasi */}
+            <h2
+              className="font-bold mb-2"
+              style={{ fontFamily: PJS, fontSize: 19, color: TEXT }}
+            >
+              {sukses.nama} berhasil ditambahkan!
+            </h2>
+
+            {/* Deskripsi */}
+            <p
+              className="text-xs leading-relaxed mb-6"
+              style={{ color: MUTED, fontFamily: IPS }}
+            >
+              Anda dapat menambahkan anak lain setelah masuk ke Beranda.
+            </p>
+
+            {/* Tombol Masuk ke Beranda */}
+            <button
+              type="button"
+              onClick={() => onEnter(sukses.id)}
+              style={{
+                width: "100%",
+                background: A,
+                color: "#fff",
+                fontFamily: IPS,
+                minHeight: 48,
+              }}
+              className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2 active:scale-98 transition-transform shadow-sm"
+            >
+              Masuk ke Beranda
+            </button>
+
+            {/* Tombol Tambah Anak Lain */}
+            <button
+              type="button"
+              onClick={() => {
+                setSukses(null);
+                setKode("");
+              }}
+              style={{
+                width: "100%",
+                color: T,
+                fontFamily: IPS,
+                minHeight: 38,
+                background: "transparent",
+              }}
+              className="text-xs font-semibold mt-1.5 active:opacity-80 transition-opacity"
+            >
+              Tambah Anak Lain
+            </button>
+          </div>
+        </div>
+      )}
       <div className="px-4 pt-2 pb-1">
         <button onClick={onBack} style={{ minWidth: 44, minHeight: 44 }} className="flex items-center justify-center rounded-2xl">
           <ArrowLeft size={20} style={{ color: TEXT }} />

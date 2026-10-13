@@ -8,3 +8,4 @@ export * from "./learning-rec-screen";
 export * from "./asesmen-custom-screen";
 export * from "./competition-screen";
 export * from "./report-screen";
+export * from "./setup-ruang-belajar";

@@ -42,9 +42,147 @@ export interface AddStudentSheetProps {
   kelasAbkMap: Record<string, string>;
   firstTime?: boolean;
   savedCount?: number;
+  initialStep?: Step;
+  targetKelas?: string;
+  isHomeschool?: boolean;
 }
 
 type SiswaCSVRow = { nama: string; abk: string; ttl: string; kelas?: string; valid: boolean };
+
+/**
+ * Komponen reusable 3 kartu gateway pilihan cara menambah siswa / PDBK
+ */
+export function PilihanTambahSiswa({
+  onSelectDbSekolah,
+  onSelectUpload,
+  onSelectManual,
+  isHomeschool = false,
+  showTips = true,
+  onSkip,
+}: {
+  onSelectDbSekolah?: () => void;
+  onSelectUpload: () => void;
+  onSelectManual: () => void;
+  isHomeschool?: boolean;
+  showTips?: boolean;
+  onSkip?: () => void;
+}) {
+  return (
+    <div className="space-y-3 flex-1 flex flex-col justify-start">
+      {/* ── KARTU 1: Input dari Database Sekolah (hanya jika bukan homeschool) ── */}
+      {!isHomeschool && onSelectDbSekolah && (
+        <div className="bg-white rounded-3xl p-4 border border-[#C5D8E8] shadow-sm flex flex-col items-center text-center">
+          <div className="w-11 h-11 rounded-full bg-[#EBF3FB] flex items-center justify-center mb-2.5 text-[#2563EB]">
+            <Database size={20} strokeWidth={2.2} />
+          </div>
+
+          <h3 className="font-bold text-[15px] text-[#1E3A8A] mb-1" style={{ fontFamily: PJS }}>
+            Input dari Database Sekolah
+          </h3>
+          <p className="text-[11.5px] text-gray-500 mb-3 leading-relaxed px-2">
+            Import data PDBK & kelas langsung dari sistem dapodik sekolah
+          </p>
+
+          <button
+            type="button"
+            onClick={onSelectDbSekolah}
+            className="w-full py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+            style={{ fontFamily: PJS }}
+          >
+            <Database size={15} />
+            Pilih dari Database Sekolah
+          </button>
+        </div>
+      )}
+
+      {/* ── KARTU 2: Upload Daftar Siswa (Hijau) ── */}
+      <div className="bg-white rounded-3xl p-4 border border-[#D5E0D5] shadow-sm flex flex-col items-center text-center">
+        <div className="w-11 h-11 rounded-full bg-[#EAF2EC] flex items-center justify-center mb-2.5 text-[#738B7B]">
+          <Upload size={20} strokeWidth={2.2} />
+        </div>
+
+        <h3 className="font-bold text-[15px] text-[#2C3531] mb-1" style={{ fontFamily: PJS }}>
+          {isHomeschool ? "Upload Daftar Anak" : "Upload Daftar PDBK"}
+        </h3>
+        <p className="text-[11.5px] text-gray-500 mb-3 leading-relaxed">
+          Tambahkan banyak {isHomeschool ? "anak" : "PDBK"} sekaligus<br />
+          Format: CSV, Excel, JPG, PNG
+        </p>
+
+        <button
+          type="button"
+          onClick={onSelectUpload}
+          className="w-full py-2.5 bg-[#738B7B] hover:bg-[#62776A] active:scale-[0.98] text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all mb-2 cursor-pointer"
+          style={{ fontFamily: PJS }}
+        >
+          <Upload size={15} />
+          {isHomeschool ? "Upload Daftar Anak" : "Upload Daftar Siswa"}
+        </button>
+      </div>
+
+      {/* ── KARTU 3: Tambah Siswa Manual (Terracotta) ── */}
+      <div className="bg-[#FFFBFB] rounded-3xl p-4 border border-[#E9C3BC] shadow-sm flex flex-col items-center text-center">
+        <div className="w-11 h-11 rounded-full bg-[#FCECE8] flex items-center justify-center mb-2.5 text-[#D07B64]">
+          <UserPlus size={20} strokeWidth={2.2} />
+        </div>
+
+        <h3 className="font-bold text-[15px] text-[#D07B64] mb-1" style={{ fontFamily: PJS }}>
+          {isHomeschool ? "Tambah Anak Manual" : "Tambah PDBK Manual"}
+        </h3>
+        <p className="text-[11.5px] text-gray-500 mb-3">
+          Masukkan data {isHomeschool ? "anak" : "PDBK"} satu per satu
+        </p>
+
+        <button
+          type="button"
+          onClick={onSelectManual}
+          className="w-full py-2.5 bg-[#D07B64] hover:bg-[#B96A55] active:scale-[0.98] text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+          style={{ fontFamily: PJS }}
+        >
+          <UserPlus size={15} />
+          {isHomeschool ? "Tambah Anak Manual" : "Tambah PDBK Manual"}
+        </button>
+      </div>
+
+      {/* Tips Box */}
+      {showTips && (
+        <div className="relative pt-2 mt-auto">
+          <div className="absolute -top-1 left-1/2 -translate-x-1/2 flex gap-1">
+            <span className="w-1 h-1 rounded-full bg-[#C4C4C4]"></span>
+            <span className="w-1 h-1 rounded-full bg-[#C4C4C4]"></span>
+            <span className="w-1 h-1 rounded-full bg-[#C4C4C4]"></span>
+          </div>
+
+          <div className="bg-white rounded-2xl p-3 border border-[#D5E0D5] flex items-start gap-2.5 shadow-sm">
+            <div className="w-7 h-7 rounded-lg bg-[#F0EEF8] flex items-center justify-center shrink-0 text-[#8B78D1] mt-0.5">
+              <Lightbulb size={16} />
+            </div>
+            <p className="text-[11px] text-gray-600 leading-tight">
+              <strong className="text-gray-800">Tips:</strong>{" "}
+              {isHomeschool
+                ? "Upload file jika sudah punya berkas anak, atau Tambah manual jika satu per satu."
+                : "Pilih Database Sekolah jika data sekolah sudah ada di sistem, Upload file jika sudah punya berkas PDBK, atau Tambah manual jika hanya beberapa peserta didik."}
+            </p>
+          </div>
+
+          {onSkip && (
+            <div className="pt-2.5">
+              <button
+                type="button"
+                onClick={onSkip}
+                className="w-full py-3 bg-white border-2 border-[#738B7B] hover:bg-[#F4F8F5] active:scale-[0.98] text-[#738B7B] rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+                style={{ fontFamily: PJS }}
+              >
+                <span>Lewati, Upload Nanti</span>
+                <ChevronRight size={15} />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /**
  * Screen & Flow Tambah Siswa — 3 Pilihan Gateway:
@@ -60,6 +198,9 @@ export function AddStudentSheet({
   kelasAbkMap,
   firstTime,
   savedCount,
+  initialStep = "choice",
+  targetKelas,
+  isHomeschool = false,
 }: AddStudentSheetProps) {
   const sanitizedMap = useMemo(() => {
     const res: Record<string, string> = {};
@@ -71,10 +212,10 @@ export function AddStudentSheet({
   }, [kelasAbkMap]);
 
   const kelasOptions = Object.keys(sanitizedMap);
-  const defaultKelas = kelasOptions[0] || "";
+  const defaultKelas = targetKelas || kelasOptions[0] || "";
   const defaultAbk = (defaultKelas && sanitizedMap[defaultKelas]) ? sanitizedMap[defaultKelas] : "Tunanetra";
 
-  const [step, setStep] = useState<Step>("choice");
+  const [step, setStep] = useState<Step>(initialStep);
   const [form, setForm] = useState(() => ({
     ...EMPTY,
     kelas: defaultKelas,
@@ -141,10 +282,11 @@ export function AddStudentSheet({
   const save = () => {
     const rawAbkList = form.extra_abk.length > 0 ? form.extra_abk : [form.jenis_abk || "Tunanetra"];
     const allAbk = rawAbkList.map(x => (x === "Lainnya" ? (form.custom_abk?.trim() || "Lainnya") : x)).join(", ");
+    const finalKelas = targetKelas || form.kelas || kelasOptions[0] || "Umum";
     onSave({
       name: form.nama.trim(),
       abk: allAbk || "Tunanetra",
-      kelas: form.kelas || kelasOptions[0] || "Umum",
+      kelas: finalKelas,
       age: Number(form.umur) || 0,
       emoji: form.emoji,
       gender: form.emoji === "👦" ? "L" : "P",
@@ -161,7 +303,7 @@ export function AddStudentSheet({
       rentang: form.rentang,
       minat: form.minat,
       terapi: form.terapi,
-      kodeOrtu: kodeOrtuBaru(form.nama, form.kelas || kelasOptions[0] || "Umum"),
+      kodeOrtu: kodeOrtuBaru(form.nama, finalKelas),
       tanggalLahir: form.tanggalLahir,
       nisn: form.nisn,
       alamat: form.alamat,
@@ -250,15 +392,15 @@ export function AddStudentSheet({
 
   const handleCommitUpload = () => {
     const valid = uploadedRows.filter(r => r.valid);
-    if (!valid.length || !selectedUploadKelas) return;
-    const targetKelas = selectedUploadKelas;
-    const defaultAbk = sanitizedMap[targetKelas] || "Tunanetra";
+    const finalTargetKelas = targetKelas || selectedUploadKelas;
+    if (!valid.length || !finalTargetKelas) return;
+    const defaultAbk = sanitizedMap[finalTargetKelas] || "Tunanetra";
     valid.forEach((s, idx) => {
       const emoji = ["👦", "👧", "🧑"][idx % 3];
       onSave({
         name: s.nama,
         abk: s.abk || defaultAbk,
-        kelas: targetKelas,
+        kelas: finalTargetKelas,
         age: 13,
         emoji,
         gender: emoji === "👧" ? "P" : "L",
@@ -275,10 +417,10 @@ export function AddStudentSheet({
         rentang: "15 menit",
         minat: "Menggambar",
         terapi: "",
-        kodeOrtu: kodeOrtuBaru(s.nama, targetKelas),
+        kodeOrtu: kodeOrtuBaru(s.nama, finalTargetKelas),
       });
     });
-    setLastName(`${valid.length} Siswa (Kelas ${targetKelas})`);
+    setLastName(`${valid.length} ${isHomeschool ? "Anak" : "Siswa"}`);
     setStep("success");
   };
 
@@ -295,7 +437,7 @@ export function AddStudentSheet({
   const handleCommitDB = () => {
     const selectedSiswaList = [...selectedDBKelas].flatMap(k => {
       const list = MOCK_DB_SEKOLAH[k] || [];
-      const kelasName = k.split(" – ")[0] || "VII A";
+      const kelasName = targetKelas || k.split(" – ")[0] || "VII A";
       return list.map(s => ({ ...s, kelasName }));
     });
 
@@ -379,115 +521,17 @@ export function AddStudentSheet({
 
           {/* Judul Subseksi */}
           <h2 className="text-center text-sm font-bold text-[#2C3531] mb-4" style={{ fontFamily: PJS }}>
-            Pilih cara menambahkan PDBK
+            {isHomeschool ? "Pilih cara menambahkan anak didik" : "Pilih cara menambahkan PDBK"}
           </h2>
 
-          {/* Wrapper 3 Kartu Pilihan */}
-          <div className="space-y-3 flex-1 flex flex-col justify-start">
-            
-            {/* ── KARTU 1: Input dari Database Sekolah (Biru/Teal Elegan) ── */}
-            <div className="bg-white rounded-3xl p-4 border border-[#C5D8E8] shadow-sm flex flex-col items-center text-center">
-              <div className="w-11 h-11 rounded-full bg-[#EBF3FB] flex items-center justify-center mb-2.5 text-[#2563EB]">
-                <Database size={20} strokeWidth={2.2} />
-              </div>
-
-              <h3 className="font-bold text-[15px] text-[#1E3A8A] mb-1" style={{ fontFamily: PJS }}>
-                Input dari Database Sekolah
-              </h3>
-              <p className="text-[11.5px] text-gray-500 mb-3 leading-relaxed px-2">
-                Import data PDBK & kelas langsung dari sistem dapodik sekolah
-              </p>
-
-              <button
-                type="button"
-                onClick={() => setStep("db-sekolah")}
-                className="w-full py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-[0.98] text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
-                style={{ fontFamily: PJS }}
-              >
-                <Database size={15} />
-                Pilih dari Database Sekolah
-              </button>
-            </div>
-
-            {/* ── KARTU 2: Upload Daftar Siswa (Hijau) ── */}
-            <div className="bg-white rounded-3xl p-4 border border-[#D5E0D5] shadow-sm flex flex-col items-center text-center">
-              <div className="w-11 h-11 rounded-full bg-[#EAF2EC] flex items-center justify-center mb-2.5 text-[#738B7B]">
-                <Upload size={20} strokeWidth={2.2} />
-              </div>
-
-              <h3 className="font-bold text-[15px] text-[#2C3531] mb-1" style={{ fontFamily: PJS }}>
-                Upload Daftar PDBK
-              </h3>
-              <p className="text-[11.5px] text-gray-500 mb-3 leading-relaxed">
-                Tambahkan banyak PDBK sekaligus<br />
-                Format: CSV, Excel, JPG, PNG
-              </p>
-
-              <button
-                type="button"
-                onClick={() => setStep("upload")}
-                className="w-full py-2.5 bg-[#738B7B] hover:bg-[#62776A] active:scale-[0.98] text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all mb-2 cursor-pointer"
-                style={{ fontFamily: PJS }}
-              >
-                <Upload size={15} />
-                Upload Daftar Siswa
-              </button>
-            </div>
-
-            {/* ── KARTU 3: Tambah Siswa Manual (Terracotta) ── */}
-            <div className="bg-[#FFFBFB] rounded-3xl p-4 border border-[#E9C3BC] shadow-sm flex flex-col items-center text-center">
-              <div className="w-11 h-11 rounded-full bg-[#FCECE8] flex items-center justify-center mb-2.5 text-[#D07B64]">
-                <UserPlus size={20} strokeWidth={2.2} />
-              </div>
-
-              <h3 className="font-bold text-[15px] text-[#D07B64] mb-1" style={{ fontFamily: PJS }}>
-                Tambah PDBK Manual
-              </h3>
-              <p className="text-[11.5px] text-gray-500 mb-3">
-                Masukkan data PDBK satu per satu
-              </p>
-
-              <button
-                type="button"
-                onClick={() => setStep("identitas")}
-                className="w-full py-2.5 bg-[#D07B64] hover:bg-[#B96A55] active:scale-[0.98] text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
-                style={{ fontFamily: PJS }}
-              >
-                <UserPlus size={15} />
-                Tambah PDBK Manual
-              </button>
-            </div>
-
-            {/* Tips Box */}
-            <div className="relative pt-2 mt-auto">
-              <div className="absolute -top-1 left-1/2 -translate-x-1/2 flex gap-1">
-                <span className="w-1 h-1 rounded-full bg-[#C4C4C4]"></span>
-                <span className="w-1 h-1 rounded-full bg-[#C4C4C4]"></span>
-                <span className="w-1 h-1 rounded-full bg-[#C4C4C4]"></span>
-              </div>
-
-              <div className="bg-white rounded-2xl p-3 border border-[#D5E0D5] flex items-start gap-2.5 shadow-sm">
-                <div className="w-7 h-7 rounded-lg bg-[#F0EEF8] flex items-center justify-center shrink-0 text-[#8B78D1] mt-0.5">
-                  <Lightbulb size={16} />
-                </div>
-                <p className="text-[11px] text-gray-600 leading-tight">
-                  <strong className="text-gray-800">Tips:</strong> Pilih Database Sekolah jika data sekolah sudah ada di sistem, Upload file jika sudah punya berkas PDBK, atau Tambah manual jika hanya beberapa peserta didik.
-                </p>
-              </div>
-
-              <div className="pt-2.5">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="w-full py-3 bg-white border-2 border-[#738B7B] hover:bg-[#F4F8F5] active:scale-[0.98] text-[#738B7B] rounded-2xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
-                  style={{ fontFamily: PJS }}
-                >
-                  <span>Lewati, Upload Nanti</span>
-                  <ChevronRight size={15} />
-                </button>
-              </div>
-            </div>
-          </div>
+          <PilihanTambahSiswa
+            onSelectDbSekolah={() => setStep("db-sekolah")}
+            onSelectUpload={() => setStep("upload")}
+            onSelectManual={() => setStep("identitas")}
+            isHomeschool={isHomeschool}
+            showTips={true}
+            onSkip={onClose}
+          />
         </div>
       </div>
     );
@@ -509,7 +553,7 @@ export function AddStudentSheet({
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               type="button"
-              onClick={() => setStep("choice")}
+              onClick={() => (initialStep !== "choice" && step === initialStep ? onClose() : setStep("choice"))}
               style={{
                 width: 36,
                 height: 36,
@@ -675,7 +719,7 @@ export function AddStudentSheet({
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               type="button"
-              onClick={() => setStep("choice")}
+              onClick={() => (initialStep !== "choice" && step === initialStep ? onClose() : setStep("choice"))}
               style={{
                 width: 36,
                 height: 36,

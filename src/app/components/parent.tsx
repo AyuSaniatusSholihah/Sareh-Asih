@@ -1627,16 +1627,14 @@ export function KemampuanDiamatiScreen({ onBack, child, aspek }: {
             return (
               <div key={it.id} className="flex items-center gap-3 px-4 py-3"
                 style={{ borderBottom: terakhir ? "none" : `1px solid ${BDR}` }}>
-                <span className="flex items-center justify-center flex-shrink-0"
-                  style={{ width: 32, height: 32, borderRadius: 10, background: meta.bg, fontSize: 15 }}>{meta.icon}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm" style={{ fontFamily: PJS, fontWeight: 600, color: TEXT, margin: 0 }}>{namaPendek(it.text)}</p>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: PJS, fontWeight: 600, color: TEXT, margin: 0 }}>{it.text}</p>
                   <div className="flex items-center gap-1.5 mt-1">
                     <span className="text-xs" style={{ color: MUTED }}>Saat ini:</span>
                     <span className="font-bold" style={{ fontSize: 11, padding: "2px 8px", borderRadius: 99, background: s.bg, color: s.color }}>{s.l}</span>
                   </div>
                 </div>
-                <ChevronRight size={16} style={{ color: MUTED, flexShrink: 0 }} />
+
               </div>
             );
           })}

@@ -48,12 +48,14 @@ export function ModalShell({ step, total, title, desc, children, onSkip, skipLab
           )}
         </div>
         <div className="px-5 pb-3 flex-shrink-0" style={{ borderBottom: `1px solid ${BDR}` }}>
-          <div className="flex items-center gap-1.5 mb-2">
-            {Array.from({ length: total }).map((_, i) => (
-              <div key={i} style={{ height: 4, flex: 1, borderRadius: 2, background: step >= i + 1 ? T : "#E5E7EB" }} />
-            ))}
-            <span className="text-xs ml-1" style={{ color: MUTED, fontFamily: DMM }}>{step}/{total}</span>
-          </div>
+          {total > 0 && (
+            <div className="flex items-center gap-1.5 mb-2">
+              {Array.from({ length: total }).map((_, i) => (
+                <div key={i} style={{ height: 4, flex: 1, borderRadius: 2, background: step >= i + 1 ? T : "#E5E7EB" }} />
+              ))}
+              <span className="text-xs ml-1" style={{ color: MUTED, fontFamily: DMM }}>{step}/{total}</span>
+            </div>
+          )}
           <div className="flex items-center justify-between gap-2">
             <div>
               <p className="font-bold" style={{ fontFamily: PJS, fontSize: 18, color: TEXT, margin: 0 }}>{title}</p>

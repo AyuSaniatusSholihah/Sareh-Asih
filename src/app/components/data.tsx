@@ -22,7 +22,8 @@ export type Screen =
   | "report"
   | "parent-dashboard" | "parent-detail"
   | "parent-calendar" | "parent-training"
-  | "riwayat-laporan" | "riwayat-perkembangan" | "detail-aspek" | "kemampuan-diamati";
+  | "riwayat-laporan" | "riwayat-perkembangan" | "detail-aspek" | "kemampuan-diamati"
+  | "setup-ruang-belajar";
 
 export interface Student {
   id:number; name:string; abk:string; kelas:string; age:number; emoji:string;
@@ -40,6 +41,10 @@ export interface Student {
   talentScore?:number;
   stars?:number;
   foto?:string; // base64 data URL dari upload foto profil
+  obsStatus?: "not_started" | "in_progress" | "completed";
+  // ─ Field baru (backward-compatible, opsional) ─
+  jenjangOpsional?: string;       // "PAUD/usia dini" | "Tanpa jenjang formal" | "SD" dsb
+  statusDiagnosis?: string;       // "Belum ada diagnosis / sedang observasi" | nama diagnosis
 }
 
 // ─── Seed data ───────────────────────────────────────────────────────
@@ -53,14 +58,14 @@ export const KODE_ORTU_REGEX = /^[A-Z0-9]+-[A-Z]+-\d{4}(-[A-Z0-9]+)?$/;
 
 // Semua siswa demo berada di satu kelas yang sama (satu guru mengampu satu kelas).
 export const seedStudents: Student[] = [
-  { id:1, name:"Rafi Pratama",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","LKSN Diksus"],  caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-RAFI-2026",  tanggalLahir:"12 Maret 2013", nisn:"0012345601", alamat:"Jl. Merpati No. 5, Surakarta", statusOrtu:"Kandung", namaOrtu:"Ibu Ratna" },
-  { id:2, name:"Nisa Aulia",     abk:"Tunadaksa",   kelas:"VII A",  age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIA-NISA-2026",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
-  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, comps:[],                            caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-ARGA-2026",  tanggalLahir:"20 Nov 2014",   nisn:"0012345603", alamat:"Jl. Dahlia No. 8, Depok",     statusOrtu:"Yatim",   namaOrtu:"Ibu Sinta" },
-  { id:4, name:"Dina Maharani",  abk:"Tunadaksa",   kelas:"VII A",  age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIA-DINA-2026",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
-  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, comps:["FLS3N PDBK"],                caraBelajar:"Visual",                kodeOrtu:"VIIA-BUDI-2026",  tanggalLahir:"15 Agu 2013",   nisn:"0012345605", alamat:"Jl. Anggrek No. 1, Solo",     statusOrtu:"Piatu",   namaOrtu:"Bapak Joko" },
-  { id:6, name:"Maya Dewi",      abk:"Tunadaksa",   kelas:"VII A",  age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIA-MAYA-2026",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
-  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"VII A",  age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  comps:["LKSN Diksus"],               caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-TONI-2026",  tanggalLahir:"30 Jan 2011",   nisn:"0012345607", alamat:"Jl. Flamboyan No. 7, Jogja",  statusOrtu:"Kandung", namaOrtu:"Bapak Rudi" },
-  { id:8, name:"Sari Indah",     abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIA-SARI-2026",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
+  { id:1, name:"Rafi Pratama",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  obsStatus:"completed", comps:["FLS3N PDBK","LKSN Diksus"],  caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-RAFI-2026",  tanggalLahir:"12 Maret 2013", nisn:"0012345601", alamat:"Jl. Merpati No. 5, Surakarta", statusOrtu:"Kandung", namaOrtu:"Ibu Ratna" },
+  { id:2, name:"Nisa Aulia",     abk:"Tunadaksa",   kelas:"VII A",  age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  obsStatus:"in_progress", comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIA-NISA-2026",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
+  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, obsStatus:"not_started", comps:[],                            caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-ARGA-2026",  tanggalLahir:"20 Nov 2014",   nisn:"0012345603", alamat:"Jl. Dahlia No. 8, Depok",     statusOrtu:"Yatim",   namaOrtu:"Ibu Sinta" },
+  { id:4, name:"Dina Maharani",  abk:"Tunadaksa",   kelas:"VII A",  age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, obsStatus:"not_started", comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIA-DINA-2026",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
+  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, obsStatus:"in_progress", comps:["FLS3N PDBK"],                caraBelajar:"Visual",                kodeOrtu:"VIIA-BUDI-2026",  tanggalLahir:"15 Agu 2013",   nisn:"0012345605", alamat:"Jl. Anggrek No. 1, Solo",     statusOrtu:"Piatu",   namaOrtu:"Bapak Joko" },
+  { id:6, name:"Maya Dewi",      abk:"Tunadaksa",   kelas:"VII A",  age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, obsStatus:"not_started", comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIA-MAYA-2026",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
+  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"VII A",  age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  obsStatus:"completed", comps:["LKSN Diksus"],               caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-TONI-2026",  tanggalLahir:"30 Jan 2011",   nisn:"0012345607", alamat:"Jl. Flamboyan No. 7, Jogja",  statusOrtu:"Kandung", namaOrtu:"Bapak Rudi" },
+  { id:8, name:"Sari Indah",     abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, obsStatus:"not_started", comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIA-SARI-2026",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
 ];
 
 // ─── Contoh foto profil siswa (dummy, disimpan lokal di src/imports) ──
@@ -108,10 +113,19 @@ export const seedLaporan: LaporanKirim[] = [
 ];
 
 // ─── Students store (guru dapat menambah siswa sendiri) ──────────────
-interface StudentsStore { list:Student[]; add:(s:Omit<Student,"id">)=>Promise<Student>|Student; }
-export const StudentsCtx = createContext<StudentsStore>({ list:seedStudents, add:()=>seedStudents[0] });
+interface StudentsStore {
+  list: Student[];
+  add: (s: Omit<Student, "id">) => Promise<Student> | Student;
+  update?: (id: number, updates: Partial<Student>) => void;
+}
+export const StudentsCtx = createContext<StudentsStore>({
+  list: seedStudents,
+  add: () => seedStudents[0],
+  update: () => {},
+});
 export const useStudents = () => useContext(StudentsCtx).list;
 export const useAddStudent = () => useContext(StudentsCtx).add;
+export const useUpdateStudent = () => useContext(StudentsCtx).update || (() => {});
 
 // ─── Pilihan form ────────────────────────────────────────────────────
 export const ABK_OPTIONS = [

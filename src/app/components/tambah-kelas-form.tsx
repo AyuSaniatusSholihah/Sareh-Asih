@@ -10,7 +10,7 @@ interface TambahKelasFormProps {
 export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }: TambahKelasFormProps) {
   const [namaSekolah, setNamaSekolah] = useState(defaultSekolah);
   const [namaKelas, setNamaKelas] = useState('');
-  const [selectedTag, setSelectedTag] = useState('Tunanetra');
+  const [selectedTags, setSelectedTags] = useState<string[]>(['Tunanetra']);
   const [customTag, setCustomTag] = useState('');
   const [showModal, setShowModal] = useState(false);
 
@@ -26,19 +26,32 @@ export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }:
     'Lainnya',
   ];
 
+  const toggleTag = (tag: string) => {
+    if (selectedTags.includes(tag)) {
+      setSelectedTags(selectedTags.filter((t) => t !== tag));
+    } else {
+      setSelectedTags([...selectedTags, tag]);
+    }
+  };
+
+  const isValid = namaKelas.trim() !== '' && selectedTags.length > 0;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!namaKelas.trim()) return;
+    if (!isValid) return;
     setShowModal(true);
   };
 
   const handleModalConfirm = () => {
     setShowModal(false);
     if (onSave) {
+      const processedTags = selectedTags.map((t) =>
+        t === 'Lainnya' ? (customTag.trim() || 'Lainnya') : t
+      );
       onSave({
         namaSekolah: namaSekolah.trim(),
         namaKelas: namaKelas.trim(),
-        tag: selectedTag === 'Lainnya' ? (customTag.trim() || 'Lainnya') : selectedTag,
+        tag: processedTags.join(', '),
       });
     }
   };
@@ -97,23 +110,26 @@ export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }:
 
               {/* Pilihan Filter / Kategori Tag */}
               <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => setSelectedTag(tag)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                      selectedTag === tag
-                        ? 'bg-[#738478] text-white shadow-sm'
-                        : 'bg-[#EAEFEA]/80 text-gray-700 hover:bg-[#EAEFEA]'
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
+                {tags.map((tag) => {
+                  const isSelected = selectedTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        isSelected
+                          ? 'bg-[#738478] text-white shadow-sm'
+                          : 'bg-[#EAEFEA]/80 text-gray-700 hover:bg-[#EAEFEA]'
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
               </div>
 
-              {selectedTag === 'Lainnya' && (
+              {selectedTags.includes('Lainnya') && (
                 <div className="mt-2.5">
                   <input
                     type="text"
@@ -129,11 +145,16 @@ export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }:
 
           {/* Tombol Simpan */}
           <div className="pb-6">
+            {!isValid && (
+              <p className="text-xs text-center text-gray-600 mb-2">
+                Pilih minimal 1 kekhususan untuk lanjut
+              </p>
+            )}
             <button
               type="submit"
-              disabled={!namaKelas.trim()}
+              disabled={!isValid}
               className={`w-full py-3.5 rounded-2xl font-semibold shadow-md transition-all ${
-                namaKelas.trim()
+                isValid
                   ? 'bg-[#738478] text-white hover:bg-[#627167] cursor-pointer active:scale-[0.99]'
                   : 'bg-gray-400 text-gray-200 cursor-not-allowed'
               }`}
