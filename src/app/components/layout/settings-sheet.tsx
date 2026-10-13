@@ -1,6 +1,5 @@
-import { useState } from "react";
 import {
-  HelpCircle, Heart, Shield, LogOut, Volume2, VolumeX, ChevronRight, X,
+  HelpCircle, Heart, Shield, LogOut, Volume2, VolumeX, ChevronRight, X, Sparkles,
 } from "lucide-react";
 import {
   T, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, useUI,
@@ -44,7 +43,6 @@ export const INFO_PANELS = [
 
 export function SettingsSheet({
   onClose,
-  onLogout,
   onEditSetup,
   role,
   teacherRole,

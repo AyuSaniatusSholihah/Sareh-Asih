@@ -27,7 +27,7 @@ export function skorTipe(jawaban: Record<number, number|"TDD">, tipe: RiasecKate
   const validAnswers = items.map(i => jawaban[i.id]).filter(v => typeof v === "number" && v >= 0) as number[];
   if (validAnswers.length === 0) return null;
   const sum = validAnswers.reduce((a, b) => a + b, 0);
-  return Math.round((sum / (validAnswers.length * 3)) * 100);
+  return Math.round((sum / (validAnswers.length * 2)) * 100);
 }
 
 export function kodeTigaHuruf(jawaban: Record<number, number|"TDD">): string {
@@ -60,39 +60,39 @@ export function skorKetekunan(jawaban: Record<number, number|"TDD">): string {
 export function getMockJawaban(studentId: number): Record<number, number> {
   const ans: Record<number, number> = {};
   
-  if (studentId === 1) { // Rafi (Tunanetra)
-    // Fungsional
+  if (studentId === 1) { // Rafi (Tunadaksa)
+    // Fungsional (0=Tidak/Belum Bisa, 1=Banyak Bantuan, 2=Sedikit Bantuan, 3=Sudah Mandiri)
     PROFIL_FUNGSIONAL.forEach(p => {
-      if (p.kategori === "Perawatan Diri") ans[p.id] = 2; // 2/2 -> 100% (or mostly 2s)
+      if (p.kategori === "Perawatan Diri") ans[p.id] = 3;
       else if (p.kategori === "Mobilitas") ans[p.id] = 2;
-      else if (p.kategori === "Kognisi") ans[p.id] = 1; // 1/2 -> 50%
+      else if (p.kategori === "Kognisi") ans[p.id] = 2;
       else ans[p.id] = 1;
     });
-    // RIASEC
+    // RIASEC (0=Tidak Pernah, 1=Kadang, 2=Sering / Selalu)
     PROFIL_KECENDERUNGAN.forEach(p => {
-      if (p.kategori === "Artistic") ans[p.id] = 3;
-      else if (p.kategori === "Investigative") ans[p.id] = 2;
+      if (p.kategori === "Artistic") ans[p.id] = 2;
+      else if (p.kategori === "Investigative") ans[p.id] = 1;
       else ans[p.id] = 1;
     });
-  } else if (studentId === 2) { // Nisa (Tunarungu)
+  } else if (studentId === 2) { // Nisa (Tunadaksa Ringan)
+    PROFIL_FUNGSIONAL.forEach(p => {
+      if (p.kategori === "Kognisi") ans[p.id] = 3;
+      else if (p.kategori === "Interaksi dengan Orang Lain") ans[p.id] = 3;
+      else ans[p.id] = 2;
+    });
+    PROFIL_KECENDERUNGAN.forEach(p => {
+      if (p.kategori === "Realistic") ans[p.id] = 2;
+      else if (p.kategori === "Artistic") ans[p.id] = 2;
+      else ans[p.id] = 1;
+    });
+  } else if (studentId === 3) { // Arga (Tunadaksa Ringan)
     PROFIL_FUNGSIONAL.forEach(p => {
       if (p.kategori === "Kognisi") ans[p.id] = 2;
-      else if (p.kategori === "Interaksi dengan Orang Lain") ans[p.id] = 2;
+      else if (p.kategori === "Mobilitas") ans[p.id] = 1;
       else ans[p.id] = 1;
     });
     PROFIL_KECENDERUNGAN.forEach(p => {
-      if (p.kategori === "Realistic") ans[p.id] = 3;
-      else if (p.kategori === "Artistic") ans[p.id] = 3;
-      else ans[p.id] = 1;
-    });
-  } else if (studentId === 3) { // Arga (Tunadaksa)
-    PROFIL_FUNGSIONAL.forEach(p => {
-      if (p.kategori === "Kognisi") ans[p.id] = 2;
-      else if (p.kategori === "Mobilitas") ans[p.id] = 0;
-      else ans[p.id] = 1;
-    });
-    PROFIL_KECENDERUNGAN.forEach(p => {
-      if (p.kategori === "Investigative") ans[p.id] = 3;
+      if (p.kategori === "Investigative") ans[p.id] = 2;
       else if (p.kategori === "Conventional") ans[p.id] = 2;
       else ans[p.id] = 0;
     });

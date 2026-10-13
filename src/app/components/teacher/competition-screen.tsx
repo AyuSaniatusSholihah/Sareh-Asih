@@ -2,13 +2,13 @@ import { useState } from "react";
 import {
   Calendar, LayoutGrid, Palette, GraduationCap,
   Lightbulb, MapPin, Tag, Users, ChevronRight, ChevronDown, User, UserCheck, Sparkles,
-  Wrench, Microscope, Heart, TrendingUp, BookOpen,
+  Wrench, Microscope, Heart, TrendingUp, BookOpen, ChevronLeft,
 } from "lucide-react";
 import {
   CARD, TEXT, MUTED, BDR, PJS, IPS, DMM, BG, DEEP, A,
 } from "../ui-kit";
 import {
-  useStudents, LOMBA, studentCompDetail, type Student,
+  useStudents, LOMBA, studentCompDetail, type Student, type Screen,
 } from "../data";
 
 // ─── Custom Card Icons matching Mockup ───────────────────────────────
@@ -83,8 +83,12 @@ function RunningManIcon({ size = 15, color = "currentColor" }: { size?: number; 
 
 export function CompetitionScreen({
   onStartObs,
+  onBack,
+  go,
 }: {
   onStartObs: (id: number) => void;
+  onBack?: () => void;
+  go?: (s: Screen) => void;
 }) {
   const students = useStudents();
   const [lombaCategory, setLombaCategory] = useState<"Semua" | "Realistic" | "Investigative" | "Artistic" | "Social" | "Enterprising" | "Conventional">("Semua");
@@ -97,6 +101,34 @@ export function CompetitionScreen({
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+      {/* ── Header dengan tombol kembali ── */}
+      <div style={{ background: "#FFFFFF", padding: "14px 20px 12px", flexShrink: 0, borderBottom: `1px solid ${BDR}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {(onBack || go) && (
+            <button
+              onClick={() => {
+                if (onBack) onBack();
+                else if (go) go("dashboard");
+              }}
+              style={{
+                width: 36, height: 36, borderRadius: 12,
+                background: "rgba(139,176,152,0.14)",
+                border: "none", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+              }}
+              className="active:scale-95 transition-transform"
+              title="Kembali"
+            >
+              <ChevronLeft size={18} style={{ color: DEEP }} strokeWidth={2.5} />
+            </button>
+          )}
+          <div>
+            <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>Agenda Lomba</h1>
+            <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: "2px 0 0" }}>O2SN · FLS3N · LKSN Diksus</p>
+          </div>
+        </div>
+      </div>
       <div className="px-4 pt-4 pb-6 space-y-4">
         <div className="space-y-3.5">
           {/* ── Filter Kategori Pills (Sticky terkunci saat scroll) ── */}

@@ -1,15 +1,29 @@
-import { GAYA_META, studentCompDetail, studentTalentDetail, type Student } from "./data";
+import { GAYA_META, studentCompDetail, studentTalentDetail, type Student, loadAiKnowledge, muatMemoriSiswaAI } from "./data";
 import { getMockJawaban, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
 
 /* ── Util unduh berkas ────────────────────────────────────────────── */
 function unduh(nama:string, isi:string, mime:string) {
-  const blob = new Blob(["﻿" + isi], {type:`${mime};charset=utf-8`});
+  const blob = new Blob(["\ufeff" + isi], {type:`${mime};charset=utf-8`});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement("a");
   a.href = url; a.download = nama;
   document.body.appendChild(a); a.click();
   document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+
+function satuSintesis(s: Student, aiConfig: any) {
+  const p = s.name.split(" ")[0];
+  const domainMinat = s.comps[0] ? `serta kecenderungan minat di bidang ${s.comps[0]}` : "";
+  const memori = muatMemoriSiswaAI(s.id);
+  const kutipanCatatan = memori.length > 0 ? ` Konteks observasi guru tercatat: "${memori[0].catatan.length > 120 ? memori[0].catatan.slice(0, 120) + '...' : memori[0].catatan}".` : "";
+  if (aiConfig.tone === "suportif") {
+    return `Selama periode observasi ini, Ananda ${p} menunjukkan kemajuan perkembangan yang sangat membanggakan di kelas. Pada aspek kemandirian sehari-hari (ADL), ${p} semakin bersemangat dan adaptif saat diberikan rutinitas terstruktur ${domainMinat}.${kutipanCatatan} Diharapkan orang tua di rumah terus mendampingi dengan pujian hangat atas setiap langkah mandiri kecil yang dicapainya.`;
+  }
+  if (aiConfig.tone === "objektif") {
+    return `Berdasarkan data observasi fungsional, ${p} menunjukkan peningkatan skor kemandirian dan koordinasi terarah ${domainMinat}.${kutipanCatatan} Respon perilaku stabil ketika didampingi media visual konkret dan instruksi bertahap. Rekomendasi lanjutan difokuskan pada penguatan rutinitas mandiri di sekolah maupun di rumah.`;
+  }
+  return `Kemajuan Ananda ${p} mencerminkan kerja sama sinergis antara stimulasi kelas dan pembiasaan keluarga. Direkomendasikan kelanjutan latihan terpadu di rumah ${domainMinat}${kutipanCatatan} dengan penguatan jadwal visual harian untuk mempertahankan konsistensi fokus belajar.`;
 }
 
 const tanggal = () => new Date().toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"});
@@ -135,7 +149,8 @@ export async function shareSpreadsheet(list:Student[], namaSekolah:string): Prom
 /* ── 2. Ekspor laporan dokumen pemetaan (.doc, dibuka Word/Docs) ───── */
 const esc = (v:string) => v.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
-function bagianSiswa(s:Student, index:number, total:number, paraf:string, ttd?: string) {
+function bagianSiswa(s:Student, index:number, total:number, paraf:string, ttd?: string, aiConfig?: any) {
+  const conf = aiConfig || loadAiKnowledge();
   const gaya = s.caraBelajar ? GAYA_META[s.caraBelajar] : undefined;
   const talent = studentTalentDetail[s.id];
   const lomba = s.comps
@@ -197,7 +212,13 @@ function bagianSiswa(s:Student, index:number, total:number, paraf:string, ttd?: 
       : `<p class="kosong">Belum ada rekomendasi ajang talenta untuk PDBK ini.</p>`
     }
 
-    <h3>E. Akses Orang Tua</h3>
+    <h3>E. Sintesis Perkembangan (Asisten AI Guru)</h3>
+    <div style="background:#F3F8F4;border-left:3px solid #8BB098;padding:8px 12px;margin:6px 0 10px;font-size:10pt;">
+      <p style="margin:0 0 4px;font-size:9pt;color:#5B7A68;"><strong>Gaya Narasi:</strong> ${conf.tone === "suportif" ? "Suportif & Optimistik (Ramah Ortu)" : conf.tone === "objektif" ? "Objektif & Klinis Edukatif" : "Aksi Kolaboratif (Rumah & Sekolah)"}</p>
+      <p style="margin:0;line-height:1.5;">${esc(satuSintesis(s, conf))}</p>
+    </div>
+
+    <h3>F. Akses Orang Tua</h3>
     <table>${baris("Kode Akses", s.kodeOrtu||"Belum dibuat")}</table>
 
     <div class="ttd">
@@ -219,6 +240,7 @@ export function buildLaporanHTML(list:Student[], namaSekolah:string, parafGuru?:
   const paraf = (parafGuru ?? muatParafGuru()).trim();
   const ttd = (ttdGuru ?? muatTtdGuru()).trim();
   const satu = list.length === 1;
+  const aiConfig = loadAiKnowledge();
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Laporan Pemetaan Bakat</title>
 <style>
@@ -255,8 +277,8 @@ export function buildLaporanHTML(list:Student[], namaSekolah:string, parafGuru?:
     <p class="meta">${esc(namaSekolah)} &middot; Dicetak ${tanggal()} &middot; ${list.length} siswa</p>
   </div>
   ${satu ? "" : `<p class="meta">Daftar siswa: ${list.map(s=>esc(s.name)).join(", ")}</p>`}
-  ${list.map((s,i)=>bagianSiswa(s,i,list.length,paraf,ttd)).join("")}
-  <p class="catatan">Laporan ini dihasilkan Sareh Asih dari data asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen tenaga ahli.</p>
+  ${list.map((s,i)=>bagianSiswa(s,i,list.length,paraf,ttd,aiConfig)).join("")}
+  <p class="catatan">Laporan ini disusun dengan pendampingan Asisten AI Guru Sareh Asih (Model: ${esc(aiConfig.model)}, Persona Guru: ${esc(aiConfig.tone)}) dari data asesmen yang diinput guru pendamping. Hasil pemetaan bersifat indikatif dan tidak menggantikan asesmen dokter/psikolog berwenang.</p>
 </body></html>`;
 }
 

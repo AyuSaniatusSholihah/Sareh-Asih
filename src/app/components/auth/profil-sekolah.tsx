@@ -70,9 +70,8 @@ export function ProfilSekolahModal({
     { kode: "B", nama: "Kelas Tuna Rungu (B)", ringkas: "Tuna Rungu", abk: "Tuna Rungu", desc: "Hambatan pendengaran/komunikasi" },
     { kode: "C", nama: "Kelas Tunagrahita Ringan (C)", ringkas: "Tunagrahita Ringan", abk: "Tunagrahita Ringan", desc: "Hambatan intelektual ringan" },
     { kode: "C1", nama: "Kelas Tunagrahita Sedang (C1)", ringkas: "Tunagrahita Sedang", abk: "Tunagrahita Sedang", desc: "Hambatan intelektual sedang" },
-    { kode: "D", nama: "Kelas Tuna Daksa Ringan (D)", ringkas: "Tuna Daksa Ringan", abk: "Tuna Daksa Ringan", desc: "Hambatan fisik dan motorik ringan" },
-    { kode: "D1", nama: "Kelas Tuna Daksa Sedang (D1)", ringkas: "Tuna Daksa Sedang", abk: "Tuna Daksa Sedang", desc: "Hambatan fisik dan motorik sedang" },
-    { kode: "F", nama: "Kelas Tuna Wicara (F)", ringkas: "Tuna Wicara", abk: "Tuna Wicara", desc: "Hambatan wicara dan komunikasi" },
+    { kode: "D", nama: "Kelas Tunadaksa Ringan (D)", ringkas: "Daksa Ringan", abk: "Tunadaksa Ringan (tanpa hambatan intelektual)", desc: "Hambatan fisik/motorik tanpa hambatan intelektual" },
+    { kode: "D1", nama: "Kelas Tunadaksa (D1)", ringkas: "Tunadaksa", abk: "Tunadaksa (dengan hambatan intelektual / ganda)", desc: "Hambatan fisik dengan hambatan intelektual atau ganda" },
     { kode: "Q", nama: "Kelas Autisme (Q)", ringkas: "Autis (ASD)", abk: "Autis (ASD)", desc: "Hambatan interaksi sosial, komunikasi dan perilaku" },
     { kode: "Lainnya", nama: "Lainnya (Tulis Mandiri)", ringkas: "Lainnya", abk: "Lainnya", desc: "Ketikkan nama kelas / layanan khusus secara mandiri" },
   ];

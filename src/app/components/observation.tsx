@@ -3,7 +3,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import {
   Sparkles, CheckCircle, ChevronRight, ChevronDown, Info, ClipboardList, Gauge, X, ArrowLeft,
-  AlertCircle, ArrowRight, Check, Users, Lightbulb, Play, Eye,
+  AlertCircle, ArrowRight, Check, Users, Lightbulb, Play, Eye, HelpCircle,
 } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, PBtn, TBar,
@@ -13,6 +13,7 @@ import {
   RIASEC_KATEGORI, RIASEC_META, SKALA_RIASEC, PROFIL_KECENDERUNGAN,
   PANDUAN_UNJUK_KERJA, PANDUAN_RIASEC,
   useStudents, type FungsionalKategori, type RiasecKategori,
+  simpanMemoriSiswaAI, muatMemoriSiswaAI,
 } from "./data";
 import { VoiceTextarea } from "./voice-input";
 import { updateStudentInFirestore } from "./firestore-students";
@@ -70,6 +71,9 @@ export function ObservationScreen({
   const [fungsionalStep, setFungsionalStep] = useState<number>(0); // 0 to 5 for the 6 domains
   const [riasecStep, setRiasecStep] = useState<number>(0); // 0 to 5 for R, I, A, S, E, C
   const [showIncompleteModal, setShowIncompleteModal] = useState<boolean>(false);
+  const [showScaleModal, setShowScaleModal] = useState<boolean>(false);
+  const [scaleModalTab, setScaleModalTab] = useState<"fungsional" | "riasec">("fungsional");
+  const [showRiasecScaleModal, setShowRiasecScaleModal] = useState<boolean>(false);
   const [highlightUnanswered, setHighlightUnanswered] = useState<boolean>(false);
   const [highlightUnansweredRiasec, setHighlightUnansweredRiasec] = useState<boolean>(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState<boolean>(false);
@@ -303,7 +307,7 @@ export function ObservationScreen({
       .filter(a => a.kategori === k)
       .filter(a => skorRiasec[a.id] !== undefined && skorRiasec[a.id] !== -1);
     if (!list.length) return null;
-    return Math.round(list.reduce((s, a) => s + skorRiasec[a.id], 0) / list.length * 100 / 3);
+    return Math.round((list.reduce((s, a) => s + skorRiasec[a.id], 0) / (list.length * 2)) * 100);
   };
 
   const bisaSimpan = terisiFungsional > 0 || terisiRiasec > 0;
@@ -311,6 +315,10 @@ export function ObservationScreen({
   const handleSimpan = () => {
     if (!bisaSimpan) return;
     setIsSaved(true);
+    // Simpan catatan ke memori AI siswa di balik layar
+    if (catatan.trim()) {
+      simpanMemoriSiswaAI(student.id, catatan.trim());
+    }
     if (onSave) {
       onSave(student.id);
     }
@@ -563,7 +571,7 @@ export function ObservationScreen({
               </div>
             </div>
 
-            {/* 2. Category Filter Pills (Tanpa 'Semua Kategori' sesuai permintaan user) */}
+            {/* 3. Category Filter Pills (D1 sampai D6) */}
             <div
               style={{
                 display: "flex",
@@ -610,17 +618,17 @@ export function ObservationScreen({
                     }}
                     className="active:scale-95"
                   >
-                    <span style={{ fontSize: 15 }}>{meta.icon}</span>
+                    <span style={{ fontSize: 14 }}>{meta.icon}</span>
                     <span
                       style={{
                         fontFamily: PJS,
-                        fontSize: 12.5,
+                        fontSize: 12,
                         fontWeight: isCurrent ? 800 : 600,
                         color: isCurrent ? meta.color : isComplete ? "#065F46" : "#334155",
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {DOMAIN_SHORT[kat]}
+                      D{idx + 1}. {DOMAIN_SHORT[kat]}
                     </span>
                     <span
                       style={{
@@ -640,106 +648,186 @@ export function ObservationScreen({
               })}
             </div>
 
-            {/* 3. Card Arti Tingkat Kemampuan (Sesuai Referensi Gambar) */}
+            {/* 4. Card Pertanyaan Berlatar Putih dengan Rounded Corners */}
             <div
               style={{
                 background: "#FFFFFF",
                 borderRadius: 24,
                 border: "1.5px solid #E2E8F0",
-                padding: "18px 20px",
-                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.02)",
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.03)",
+                padding: "20px 18px",
               }}
             >
-              <h4
-                style={{
-                  fontFamily: PJS,
-                  fontWeight: 800,
-                  fontSize: 14,
-                  color: "#1E293B",
-                  margin: "0 0 14px",
-                }}
-              >
-                Arti tingkat kemampuan
-              </h4>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[
-                  {
-                    badge: "N/A",
-                    desc: "Tidak dapat dijawab / diamati",
-                    bg: "#EEF2F6",
-                    border: "#CBD5E1",
-                    color: "#64748B",
-                  },
-                  {
-                    badge: "Belum",
-                    desc: "0 Belum bisa sama sekali",
-                    bg: "#FEE2E2",
-                    border: "#FECACA",
-                    color: "#DC2626",
-                  },
-                  {
-                    badge: "Dibantu",
-                    desc: "1 Bisa dengan bantuan penuh",
-                    bg: "#FEF3C7",
-                    border: "#FDE68A",
-                    color: "#D97706",
-                  },
-                  {
-                    badge: "Sebagian",
-                    desc: "2 Bisa sebagian, butuh diingatkan",
-                    bg: "#DCFCE7",
-                    border: "#BBF7D0",
-                    color: "#16A34A",
-                  },
-                  {
-                    badge: "Mandiri",
-                    desc: "3 Bisa sendiri secara konsisten",
-                    bg: "#D1FAE5",
-                    border: "#86EFAC",
-                    color: "#065F46",
-                  },
-                ].map((item, idx) => (
-                  <div key={idx} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <span
-                      style={{
-                        fontFamily: PJS,
-                        fontWeight: 800,
-                        fontSize: 12,
-                        padding: "4px 14px",
-                        borderRadius: 9999,
-                        background: item.bg,
-                        border: `1px solid ${item.border}`,
-                        color: item.color,
-                        minWidth: 74,
-                        textAlign: "center",
-                        display: "inline-block",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {item.badge}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: IPS,
-                        fontSize: 12.5,
-                        fontWeight: 500,
-                        color: "#475569",
-                        lineHeight: 1.35,
-                      }}
-                    >
-                      {item.desc}
-                    </span>
+              {/* Header Kartu Kategori */}
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
+                  {/* Icon Box Rounded */}
+                  <div
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 16,
+                      background: "#F0F9FF",
+                      border: "1.5px solid #BAE6FD",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 24,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {currentMeta.icon}
                   </div>
-                ))}
+
+                  {/* Judul & Deskripsi Kategori */}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                      <span style={{
+                        fontSize: 10,
+                        fontWeight: 800,
+                        fontFamily: PJS,
+                        color: currentMeta.color,
+                        background: `${currentMeta.color}18`,
+                        padding: "2px 7px",
+                        borderRadius: 6,
+                      }}>
+                        Bagian {fungsionalStep + 1} dari 6
+                      </span>
+                    </div>
+                    <h3 style={{ fontFamily: PJS, fontSize: 16.5, fontWeight: 800, color: "#1E293B", margin: 0, lineHeight: 1.25 }}>
+                      {currentCategory}
+                    </h3>
+                    <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#64748B", margin: "3px 0 0", lineHeight: 1.35, fontWeight: 400 }}>
+                      {currentMeta.desc}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Counter Pill Badge */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0 }}>
+                  <div
+                    style={{
+                      padding: "5px 12px",
+                      borderRadius: 9999,
+                      background: "#F0F9FF",
+                      border: "1.5px solid #BAE6FD",
+                      color: "#0284C7",
+                      fontFamily: PJS,
+                      fontWeight: 800,
+                      fontSize: 12,
+                    }}
+                  >
+                    {currentCategoryAnswered.length}/{currentCategoryItems.length} Terisi
+                  </div>
+                </div>
+              </div>
+
+              {/* Garis Pembatas Header */}
+              <div style={{ height: 1, background: "#E2E8F0", margin: "16px 0 20px" }} />
+
+              {/* Daftar Pertanyaan di dalam Kartu */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                {currentCategoryItems.map((a, idx) => {
+                  const isAnswered = skorFungsional[a.id] !== undefined;
+                  const isHighlighted = highlightUnanswered && !isAnswered;
+
+                  return (
+                    <div id={`item-${a.id}`} key={a.id} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      {/* Teks Pertanyaan */}
+                      <p
+                        style={{
+                          fontFamily: PJS,
+                          fontSize: 13.5,
+                          fontWeight: 700,
+                          color: isHighlighted ? "#B45309" : "#334155",
+                          margin: 0,
+                          lineHeight: 1.45,
+                        }}
+                      >
+                        {a.text}
+                      </p>
+
+                      {/* 4 Pilihan Skala Kemampuan (Unjuk Kerja) */}
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+                        {[
+                          { v: 0, label: "Tidak/Belum Bisa" },
+                          { v: 1, label: "Banyak Bantuan" },
+                          { v: 2, label: "Sedikit Bantuan" },
+                          { v: 3, label: "Sudah Mandiri" },
+                        ].map(opt => {
+                          const isSelected = skorFungsional[a.id] === opt.v;
+                          return (
+                            <button
+                              key={opt.v}
+                              type="button"
+                              onClick={() => setSkorFungsional(p => ({ ...p, [a.id]: opt.v }))}
+                              style={{
+                                minHeight: 46,
+                                padding: "4px 4px",
+                                borderRadius: 16,
+                                background: isSelected ? "#FFA000" : "#FFFFFF",
+                                border: isSelected ? "1.5px solid #FFA000" : "1.5px solid #CBD5E1",
+                                color: isSelected ? "#FFFFFF" : "#334155",
+                                fontFamily: PJS,
+                                fontWeight: isSelected ? 800 : 700,
+                                fontSize: 11.5,
+                                lineHeight: 1.2,
+                                textAlign: "center",
+                                boxShadow: isSelected ? "0 4px 12px rgba(255, 160, 0, 0.35)" : "none",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                              }}
+                              className="active:scale-95"
+                            >
+                              {opt.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Tombol "Tidak dapat dijawab" (Garis Putus-Putus di Kiri Bawah) */}
+                      <div style={{ display: "flex", justifyContent: "flex-start", marginTop: 2 }}>
+                        <button
+                          type="button"
+                          onClick={() => setSkorFungsional(p => ({ ...p, [a.id]: -1 }))}
+                          style={{
+                            padding: "6px 14px",
+                            borderRadius: 12,
+                            background: skorFungsional[a.id] === -1 ? "#F1F5F9" : "transparent",
+                            border: skorFungsional[a.id] === -1 ? "1.5px solid #94A3B8" : "1.5px dashed #CBD5E1",
+                            color: skorFungsional[a.id] === -1 ? "#0F172A" : "#64748B",
+                            fontFamily: PJS,
+                            fontWeight: skorFungsional[a.id] === -1 ? 700 : 500,
+                            fontSize: 11.5,
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                          }}
+                          className="active:scale-95"
+                        >
+                          Tidak dapat dijawab
+                        </button>
+                      </div>
+
+                      {/* Divider halus antar butir soal (kecuali yang terakhir) */}
+                      {idx < currentCategoryItems.length - 1 && (
+                        <div style={{ height: 1, background: "#F1F5F9", marginTop: 14 }} />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* 4. Panduan Aktivitas Unjuk Kerja (Collapsible) */}
+            {/* 5. Panduan Aktivitas Unjuk Kerja (Collapsible di Bawah Form) */}
             {(() => {
               const panduan = PANDUAN_UNJUK_KERJA[currentCategory];
               const isExpanded = expandedGuide === currentCategory;
-              // Filter activities relevant to student's ABK type
               const relevanPanduan = panduan.filter(
                 a => !a.cocokUntuk || a.cocokUntuk.length === 0 || a.cocokUntuk.includes(student.abk)
               );
@@ -755,7 +843,6 @@ export function ObservationScreen({
                     overflow: "hidden",
                   }}
                 >
-                  {/* Header — always visible */}
                   <button
                     type="button"
                     onClick={() => setExpandedGuide(isExpanded ? null : currentCategory)}
@@ -791,13 +878,13 @@ export function ObservationScreen({
                         fontFamily: PJS, fontSize: 13.5, fontWeight: 800,
                         color: "#92400E", margin: 0, lineHeight: 1.25,
                       }}>
-                        💡 Ide Aktivitas Unjuk Kerja
+                        💡 Butuh Ide Aktivitas Pengamatan? (Opsional)
                       </p>
                       <p style={{
                         fontFamily: IPS, fontSize: 11.5, fontWeight: 500,
                         color: "#B45309", margin: "2px 0 0", lineHeight: 1.3,
                       }}>
-                        {hasRelevant ? `${relevanPanduan.length} aktivitas cocok untuk ${student.abk}` : `${panduan.length} aktivitas tersedia`}
+                        {hasRelevant ? `${relevanPanduan.length} aktivitas terarah untuk ${student.abk}` : `${panduan.length} contoh aktivitas`}
                       </p>
                     </div>
                     <ChevronDown
@@ -811,7 +898,6 @@ export function ObservationScreen({
                     />
                   </button>
 
-                  {/* Expanded content */}
                   {isExpanded && (
                     <div style={{ padding: "0 14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
                       {(hasRelevant ? relevanPanduan : panduan).map((akt, i) => (
@@ -874,7 +960,6 @@ export function ObservationScreen({
                           </div>
                         </div>
                       ))}
-                      {/* Info box */}
                       <div style={{
                         display: "flex", alignItems: "flex-start", gap: 8,
                         padding: "10px 14px", borderRadius: 12,
@@ -885,7 +970,7 @@ export function ObservationScreen({
                           fontFamily: IPS, fontSize: 11, fontWeight: 500,
                           color: "#92400E", margin: 0, lineHeight: 1.4,
                         }}>
-                          Berikan aktivitas di atas kepada anak, lalu <strong>amati perilaku yang muncul</strong> dan catat di indikator-indikator di bawah ini. Anda juga bisa menggunakan aktivitas lain yang sesuai.
+                          Berikan aktivitas di atas kepada anak, lalu <strong>amati perilaku yang muncul</strong> dan catat di indikator-indikator di atas. Anda juga bisa menggunakan aktivitas lain yang sesuai.
                         </p>
                       </div>
                     </div>
@@ -894,7 +979,7 @@ export function ObservationScreen({
               );
             })()}
 
-            {/* 5. Input Aktivitas yang Digunakan Hari Ini */}
+            {/* 6. Input Aktivitas yang Digunakan Hari Ini (Opsional) */}
             <div
               style={{
                 background: "#FFFFFF",
@@ -939,166 +1024,6 @@ export function ObservationScreen({
               )}
             </div>
 
-            {/* 6. Card Pertanyaan Berlatar Putih dengan Rounded Corners */}
-            <div
-              style={{
-                background: "#FFFFFF",
-                borderRadius: 24,
-                border: "1.5px solid #E2E8F0",
-                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.03)",
-                padding: "20px 18px",
-              }}
-            >
-              {/* Header Kartu Kategori */}
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
-                  {/* Icon Box Rounded */}
-                  <div
-                    style={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: 16,
-                      background: "#F0F9FF",
-                      border: "1.5px solid #BAE6FD",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 24,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {currentMeta.icon}
-                  </div>
-
-                  {/* Judul & Deskripsi Kategori */}
-                  <div style={{ minWidth: 0 }}>
-                    <h3 style={{ fontFamily: PJS, fontSize: 16.5, fontWeight: 800, color: "#1E293B", margin: 0, lineHeight: 1.25 }}>
-                      {currentCategory}
-                    </h3>
-                    <p style={{ fontFamily: IPS, fontSize: 12, color: "#64748B", margin: "4px 0 0", lineHeight: 1.35, fontWeight: 400 }}>
-                      {currentMeta.desc}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Counter Pill Badge */}
-                <div
-                  style={{
-                    padding: "4px 12px",
-                    borderRadius: 9999,
-                    background: "#F0F9FF",
-                    border: "1.5px solid #BAE6FD",
-                    color: "#0284C7",
-                    fontFamily: PJS,
-                    fontWeight: 800,
-                    fontSize: 13,
-                    flexShrink: 0,
-                  }}
-                >
-                  {currentCategoryAnswered.length}/{currentCategoryItems.length}
-                </div>
-              </div>
-
-              {/* Garis Pembatas Header */}
-              <div style={{ height: 1, background: "#E2E8F0", margin: "16px 0 20px" }} />
-
-              {/* Daftar Pertanyaan di dalam Kartu */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                {currentCategoryItems.map((a, idx) => {
-                  const isAnswered = skorFungsional[a.id] !== undefined;
-                  const isHighlighted = highlightUnanswered && !isAnswered;
-
-                  return (
-                    <div id={`item-${a.id}`} key={a.id} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                      {/* Teks Pertanyaan */}
-                      <p
-                        style={{
-                          fontFamily: PJS,
-                          fontSize: 13.5,
-                          fontWeight: 700,
-                          color: isHighlighted ? "#B45309" : "#334155",
-                          margin: 0,
-                          lineHeight: 1.45,
-                        }}
-                      >
-                        {a.text}
-                      </p>
-
-                      {/* 4 Pilihan Skala Kemampuan */}
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-                        {[
-                          { v: 0, label: "Belum" },
-                          { v: 1, label: "Dibantu" },
-                          { v: 2, label: "Sebagian" },
-                          { v: 3, label: "Mandiri" },
-                        ].map(opt => {
-                          const isSelected = skorFungsional[a.id] === opt.v;
-                          return (
-                            <button
-                              key={opt.v}
-                              type="button"
-                              onClick={() => setSkorFungsional(p => ({ ...p, [a.id]: opt.v }))}
-                              style={{
-                                height: 44,
-                                borderRadius: 16,
-                                background: isSelected ? "#FFA000" : "#FFFFFF",
-                                border: isSelected ? "1.5px solid #FFA000" : "1.5px solid #CBD5E1",
-                                color: isSelected ? "#FFFFFF" : "#334155",
-                                fontFamily: PJS,
-                                fontWeight: isSelected ? 800 : 700,
-                                fontSize: 12.5,
-                                boxShadow: isSelected ? "0 4px 12px rgba(255, 160, 0, 0.35)" : "none",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                cursor: "pointer",
-                                transition: "all 0.15s ease",
-                              }}
-                              className="active:scale-95"
-                            >
-                              {opt.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Tombol "Tidak dapat dijawab" (Garis Putus-Putus di Kiri Bawah) */}
-                      <div style={{ display: "flex", justifyContent: "flex-start", marginTop: 2 }}>
-                        <button
-                          type="button"
-                          onClick={() => setSkorFungsional(p => ({ ...p, [a.id]: -1 }))}
-                          style={{
-                            padding: "6px 14px",
-                            borderRadius: 12,
-                            background: skorFungsional[a.id] === -1 ? "#F1F5F9" : "transparent",
-                            border: skorFungsional[a.id] === -1 ? "1.5px solid #94A3B8" : "1.5px dashed #CBD5E1",
-                            color: skorFungsional[a.id] === -1 ? "#0F172A" : "#64748B",
-                            fontFamily: PJS,
-                            fontWeight: skorFungsional[a.id] === -1 ? 700 : 500,
-                            fontSize: 11.5,
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            transition: "all 0.15s ease",
-                          }}
-                          className="active:scale-95"
-                        >
-                          Tidak dapat dijawab
-                        </button>
-                      </div>
-
-                      {/* Divider halus antar butir soal (kecuali yang terakhir) */}
-                      {idx < currentCategoryItems.length - 1 && (
-                        <div style={{ height: 1, background: "#F1F5F9", marginTop: 14 }} />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Navigasi Bawah Slide */}
             <div className="flex gap-2.5 pt-3 pb-4">
               <button
                 type="button"
@@ -1193,7 +1118,7 @@ export function ObservationScreen({
               </div>
             </div>
 
-            {/* 2. Category Filter Pills (Tanpa 'Semua Kategori' sesuai instruksi) */}
+            {/* 2. Category Filter Pills */}
             <div
               style={{
                 display: "flex",
@@ -1210,7 +1135,15 @@ export function ObservationScreen({
                 const list = PROFIL_KECENDERUNGAN.filter(a => a.kategori === kat);
                 const answeredCount = list.filter(a => skorRiasec[a.id] !== undefined).length;
                 const isComplete = answeredCount === list.length && list.length > 0;
-                const katLabel = kat === "Investigative" ? "Investigasi" : kat === "Realistic" ? "Realistik" : kat === "Artistic" ? "Artistik" : kat === "Social" ? "Sosial" : kat === "Conventional" ? "Konvensional" : kat;
+                const riasecLabelMap: Record<string, string> = {
+                  Realistic: "1. Realistik (R)",
+                  Investigative: "2. Investigasi (I)",
+                  Artistic: "3. Artistik (A)",
+                  Social: "4. Sosial (S)",
+                  Enterprising: "5. Enterprising (E)",
+                  Conventional: "6. Konvensional (C)",
+                };
+                const katLabel = riasecLabelMap[kat] || kat;
 
                 return (
                   <button
@@ -1271,72 +1204,199 @@ export function ObservationScreen({
               })}
             </div>
 
-            {/* 3. Card Arti Frekuensi Ketertarikan (Sesuai Desain Fungsional) */}
+            {/* 3. Card Pertanyaan Berlatar Putih dengan Rounded Corners */}
             <div
               style={{
                 background: "#FFFFFF",
                 borderRadius: 24,
                 border: "1.5px solid #E2E8F0",
-                padding: "18px 20px",
-                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.02)",
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.03)",
+                padding: "20px 18px",
               }}
             >
-              <h4
-                style={{
-                  fontFamily: PJS,
-                  fontWeight: 800,
-                  fontSize: 14,
-                  color: "#1E293B",
-                  margin: "0 0 14px",
-                }}
-              >
-                Arti frekuensi ketertarikan
-              </h4>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[
-                  { badge: "N/A", desc: "Tidak dapat dijawab / diamati", bg: "#EEF2F6", border: "#CBD5E1", color: "#64748B" },
-                  { badge: "Tidak Pernah", desc: "0 Tidak pernah sama sekali", bg: "#FEE2E2", border: "#FECACA", color: "#DC2626" },
-                  { badge: "Kadang", desc: "1 Kadang-kadang tertarik / melakukan", bg: "#FEF3C7", border: "#FDE68A", color: "#D97706" },
-                  { badge: "Sering", desc: "2 Sering tertarik / melakukan", bg: "#DCFCE7", border: "#BBF7D0", color: "#16A34A" },
-                  { badge: "Sangat Sering", desc: "3 Sangat sering, antusias konsisten", bg: "#D1FAE5", border: "#86EFAC", color: "#065F46" },
-                ].map((item, idx) => (
-                  <div key={idx} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <span
-                      style={{
-                        fontFamily: PJS,
-                        fontWeight: 800,
-                        fontSize: 11.5,
-                        padding: "4px 10px",
-                        borderRadius: 9999,
-                        background: item.bg,
-                        border: `1px solid ${item.border}`,
-                        color: item.color,
-                        minWidth: 88,
-                        textAlign: "center",
-                        display: "inline-block",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {item.badge}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: IPS,
-                        fontSize: 12.5,
-                        fontWeight: 500,
-                        color: "#475569",
-                        lineHeight: 1.35,
-                      }}
-                    >
-                      {item.desc}
-                    </span>
+              {/* Header Kartu Kategori */}
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 16,
+                      background: currentRiasecMeta.bg,
+                      border: `1.5px solid ${currentRiasecMeta.color}40`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 24,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {currentRiasecMeta.icon}
                   </div>
-                ))}
+
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                      <span style={{
+                        fontSize: 10,
+                        fontWeight: 800,
+                        fontFamily: PJS,
+                        color: currentRiasecMeta.color,
+                        background: `${currentRiasecMeta.color}18`,
+                        padding: "2px 7px",
+                        borderRadius: 6,
+                      }}>
+                        Bagian {riasecStep + 1} dari 6
+                      </span>
+                    </div>
+                    <h3 style={{ fontFamily: PJS, fontSize: 16.5, fontWeight: 800, color: "#1E293B", margin: 0, lineHeight: 1.25 }}>
+                      {currentRiasecCategory === "Investigative" ? "Investigasi (Investigative)" : currentRiasecCategory === "Realistic" ? "Realistik (Realistic)" : currentRiasecCategory === "Artistic" ? "Artistik (Artistic)" : currentRiasecCategory === "Social" ? "Sosial (Social)" : currentRiasecCategory === "Enterprising" ? "Enterprising (Kewirausahaan)" : "Konvensional (Conventional)"}
+                    </h3>
+                    <p style={{ fontFamily: IPS, fontSize: 12, color: "#64748B", margin: "4px 0 0", lineHeight: 1.35, fontWeight: 400 }}>
+                      {currentRiasecMeta.desc}
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5, flexShrink: 0 }}>
+                  <div
+                    style={{
+                      padding: "4px 10px",
+                      borderRadius: 9999,
+                      background: currentRiasecMeta.bg,
+                      border: `1.5px solid ${currentRiasecMeta.color}40`,
+                      color: currentRiasecMeta.color,
+                      fontFamily: PJS,
+                      fontWeight: 800,
+                      fontSize: 12,
+                    }}
+                  >
+                    {currentRiasecAnswered.length}/{currentRiasecItems.length}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowRiasecScaleModal(true)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      color: "#64748B",
+                      fontSize: 11,
+                      fontFamily: PJS,
+                      fontWeight: 700,
+                    }}
+                    className="hover:underline"
+                  >
+                    <HelpCircle size={12} style={{ color: "#059669" }} />
+                    <span>Arti nilai?</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Garis Pembatas Header */}
+              <div style={{ height: 1, background: "#E2E8F0", margin: "16px 0 20px" }} />
+
+              {/* Daftar Pertanyaan di dalam Kartu */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                {currentRiasecItems.map((a, idx) => {
+                  const isAnswered = skorRiasec[a.id] !== undefined;
+                  const isHighlighted = highlightUnansweredRiasec && !isAnswered;
+
+                  return (
+                    <div id={`riasec-item-${a.id}`} key={a.id} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <p
+                        style={{
+                          fontFamily: PJS,
+                          fontSize: 13.5,
+                          fontWeight: 700,
+                          color: isHighlighted ? "#B45309" : "#334155",
+                          margin: 0,
+                          lineHeight: 1.45,
+                        }}
+                      >
+                        {a.text}
+                      </p>
+
+                      {/* 3 Pilihan Skala Minat (RIASEC) */}
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                        {[
+                          { v: 0, label: "Tidak Pernah" },
+                          { v: 1, label: "Kadang" },
+                          { v: 2, label: "Sering / Selalu" },
+                        ].map(opt => {
+                          const isSelected = skorRiasec[a.id] === opt.v;
+                          return (
+                            <button
+                              key={opt.v}
+                              type="button"
+                              onClick={() => setSkorRiasec(p => ({ ...p, [a.id]: opt.v }))}
+                              style={{
+                                height: 44,
+                                borderRadius: 16,
+                                background: isSelected ? "#FFA000" : "#FFFFFF",
+                                border: isSelected ? "1.5px solid #FFA000" : "1.5px solid #CBD5E1",
+                                color: isSelected ? "#FFFFFF" : "#334155",
+                                fontFamily: PJS,
+                                fontWeight: isSelected ? 800 : 700,
+                                fontSize: 11.5,
+                                lineHeight: 1.15,
+                                textAlign: "center",
+                                padding: "0 2px",
+                                boxShadow: isSelected ? "0 4px 12px rgba(255, 160, 0, 0.35)" : "none",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                              }}
+                              className="active:scale-95"
+                            >
+                              {opt.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Tombol "Tidak dapat dijawab" (Garis Putus-Putus di Kiri Bawah) */}
+                      <div style={{ display: "flex", justifyContent: "flex-start", marginTop: 2 }}>
+                        <button
+                          type="button"
+                          onClick={() => setSkorRiasec(p => ({ ...p, [a.id]: -1 }))}
+                          style={{
+                            padding: "6px 14px",
+                            borderRadius: 12,
+                            background: skorRiasec[a.id] === -1 ? "#F1F5F9" : "transparent",
+                            border: skorRiasec[a.id] === -1 ? "1.5px solid #94A3B8" : "1.5px dashed #CBD5E1",
+                            color: skorRiasec[a.id] === -1 ? "#0F172A" : "#64748B",
+                            fontFamily: PJS,
+                            fontWeight: skorRiasec[a.id] === -1 ? 700 : 500,
+                            fontSize: 11.5,
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                          }}
+                          className="active:scale-95"
+                        >
+                          Tidak dapat dijawab
+                        </button>
+                      </div>
+
+                      {/* Divider halus antar butir soal (kecuali yang terakhir) */}
+                      {idx < currentRiasecItems.length - 1 && (
+                        <div style={{ height: 1, background: "#F1F5F9", marginTop: 14 }} />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* 3.5. Card Panduan Unjuk Kerja Observasi Minat RIASEC */}
+            {/* 4. Card Panduan Unjuk Kerja Observasi Minat RIASEC (Collapsible di Bawah Form) */}
             {(() => {
               const panduan = PANDUAN_RIASEC[currentRiasecCategory] || [];
               const isExpanded = expandedRiasecGuide === currentRiasecCategory;
@@ -1485,7 +1545,7 @@ export function ObservationScreen({
                           fontFamily: IPS, fontSize: 11, fontWeight: 500,
                           color: "#92400E", margin: 0, lineHeight: 1.4,
                         }}>
-                          Berikan aktivitas pemicu minat di atas kepada anak, lalu <strong>amati antusiasme dan responnya</strong> untuk mengisi skala frekuensi minat di bawah.
+                          Berikan aktivitas pemicu minat di atas kepada anak, lalu <strong>amati antusiasme dan responnya</strong> untuk mengisi skala frekuensi minat di atas.
                         </p>
                       </div>
                     </div>
@@ -1493,164 +1553,6 @@ export function ObservationScreen({
                 </div>
               );
             })()}
-
-            {/* 4. Card Pertanyaan Berlatar Putih dengan Rounded Corners */}
-            <div
-              style={{
-                background: "#FFFFFF",
-                borderRadius: 24,
-                border: "1.5px solid #E2E8F0",
-                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.03)",
-                padding: "20px 18px",
-              }}
-            >
-              {/* Header Kartu Kategori */}
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: 16,
-                      background: currentRiasecMeta.bg,
-                      border: `1.5px solid ${currentRiasecMeta.color}40`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 24,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {currentRiasecMeta.icon}
-                  </div>
-
-                  <div style={{ minWidth: 0 }}>
-                    <h3 style={{ fontFamily: PJS, fontSize: 16.5, fontWeight: 800, color: "#1E293B", margin: 0, lineHeight: 1.25 }}>
-                      {currentRiasecCategory === "Investigative" ? "Investigasi (Investigative)" : currentRiasecCategory === "Realistic" ? "Realistik (Realistic)" : currentRiasecCategory === "Artistic" ? "Artistik (Artistic)" : currentRiasecCategory === "Social" ? "Sosial (Social)" : currentRiasecCategory === "Enterprising" ? "Enterprising (Kewirausahaan)" : "Konvensional (Conventional)"}
-                    </h3>
-                    <p style={{ fontFamily: IPS, fontSize: 12, color: "#64748B", margin: "4px 0 0", lineHeight: 1.35, fontWeight: 400 }}>
-                      {currentRiasecMeta.desc}
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    padding: "4px 12px",
-                    borderRadius: 9999,
-                    background: currentRiasecMeta.bg,
-                    border: `1.5px solid ${currentRiasecMeta.color}40`,
-                    color: currentRiasecMeta.color,
-                    fontFamily: PJS,
-                    fontWeight: 800,
-                    fontSize: 13,
-                    flexShrink: 0,
-                  }}
-                >
-                  {currentRiasecAnswered.length}/{currentRiasecItems.length}
-                </div>
-              </div>
-
-              {/* Garis Pembatas Header */}
-              <div style={{ height: 1, background: "#E2E8F0", margin: "16px 0 20px" }} />
-
-              {/* Daftar Pertanyaan di dalam Kartu */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                {currentRiasecItems.map((a, idx) => {
-                  const isAnswered = skorRiasec[a.id] !== undefined;
-                  const isHighlighted = highlightUnansweredRiasec && !isAnswered;
-
-                  return (
-                    <div id={`riasec-item-${a.id}`} key={a.id} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                      <p
-                        style={{
-                          fontFamily: PJS,
-                          fontSize: 13.5,
-                          fontWeight: 700,
-                          color: isHighlighted ? "#B45309" : "#334155",
-                          margin: 0,
-                          lineHeight: 1.45,
-                        }}
-                      >
-                        {a.text}
-                      </p>
-
-                      {/* 4 Pilihan Skala Kemampuan */}
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-                        {[
-                          { v: 0, label: "Tidak Pernah" },
-                          { v: 1, label: "Kadang" },
-                          { v: 2, label: "Sering" },
-                          { v: 3, label: "Sangat Sering" },
-                        ].map(opt => {
-                          const isSelected = skorRiasec[a.id] === opt.v;
-                          return (
-                            <button
-                              key={opt.v}
-                              type="button"
-                              onClick={() => setSkorRiasec(p => ({ ...p, [a.id]: opt.v }))}
-                              style={{
-                                height: 44,
-                                borderRadius: 16,
-                                background: isSelected ? "#FFA000" : "#FFFFFF",
-                                border: isSelected ? "1.5px solid #FFA000" : "1.5px solid #CBD5E1",
-                                color: isSelected ? "#FFFFFF" : "#334155",
-                                fontFamily: PJS,
-                                fontWeight: isSelected ? 800 : 700,
-                                fontSize: 11.5,
-                                lineHeight: 1.15,
-                                textAlign: "center",
-                                padding: "0 2px",
-                                boxShadow: isSelected ? "0 4px 12px rgba(255, 160, 0, 0.35)" : "none",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                cursor: "pointer",
-                                transition: "all 0.15s ease",
-                              }}
-                              className="active:scale-95"
-                            >
-                              {opt.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Tombol "Tidak dapat dijawab" (Garis Putus-Putus di Kiri Bawah) */}
-                      <div style={{ display: "flex", justifyContent: "flex-start", marginTop: 2 }}>
-                        <button
-                          type="button"
-                          onClick={() => setSkorRiasec(p => ({ ...p, [a.id]: -1 }))}
-                          style={{
-                            padding: "6px 14px",
-                            borderRadius: 12,
-                            background: skorRiasec[a.id] === -1 ? "#F1F5F9" : "transparent",
-                            border: skorRiasec[a.id] === -1 ? "1.5px solid #94A3B8" : "1.5px dashed #CBD5E1",
-                            color: skorRiasec[a.id] === -1 ? "#0F172A" : "#64748B",
-                            fontFamily: PJS,
-                            fontWeight: skorRiasec[a.id] === -1 ? 700 : 500,
-                            fontSize: 11.5,
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            transition: "all 0.15s ease",
-                          }}
-                          className="active:scale-95"
-                        >
-                          Tidak dapat dijawab
-                        </button>
-                      </div>
-
-                      {/* Divider halus antar butir soal (kecuali yang terakhir) */}
-                      {idx < currentRiasecItems.length - 1 && (
-                        <div style={{ height: 1, background: "#F1F5F9", marginTop: 14 }} />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
 
             {/* Navigasi Bawah Slide RIASEC */}
             <div className="flex gap-2.5 pt-3 pb-4">
@@ -1714,6 +1616,55 @@ export function ObservationScreen({
               />
             </div>
 
+            {/* ── AI Merekam di Balik Layar ── */}
+            <div
+              style={{
+                background: "linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%)",
+                borderRadius: 16,
+                padding: "12px 14px",
+                border: "1.5px solid #A7F3D0",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 10,
+              }}
+            >
+              <div
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 10,
+                  background: "#D1FAE5",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#059669",
+                  flexShrink: 0,
+                  marginTop: 1,
+                }}
+              >
+                <Sparkles size={16} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                  <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 800, color: "#065F46", margin: 0 }}>
+                    AI Merekam Catatan di Balik Layar
+                  </p>
+                  <span style={{ fontSize: 9.5, background: "#D1FAE5", color: "#047857", fontWeight: 800, padding: "1px 6px", borderRadius: 6, fontFamily: PJS }}>
+                    Otomatis
+                  </span>
+                </div>
+                <p style={{ fontFamily: IPS, fontSize: 11, color: "#047857", margin: 0, lineHeight: 1.45 }}>
+                  Setiap narasi observasi yang Anda ketik atau rekam suara akan dipelajari AI untuk mempersonalisasi draf rapor & rekomendasi belajar <strong>{student.name.split(" ")[0]}</strong>.
+                </p>
+                {catatan.trim().length > 0 && (
+                  <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 6, fontSize: 10.5, fontFamily: PJS, fontWeight: 700, color: "#059669" }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#059669", display: "inline-block" }} />
+                    <span>{catatan.trim().split(/\s+/).length} kata pengamatan siap diserap ke profil {student.name.split(" ")[0]}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div style={{ background: CARD, border: `1.5px solid rgba(91,122,104,0.35)`, borderRadius: 18, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }} className="px-4 py-3">
               <p className="text-xs font-bold mb-2" style={{ color: DEEP, fontFamily: PJS }}>Ringkasan sesi ini</p>
               {[
@@ -1765,10 +1716,143 @@ export function ObservationScreen({
               </div>
             )}
 
-            <div style={{ background: CARD, border: `1px solid ${BDR}` }} className="rounded-2xl px-4 py-3 text-center">
+            {/* Penjelasan Proses AI Sareh Asih */}
+            <div
+              style={{
+                background: "linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%)",
+                borderRadius: 20,
+                border: "1.5px solid #A7F3D0",
+                padding: "16px 18px",
+                boxShadow: "0 2px 10px rgba(5, 150, 105, 0.05)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                <div
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 10,
+                    background: "#D1FAE5",
+                    border: "1px solid #6EE7B7",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#059669",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Sparkles size={18} />
+                </div>
+                <div>
+                  <h4
+                    style={{
+                      fontFamily: PJS,
+                      fontSize: 13.5,
+                      fontWeight: 800,
+                      color: "#065F46",
+                      margin: 0,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    Bagaimana AI Memproses Asesmen Ini?
+                  </h4>
+                  <p
+                    style={{
+                      fontFamily: IPS,
+                      fontSize: 11.5,
+                      color: "#047857",
+                      margin: "2px 0 0",
+                    }}
+                  >
+                    Kombinasi data checklist & narasi suara guru
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+                {[
+                  {
+                    num: "1",
+                    title: "Sintesis Checklist & Catatan Suara",
+                    desc: "AI menyatukan skor D1–D6 dan RIASEC dengan cerita suara guru untuk menangkap konteks nyata di luar lembar form.",
+                  },
+                  {
+                    num: "2",
+                    title: "Pemetaan Bakat & Minat Holland",
+                    desc: "Menghitung kecenderungan bakat dominan dan profil fungsional siswa disesuaikan kebutuhan ABK.",
+                  },
+                  {
+                    num: "3",
+                    title: "Rekomendasi Belajar & Rencana Prestasi",
+                    desc: "Menghasilkan adaptasi belajar individual di kelas serta peluang ekstrakurikuler atau lomba yang cocok.",
+                  },
+                ].map((step) => (
+                  <div
+                    key={step.num}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 10,
+                      background: "rgba(255, 255, 255, 0.8)",
+                      borderRadius: 12,
+                      padding: "10px 12px",
+                      border: "1px solid rgba(167, 243, 208, 0.6)",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "50%",
+                        background: "#059669",
+                        color: "#FFFFFF",
+                        fontSize: 11,
+                        fontWeight: 800,
+                        fontFamily: PJS,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        marginTop: 1,
+                      }}
+                    >
+                      {step.num}
+                    </span>
+                    <div style={{ minWidth: 0 }}>
+                      <p
+                        style={{
+                          fontFamily: PJS,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: "#1E293B",
+                          margin: 0,
+                          lineHeight: 1.3,
+                        }}
+                      >
+                        {step.title}
+                      </p>
+                      <p
+                        style={{
+                          fontFamily: IPS,
+                          fontSize: 11,
+                          color: "#475569",
+                          margin: "2px 0 0",
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {step.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ background: CARD, border: `1px solid ${BDR}` }} className="rounded-2xl px-4 py-3.5 text-center">
               <p className="text-xs mb-2.5" style={{ color: MUTED }}>
-                {!bisaSimpan ? "Isi minimal satu indikator atau butir asesmen sebelum menyimpan."
-                  : "Data siap diproses AI untuk pemetaan bakat dan rekomendasi belajar."}
+                {!bisaSimpan
+                  ? "Isi minimal satu indikator atau butir asesmen sebelum menyimpan."
+                  : "Tekan tombol di bawah untuk menyimpan data dan memproses analisis AI."}
               </p>
               <div className="flex gap-2.5">
                 <button
@@ -1798,18 +1882,53 @@ export function ObservationScreen({
                 <div style={{ flex: 2 }}>
                   <PBtn
                     full
-                    label={isSaved ? "Tersimpan ✓ — Simpan Ulang" : "Simpan & Proses AI"}
-                    icon={<Sparkles size={15} />}
+                    label={isSaved ? "Tersimpan ✓ — Analisis Ulang (AI)" : "Simpan & Analisis Bakat (AI)"}
+                    icon={<Sparkles size={16} />}
                     onClick={handleSimpan}
                     disabled={!bisaSimpan}
                     size="md"
                   />
                 </div>
               </div>
+              <p style={{ fontFamily: IPS, fontSize: 10.5, color: "#64748B", margin: "8px 0 0" }}>
+                ✨ Otomatis menghasilkan Peta Bakat, Rekomendasi Belajar, & Rencana Intervensi
+              </p>
             </div>
           </div>
         )}
       </div>
+
+      {/* ── TOMBOL MELAYANG PANDUAN SKALA (FLOATING HELP BUTTON BULAT RINGKAS) ── */}
+      {!showResultModal && !showIncompleteModal && !showScaleModal && !showRiasecScaleModal && (
+        <button
+          type="button"
+          onClick={() => {
+            setScaleModalTab(tahap === "kecenderungan" ? "riasec" : "fungsional");
+            setShowScaleModal(true);
+          }}
+          style={{
+            position: "absolute",
+            bottom: 74,
+            right: 16,
+            zIndex: 40,
+            width: 42,
+            height: 42,
+            borderRadius: "50%",
+            background: "linear-gradient(135deg, #163828 0%, #2D5A43 100%)",
+            color: "#FFFFFF",
+            boxShadow: "0 6px 18px rgba(22, 56, 40, 0.40), 0 2px 5px rgba(0,0,0,0.15)",
+            border: "2px solid rgba(255, 255, 255, 0.6)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          className="active:scale-90 transition-transform hover:brightness-110"
+          title="Buka panduan arti skala penilaian"
+        >
+          <HelpCircle size={22} strokeWidth={2.4} />
+        </button>
+      )}
 
       {/* ── POP UP MODAL SETELAH SIMPAN (Lihat Hasil Asesmen / Kembali ke Catatan) — Terkunci Penuh di Frame HP ── */}
       {showResultModal && (
@@ -1903,7 +2022,7 @@ export function ObservationScreen({
                 lineHeight: 1.3,
               }}
             >
-              Asesmen Tersimpan!
+              Asesmen & Analisis AI Selesai!
             </h3>
             <p
               style={{
@@ -1914,7 +2033,7 @@ export function ObservationScreen({
                 lineHeight: 1.5,
               }}
             >
-              Data asesmen untuk <strong>{student.name}</strong> telah berhasil disimpan. Silakan pilih langkah selanjutnya:
+              Data asesmen checklist dan catatan suara untuk <strong>{student.name}</strong> telah berhasil disimpan & dianalisis oleh AI.
             </p>
 
             {/* Actions */}
@@ -1943,7 +2062,7 @@ export function ObservationScreen({
                 className="hover:brightness-105 active:scale-95 transition-all"
               >
                 <Sparkles size={16} />
-                <span>Lihat Hasil Asesmen</span>
+                <span>Lihat Hasil & Peta Bakat (AI)</span>
               </button>
 
               {/* Button 2: Kembali (Redirects to Catatan) */}
@@ -2125,6 +2244,312 @@ export function ObservationScreen({
                 Batal
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL BOTTOM SHEET: PANDUAN SKALA (FUNGSIONAL & RIASEC DENGAN SWITCHER TAB) ── */}
+      {showScaleModal && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            background: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "center",
+          }}
+          onClick={() => setShowScaleModal(false)}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 430,
+              background: "#FFFFFF",
+              borderTopLeftRadius: 28,
+              borderTopRightRadius: 28,
+              padding: "20px 20px 24px",
+              boxShadow: "0 -10px 40px rgba(0, 0, 0, 0.2)",
+              maxHeight: "85vh",
+              display: "flex",
+              flexDirection: "column",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Grab Handle */}
+            <div style={{ width: 40, height: 4, background: "#CBD5E1", borderRadius: 9999, margin: "0 auto 14px", flexShrink: 0 }} />
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexShrink: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 14,
+                    background: scaleModalTab === "fungsional" ? "#E0F2FE" : "#FEF3C7",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: scaleModalTab === "fungsional" ? "#0284C7" : "#D97706",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  {scaleModalTab === "fungsional" ? <HelpCircle size={22} /> : <Sparkles size={20} />}
+                </div>
+                <div>
+                  <h3 style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: "#1E293B", margin: 0 }}>
+                    {scaleModalTab === "fungsional" ? "Panduan Skala Kemandirian" : "Arti Frekuensi Ketertarikan (RIASEC)"}
+                  </h3>
+                  <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#64748B", margin: "2px 0 0" }}>
+                    {scaleModalTab === "fungsional" ? "Skala profil fungsional domain D1 – D6" : "Skala observasi minat & bakat siswa"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowScaleModal(false)}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  background: "#F1F5F9",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#64748B",
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Segmented Switcher Tab */}
+            <div style={{ display: "flex", gap: 6, background: "#F1F5F9", padding: 4, borderRadius: 14, marginBottom: 14, flexShrink: 0 }}>
+              <button
+                type="button"
+                onClick={() => setScaleModalTab("fungsional")}
+                style={{
+                  flex: 1,
+                  padding: "7px 10px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: scaleModalTab === "fungsional" ? "#FFFFFF" : "transparent",
+                  color: scaleModalTab === "fungsional" ? "#0284C7" : "#64748B",
+                  fontFamily: PJS,
+                  fontSize: 12,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  boxShadow: scaleModalTab === "fungsional" ? "0 2px 6px rgba(0,0,0,0.06)" : "none",
+                  transition: "all 0.15s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                }}
+              >
+                <span>🧠</span>
+                <span>Fungsional (D1–D6)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setScaleModalTab("riasec")}
+                style={{
+                  flex: 1,
+                  padding: "7px 10px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: scaleModalTab === "riasec" ? "#FFFFFF" : "transparent",
+                  color: scaleModalTab === "riasec" ? "#059669" : "#64748B",
+                  fontFamily: PJS,
+                  fontSize: 12,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  boxShadow: scaleModalTab === "riasec" ? "0 2px 6px rgba(0,0,0,0.06)" : "none",
+                  transition: "all 0.15s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                }}
+              >
+                <span>🎯</span>
+                <span>Minat (RIASEC)</span>
+              </button>
+            </div>
+
+            {/* Banner Konteks Waktu Penyusunan Asesmen */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 10,
+                padding: "10px 12px",
+                borderRadius: 14,
+                background: "#F0FDF4",
+                border: "1px solid #BBF7D0",
+                marginBottom: 12,
+                flexShrink: 0,
+              }}
+            >
+              <span style={{ fontSize: 16, marginTop: 1 }}>🗓️</span>
+              <div>
+                <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: "#166534", margin: 0 }}>
+                  Waktu Penyusunan Asesmen
+                </p>
+                <p style={{ fontFamily: IPS, fontSize: 11, color: "#15803D", margin: "2px 0 0", lineHeight: 1.45 }}>
+                  Guru menyusun asesmen di <strong>awal tahun ajaran</strong> sebagai baseline/diagnostik pembelajaran (PPI), kemudian <strong>disesuaikan & diselaraskan pada tahun berikutnya</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* List Skala */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 9, overflowY: "auto", paddingRight: 2 }}>
+              {(scaleModalTab === "fungsional" ? [
+                {
+                  badge: "0",
+                  label: "Tidak/Belum Bisa",
+                  desc: "Siswa belum mampu atau belum bisa melakukan aktivitas ini sama sekali.",
+                  bg: "#FEE2E2",
+                  border: "#FECACA",
+                  color: "#DC2626",
+                },
+                {
+                  badge: "1",
+                  label: "Banyak Bantuan",
+                  desc: "Mampu mencoba, namun membutuhkan banyak bantuan (pendampingan fisik penuh atau bimbingan intensif langkah demi langkah).",
+                  bg: "#FEF3C7",
+                  border: "#FDE68A",
+                  color: "#D97706",
+                },
+                {
+                  badge: "2",
+                  label: "Sedikit Bantuan",
+                  desc: "Mampu melakukan sebagian besar, hanya memerlukan sedikit bantuan (arahan lisan minimal, isyarat, atau pengingat).",
+                  bg: "#DCFCE7",
+                  border: "#BBF7D0",
+                  color: "#16A34A",
+                },
+                {
+                  badge: "3",
+                  label: "Sudah Mandiri",
+                  desc: "Sudah mampu menyelesaikan secara konsisten, tuntas, dan mandiri tanpa bantuan guru/pendamping.",
+                  bg: "#D1FAE5",
+                  border: "#86EFAC",
+                  color: "#065F46",
+                },
+                {
+                  badge: "N/A",
+                  label: "Tidak Dapat Dijawab",
+                  desc: "Indikator belum diobservasi pada sesi ini atau tidak relevan dengan kondisi fisik anak.",
+                  bg: "#F1F5F9",
+                  border: "#CBD5E1",
+                  color: "#64748B",
+                },
+              ] : [
+                {
+                  badge: "0",
+                  label: "Tidak Pernah",
+                  desc: "Siswa tidak tertarik atau menolak aktivitas ini sama sekali saat diberikan kesempatan.",
+                  bg: "#FEE2E2",
+                  border: "#FECACA",
+                  color: "#DC2626",
+                },
+                {
+                  badge: "1",
+                  label: "Kadang",
+                  desc: "Kadang-kadang tertarik / hanya mau mencoba jika diajak teman atau dipandu guru.",
+                  bg: "#FEF3C7",
+                  border: "#FDE68A",
+                  color: "#D97706",
+                },
+                {
+                  badge: "2",
+                  label: "Sering / Selalu",
+                  desc: "Sering atau selalu tertarik, menunjukkan antusiasme tinggi, fokus konsisten, dan inisiatif mandiri.",
+                  bg: "#D1FAE5",
+                  border: "#86EFAC",
+                  color: "#065F46",
+                },
+                {
+                  badge: "N/A",
+                  label: "Tidak Dapat Dijawab",
+                  desc: "Aktivitas belum pernah diobservasi atau tidak dapat diujikan dalam sesi ini.",
+                  bg: "#F1F5F9",
+                  border: "#CBD5E1",
+                  color: "#64748B",
+                },
+              ]).map((item) => (
+                <div
+                  key={item.badge}
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 12,
+                    padding: "10px 12px",
+                    borderRadius: 14,
+                    background: "#F8FAFC",
+                    border: "1px solid #E2E8F0",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: PJS,
+                      fontWeight: 800,
+                      fontSize: 12,
+                      padding: "4px 10px",
+                      borderRadius: 10,
+                      background: item.bg,
+                      border: `1px solid ${item.border}`,
+                      color: item.color,
+                      minWidth: 46,
+                      textAlign: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {item.badge}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: "#1E293B", margin: 0 }}>
+                      {item.label}
+                    </p>
+                    <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#64748B", margin: "2px 0 0", lineHeight: 1.4 }}>
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowScaleModal(false)}
+              style={{
+                width: "100%",
+                marginTop: 14,
+                padding: "12px",
+                borderRadius: 14,
+                background: scaleModalTab === "fungsional" ? "#0284C7" : "#059669",
+                color: "#FFFFFF",
+                fontFamily: PJS,
+                fontWeight: 800,
+                fontSize: 13.5,
+                border: "none",
+                cursor: "pointer",
+                flexShrink: 0,
+                transition: "background 0.2s ease",
+              }}
+              className="active:scale-[0.98]"
+            >
+              Mengerti, Tutup Panduan
+            </button>
           </div>
         </div>
       )}

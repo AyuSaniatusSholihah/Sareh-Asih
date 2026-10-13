@@ -56,16 +56,15 @@ export const kodeOrtuBaru = (nama: string, kelas: string, tahun: string | number
 };
 export const KODE_ORTU_REGEX = /^[A-Z0-9]+-[A-Z]+-\d{4}(-[A-Z0-9]+)?$/;
 
-// Semua siswa demo berada di satu kelas yang sama (satu guru mengampu satu kelas).
 export const seedStudents: Student[] = [
-  { id:1, name:"Rafi Pratama",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  obsStatus:"completed", comps:["FLS3N PDBK","LKSN Diksus"],  caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-RAFI-2026",  tanggalLahir:"12 Maret 2013", nisn:"0012345601", alamat:"Jl. Merpati No. 5, Surakarta", statusOrtu:"Kandung", namaOrtu:"Ibu Ratna" },
-  { id:2, name:"Nisa Aulia",     abk:"Tunadaksa",   kelas:"VII A",  age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  obsStatus:"in_progress", comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIA-NISA-2026",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
-  { id:3, name:"Arga Saputra",   abk:"Tunadaksa",   kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, obsStatus:"not_started", comps:[],                            caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-ARGA-2026",  tanggalLahir:"20 Nov 2014",   nisn:"0012345603", alamat:"Jl. Dahlia No. 8, Depok",     statusOrtu:"Yatim",   namaOrtu:"Ibu Sinta" },
-  { id:4, name:"Dina Maharani",  abk:"Tunadaksa",   kelas:"VII A",  age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, obsStatus:"not_started", comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIA-DINA-2026",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
-  { id:5, name:"Budi Santoso",   abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, obsStatus:"in_progress", comps:["FLS3N PDBK"],                caraBelajar:"Visual",                kodeOrtu:"VIIA-BUDI-2026",  tanggalLahir:"15 Agu 2013",   nisn:"0012345605", alamat:"Jl. Anggrek No. 1, Solo",     statusOrtu:"Piatu",   namaOrtu:"Bapak Joko" },
-  { id:6, name:"Maya Dewi",      abk:"Tunadaksa",   kelas:"VII A",  age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, obsStatus:"not_started", comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIA-MAYA-2026",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
-  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa",   kelas:"VII A",  age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  obsStatus:"completed", comps:["LKSN Diksus"],               caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-TONI-2026",  tanggalLahir:"30 Jan 2011",   nisn:"0012345607", alamat:"Jl. Flamboyan No. 7, Jogja",  statusOrtu:"Kandung", namaOrtu:"Bapak Rudi" },
-  { id:8, name:"Sari Indah",     abk:"Tunadaksa",   kelas:"VII A",  age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, obsStatus:"not_started", comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIA-SARI-2026",  tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
+  { id:1, name:"Rafi Pratama",   abk:"Tunadaksa (dengan hambatan intelektual / ganda)",   kelas:"VII A",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:true,  obsStatus:"completed", comps:["FLS3N PDBK","LKSN Diksus"],  caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-RAFI-2026",  tanggalLahir:"12 Maret 2013", nisn:"0012345601", alamat:"Jl. Merpati No. 5, Surakarta", statusOrtu:"Kandung", namaOrtu:"Ibu Ratna" },
+  { id:2, name:"Nisa Aulia",     abk:"Tunadaksa Ringan (tanpa hambatan intelektual)",     kelas:"VII A",  age:14, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:true,  obsStatus:"in_progress", comps:["FLS3N PDBK","O2SN Diksus"],  caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIA-NISA-2026",  tanggalLahir:"05 Juli 2012",  nisn:"0012345602", alamat:"Jl. Kenari No. 12, Jakarta",  statusOrtu:"Kandung", namaOrtu:"Bapak Haris" },
+  { id:3, name:"Arga Saputra",   abk:"Tunadaksa Ringan (tanpa hambatan intelektual)",     kelas:"VII A",  age:12, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:false, obsStatus:"not_started", comps:[],                            caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIA-ARGA-2026",  tanggalLahir:"20 Nov 2014",   nisn:"0012345603", alamat:"Jl. Dahlia No. 8, Depok",     statusOrtu:"Yatim",   namaOrtu:"Ibu Sinta" },
+  { id:4, name:"Dina Maharani",  abk:"Tunadaksa (dengan hambatan intelektual / ganda)",   kelas:"VII B",  age:15, emoji:"👧", gender:"P", teacher:"Bu Sari",  hasObs:false, obsStatus:"not_started", comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIB-DINA-2026",  tanggalLahir:"03 Feb 2011",   nisn:"0012345604", alamat:"Jl. Melati No. 3, Bandung",   statusOrtu:"Kandung", namaOrtu:"Ibu Dewi" },
+  { id:5, name:"Budi Santoso",   abk:"Tunadaksa Ringan (tanpa hambatan intelektual)",     kelas:"VII B",  age:13, emoji:"👦", gender:"L", teacher:"Bu Sari",  hasObs:false, obsStatus:"in_progress", comps:["FLS3N PDBK"],                caraBelajar:"Visual",                kodeOrtu:"VIIB-BUDI-2026",  tanggalLahir:"15 Agu 2013",   nisn:"0012345605", alamat:"Jl. Anggrek No. 1, Solo",     statusOrtu:"Piatu",   namaOrtu:"Bapak Joko" },
+  { id:6, name:"Maya Dewi",      abk:"Tunadaksa (dengan hambatan intelektual / ganda)",   kelas:"VII B",  age:14, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, obsStatus:"not_started", comps:[],                            caraBelajar:"Kinestetik",            kodeOrtu:"VIIB-MAYA-2026",  tanggalLahir:"21 Apr 2012",   nisn:"0012345606", alamat:"Jl. Mawar No. 9, Semarang",   statusOrtu:"Wali",    namaOrtu:"Bibi Ani" },
+  { id:7, name:"Toni Firmansyah",abk:"Tunadaksa Ringan (tanpa hambatan intelektual)",     kelas:"VIII A", age:15, emoji:"👦", gender:"L", teacher:"Pak Budi", hasObs:true,  obsStatus:"completed", comps:["LKSN Diksus"],               caraBelajar:"Visual & Kinestetik",   kodeOrtu:"VIIIA-TONI-2026", tanggalLahir:"30 Jan 2011",   nisn:"0012345607", alamat:"Jl. Flamboyan No. 7, Jogja",  statusOrtu:"Kandung", namaOrtu:"Bapak Rudi" },
+  { id:8, name:"Sari Indah",     abk:"Tunadaksa (dengan hambatan intelektual / ganda)",   kelas:"VIII A", age:13, emoji:"👧", gender:"P", teacher:"Bu Rina",  hasObs:false, obsStatus:"not_started", comps:["O2SN Diksus"],               caraBelajar:"Auditori & Kinestetik", kodeOrtu:"VIIIA-SARI-2026", tanggalLahir:"10 Des 2013",   nisn:"0012345608", alamat:"Jl. Cempaka No. 4, Bandung",  statusOrtu:"Kandung", namaOrtu:"Ibu Lina" },
 ];
 
 // ─── Contoh foto profil siswa (dummy, disimpan lokal di src/imports) ──
@@ -129,12 +128,10 @@ export const useUpdateStudent = () => useContext(StudentsCtx).update || (() => {
 
 // ─── Pilihan form ────────────────────────────────────────────────────
 export const ABK_OPTIONS = [
-  "Tunadaksa",
-  "Tuna Daksa Ringan",
-  "Tuna Daksa Sedang",
+  "Tunadaksa (dengan hambatan intelektual / ganda)",
+  "Tunadaksa Ringan (tanpa hambatan intelektual)",
   "Tunanetra",
   "Tuna Rungu",
-  "Tuna Wicara",
   "Autis (ASD)",
   "Tunagrahita Ringan",
   "Tunagrahita Sedang",
@@ -164,11 +161,11 @@ export const FUNGSIONAL_META: Record<FungsionalKategori,{icon:string;color:strin
 };
 
 export const SKALA_FUNGSIONAL = [
-  {v:-1, l:"N/A",     d:"Tidak dapat dijawab / diamati",       color:"#94A3B8", bg:"#F1F5F9"},
-  {v:0, l:"Belum",    d:"0 Belum bisa sama sekali",            color:"#D27D6B", bg:"#F8EBE8"},
-  {v:1, l:"Dibantu",  d:"1 Bisa dengan bantuan penuh",         color:"#F59E0B", bg:"#FFFBEB"},
-  {v:2, l:"Sebagian", d:"2 Bisa sebagian, butuh diingatkan",   color:"#8BB098", bg:"#EBF3ED"},
-  {v:3, l:"Mandiri",  d:"3 Bisa sendiri secara konsisten",     color:"#2E3E35", bg:"#D4E8DA"},
+  {v:-1, l:"N/A",               d:"Tidak dapat dijawab / diamati",                   color:"#94A3B8", bg:"#F1F5F9"},
+  {v:0,  l:"Tidak/Belum Bisa",  d:"0 Belum bisa sama sekali / belum mampu",          color:"#D27D6B", bg:"#F8EBE8"},
+  {v:1,  l:"Banyak Bantuan",    d:"1 Memerlukan banyak bantuan / bantuan penuh",     color:"#F59E0B", bg:"#FFFBEB"},
+  {v:2,  l:"Sedikit Bantuan",   d:"2 Memerlukan sedikit bantuan / arahan minimal",   color:"#8BB098", bg:"#EBF3ED"},
+  {v:3,  l:"Sudah Mandiri",     d:"3 Sudah mandiri secara konsisten tanpa bantuan",  color:"#2E3E35", bg:"#D4E8DA"},
 ];
 
 export interface FungsionalItem { id:number; kode?: string; text:string; kategori:FungsionalKategori }
@@ -273,19 +270,19 @@ export const PANDUAN_UNJUK_KERJA: Record<FungsionalKategori, AktivitasUnjukKerja
       judul: "Menyusun Rencana Proyek Keterampilan",
       deskripsi: "Berikan bahan prakarya sederhana. Minta siswa merencanakan tahapan kerja dan membandingkan dua pilihan bahan/alat secara lisan atau ketikan sebelum mulai mengerjakan.",
       perilakuDiamati: ["Memahami instruksi 2-3 langkah (D1.01)", "Merencanakan langkah tugas (D1.10)", "Membandingkan pilihan (D1.11)", "Menyampaikan ide lisan/ketikan (D1.08)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Kuis Berpikir Adaptif (Jawaban Lisan / Keyboard)",
       deskripsi: "Berikan teks bacaan dan soal hitungan kontekstual. Berikan pilihan menjawab secara lisan atau mengetik bila motorik tangan lelah saat menulis.",
       perilakuDiamati: ["Membaca & memahami (D1.05)", "Konsep hitungan (D1.06)", "Jawaban lisan saat sulit menulis (D1.07)", "Mencari cara alternatif (D1.04)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Simulasi Nyata: Mengukur Bahan & Menghitung Uang",
       deskripsi: "Sediakan simulasi belanja atau takaran resep praktis. Amati bagaimana siswa menerapkan konsep nyata dan mengenali batas kemampuan fisiknya saat lelah.",
       perilakuDiamati: ["Penerapan konsep nyata (D1.12)", "Mengenali batas fisik (D1.09)", "Fokus saat mulai lelah (D1.03)", "Mengingat materi sebelumnya (D1.02)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -294,19 +291,19 @@ export const PANDUAN_UNJUK_KERJA: Record<FungsionalKategori, AktivitasUnjukKerja
       judul: "Navigasi Rute Kelas & Luar Kelas (Ramp & Koridor)",
       deskripsi: "Minta siswa berpindah dari dalam kelas menuju kantin, toilet, atau lapangan melewati jalur landai (ramp) dengan kursi roda, kruk, atau walker secara aman.",
       perilakuDiamati: ["Berpindah di kelas (D2.01)", "Navigasi luar kelas (D2.02)", "Menggunakan ramp/jalur landai (D2.06)", "Berpindah tepat waktu (D2.10)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Simulasi Transfer Posisi Mandiri",
       deskripsi: "Amati teknik siswa saat berpindah posisi duduk ke berdiri atau berpindah dari kursi roda ke kursi meja belajar secara mandiri dan aman.",
       perilakuDiamati: ["Berpindah posisi mandiri (D2.05)", "Menggunakan alat mobilitas (D2.07)", "Meminta bantuan tepat saat rintangan (D2.09)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Menjangkau Benda & Olahraga Adaptif (Boccia / Senam Kursi)",
       deskripsi: "Ajak siswa menjangkau benda di rak, membawanya di pangkuan/tas kursi roda, lalu berpartisipasi dalam senam adaptif atau permainan boccia.",
       perilakuDiamati: ["Menjangkau & membawa benda (D2.08)", "Senam/olahraga adaptif (D2.03)", "Ikut kegiatan fisik/ekskul (D2.12)", "Menyesuaikan rute (D2.04)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -315,19 +312,19 @@ export const PANDUAN_UNJUK_KERJA: Record<FungsionalKategori, AktivitasUnjukKerja
       judul: "Makan & Minum dengan Alat Adaptif",
       deskripsi: "Sediakan bekal istirahat. Amati kemandirian membuka wadah bekal/botol minum dan penggunaan alat makan adaptif (sendok bertali/pegangan besar).",
       perilakuDiamati: ["Makan & minum mandiri (D3.01)", "Menjaga kerapian diri (D3.03)", "Mengelola barang milik sendiri (D3.04)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Kemandirian Berpakaian & Alat Bantu Pribadi",
       deskripsi: "Amati siswa mengenakan/melepas jaket/rompi, mengancingkan, menarik resleting, atau memasang strap velcro ortosis/kruk secara mandiri.",
       perilakuDiamati: ["Memakai/melepas pakaian & sepatu (D3.05)", "Kancing/resleting/tali (D3.06)", "Memasang & merawat ortosis/alat bantu (D3.07)", "Menjaga kenyamanan & posisi duduk (D3.09)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Akses Toilet & Kebersihan Remaja",
       deskripsi: "Amati kemandirian navigasi ke toilet difabel, transfer posisi toilet dengan handrail, kebersihan diri remaja, dan pengelolaan uang saku jajan.",
       perilakuDiamati: ["Ke toilet mandiri (D3.02)", "Transfer toilet aman (D3.08)", "Kebersihan masa remaja (D3.10)", "Mengelola uang saku (D3.12)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -336,19 +333,19 @@ export const PANDUAN_UNJUK_KERJA: Record<FungsionalKategori, AktivitasUnjukKerja
       judul: "Proyek Kolaboratif & Meminta Bantuan Sopan",
       deskripsi: "Dua sampai tiga siswa bekerja sama menyelesaikan puzzle atau poster. Amati kemampuan siswa meminta bantuan fisik dengan sopan dan interaksi dua arah.",
       perilakuDiamati: ["Memulai komunikasi (D4.01)", "Interaksi dua arah (D4.03)", "Meminta bantuan fisik dengan sopan (D4.05)", "Bekerja sama dengan teman (D4.09)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Diskusi & Menjelaskan Kondisi Diri",
       deskripsi: "Siswa diajak menceritakan hobi atau menjelaskan fungsi alat bantunya kepada teman dalam suasana yang positif dan percaya diri.",
       perilakuDiamati: ["Menjelaskan kondisi dengan percaya diri (D4.07)", "Menolak ejekan/bullying tegas (D4.08)", "Menjaga pertemanan sebaya (D4.10)", "Komunikasi santun dengan guru/staf (D4.12)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Bermain Peran: Asertif Terhadap Ajakan Berisiko",
       deskripsi: "Simulasi situasi pertemanan untuk mengamati keberanian siswa menyelesaikan kesalahpahaman dan menolak ajakan tidak baik dari teman sebaya.",
       perilakuDiamati: ["Menyelesaikan perselisihan mandiri (D4.04)", "Menolak ajakan berisiko (D4.11)", "Bermain dalam permainan modifikasi (D4.06)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -357,19 +354,19 @@ export const PANDUAN_UNJUK_KERJA: Record<FungsionalKategori, AktivitasUnjukKerja
       judul: "Menyiapkan Meja Belajar & Alat Adaptif",
       deskripsi: "Siswa mengeluarkan buku, pensil bergrip adaptif, dan perlengkapan dari tas kursi roda/ransel, lalu menyusun di meja belajar secara mandiri.",
       perilakuDiamati: ["Memulai tugas mandiri (D5.01)", "Menyiapkan alat belajar (D5.03)", "Menulis/menggambar dengan alat adaptif (D5.05)", "Membawa tas & buku (D5.07)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Prakarya Keterampilan Sesuai SOP",
       deskripsi: "Siswa membuat prakarya (menggunakan gunting adaptif, memotong bahan, membatik/kriya) sesuai langkah keselamatan kerja.",
       perilakuDiamati: ["Menggunakan gunting/alat modifikasi (D5.06)", "Menyelesaikan prakarya cara sesuai (D5.09)", "Keterampilan dasar & SOP (D5.12)", "Selesai tepat waktu (D5.02)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Piket Kelas & Pengaturan Jadwal Pelajaran",
       deskripsi: "Siswa menjalankan tugas piket (merapikan meja, menyortir buku) dan mengecek perlengkapan buku sesuai jadwal pelajaran esok hari.",
       perilakuDiamati: ["Piket kelas sesuai kemampuan (D5.08)", "Mengatur perlengkapan jadwal (D5.10)", "Berpindah jadwal mandiri (D5.04)", "Tugas mandiri tepat waktu (D5.11)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -378,19 +375,19 @@ export const PANDUAN_UNJUK_KERJA: Record<FungsionalKategori, AktivitasUnjukKerja
       judul: "Diskusi Kelas & Advokasi Aksesibilitas",
       deskripsi: "Siswa berpartisipasi dalam musyawarah kelas dan berani menyampaikan kebutuhan penyesuaian (posisi meja, akses ramp, waktu tambahan).",
       perilakuDiamati: ["Terlibat aktif di kelompok (D6.01)", "Partisipasi diskusi kelas (D6.05)", "Menyampaikan kebutuhan penyesuaian (D6.04)", "Identifikasi hambatan aksesibilitas (D6.08)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Olahraga / Ekstrakurikuler Adaptif",
       deskripsi: "Siswa bergabung dalam kegiatan ekstrakurikuler (pramuka, OSIS, olahraga adaptif seperti boccia/voli duduk) dengan alat bantunya.",
       perilakuDiamati: ["Olahraga adaptif (D6.06)", "Menggunakan alat bantu mandiri (D6.03)", "Ikut organisasi/ekskul (D6.10)", "Kegiatan luar jam sekolah (D6.02)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Pentas Seni & Pameran Karya",
       deskripsi: "Siswa menampilkan hasil karya atau tampil di depan umum (bernyanyi/presentasi) dan menyampaikan pendapat santun kepada guru.",
       perilakuDiamati: ["Tampil di depan umum (D6.07)", "Percaya diri hal baru (D6.09)", "Partisipasi pameran karya (D6.12)", "Menyampaikan pendapat santun ke guru (D6.11)"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 };
@@ -403,19 +400,19 @@ export const PANDUAN_RIASEC: Record<RiasecKategori, AktivitasUnjukKerja[]> = {
       judul: "Merakit Komponen / Balok Besar",
       deskripsi: "Sediakan balok atau komponen rakit dengan pegangan mudah digenggam. Amati apakah siswa antusias membongkar-pasang dan mencoba alat kerja praktis.",
       perilakuDiamati: ["Tertarik membongkar/merakit", "Memilih kegiatan tangan/alat", "Lebih suka praktik langsung"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Berkebun Meja Adaptif / Menanam Benih",
       deskripsi: "Ajak siswa menanam biji di pot kecil di atas meja kerja: mengisi media tanam, menabur benih, dan menyiram dengan semprotan ringan.",
       perilakuDiamati: ["Merawat tanaman/hewan", "Mengolah bahan nyata", "Senang aktivitas praktik lingkungan"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Praktik Tata Boga dengan Alat Adaptif",
       deskripsi: "Membuat roti isi atau jus dengan sendok/alat potong adaptif, menakar bahan, dan menyajikan secara rapi.",
       perilakuDiamati: ["Tertarik praktik boga", "Mau memakai alat kerja", "Mengolah bahan nyata"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -424,19 +421,19 @@ export const PANDUAN_RIASEC: Record<RiasecKategori, AktivitasUnjukKerja[]> = {
       judul: "Percobaan Sains Sederhana",
       deskripsi: "Mencampur warna larutan, mengamati reaksi benda apung-tenggelam, atau melarutkan bahan. Amati rasa ingin tahu dan ketelitian siswa.",
       perilakuDiamati: ["Bertanya mengapa/bagaimana", "Mencoba-coba sendiri", "Tertarik pada percobaan"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Teka-teki Pola & Permainan Logika",
       deskripsi: "Berikan puzzle magnetik, tebak pola, atau teka-teki logika sederhana. Amati persistensi dan strategi pemecahan masalah.",
       perilakuDiamati: ["Menikmati teka-teki/pola", "Mencari cara lain", "Senang membandingkan konsep"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Eksplorasi Alam & Observasi Lingkungan",
       deskripsi: "Siswa diajak mengamati spesimen daun, batuan, atau tanaman menggunakan lup/kaca pembesar dari posisi duduk yang nyaman.",
       perilakuDiamati: ["Memperhatikan detail benda/tanaman", "Tertarik mencari informasi", "Bertanya di luar materi dasar"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -445,19 +442,19 @@ export const PANDUAN_RIASEC: Record<RiasecKategori, AktivitasUnjukKerja[]> = {
       judul: "Menggambar / Melukis dengan Alat Adaptif",
       deskripsi: "Sediakan kuas/pensil dengan pegangan tebal atau media digital. Biarkan siswa mengekspresikan karya seni visual secara bebas.",
       perilakuDiamati: ["Memilih kegiatan seni rupa", "Ingin menghias/mendesain", "Bangga menunjukkan karya"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Bermain Musik / Ritme Adaptif",
       deskripsi: "Sediakan instrumen musik yang mudah dimainkan (keyboard sentuh, perkusi ringan, marakas). Amati respon dan kepekaan ritmis siswa.",
       perilakuDiamati: ["Tertarik pada musik/ritme", "Menikmati irama musik", "Senang bernyanyi/memainkan alat musik"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Bercerita & Bermain Peran (Role Play)",
       deskripsi: "Ajak siswa mengekspresikan karakter cerita rakyat atau profesi favorit melalui dialog ekspresif dan gestur dramatis.",
       perilakuDiamati: ["Senang memerankan tokoh", "Senang bercerita", "Lebih suka membuat karya imajinatif"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -466,19 +463,19 @@ export const PANDUAN_RIASEC: Record<RiasecKategori, AktivitasUnjukKerja[]> = {
       judul: "Simulasi Menolong & Berbagi dengan Teman",
       deskripsi: "Berikan situasi berbagi alat belajar atau membantu teman yang membutuhkan arahan. Amati spontanitas empati dan komunikasi.",
       perilakuDiamati: ["Membantu tanpa diminta", "Peduli pada orang lain", "Senang membantu guru & teman"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Proyek Kolaboratif Kelompok Kecil",
       deskripsi: "Tiga sampai empat siswa menyelesaikan tugas poster atau majalah dinding mini bersama. Amati kerjasama dan keterlibatan sosial.",
       perilakuDiamati: ["Memilih kerja tim daripada sendiri", "Berbagi bekal/alat", "Senang berinteraksi dalam kelompok"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Simulasi Pelayanan & Keramahan",
       deskripsi: "Siswa menjadi koordinator penerima tamu atau menyambut teman di kelas. Amati keramahan dan antusiasme melayani sesama.",
       perilakuDiamati: ["Menyapa teman baru dengan ramah", "Tertarik merawat/melayani", "Senang kerja bakti bersama"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -487,19 +484,19 @@ export const PANDUAN_RIASEC: Record<RiasecKategori, AktivitasUnjukKerja[]> = {
       judul: "Simulasi Bazar Mini / Penjualan Karya",
       deskripsi: "Buat simulasi meja bazar. Siswa memajang hasil karya, menentukan harga, dan menawarkan produk ke teman/guru.",
       perilakuDiamati: ["Senang menawarkan hasil karya", "Mengambil inisiatif berbicara", "Berani tampil percaya diri"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Permainan Koordinator / Pemimpin Regu",
       deskripsi: "Tunjuk siswa memimpin kelompok kecil untuk menentukan giliran dan membagi tugas diskusi secara adil.",
       perilakuDiamati: ["Mengajak teman mengikuti ide", "Berani memulai kegiatan baru", "Senang memimpin tim"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Presentasi Karya & Ide di Depan Kelas",
       deskripsi: "Minta siswa mempresentasikan ide proyeknya kepada teman-teman dengan gaya komunikasi persuasif.",
       perilakuDiamati: ["Berani tampil di depan umum", "Senang mendapat peran representatif", "Menyampaikan ide dengan percaya diri"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 
@@ -508,19 +505,19 @@ export const PANDUAN_RIASEC: Record<RiasecKategori, AktivitasUnjukKerja[]> = {
       judul: "Sortir & Klasifikasi Komponen Terstruktur",
       deskripsi: "Sediakan bahan campuran (kancing, manik, alat tulis). Minta siswa mengelompokkan berdasarkan kategori, warna, atau ukuran ke wadah rapi.",
       perilakuDiamati: ["Merapikan & menyusun benda", "Mengelompokkan menurut aturan", "Teliti pada keteraturan"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Menjalankan Prosedur / SOP Kerja Berurutan",
       deskripsi: "Berikan lembar panduan kerja langkah-demi-langkah (resep/urutan pelipatan). Amati kepatuhan terhadap urutan dan ketelitian hasil.",
       perilakuDiamati: ["Nyaman dengan aturan jelas", "Mengikuti langkah berurutan", "Memeriksa pekerjaan sebelum selesai"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
     {
       judul: "Pencatatan & Inventarisasi Alat Kelas",
       deskripsi: "Siswa diminta memeriksa ketersediaan buku atau spidol kelas, mencatatnya dalam daftar tabel sederhana.",
       perilakuDiamati: ["Teliti dalam pencatatan berulang", "Tertarik mencatat & menghitung", "Menyimpan barang di tempat tetap"],
-      cocokUntuk: ["Tunadaksa", "Tuna Daksa Ringan", "Tuna Daksa Sedang"],
+      cocokUntuk: ["Tunadaksa", "Tunadaksa Ringan"],
     },
   ],
 };
@@ -573,11 +570,10 @@ export const RIASEC_PENJELASAN: Record<RiasecKategori, { apa: string; contoh: st
 };
 
 export const SKALA_RIASEC = [
-  {v:-1, l:"N/A", d:"Tidak dapat dijawab / diamati", color:"#94A3B8", bg:"#F1F5F9"},
-  {v:0, l:"Tidak Pernah", d:"0 Tidak pernah",       color:"#64748B", bg:"#F1F5F9"},
-  {v:1, l:"Kadang",       d:"1 Kadang",             color:"#0EA5E9", bg:"#F0F9FF"},
-  {v:2, l:"Sering",       d:"2 Sering",             color:"#2563EB", bg:"#EFF6FF"},
-  {v:3, l:"Sangat Sering",d:"3 Sangat sering",      color:"#1E3A8A", bg:"#DBEAFE"},
+  {v:-1, l:"N/A",             d:"Tidak dapat dijawab / diamati",                 color:"#94A3B8", bg:"#F1F5F9"},
+  {v:0,  l:"Tidak Pernah",    d:"0 Tidak pernah menunjukkan minat / menolak",    color:"#64748B", bg:"#F1F5F9"},
+  {v:1,  l:"Kadang",          d:"1 Kadang-kadang tertarik / mencoba jika diajak", color:"#0EA5E9", bg:"#F0F9FF"},
+  {v:2,  l:"Sering / Selalu", d:"2 Sering atau selalu antusias dan berinisiatif", color:"#16A34A", bg:"#DCFCE7"},
 ];
 
 export interface RiasecItem { id:number; text:string; kategori:RiasecKategori }
@@ -947,3 +943,121 @@ export const LAYANAN: Layanan[] = [
   { id:7, nama:"Skrining Tumbuh Kembang Puskesmas", jenis:"Terapi", kategori:"Skrining & Konsultasi Awal", jarak:"1,5 km", alamat:"Puskesmas Cibeunying, Bandung", jadwal:"Setiap bulan · lihat kalender", biaya:"Gratis · bawa KIA/BPJS", kontak:"022-720-1234", rating:4.6, emoji:"🔎", terbuka:true, agendaBerikutnya:"12 Agustus 2026", catatan:"Layanan umum untuk deteksi dini. Tidak perlu rujukan." },
   { id:8, nama:"Komunitas Orang Tua ABK Bandung", jenis:"Komunitas", kategori:"Support Group & Sharing Session", jarak:"—", alamat:"Pertemuan bergilir · info via grup", jadwal:"Minggu ke-2 setiap bulan", biaya:"Gratis", kontak:"0895-1010-2020", rating:4.9, emoji:"🤝", terbuka:true, agendaBerikutnya:"13 September 2026", catatan:"Ruang berbagi pengalaman antar orang tua, sering menghadirkan psikolog anak." },
 ];
+
+// ─── AI Knowledge & Custom Instructions (Guru Assistant Persona) ─────
+export interface DokumenRujukan {
+  id: string;
+  judul: string;
+  tipe: string;
+  ringkasan: string;
+  aktif: boolean;
+}
+
+export interface AiKnowledgeConfig {
+  tone: "suportif" | "objektif" | "kolaboratif";
+  prioritasFokus: string[];
+  batasanEtis: string[];
+  modeAsesmen: "standar" | "guru" | "sensori";
+  instruksiKhusus: string;
+  panggilanSiswa: "nama_panggilan" | "nama_lengkap";
+  rekomendasiRumahAktif: boolean;
+  model: string;
+  dokumenRujukan: DokumenRujukan[];
+}
+
+export const DEFAULT_AI_KNOWLEDGE: AiKnowledgeConfig = {
+  tone: "suportif",
+  prioritasFokus: [
+    "Kemandirian Aktivitas Harian (ADL)",
+    "Komunikasi Fungsional & Bahasa Isyarat/PECS",
+    "Bakat Minat Vokasional & Kreativitas",
+  ],
+  batasanEtis: [
+    "Dilarang mendiagnosis gangguan medis/psikiatri baru",
+    "Dilarang membandingkan anak dengan siswa lain di laporan",
+    "Gunakan bahasa hangat tanpa jargon medis yang menakutkan",
+    "Sertakan apresiasi kemajuan sekecil apa pun",
+  ],
+  modeAsesmen: "guru",
+  instruksiKhusus:
+    "Fokus pada apresiasi kemajuan riil yang dicapai anak. Jika aspek motorik masih memerlukan bantuan penuh, sarankan adaptasi alat sederhana di rumah (seperti sendok berpegangan tebal atau pensil berbusa). Jangan pernah menggunakan kata 'gagal', gantikan dengan frasa 'sedang berproses menuju mandiri'.",
+  panggilanSiswa: "nama_panggilan",
+  rekomendasiRumahAktif: true,
+  model: "Gemini 1.5 Pro (Edu-Inklusif v2.4)",
+  dokumenRujukan: [
+    {
+      id: "doc-1",
+      judul: "Panduan PPI & Kurikulum Merdeka SLB 2026",
+      tipe: "Pedoman Resmi",
+      ringkasan: "Penyesuaian capaian pembelajaran berbasis profil fungsional individu dan asesmen diagnostik awal.",
+      aktif: true,
+    },
+    {
+      id: "doc-2",
+      judul: "Protokol Stimulasi Regulasi Sensori Ruang Kelas",
+      tipe: "SOP Sekolah",
+      ringkasan: "Langkah penanganan overstimulasi sensori: sediakan calming corner, tekstur menenangkan, & noise-cancelling.",
+      aktif: true,
+    },
+    {
+      id: "doc-3",
+      judul: "Rubrik Kesiapan Vokasi & Ajang Talenta PDBK",
+      tipe: "Pedoman Lomba",
+      ringkasan: "Kriteria kesesuaian minat RIASEC dengan cabang lomba FLS3N, O2SN, dan LKSN Diksus.",
+      aktif: true,
+    },
+  ],
+};
+
+export function loadAiKnowledge(): AiKnowledgeConfig {
+  try {
+    const saved = localStorage.getItem("sareh_asih_ai_knowledge");
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return DEFAULT_AI_KNOWLEDGE;
+}
+
+export function saveAiKnowledge(config: AiKnowledgeConfig): void {
+  try {
+    localStorage.setItem("sareh_asih_ai_knowledge", JSON.stringify(config));
+  } catch (e) {}
+}
+
+// ─── Memori Catatan Siswa yang Diserap AI (Di Balik Layar) ───────────
+export interface MemoriCatatanSiswa {
+  catatan: string;
+  waktu: string;
+  poinKunci: string[];
+}
+
+export function simpanMemoriSiswaAI(studentId: number, catatanBaru: string): void {
+  if (!catatanBaru || !catatanBaru.trim()) return;
+  try {
+    const key = `sareh_asih_ai_memory_${studentId}`;
+    const list: MemoriCatatanSiswa[] = JSON.parse(localStorage.getItem(key) || "[]");
+    
+    // Ekstraksi poin penting secara otomatis (simulasi AI di balik layar)
+    const kalimat = catatanBaru.split(/[.,\n]/).map(k => k.trim()).filter(k => k.length > 5);
+    const poinKunci = kalimat.slice(0, 3);
+
+    const entriBaru: MemoriCatatanSiswa = {
+      catatan: catatanBaru.trim(),
+      waktu: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+      poinKunci: poinKunci.length > 0 ? poinKunci : [catatanBaru.trim().slice(0, 50)],
+    };
+
+    list.unshift(entriBaru);
+    localStorage.setItem(key, JSON.stringify(list.slice(0, 15)));
+  } catch (e) {}
+}
+
+export function muatMemoriSiswaAI(studentId: number): MemoriCatatanSiswa[] {
+  try {
+    const key = `sareh_asih_ai_memory_${studentId}`;
+    return JSON.parse(localStorage.getItem(key) || "[]");
+  } catch (e) {
+    return [];
+  }
+}
+
+

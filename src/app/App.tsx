@@ -411,9 +411,11 @@ export default function App() {
       case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} namaSekolah={guru.sekolah} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
       case "asesmen-custom": return <AsesmenCustomScreen onBack={goBack} studentId={selectedStudentId} />;
-      case "competition": return <CompetitionScreen onStartObs={startObs} />;
+      case "competition": return <CompetitionScreen onStartObs={startObs} onBack={goBack} go={go} />;
       case "report": return (
         <ReportScreen
+          onBack={goBack}
+          go={go}
           namaSekolah={guru.sekolah}
           namaGuru={guru.nama}
           onProfile={() => {
@@ -516,8 +518,13 @@ export default function App() {
                 )}
                 {renderScreen()}
 
-                {showSearch && <SearchOverlay onClose={() => setShowSearch(false)} />}
-                {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} onLogout={handleLogout} role={role} />}
+                {showSettings && (
+                  <SettingsSheet
+                    onClose={() => setShowSettings(false)}
+                    onLogout={handleLogout}
+                    role={role}
+                  />
+                )}
 
                 {/* Modal kode akses orang tua */}
                 {showLinkCode && (
