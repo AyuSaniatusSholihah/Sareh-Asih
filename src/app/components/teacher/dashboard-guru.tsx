@@ -1,7 +1,6 @@
-import React from "react";
 import {
   Percent, Star, Calendar, FileText, Search, Bell, Settings,
-  ChevronRight, Activity, ClipboardCheck, User,
+  ChevronRight, Activity, ClipboardCheck, User, PlayCircle, Sparkles,
 } from "lucide-react";
 import {
   A, BG, CARD, TEXT, MUTED, BDR, DEEP, PJS, IPS, DMM, useUI,
@@ -38,32 +37,47 @@ export function DashboardGuru({
   const aktivitas = [
     ...pendingObs.slice(0, 1).map(s => ({
       id: `p${s.id}`,
+      studentId: s.id,
       I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: A }} />,
       bg: "rgba(210,125,107,0.12)",
       foto: fotoSiswa(s),
+      tipe: "Asesmen",
       judul: "Asesmen belum tuntas",
       ket: `${s.name.split(" ")[0]} · Belum dipetakan`,
-      waktu: "Perlu aksi", tint: A,
+      waktu: "Perlu aksi",
+      tint: A,
+      isPending: true,
+      action: () => onStartObs(s.id),
     })),
     ...students.filter(s => s.hasObs).slice(0, 2).map((s, i) => ({
       id: `o${s.id}`,
+      studentId: s.id,
       I: <ClipboardCheck size={16} strokeWidth={2.3} style={{ color: "#059669" }} />,
       bg: "#ECFDF5",
       foto: fotoSiswa(s),
+      tipe: "Asesmen",
       judul: "Asesmen selesai",
       ket: `${s.name.split(" ")[0]} · ${s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)) : ""}`,
-      waktu: ["Baru saja", "Hari ini"][i] ?? "Hari ini", tint: "#059669",
+      waktu: ["Baru saja", "Hari ini"][i] ?? "Hari ini",
+      tint: "#059669",
+      isPending: false,
+      action: () => go("observation"),
     })),
     ...laporan.slice().reverse().slice(0, 3).map(l => {
       const s = students.find(x => x.id === l.studentId);
       return {
         id: `l${l.id}`,
+        studentId: l.studentId,
         I: <FileText size={16} strokeWidth={2.3} style={{ color: DEEP }} />,
         bg: "rgba(91,122,104,0.12)",
         foto: s ? fotoSiswa(s) : undefined,
+        tipe: "Laporan",
         judul: "Laporan dikirim ke orang tua",
         ket: `${s?.name.split(" ")[0] ?? "Siswa"} · ${l.isi.substring(0, 30)}...`,
-        waktu: l.dikirimPada, tint: DEEP,
+        waktu: l.dikirimPada,
+        tint: DEEP,
+        isPending: false,
+        action: () => go("report"),
       };
     }),
   ].slice(0, 5);
@@ -271,25 +285,87 @@ export function DashboardGuru({
           </div>
           <div style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 22, padding: "4px 14px", boxShadow: "0 2px 10px rgba(91,122,104,0.08)" }}>
             {aktivitas.map((a, i) => (
-              <div key={a.id}
-                style={{ display: "flex", alignItems: "center", gap: 11, padding: "11px 0", borderTop: i === 0 ? "none" : `1px solid ${BDR}` }}>
+              <button
+                key={a.id}
+                onClick={a.action}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 11,
+                  padding: "11px 0",
+                  width: "100%",
+                  background: "none",
+                  border: "none",
+                  borderTop: i === 0 ? "none" : `1px solid ${BDR}`,
+                  cursor: "pointer",
+                  textAlign: "left",
+                  borderRadius: 0,
+                  transition: "background 0.15s",
+                }}
+                className="active:scale-[0.98] transition-all"
+              >
+                {/* Avatar / ikon */}
                 {a.foto ? (
                   <img
                     src={a.foto}
                     alt=""
-                    style={{ width: 38, height: 38, borderRadius: 13, objectFit: "cover", flexShrink: 0, border: `1.5px solid ${a.tint}40` }}
+                    style={{
+                      width: 38, height: 38, borderRadius: 13,
+                      objectFit: "cover", flexShrink: 0,
+                      border: `1.5px solid ${a.tint}40`,
+                      ...(a.isPending ? { boxShadow: `0 0 0 2.5px ${a.tint}55` } : {}),
+                    }}
                   />
                 ) : (
                   <div style={{ width: 38, height: 38, borderRadius: 13, background: a.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {a.I}
                   </div>
                 )}
+
+                {/* Teks */}
                 <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 2 }}>
+                    <span style={{
+                      fontSize: 9,
+                      fontWeight: 800,
+                      fontFamily: PJS,
+                      color: a.tint,
+                      background: `${a.tint}18`,
+                      borderRadius: 5,
+                      padding: "1.5px 6px",
+                      letterSpacing: 0.3,
+                      flexShrink: 0,
+                    }}>
+                      {a.tipe}
+                    </span>
+                  </div>
                   <p style={{ fontFamily: PJS, fontWeight: 700, fontSize: 12.5, color: TEXT, margin: 0, lineHeight: 1.25 }}>{a.judul}</p>
                   <p style={{ fontSize: 10.5, color: MUTED, margin: "2px 0 0", lineHeight: 1.35, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.ket}</p>
                 </div>
-                <span style={{ fontSize: 9.5, color: a.tint, fontWeight: 800, fontFamily: DMM, flexShrink: 0 }}>{a.waktu}</span>
-              </div>
+
+                {/* Badge / aksi kanan */}
+                {a.isPending ? (
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                    background: A,
+                    color: "#fff",
+                    borderRadius: 20,
+                    padding: "5px 9px 5px 7px",
+                    flexShrink: 0,
+                    boxShadow: `0 3px 10px ${A}55`,
+                  }}>
+                    <PlayCircle size={12} strokeWidth={2.5} />
+                    <span style={{ fontSize: 10, fontWeight: 800, fontFamily: PJS, letterSpacing: 0.2 }}>Lanjutkan</span>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", gap: 3, flexShrink: 0 }}>
+                    <span style={{ fontSize: 9.5, color: a.tint, fontWeight: 800, fontFamily: DMM }}>{a.waktu}</span>
+                    <ChevronRight size={13} strokeWidth={2.5} style={{ color: a.tint, opacity: 0.7 }} />
+                  </div>
+                )}
+              </button>
             ))}
           </div>
         </div>

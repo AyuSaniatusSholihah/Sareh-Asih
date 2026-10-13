@@ -7,7 +7,7 @@ import {
   Globe, ExternalLink, ShieldCheck, Smartphone, Sparkles, Settings, PenLine,
 } from "lucide-react";
 import { CARD, TEXT, MUTED, SEC, T, A, DEEP, PJS, IPS, BG, BDR, DMM, useUI } from "../ui-kit";
-import { useStudents, fotoSiswa, type Student } from "../data";
+import { useStudents, fotoSiswa, type Student, loadAiKnowledge, type Screen } from "../data";
 import { exportSpreadsheet, exportLaporanPemetaan, printReportPDF, muatParafGuru, simpanParafGuru, muatTtdGuru, simpanTtdGuru } from "../export";
 import { SignaturePad } from "../signature-pad";
 import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
@@ -36,10 +36,23 @@ interface ConnectedDeviceInfo {
   lastActive: string;
 }
 
-export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah: string; namaGuru?: string; onProfile?: () => void }) {
+export function ReportScreen({
+  namaSekolah,
+  namaGuru,
+  onProfile,
+  onBack,
+  go,
+}: {
+  namaSekolah: string;
+  namaGuru?: string;
+  onProfile?: () => void;
+  onBack?: () => void;
+  go?: (s: Screen) => void;
+}) {
   const { openSearch, openSettings } = useUI();
   const students = useStudents();
   const [view, setView] = useState<ReportView>("main");
+  const aiConfig = useMemo(() => loadAiKnowledge(), []);
   // Paraf guru: ikut tercetak di blok tanda tangan laporan (.doc / PDF)
   const [parafGuru, setParafGuru] = useState<string>(() => muatParafGuru() || namaGuru || "");
   const ubahParaf = (v: string) => { setParafGuru(v); simpanParafGuru(v); };
@@ -693,13 +706,38 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
       {/* Header Laporan Utama (Sesuai header lainnya: Search, Profile, Settings) */}
       <div style={{ background: "#FFFFFF", padding: "14px 20px 10px", borderBottom: "1px solid rgba(91,122,104,0.10)", position: "sticky", top: 0, zIndex: 15 }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
-              Laporan
-            </h1>
-            <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "4px 0 0", fontWeight: 500 }}>
-              Rekap data siswa & pemetaan bakat
-            </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 12,
+                  background: "rgba(139,176,152,0.14)",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#1B2E24",
+                  flexShrink: 0,
+                }}
+                className="active:scale-95 transition-transform"
+                title="Kembali"
+              >
+                <ArrowLeft size={18} />
+              </button>
+            )}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+                Laporan
+              </h1>
+              <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "4px 0 0", fontWeight: 500 }}>
+                Rekap data siswa & pemetaan bakat
+              </p>
+            </div>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
@@ -803,6 +841,31 @@ export function ReportScreen({ namaSekolah, namaGuru, onProfile }: { namaSekolah
             </div>
           </div>
           <ChevronRight size={18} style={{ color: "#164E36", flexShrink: 0 }} />
+        </div>
+
+        {/* Banner: Asisten AI Guru (Di balik layar) */}
+        <div
+          style={{
+            background: "#F0FDF4",
+            border: "1px solid #BBF7D0",
+            borderRadius: 16,
+            padding: "12px 14px",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", color: "#166534", flexShrink: 0 }}>
+            <Sparkles size={17} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, margin: 0, color: "#166534" }}>
+              Asisten AI Sareh Asih Aktif
+            </p>
+            <p style={{ fontFamily: IPS, fontSize: 11, color: "#15803D", margin: "2px 0 0" }}>
+              Narasi laporan otomatis disintesis dari catatan & asesmen setiap siswa
+            </p>
+          </div>
         </div>
 
         {/* Format Rekapan Guru langsung di awal */}

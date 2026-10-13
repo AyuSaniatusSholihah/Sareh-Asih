@@ -10,7 +10,7 @@ import {
 } from "../ui-kit";
 import {
   useStudents, useUpdateStudent, fotoSiswa, type Student, type LaporanKirim, type Screen,
-  ABK_OPTIONS, CARA_BELAJAR_OPTIONS,
+  ABK_OPTIONS, CARA_BELAJAR_OPTIONS, loadAiKnowledge, simpanMemoriSiswaAI, muatMemoriSiswaAI,
 } from "../data";
 import { exportLaporanPemetaan } from "../export";
 import { getMockJawaban, kodeTigaHuruf } from "../shared-charts";
@@ -169,8 +169,26 @@ export function JurnalTab({
 
   const handleSave = () => {
     onKirim(s.id, draft);
+    if (draft.trim()) {
+      simpanMemoriSiswaAI(s.id, draft.trim());
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2200);
+  };
+
+  const handleGenerateAiDraft = () => {
+    const conf = loadAiKnowledge();
+    const p = s.name.split(" ")[0];
+    let text = "";
+    if (conf.tone === "suportif") {
+      text = `Alhamdulillah, Ananda ${p} hari ini menunjukkan antusiasme yang sangat baik di kelas. ${p} mulai berani mencoba kegiatan mandiri dengan respon positif saat diarahkan. Terima kasih Ayah/Bunda atas pendampingan penuh kasih di rumah! 🌸`;
+    } else if (conf.tone === "objektif") {
+      text = `Perkembangan Ananda ${p} minggu ini: fokus aktivitas bertahan lebih stabil saat menggunakan media visual terstruktur. Indikator kemandirian ADL menunjukkan peningkatan respon adaptif. Target selanjutnya adalah pemantapan rutinitas kelas. 📊`;
+    } else {
+      text = `Ananda ${p} hari ini berpartisipasi aktif dalam sesi kelas bersama teman sebaya. Di rumah, Ayah/Bunda dapat melanjutkan penguatan dengan memberi kesempatan ${p} merapikan barang mandiri secara bertahap. Salam hormat! 🤝`;
+    }
+    setDraft(text);
+    setExpanded(true);
   };
 
   const shortDate = (str: string) => {
@@ -225,6 +243,21 @@ export function JurnalTab({
             {listening ? <MicOff size={12} /> : <Mic size={12} />}
             {listening ? "Berhenti" : "Bicara untuk Menulis"}
           </button>
+          <button
+            onClick={handleGenerateAiDraft}
+            style={{
+              display: "flex", alignItems: "center", gap: 5, padding: "5px 10px",
+              borderRadius: 10, border: "none", cursor: "pointer", fontFamily: IPS,
+              fontSize: 11, fontWeight: 700,
+              background: "rgba(45,84,62,0.10)",
+              color: DEEP,
+            }}
+            title="Draf pesan sesuai AI Knowledge Guru"
+            className="active:scale-95 transition-transform"
+          >
+            <Sparkles size={12} style={{ color: "#FFA000" }} />
+            <span>Draf AI</span>
+          </button>
           {listening && (
             <span style={{ fontSize: 10, color: A, fontFamily: IPS, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: A, display: "inline-block" }} />
@@ -238,8 +271,9 @@ export function JurnalTab({
       </div>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <p style={{ fontSize: 11, color: MUTED, fontFamily: IPS, flex: 1 }}>
-          Catatan akan terlihat oleh orang tua.
+        <p style={{ fontSize: 11, color: MUTED, fontFamily: IPS, flex: 1, display: "flex", alignItems: "center", gap: 5 }}>
+          <Sparkles size={13} style={{ color: "#059669", flexShrink: 0 }} />
+          <span>Tersinkron ke orang tua & diserap AI per siswa di balik layar.</span>
         </p>
         <button
           onClick={handleSave}

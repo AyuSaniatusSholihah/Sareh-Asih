@@ -392,27 +392,75 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
                   </p>
                 </div>
 
-                <p style={{ fontFamily: IPS, fontSize: 12, color: "#8BA892", lineHeight: 1.55, margin: "0 0 12px" }}>
+                <p style={{ fontFamily: IPS, fontSize: 12, color: "#8BA892", lineHeight: 1.55, margin: "0 0 4px" }}>
                   {latestLaporan.isi.length > 100 ? latestLaporan.isi.slice(0, 100) + "…" : latestLaporan.isi}
                 </p>
 
-                {/* Saran untuk orang tua */}
-                <div style={{ background: "linear-gradient(135deg, #FFF8F4 0%, #FFF2EC 100%)", border: `1px solid rgba(210,125,107,0.18)`, borderRadius: 14, padding: "12px 14px" }}>
-                  <div className="flex items-center gap-2" style={{ marginBottom: 5 }}>
-                    <span style={{ fontSize: 15, lineHeight: 1 }}>💡</span>
-                    <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 700, color: "#C4695A", margin: 0 }}>Saran untuk orang tua</p>
-                  </div>
-                  <p style={{ fontFamily: IPS, fontSize: 12, color: TEXT, margin: 0, lineHeight: 1.45 }}>
-                    Berikan waktu latihan menggambar secara rutin di rumah.
-                  </p>
-                </div>
-
                 <button onClick={() => go("riwayat-laporan")} className="flex items-center gap-1.5"
-                  style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: T, background: "none", border: "none", padding: "12px 0 0", cursor: "pointer" }}>
+                  style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: T, background: "none", border: "none", padding: "10px 0 0", cursor: "pointer" }}>
                   Lihat laporan lengkap <span>→</span>
                 </button>
               </div>
             )}
+
+            {/* ── Saran dari Guru (selalu tampil) ── */}
+            {(() => {
+              // Ambil saran dari aspek fungsional yang relevan berdasarkan profil anak
+              // Gunakan aspek "Interaksi dengan Orang Lain" sebagai default karena paling relevan umum,
+              // atau aspek pertama dari SARAN_RUMAH jika ada profil fungsional anak
+              const saranKategori: FungsionalKategori = "Interaksi dengan Orang Lain";
+              const saranList = SARAN_RUMAH[saranKategori]
+                .map(s => s.replace(/{nama}/g, nama))
+                .slice(0, 2);
+              return (
+                <div style={{
+                  background: "linear-gradient(135deg, #FFF8F4 0%, #FFF2EC 100%)",
+                  border: "1px solid rgba(210,125,107,0.22)",
+                  borderRadius: 20,
+                  padding: "16px",
+                  boxShadow: "0 1px 8px rgba(210,125,107,0.07)",
+                }}>
+                  <div className="flex items-center gap-2.5" style={{ marginBottom: 12 }}>
+                    <div style={{ width: 34, height: 34, borderRadius: 11, background: "linear-gradient(135deg, #FFE8D6 0%, #FFD5B8 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Lightbulb size={16} style={{ color: "#C4695A" }} strokeWidth={2.2} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>Saran dari Guru</p>
+                      <p style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED, margin: "2px 0 0" }}>{child.teacher} · Untuk diterapkan di rumah</p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {saranList.map((saran, idx) => (
+                      <div key={idx} style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 9,
+                        background: "rgba(255,255,255,0.7)",
+                        borderRadius: 12,
+                        padding: "10px 12px",
+                        border: "1px solid rgba(210,125,107,0.12)",
+                      }}>
+                        <span style={{
+                          width: 20, height: 20, borderRadius: "50%",
+                          background: "rgba(210,125,107,0.18)",
+                          color: "#C4695A",
+                          fontFamily: PJS, fontSize: 10, fontWeight: 800,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          flexShrink: 0, marginTop: 1,
+                        }}>{idx + 1}</span>
+                        <p style={{ fontFamily: IPS, fontSize: 12, color: TEXT, margin: 0, lineHeight: 1.5 }}>{saran}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button onClick={() => go("riwayat-perkembangan")} className="flex items-center gap-1.5"
+                    style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: "#C4695A", background: "none", border: "none", padding: "12px 0 0", cursor: "pointer" }}>
+                    Lihat semua saran <span>→</span>
+                  </button>
+                </div>
+              );
+            })()}
 
             {/* ── Dua kartu info 2 kolom: Agenda Terdekat & Rekomendasi Pelatihan ── */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>

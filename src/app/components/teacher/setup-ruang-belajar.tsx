@@ -21,9 +21,8 @@ const KEKHUSUSAN_LIST = [
   { kode: "B", nama: "Hambatan pendengaran (Tuna Rungu / B)", abk: "Tuna Rungu" },
   { kode: "C", nama: "Hambatan intelektual ringan (Tunagrahita Ringan / C)", abk: "Tunagrahita Ringan" },
   { kode: "C1", nama: "Hambatan intelektual sedang (Tunagrahita Sedang / C1)", abk: "Tunagrahita Sedang" },
-  { kode: "D", nama: "Hambatan fisik ringan (Tuna Daksa Ringan / D)", abk: "Tuna Daksa Ringan" },
-  { kode: "D1", nama: "Hambatan fisik sedang (Tuna Daksa Sedang / D1)", abk: "Tuna Daksa Sedang" },
-  { kode: "F", nama: "Hambatan wicara (Tuna Wicara / F)", abk: "Tuna Wicara" },
+  { kode: "D", nama: "Tunadaksa Ringan — tanpa hambatan intelektual (D)", abk: "Tunadaksa Ringan (tanpa hambatan intelektual)" },
+  { kode: "D1", nama: "Tunadaksa — dengan hambatan intelektual/ganda (D1)", abk: "Tunadaksa (dengan hambatan intelektual / ganda)" },
   { kode: "Q", nama: "Spektrum autisme (Autis / Q)", abk: "Autis (ASD)" },
   { kode: "Lainnya", nama: "Lainnya (tulis sendiri)", abk: "Lainnya" },
 ];

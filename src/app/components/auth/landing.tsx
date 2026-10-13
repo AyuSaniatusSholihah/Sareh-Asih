@@ -387,13 +387,13 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                       <div className="my-2">
                         <div className="flex justify-between items-center mb-1.5 px-0.5">
                           <span className="text-[11px] font-semibold text-[#6B8070]">Tingkat Kemandirian:</span>
-                          <span className="text-[11px] font-bold text-[#2E3E35] bg-[#EAF2EC] px-2 py-0.5 rounded-md">Sebagian</span>
+                          <span className="text-[11px] font-bold text-[#2E3E35] bg-[#EAF2EC] px-2 py-0.5 rounded-md">Sedikit Bantuan</span>
                         </div>
                         <div className="grid grid-cols-4 gap-1.5 my-2.5">
                           {[
-                            { level: "Belum", active: true, color: "#A8C5B2" },
-                            { level: "Dibantu", active: true, color: "#8BB098" },
-                            { level: "Sebagian", active: true, color: "#5B7A68" },
+                            { level: "Tidak/Belum", active: true, color: "#A8C5B2" },
+                            { level: "Banyak", active: true, color: "#8BB098" },
+                            { level: "Sedikit", active: true, color: "#5B7A68" },
                             { level: "Mandiri", active: false, color: "#E5E7EB" },
                           ].map((lvl, i) => (
                             <div key={i} className="flex flex-col items-center">
@@ -401,7 +401,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                                 className="w-full h-3 rounded-full transition-all"
                                 style={{ backgroundColor: lvl.active ? lvl.color : "#E5E7EB" }}
                               />
-                              <span className="text-[10px] mt-1.5 font-semibold" style={{ color: lvl.active ? "#2E3E35" : "#9CA3AF" }}>
+                              <span className="text-[10px] mt-1.5 font-semibold text-center" style={{ color: lvl.active ? "#2E3E35" : "#9CA3AF" }}>
                                 {lvl.level}
                               </span>
                             </div>
@@ -411,7 +411,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
 
                       <div className="mt-3 flex items-center gap-1.5 bg-white p-2.5 rounded-xl border border-[#E5E7EB]">
                         <span style={{ fontSize: 13, fontWeight: 800, color: "#10B981" }}>↑</span>
-                        <span style={{ fontSize: 11.5, color: "#374151", fontWeight: 600 }}>Naik dari Dibantu → Sebagian sejak asesmen terakhir</span>
+                        <span style={{ fontSize: 11.5, color: "#374151", fontWeight: 600 }}>Naik dari Banyak Bantuan → Sedikit Bantuan sejak asesmen awal</span>
                       </div>
                     </div>
 
