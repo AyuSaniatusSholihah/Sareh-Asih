@@ -121,8 +121,8 @@ export default function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   const [namaOrtu] = useState("Ani Rahmawati");
-  const [childId, setChildId] = useState<number | null>(null);
-  const [childIds, setChildIds] = useState<number[]>([]);
+  const [childId, setChildId] = useState<number | null>(1);
+  const [childIds, setChildIds] = useState<number[]>([1]);
   const [showLinkCode, setShowLinkCode] = useState(false);
   const child = childId !== null ? (list.find(s => s.id === childId) ?? null) : null;
   const anakTerkirim = list.filter(s => childIds.includes(s.id));
@@ -163,7 +163,7 @@ export default function App() {
       // Setup ruang belajar sepenuhnya dilakukan di tab Siswa.
       setGuruSetup("akun");
     } else {
-      go("parent-code");
+      enterParent(1);
     }
   };
 
@@ -172,9 +172,10 @@ export default function App() {
   };
 
   const enterParent = (linkedId: number | null) => {
-    setRole("ortu"); setChildId(linkedId); setChildIds(linkedId ? [linkedId] : []);
+    const activeId = linkedId ?? 1;
+    setRole("ortu"); setChildId(activeId); setChildIds(activeId ? [activeId] : [1]);
     setScreen("parent-dashboard"); setTab("parent-dashboard");
-    setShowOnboarding(true);
+    setShowOnboarding(false);
   };
 
   const handleLogout = () => {

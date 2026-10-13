@@ -10,13 +10,13 @@ import {
 } from "./ui-kit";
 import {
   AGENDA, KIND_META, LAYANAN, studentTalentDetail, RIASEC_META, FUNGSIONAL_KATEGORI,
-  FUNGSIONAL_META, SKALA_FUNGSIONAL, KAPTION_ASPEK, WARNA_LEVEL, WARNA_LEVEL_TEKS,
+  FUNGSIONAL_META, PENJELASAN_FUNGSIONAL_ORTU, SKALA_FUNGSIONAL, KAPTION_ASPEK, WARNA_LEVEL, WARNA_LEVEL_TEKS,
   PROFIL_FUNGSIONAL, SARAN_RUMAH, seedPerkembangan, PERIODE_LIST,
   fotoSiswa, type PeriodePerkembangan, type FungsionalKategori, type RiasecKategori,
   type Screen, type Student, type LaporanKirim,
   type AgendaEvent, type EventKind,
 } from "./data";
-import { ProfilFungsionalRadar, ProfilKecenderunganBar, getMockJawaban, kodeTigaHuruf, skorKetekunan } from "./shared-charts";
+import { ProfilFungsionalRadar, ProfilKecenderunganBar, ModalPenjelasanFungsional, getMockJawaban, kodeTigaHuruf, skorKetekunan, skorDomain } from "./shared-charts";
 
 // ─── Modal: masukkan kode akses dari dalam aplikasi ───────────────────
 export function LinkCodeModal({onClose,onLinked,students,linkedIds=[]}:{onClose:()=>void;onLinked:(s:Student)=>void;students:Student[];linkedIds?:number[]}) {
@@ -375,7 +375,17 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
                     <div style={{ width: 34, height: 34, borderRadius: 11, background: "linear-gradient(135deg, #FFE8E0 0%, #FFD5C8 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <FileText size={16} style={{ color: "#C4695A" }} strokeWidth={2.2} />
                     </div>
-                    <p style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>Laporan Terbaru dari Guru</p>
+                    <div>
+                      <p style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>Laporan Terbaru dari Guru</p>
+                      {latestLaporan.tag && (
+                        <span style={{
+                          fontFamily: PJS, fontSize: 9.5, fontWeight: 800, color: "#C4695A",
+                          background: "#FFF2EC", padding: "1px 6px", borderRadius: 6, display: "inline-block", marginTop: 2,
+                        }}>
+                          {latestLaporan.tag}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <button onClick={() => go("riwayat-laporan")} className="flex items-center gap-1.5"
                     style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
@@ -385,20 +395,30 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
                 </div>
 
                 {/* Guru pengirim */}
-                <div className="flex items-center gap-1.5" style={{ marginBottom: 8 }}>
+                <div className="flex items-center gap-1.5" style={{ marginBottom: 6 }}>
                   <Users size={13} style={{ color: MUTED, flexShrink: 0 }} />
                   <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: 0 }}>
                     {child.teacher} · Guru Pendamping
                   </p>
                 </div>
 
-                <p style={{ fontFamily: IPS, fontSize: 12, color: "#8BA892", lineHeight: 1.55, margin: "0 0 4px" }}>
-                  {latestLaporan.isi.length > 100 ? latestLaporan.isi.slice(0, 100) + "…" : latestLaporan.isi}
+                {/* Sorotan kemajuan jika ada */}
+                {latestLaporan.kemajuan && (
+                  <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 10, padding: "6px 9px", marginBottom: 8 }} className="flex items-start gap-1.5">
+                    <span style={{ fontSize: 11, flexShrink: 0, marginTop: 1 }}>🌱</span>
+                    <p style={{ fontFamily: IPS, fontSize: 11, color: "#166534", margin: 0, lineHeight: 1.4, fontWeight: 600 }}>
+                      {latestLaporan.kemajuan}
+                    </p>
+                  </div>
+                )}
+
+                <p style={{ fontFamily: IPS, fontSize: 12, color: TEXT, lineHeight: 1.55, margin: "0 0 4px" }}>
+                  {latestLaporan.isi.length > 120 ? latestLaporan.isi.slice(0, 120) + "…" : latestLaporan.isi}
                 </p>
 
                 <button onClick={() => go("riwayat-laporan")} className="flex items-center gap-1.5"
                   style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: T, background: "none", border: "none", padding: "10px 0 0", cursor: "pointer" }}>
-                  Lihat laporan lengkap <span>→</span>
+                  Lihat linimasa riwayat ({laporan.length} catatan) <span>→</span>
                 </button>
               </div>
             )}
@@ -1176,16 +1196,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
 
         {child.hasObs && (
           <>
-            <SeksiCollapsible judul="Peta Potensi Anak" defaultTerbuka={true}>
-              <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} readOnly={true} />
-              <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} studentName={nama} studentId={child.id} readOnly={true} />
-              <div style={{background:"#F0FDF4",border:`1px solid #BBF7D0`}} className="rounded-xl px-4 py-3 flex items-start gap-2.5 mt-2">
-                <Info size={14} style={{color:"#15803D",flexShrink:0,marginTop:1}}/>
-                <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
-                  Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
-                </p>
-              </div>
-            </SeksiCollapsible>
+            <RingkasanPotensiOrtu child={child} nama={nama} />
 
             <SeksiCollapsible judul="Tren & Perkembangan" defaultTerbuka={true}>
               <KartuMasukPerkembangan nama={nama} data={seedPerkembangan[child.id]} onLihat={() => go("riwayat-perkembangan")} />
@@ -1217,17 +1228,236 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
   );
 }
 
-/* ── Laporan dari guru (hanya baca, tidak bisa dibalas) ─────────────── */
+/* ── Komponen Kesimpulan Utama & Ringkasan Potensi (Conclusion-First) ── */
+function RingkasanPotensiOrtu({ child, nama }: { child: Student; nama: string }) {
+  const [bukaGrafik, setBukaGrafik] = useState(false);
+  const [modalAspek, setModalAspek] = useState<FungsionalKategori | null>(null);
+  const jawaban = getMockJawaban(child.id);
+
+  // Hitung skor kemandirian tiap aspek
+  const domainScores = FUNGSIONAL_KATEGORI.map(domain => ({
+    domain,
+    skor: skorDomain(jawaban, domain) ?? 0,
+    meta: FUNGSIONAL_META[domain],
+    info: PENJELASAN_FUNGSIONAL_ORTU[domain],
+  }));
+
+  const terurut = [...domainScores].sort((a, b) => b.skor - a.skor);
+  const tertinggi = terurut[0];
+  const tertinggiKedua = terurut[1] || terurut[0];
+  const terendah = terurut[terurut.length - 1];
+
+  // Minat bakat utama
+  const talent = studentTalentDetail[child.id];
+  const domainUtama = talent?.domains?.[0];
+  const namaBakatUtama = domainUtama
+    ? (domainUtama.t === "Artistic" ? "Seni & Kreativitas" : domainUtama.t === "Investigative" ? "Investigasi & Nalar" : domainUtama.t)
+    : "Kreativitas & Praktik";
+
+  const statusLevel = (skor: number) => {
+    if (skor >= 75) return { teks: "Sudah Mandiri", bg: "#DCFCE7", color: "#15803D" };
+    if (skor >= 50) return { teks: "Sedikit Bantuan", bg: "#EBF3ED", color: "#2E3E35" };
+    return { teks: "Perlu Pendampingan", bg: "#FEF3C7", color: "#B45309" };
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* ── 1. Rangkuman Kesimpulan Utama (Conclusion-First) ── */}
+      <div style={{
+        background: "linear-gradient(135deg, #F0F7F4 0%, #E7F2EB 100%)",
+        border: "1.5px solid rgba(45, 84, 62, 0.20)",
+        borderRadius: 20,
+        padding: "16px",
+        boxShadow: "0 2px 10px rgba(91,122,104,0.06)",
+      }}>
+        <div className="flex items-center gap-2.5 mb-2.5">
+          <div style={{
+            width: 32, height: 32, borderRadius: 10,
+            background: "rgba(45, 84, 62, 0.14)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0,
+          }}>
+            <Sparkles size={16} style={{ color: DEEP }} />
+          </div>
+          <div>
+            <h3 style={{ fontFamily: PJS, fontSize: 14, fontWeight: 800, color: DEEP, margin: 0 }}>
+              Kesimpulan Perkembangan {nama}
+            </h3>
+            <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>
+              Rangkuman bahasa awam dari hasil pengamatan guru di sekolah
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-2 mt-3">
+          {/* Poin 1: Kemandirian */}
+          <div style={{ background: "rgba(255,255,255,0.85)", borderRadius: 12, padding: "9px 11px", border: "1px solid rgba(45,84,62,0.12)" }} className="flex items-start gap-2">
+            <span style={{ fontSize: 14, marginTop: 1 }}>🌟</span>
+            <p style={{ fontSize: 11.5, color: TEXT, lineHeight: 1.45, margin: 0 }}>
+              <strong>Kekuatan Mandiri:</strong> {nama} paling mandiri dalam <strong>{tertinggi.info.istilahOrtu}</strong> ({tertinggi.domain}) dan <strong>{tertinggiKedua.info.istilahOrtu}</strong>.
+            </p>
+          </div>
+
+          {/* Poin 2: Minat */}
+          <div style={{ background: "rgba(255,255,255,0.85)", borderRadius: 12, padding: "9px 11px", border: "1px solid rgba(45,84,62,0.12)" }} className="flex items-start gap-2">
+            <span style={{ fontSize: 14, marginTop: 1 }}>🎨</span>
+            <p style={{ fontSize: 11.5, color: TEXT, lineHeight: 1.45, margin: 0 }}>
+              <strong>Minat &amp; Bakat:</strong> Menunjukkan antusiasme dan daya fokus tinggi pada <strong>{namaBakatUtama}</strong>.
+            </p>
+          </div>
+
+          {/* Poin 3: Fokus Pendampingan */}
+          <div style={{ background: "rgba(255,255,255,0.85)", borderRadius: 12, padding: "9px 11px", border: "1px solid rgba(45,84,62,0.12)" }} className="flex items-start gap-2">
+            <span style={{ fontSize: 14, marginTop: 1 }}>🌱</span>
+            <p style={{ fontSize: 11.5, color: TEXT, lineHeight: 1.45, margin: 0 }}>
+              <strong>Fokus Pembiasaan:</strong> Aspek <strong>{terendah.info.istilahOrtu}</strong> ({terendah.domain}) terus didampingi bertahap agar semakin percaya diri.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 2. Kartu 6 Aspek Kemandirian Harian (Bahasa Ramah Orang Tua) ── */}
+      <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 20, padding: "16px" }}>
+        <div className="flex items-center justify-between mb-1">
+          <div>
+            <h4 style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>
+              Kemandirian pada 6 Aspek Kehidupan
+            </h4>
+            <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: "2px 0 0" }}>
+              Ketuk aspek untuk membaca arti sehari-hari &amp; tips di rumah
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-2 mt-3">
+          {domainScores.map(({ domain, skor, meta, info }) => {
+            const st = statusLevel(skor);
+            return (
+              <div
+                key={domain}
+                onClick={() => setModalAspek(domain)}
+                className="flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer hover:border-slate-300 active:scale-[0.99]"
+                style={{ background: BG, borderColor: BDR }}
+              >
+                <span style={{ fontSize: 20, width: 34, height: 34, borderRadius: 10, background: meta.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {meta.icon}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1 mb-0.5">
+                    <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: TEXT, margin: 0 }}>
+                      {domain}
+                    </p>
+                    <span style={{
+                      fontFamily: PJS, fontSize: 10, fontWeight: 800,
+                      padding: "2px 7px", borderRadius: 99,
+                      background: st.bg, color: st.color,
+                      whiteSpace: "nowrap", flexShrink: 0,
+                    }}>
+                      {st.teks}
+                    </span>
+                  </div>
+                  <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {info.istilahOrtu}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setModalAspek(domain); }}
+                  title="Lihat arti kategori ini"
+                  style={{
+                    width: 24, height: 24, borderRadius: "50%",
+                    background: "rgba(91,122,104,0.12)", border: "none",
+                    color: DEEP, display: "flex", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer", flexShrink: 0,
+                  }}
+                  className="active:scale-90"
+                >
+                  <Info size={13} />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── 3. Toggle Collapsible: Buka Diagram Radar & Grafik Teknis ── */}
+      <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 20, overflow: "hidden" }}>
+        <button
+          type="button"
+          onClick={() => setBukaGrafik(!bukaGrafik)}
+          className="w-full flex items-center justify-between p-4 cursor-pointer text-left"
+          style={{ background: bukaGrafik ? "#F8FAFC" : CARD, border: "none" }}
+        >
+          <div className="flex items-center gap-2.5">
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: "rgba(91,122,104,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <TrendingUp size={16} style={{ color: DEEP }} />
+            </div>
+            <div>
+              <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0 }}>
+                {bukaGrafik ? "Sembunyikan Diagram Grafik" : "Buka Diagram Radar & Grafik Minat"}
+              </p>
+              <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: "1px 0 0" }}>
+                {bukaGrafik ? "Ketuk untuk melipat kembali diagram" : "Opsional: visualisasi radar fungsional & batang minat"}
+              </p>
+            </div>
+          </div>
+          <ChevronDown
+            size={18}
+            style={{
+              color: MUTED,
+              transform: bukaGrafik ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s ease",
+            }}
+          />
+        </button>
+
+        {bukaGrafik && (
+          <div className="p-3 pt-0 space-y-3" style={{ borderTop: `1px solid ${BDR}` }}>
+            <div style={{ height: 10 }} />
+            <ProfilFungsionalRadar jawaban={jawaban} readOnly={true} studentName={nama} studentId={child.id} />
+            <ProfilKecenderunganBar jawaban={jawaban} studentName={nama} studentId={child.id} readOnly={true} />
+            <div style={{ background: "#F0FDF4", border: `1px solid #BBF7D0` }} className="rounded-xl px-4 py-3 flex items-start gap-2.5">
+              <Info size={14} style={{ color: "#15803D", flexShrink: 0, marginTop: 1 }} />
+              <p className="text-xs leading-relaxed" style={{ color: "#15803D", margin: 0 }}>
+                Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Modal / Sheet Penjelasan Kategori Fungsional */}
+      {modalAspek && (
+        <ModalPenjelasanFungsional
+          kategori={modalAspek}
+          skor={domainScores.find(d => d.domain === modalAspek)?.skor}
+          namaAnak={nama}
+          onClose={() => setModalAspek(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ── Laporan dari guru (dengan tag & preview kemajuan) ─────────────── */
 function LaporanGuruSection({laporan,onBaca,namaAnak,onLihatRiwayat}:{
   laporan:LaporanKirim[]; onBaca:(id:number)=>void; namaAnak:string; onLihatRiwayat?:()=>void;
 }) {
-  const terbaru = laporan.slice().sort((a,b)=> 
+  const urut = laporan.slice().sort((a,b)=> 
     new Date(b.dikirimPada).getTime() - new Date(a.dikirimPada).getTime()
-  )[0];
+  );
+  const terbaru = urut[0];
 
   useEffect(() => {
     if (terbaru && !terbaru.dibaca) onBaca(terbaru.id);
   }, [terbaru?.id]);
+
+  const tagColor = (tag?: string) => {
+    if (tag === "Bakat & Lomba") return { bg: "#FFEDD5", color: "#C2410C", border: "#FDBA74" };
+    if (tag === "Kemandirian") return { bg: "#DCFCE7", color: "#15803D", border: "#86EFAC" };
+    if (tag === "Perkembangan") return { bg: "#E0F2FE", color: "#0369A1", border: "#7DD3FC" };
+    return { bg: "#F1F5F9", color: "#475569", border: "#CBD5E1" };
+  };
 
   return (
     <div style={{background:CARD, border:`1.5px solid ${terbaru && !terbaru.dibaca ? A : BDR}`}} 
@@ -1241,8 +1471,7 @@ function LaporanGuruSection({laporan,onBaca,namaAnak,onLihatRiwayat}:{
         )}
       </div>
       <p className="text-xs leading-relaxed mb-3" style={{color:MUTED}}>
-        Laporan terbaru dari guru tentang {namaAnak}. Bersifat satu arah — 
-        silakan hubungi guru langsung bila ingin berdiskusi.
+        Catatan bertahap guru pendamping tentang {namaAnak}. Bersifat satu arah untuk memantau proses perkembangan secara berkala.
       </p>
       
       {!terbaru ? (
@@ -1251,19 +1480,53 @@ function LaporanGuruSection({laporan,onBaca,namaAnak,onLihatRiwayat}:{
         </div>
       ) : (
         <>
-          <div style={{background:BG,border:`1px solid ${BDR}`}} className="rounded-xl px-3 py-3">
-            <p className="text-xs mb-2 font-semibold" style={{color:MUTED,fontFamily:DMM}}>{terbaru.dikirimPada}</p>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{color:TEXT}}>{terbaru.isi}</p>
+          <div style={{background:BG,border:`1px solid ${BDR}`}} className="rounded-xl p-3.5 space-y-2">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                {terbaru.tag && (() => {
+                  const tc = tagColor(terbaru.tag);
+                  return (
+                    <span style={{
+                      fontFamily: PJS, fontSize: 10, fontWeight: 800,
+                      padding: "2px 8px", borderRadius: 8,
+                      background: tc.bg, color: tc.color, border: `1px solid ${tc.border}`,
+                    }}>
+                      {terbaru.tag}
+                    </span>
+                  );
+                })()}
+                <p className="text-xs font-semibold" style={{color:MUTED,fontFamily:DMM}}>{terbaru.dikirimPada}</p>
+              </div>
+            </div>
+
+            <p style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>
+              {terbaru.judul}
+            </p>
+
+            {terbaru.kemajuan && (
+              <div style={{ background: "#EEF6F0", border: "1px solid #D4E8DA", borderRadius: 10, padding: "7px 10px" }} className="flex items-start gap-2">
+                <span style={{ fontSize: 12, flexShrink: 0, marginTop: 1 }}>🌱</span>
+                <p style={{ fontSize: 11, color: "#2E6B4F", margin: 0, lineHeight: 1.4, fontWeight: 600 }}>
+                  {terbaru.kemajuan}
+                </p>
+              </div>
+            )}
+
+            <p className="text-xs leading-relaxed whitespace-pre-wrap" style={{color:TEXT, margin: 0}}>{terbaru.isi}</p>
           </div>
-          {laporan.length > 1 && onLihatRiwayat && (
+
+          {onLihatRiwayat && (
             <button 
               onClick={onLihatRiwayat}
-              className="w-full flex items-center justify-between mt-3 cursor-pointer"
-              style={{color:T, background:"transparent", border:"none"}}
+              className="w-full flex items-center justify-between mt-3 pt-2 cursor-pointer"
+              style={{color:T, background:"transparent", border:"none", borderTop: `1px solid ${BDR}`}}
             >
-              <span className="text-xs font-semibold">
-                Lihat riwayat laporan ({laporan.length - 1})
-              </span>
+              <div className="flex items-center gap-1.5">
+                <CalendarDays size={13} style={{ color: T }} />
+                <span className="text-xs font-bold" style={{ fontFamily: PJS }}>
+                  Lihat linimasa riwayat ({laporan.length} catatan)
+                </span>
+              </div>
               <ChevronRight size={14} style={{color:T}}/>
             </button>
           )}
@@ -1273,6 +1536,7 @@ function LaporanGuruSection({laporan,onBaca,namaAnak,onLihatRiwayat}:{
   );
 }
 
+/* ── Layar Riwayat Laporan Guru (Linimasa Progresif Vertikal) ────────── */
 export function RiwayatLaporanScreen({
   onBack, laporan, namaAnak,
 }: {
@@ -1282,17 +1546,172 @@ export function RiwayatLaporanScreen({
     new Date(b.dikirimPada).getTime() - new Date(a.dikirimPada).getTime()
   );
 
+  const tagColor = (tag?: string) => {
+    if (tag === "Bakat & Lomba") return { bg: "#FFEDD5", color: "#C2410C", border: "#FDBA74", bullet: "#C2410C" };
+    if (tag === "Kemandirian") return { bg: "#DCFCE7", color: "#15803D", border: "#86EFAC", bullet: "#15803D" };
+    if (tag === "Perkembangan") return { bg: "#E0F2FE", color: "#0369A1", border: "#7DD3FC", bullet: "#0369A1" };
+    return { bg: "#F1F5F9", color: "#475569", border: "#CBD5E1", bullet: "#64748B" };
+  };
+
   return (
-    <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS}}>
-      <TBar title="Riwayat Laporan" sub={namaAnak} onBack={onBack}/>
-      <div className="px-4 pt-4 pb-6 space-y-3">
-        {urut.map(l=>(
-          <div key={l.id} style={{background:CARD,border:`1px solid ${BDR}`}} 
-               className="rounded-2xl p-4">
-            <p className="text-xs mb-2 font-semibold" style={{color:MUTED,fontFamily:DMM}}>{l.dikirimPada}</p>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{color:TEXT}}>{l.isi}</p>
+    <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS, background:BG}}>
+      <TBar title="Riwayat Laporan Guru" sub={`Linimasa perkembangan ${namaAnak}`} onBack={onBack}/>
+      <div className="px-4 pt-4 pb-12 space-y-4">
+        
+        {/* Banner Ringkasan Linimasa */}
+        <div style={{
+          background: "linear-gradient(135deg, #F0F7F4 0%, #E7F2EB 100%)",
+          border: "1.5px solid rgba(45,84,62,0.18)",
+          borderRadius: 20,
+          padding: "16px",
+        }}>
+          <div className="flex items-center gap-2.5 mb-2">
+            <div style={{
+              width: 34, height: 34, borderRadius: 10,
+              background: "rgba(45,84,62,0.14)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <CalendarDays size={18} style={{ color: DEEP }} />
+            </div>
+            <div>
+              <h3 style={{ fontFamily: PJS, fontSize: 14, fontWeight: 800, color: DEEP, margin: 0 }}>
+                Linimasa Perkembangan Berkala
+              </h3>
+              <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: 0 }}>
+                {urut.length} catatan tersimpan · Laporan tidak saling menggantikan
+              </p>
+            </div>
           </div>
-        ))}
+          <p style={{ fontFamily: IPS, fontSize: 11.5, color: TEXT, lineHeight: 1.5, margin: 0 }}>
+            Setiap catatan di bawah merekam momen dan perkembangan kemampuan {namaAnak} di sekolah secara berkala. Catatan baru tidak menghapus catatan lama, melainkan melengkapi riwayat proses belajar ananda.
+          </p>
+        </div>
+
+        {/* Linimasa Vertikal (Progressive Vertical Timeline) */}
+        <div className="relative pl-6 space-y-6" style={{ marginTop: 8 }}>
+          {/* Garis vertikal timeline */}
+          <div style={{
+            position: "absolute",
+            left: 11,
+            top: 14,
+            bottom: 24,
+            width: 2,
+            background: "#D1D5DB",
+          }} />
+
+          {urut.map((l, idx) => {
+            const tc = tagColor(l.tag);
+            const isFirst = idx === 0;
+            return (
+              <div key={l.id} className="relative">
+                {/* Node bullet pada garis */}
+                <div style={{
+                  position: "absolute",
+                  left: -20,
+                  top: 14,
+                  width: 14,
+                  height: 14,
+                  borderRadius: "50%",
+                  background: isFirst ? tc.bullet : "#FFFFFF",
+                  border: `3px solid ${tc.bullet}`,
+                  boxShadow: "0 0 0 3px rgba(255,255,255,0.8)",
+                  zIndex: 2,
+                }} />
+
+                {/* Kartu laporan pada timeline */}
+                <div style={{
+                  background: CARD,
+                  border: `1.5px solid ${isFirst ? "rgba(91,122,104,0.35)" : BDR}`,
+                  borderRadius: 18,
+                  padding: "16px",
+                  boxShadow: isFirst ? "0 4px 14px rgba(91,122,104,0.08)" : "0 1px 6px rgba(0,0,0,0.03)",
+                }}>
+                  {/* Baris Meta: Tanggal & Tag */}
+                  <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <span style={{
+                        fontFamily: DMM, fontSize: 11, fontWeight: 700, color: MUTED,
+                      }}>
+                        {l.dikirimPada}
+                      </span>
+                      {l.tag && (
+                        <span style={{
+                          fontFamily: PJS, fontSize: 10, fontWeight: 800,
+                          padding: "2px 8px", borderRadius: 8,
+                          background: tc.bg, color: tc.color,
+                          border: `1px solid ${tc.border}`,
+                        }}>
+                          {l.tag}
+                        </span>
+                      )}
+                    </div>
+                    {isFirst && (
+                      <span style={{
+                        fontFamily: PJS, fontSize: 10, fontWeight: 800,
+                        padding: "2px 7px", borderRadius: 99,
+                        background: "#E7F2EB", color: T,
+                      }}>
+                        Terbaru
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Judul Laporan */}
+                  <h4 style={{ fontFamily: PJS, fontSize: 14.5, fontWeight: 800, color: TEXT, margin: "0 0 6px", lineHeight: 1.3 }}>
+                    {l.judul}
+                  </h4>
+
+                  {/* Sorotan Kemajuan (Highlight Box) */}
+                  {l.kemajuan && (
+                    <div style={{
+                      background: "#F0FDF4",
+                      border: "1px solid #BBF7D0",
+                      borderRadius: 12,
+                      padding: "8px 11px",
+                      marginBottom: 10,
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 8,
+                    }}>
+                      <span style={{ fontSize: 14, flexShrink: 0 }}>🌱</span>
+                      <div>
+                        <p style={{ fontFamily: PJS, fontSize: 11, fontWeight: 800, color: "#15803D", margin: 0 }}>
+                          Kemajuan yang Terlihat:
+                        </p>
+                        <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#166534", margin: "2px 0 0", lineHeight: 1.4 }}>
+                          {l.kemajuan}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Isi Lengkap Laporan */}
+                  <p style={{
+                    fontFamily: IPS, fontSize: 12.5, color: TEXT, lineHeight: 1.6,
+                    margin: 0, whiteSpace: "pre-wrap",
+                  }}>
+                    {l.isi}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Catatan Kaki Penutup */}
+        <div style={{
+          background: BG,
+          border: `1px dashed ${BDR}`,
+          borderRadius: 16,
+          padding: "12px 14px",
+          textAlign: "center",
+        }}>
+          <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: 0, lineHeight: 1.45 }}>
+            Guru pendamping akan terus menambahkan catatan seiring proses belajar dan latihan {namaAnak} di sekolah.
+          </p>
+        </div>
+
       </div>
     </div>
   );
@@ -1485,6 +1904,7 @@ export function PerkembanganScreen({ onBack, child, onPilihAspek }: {
 
         {FUNGSIONAL_KATEGORI.map(k => {
           const meta = FUNGSIONAL_META[k];
+          const info = PENJELASAN_FUNGSIONAL_ORTU[k];
           return (
             <button key={k} onClick={() => onPilihAspek(k)}
               className="w-full flex items-center gap-3 px-3.5 py-3 text-left active:scale-[0.99] transition-transform"
@@ -1492,7 +1912,10 @@ export function PerkembanganScreen({ onBack, child, onPilihAspek }: {
               <span className="flex items-center justify-center flex-shrink-0"
                 style={{ width: 42, height: 42, borderRadius: "50%", background: meta.bg, fontSize: 19 }}>{meta.icon}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold" style={{ fontFamily: PJS, color: TEXT, margin: 0 }}>{NAMA_ASPEK[k]}</p>
+                <div className="flex items-center justify-between gap-1">
+                  <p className="text-sm font-bold" style={{ fontFamily: PJS, color: TEXT, margin: 0 }}>{NAMA_ASPEK[k]}</p>
+                  <span className="text-[11px] font-semibold" style={{ color: meta.color }}>{info.istilahOrtu}</span>
+                </div>
                 <BarDistribusi counts={data.aspek[k].sesudah} />
                 <p className="text-xs mt-1.5" style={{ color: MUTED, margin: 0 }}>{KAPTION_ASPEK[k]}</p>
               </div>
@@ -1513,6 +1936,7 @@ export function AspekDetailScreen({ onBack, child, aspek, onLihatKemampuan }: {
   const nama = child ? child.name.split(" ")[0] : "";
   const data = child ? seedPerkembangan[child.id] : undefined;
   const meta = FUNGSIONAL_META[aspek];
+  const infoOrtu = PENJELASAN_FUNGSIONAL_ORTU[aspek];
   const jumlah = PROFIL_FUNGSIONAL.filter(i => i.kategori === aspek).length;
 
   if (!data) {
@@ -1550,13 +1974,24 @@ export function AspekDetailScreen({ onBack, child, aspek, onLihatKemampuan }: {
       } />
       <div className="px-4 pt-4 pb-6 space-y-3">
 
-        {/* Pengantar aspek */}
-        <div className="flex items-center gap-3 p-4" style={{ background: meta.bg, borderRadius: 16 }}>
-          <span className="flex items-center justify-center flex-shrink-0"
-            style={{ width: 46, height: 46, borderRadius: "50%", background: "#FFFFFF", fontSize: 22 }}>{meta.icon}</span>
-          <div className="min-w-0">
-            <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT, margin: 0 }}>{aspek}</p>
-            <p className="text-xs leading-relaxed mt-0.5" style={{ color: MUTED }}>{meta.desc}</p>
+        {/* Pengantar aspek bahasa orang tua */}
+        <div style={{ background: meta.bg, border: `1.5px solid ${meta.color}35`, borderRadius: 18, padding: "16px" }}>
+          <div className="flex items-center gap-3 mb-2.5">
+            <span className="flex items-center justify-center flex-shrink-0"
+              style={{ width: 44, height: 44, borderRadius: "50%", background: "#FFFFFF", fontSize: 22, boxShadow: "0 2px 6px rgba(0,0,0,0.06)" }}>{meta.icon}</span>
+            <div className="min-w-0">
+              <p className="font-bold text-base" style={{ fontFamily: PJS, color: TEXT, margin: 0 }}>{aspek}</p>
+              <p className="text-xs font-semibold" style={{ color: meta.color, margin: "2px 0 0" }}>{infoOrtu.istilahOrtu}</p>
+            </div>
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: TEXT, margin: "0 0 10px" }}>{infoOrtu.artinyaUntukAnak}</p>
+          <div style={{ background: "rgba(255,255,255,0.7)", borderRadius: 12, padding: "9px 11px", display: "flex", flexDirection: "column", gap: 5 }}>
+            <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>
+              <strong style={{ color: TEXT }}>Contoh di Sekolah:</strong> {infoOrtu.contohSekolah}
+            </p>
+            <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>
+              <strong style={{ color: TEXT }}>Contoh di Rumah:</strong> {infoOrtu.contohRumah}
+            </p>
           </div>
         </div>
 

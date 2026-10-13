@@ -97,18 +97,68 @@ export const fotoSiswa = (s: Pick<Student, "id" | "foto" | "gender">): string | 
  * dapat membalas. Guru bebas mengirim berapa kali pun; setiap kiriman
  * tercatat di riwayat beserta status dibaca/belum dibaca.
  */
+export type LaporanTag = "Perkembangan" | "Bakat & Lomba" | "Kemandirian" | "Evaluasi Rutin";
+
 export interface LaporanKirim {
-  id:number;
-  studentId:number;
-  judul:string;
-  isi:string;
-  dikirimPada:string;   // contoh "3 Jun 2026"
-  dibaca:boolean;
-  dibacaPada?:string;
+  id: number;
+  studentId: number;
+  judul: string;
+  isi: string;
+  dikirimPada: string;   // contoh "18 Jun 2026"
+  dibaca: boolean;
+  dibacaPada?: string;
+  tag?: LaporanTag;
+  sorotan?: string;
+  kemajuan?: string;
 }
 
 export const seedLaporan: LaporanKirim[] = [
-  { id:1, studentId:1, judul:"Catatan Latihan Gambar", isi:"Rafi mulai ikut latihan persiapan FLS2N cabang menggambar setiap Rabu. Mohon dukungan agar tetap semangat!", dikirimPada:"18 Jun 2026", dibaca:false },
+  {
+    id: 1,
+    studentId: 1,
+    judul: "Penyesuaian di Kelas & Minat Awal",
+    tag: "Evaluasi Rutin",
+    sorotan: "Rafi mulai nyaman dengan rutinitas kelas dan sangat antusias saat sesi eksplorasi warna.",
+    isi: "Di awal semester ini, Rafi menunjukkan adaptasi yang baik di kelas VII A. Rafi sangat antusias ketika sesi menggambar bebas dan mampu memilih paduan warna sendiri secara percaya diri. Mobilitas di kelas masih didampingi guru saat berpindah meja belajar.",
+    kemajuan: "Mampu memusatkan fokus pada tugas menggambar mandiri hingga 20 menit.",
+    dikirimPada: "14 Apr 2026",
+    dibaca: true,
+    dibacaPada: "15 Apr 2026",
+  },
+  {
+    id: 2,
+    studentId: 1,
+    judul: "Kemandirian & Penggunaan Alat Bantu",
+    tag: "Kemandirian",
+    sorotan: "Peningkatan kemandirian saat merapikan perlengkapan gambar dan berpindah kursi.",
+    isi: "Perkembangan motorik halus Rafi terlihat semakin mantap. Rafi sudah bisa mengambil dan merapikan kuas lukis ke tempatnya tanpa perlu diingatkan berkali-kali. Keseimbangan saat duduk di meja gambar juga semakin stabil dengan postur yang lebih rileks.",
+    kemajuan: "Merapikan alat belajar sendiri & lebih percaya diri berinteraksi dengan teman sebangku.",
+    dikirimPada: "20 Mei 2026",
+    dibaca: true,
+    dibacaPada: "21 Mei 2026",
+  },
+  {
+    id: 3,
+    studentId: 1,
+    judul: "Persiapan FLS2N Seni Rupa & Desain",
+    tag: "Bakat & Lomba",
+    sorotan: "Rafi resmi mulai latihan intensif persiapan seleksi FLS2N PDBK cabang seni lukis.",
+    isi: "Rafi mulai ikut latihan persiapan FLS2N cabang seni rupa/menggambar setiap Rabu siang. Daya imajinasi warna dan ketelitian goresannya berkembang sangat pesat. Mohon dukungan dan apresiasi di rumah agar ananda tetap semangat dan bahagia menjalani latihannya!",
+    kemajuan: "Menyelesaikan 1 karya sketsa kanvas mandiri dengan paduan warna ekspresif.",
+    dikirimPada: "18 Jun 2026",
+    dibaca: false,
+  },
+  {
+    id: 4,
+    studentId: 2,
+    judul: "Perkembangan Ritme & Gerak Kreatif",
+    tag: "Bakat & Lomba",
+    sorotan: "Nisa menunjukkan kepekaan gerak dan ritmis yang sangat baik dalam latihan tari adaptif.",
+    isi: "Nisa sangat menikmati aktivitas kinestetik dan seni pertunjukan. Daya tangkap terhadap tempo dan ketukan sangat kuat. Sangat direkomendasikan untuk terus didorong ikut latihan pentas seni.",
+    kemajuan: "Menguasai urutan gerak ritmis secara mandiri.",
+    dikirimPada: "12 Jun 2026",
+    dibaca: true,
+  },
 ];
 
 // ─── Students store (guru dapat menambah siswa sendiri) ──────────────
@@ -158,6 +208,66 @@ export const FUNGSIONAL_META: Record<FungsionalKategori,{icon:string;color:strin
   "Interaksi dengan Orang Lain": {icon:"🤝", color:"#7C3AED", bg:"#F5F3FF", desc:"Komunikasi dan respons sosial"},
   "Aktivitas Sehari-hari": {icon:"📅", color:"#D97706", bg:"#FEF3C7", desc:"Tanggung jawab rutin dan tugas sekolah"},
   "Partisipasi": {icon:"🙋", color:"#DB2777", bg:"#FDF2F8", desc:"Keterlibatan dalam kegiatan kelas atau kelompok"},
+};
+
+export interface PenjelasanFungsionalOrtu {
+  istilahOrtu: string;
+  ringkasan: string;
+  artinyaUntukAnak: string;
+  contohSekolah: string;
+  contohRumah: string;
+  tipsPendampingan: string;
+}
+
+export const PENJELASAN_FUNGSIONAL_ORTU: Record<FungsionalKategori, PenjelasanFungsionalOrtu> = {
+  "Kognisi": {
+    istilahOrtu: "Kemampuan Memahami & Berpikir",
+    ringkasan: "Bagaimana anak menyerap informasi, memahami petunjuk, dan memecahkan masalah sederhana.",
+    artinyaUntukAnak: "Mencakup daya ingat anak terhadap pelajaran, kemampuan mengikuti arahan bertahap (seperti 2–3 instruksi sekaligus), serta inisiatif mencari cara saat menghadapi tugas yang sulit.",
+    contohSekolah: "Memahami penjelasan guru dan menyelesaikan tugas keterampilan secara bertahap.",
+    contohRumah: "Dapat mengingat rutinitas pagi (sarapan, pakai sepatu) dan mengikuti arahan sederhana tanpa harus diulang berkali-kali.",
+    tipsPendampingan: "Gunakan kalimat pendek, instruksi bertahap satu per satu, dan beri pujian atas setiap proses berpikir anak."
+  },
+  "Mobilitas": {
+    istilahOrtu: "Kemampuan Bergerak & Berpindah",
+    ringkasan: "Kemandirian dan keamanan anak dalam berpindah tempat serta menggunakan alat bantu gerak.",
+    artinyaUntukAnak: "Bukan hanya soal berjalan, tetapi bagaimana anak bergerak aman di lingkungan (di dalam kelas, toilet, lorong sekolah), berpindah posisi duduk-berdiri, dan menggunakan alat bantu seperti kursi roda atau kruk.",
+    contohSekolah: "Berpindah dari kursi belajar ke meja kelompok atau menuju toilet sekolah dengan jalur yang aksesibel.",
+    contohRumah: "Berpindah mandiri dari tempat tidur ke ruang keluarga serta aman melewati undakan atau karpet.",
+    tipsPendampingan: "Pastikan jalur berjalan di rumah bebas dari barang berserakan, dan beri waktu anak bergerak dengan kecepatannya sendiri."
+  },
+  "Perawatan Diri": {
+    istilahOrtu: "Kemandirian Pribadi Harian",
+    ringkasan: "Kemampuan mengurus kebutuhan fisik diri sendiri seperti makan, minum, ke toilet, dan berpakaian.",
+    artinyaUntukAnak: "Tingkat bantuan yang dibutuhkan anak saat membersihkan diri, mencuci tangan, mengancingkan baju, atau menggunakan alat makan.",
+    contohSekolah: "Membuka kotak bekal, makan saat jam istirahat, dan mencuci tangan secara mandiri.",
+    contohRumah: "Mampu ke kamar mandi sendiri, memakai pakaian tidur atau sepatu dengan bantuan minimal.",
+    tipsPendampingan: "Gunakan pakaian dengan kancing besar atau perekat velcro yang memudahkan anak berlatih mandiri secara bertahap."
+  },
+  "Interaksi dengan Orang Lain": {
+    istilahOrtu: "Komunikasi & Hubungan Sosial",
+    ringkasan: "Cara anak mengekspresikan diri, menyapa teman, dan merespons lingkungan sosial.",
+    artinyaUntukAnak: "Bagaimana anak memulai percakapan, bekerja sama dalam kelompok, membaca situasi sosial, dan menyampaikan perasaan atau kebutuhannya kepada guru serta teman sebaya.",
+    contohSekolah: "Menyapa teman sekelas, ikut bermain saat jam istirahat, dan berani bertanya kepada guru.",
+    contohRumah: "Mampu menceritakan kejadian di sekolah dan mau berbagi mainan dengan saudara atau anggota keluarga.",
+    tipsPendampingan: "Ajak anak berdialog hangat setiap pulang sekolah, dan latih kosakata perasaan (senang, lelah, bangga)."
+  },
+  "Aktivitas Sehari-hari": {
+    istilahOrtu: "Rutinitas & Tanggung Jawab Harian",
+    ringkasan: "Kedisiplinan mengelola barang pribadi dan menjalankan rutinitas teratur.",
+    artinyaUntukAnak: "Kemampuan anak menjaga peralatan sekolahnya sendiri (seperti alat tulis dan buku), mengikuti jadwal harian, serta merapikan kembali barang setelah dipakai.",
+    contohSekolah: "Mengeluarkan buku pelajaran dari tas dan merapikan meja setelah jam belajar selesai.",
+    contohRumah: "Menaruh tas di tempatnya setelah pulang sekolah dan menyiapkan buku untuk besok.",
+    tipsPendampingan: "Buat jadwal visual bergambar di dinding kamar agar anak merasa tenang dengan urutan aktivitas yang terprediksi."
+  },
+  "Partisipasi": {
+    istilahOrtu: "Keaktifan & Rasa Percaya Diri",
+    ringkasan: "Keikutsertaan anak dalam kegiatan bersama di sekolah maupun komunitas lingkungan.",
+    artinyaUntukAnak: "Tingkat rasa percaya diri anak saat tampil di depan kelas, ikut lomba, berpartisipasi dalam pentas seni, atau terlibat dalam kegiatan ekstrakurikuler.",
+    contohSekolah: "Antusias mengikuti senam bersama, perayaan sekolah, atau latihan persiapan lomba minat/bakat.",
+    contohRumah: "Percaya diri saat diajak ke acara keluarga atau lingkungan sekitar rumah tanpa merasa cemas berlebih.",
+    tipsPendampingan: "Rayakan keberanian anak saat mencoba hal baru, terlepas dari apakah hasilnya sudah sempurna atau belum."
+  }
 };
 
 export const SKALA_FUNGSIONAL = [

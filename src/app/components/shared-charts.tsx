@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell, LabelList
 } from "recharts";
 import {
-  FUNGSIONAL_KATEGORI, FUNGSIONAL_META,
+  FUNGSIONAL_KATEGORI, FUNGSIONAL_META, PENJELASAN_FUNGSIONAL_ORTU,
   RIASEC_KATEGORI, RIASEC_META, RIASEC_PENJELASAN, RIASEC_KODE,
   PROFIL_FUNGSIONAL, PROFIL_KECENDERUNGAN,
   FungsionalKategori, RiasecKategori
@@ -118,6 +118,8 @@ export function ProfilFungsionalRadar({
   studentName?: string;
   studentId?: number;
 }) {
+  const [activeDomain, setActiveDomain] = useState<FungsionalKategori | null>(null);
+
   const data = FUNGSIONAL_KATEGORI.map(domain => ({
     subject: domain,
     icon: FUNGSIONAL_META[domain].icon,
@@ -152,7 +154,7 @@ export function ProfilFungsionalRadar({
     if (selisih < 15 || tersedia.length < 2) {
       keteranganKemandirian = `${name} menunjukkan kapasitas fungsional yang cukup merata di seluruh domain yang teramati, dengan ${tertinggi.subject} (${tertinggi.A}%) sedikit paling menonjol.`;
     } else {
-      keteranganKemandirian = `${name} menunjukkan kapasitas fungsional paling menonjol pada aspek ${tertinggi.subject} (${tertinggi.A}%). Aspek ${terendah.subject} (${terendah.A}%) masih bisa terus dikembangkan lewat latihan bertahap dan dukungan rutin.`;
+      keteranganKemandirian = `${name} menunjukkan kapasitas fungsional paling menonjol pada aspek ${tertinggi.subject} (${tertinggi.A}%). Aspek ${terendah.subject} (${terendah.A}%) masih bisa terus didampingi lewat pembiasaan bertahap di sekolah dan di rumah.`;
     }
   }
 
@@ -176,13 +178,30 @@ export function ProfilFungsionalRadar({
         <div className="flex items-center gap-2 min-w-0">
           <Activity size={18} style={{ color: DEEP }} className="flex-shrink-0" />
           <h3 style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, whiteSpace: "nowrap" }}>
-            Profil Fungsional
+            Profil Fungsional &amp; Kemandirian
           </h3>
         </div>
       </div>
-      <p style={{ fontSize: 12, color: MUTED, marginBottom: 14, paddingLeft: 4, lineHeight: 1.4 }}>
-        Kapasitas fungsional & kemandirian harian di 6 domain kehidupan (Skala 0–100%).
+      <p style={{ fontSize: 12, color: MUTED, marginBottom: 12, paddingLeft: 4, lineHeight: 1.4 }}>
+        Tingkat kemandirian anak pada 6 domain kehidupan sehari-hari (Skala 0–100%).
       </p>
+
+      {/* Panduan Membaca Diagram untuk Orang Tua */}
+      <div style={{
+        background: "#F0FDF4",
+        border: "1px solid #BBF7D0",
+        borderRadius: 14,
+        padding: "10px 12px",
+        marginBottom: 12,
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 8,
+      }}>
+        <Info size={15} style={{ color: "#15803D", flexShrink: 0, marginTop: 1 }} />
+        <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#166534", margin: 0, lineHeight: 1.45 }}>
+          <strong>Cara membaca:</strong> Semakin luas area hijau mendekati tepi luar (100%), semakin mandiri {name}. Ketuk salah satu chip kategori di bawah diagram untuk melihat arti dan contohnya di rumah.
+        </p>
+      </div>
 
       {/* Radar Chart */}
       <div style={{ width: '100%', height: 230 }}>
@@ -197,7 +216,141 @@ export function ProfilFungsionalRadar({
         </ResponsiveContainer>
       </div>
 
-      {/* Keterangan Tulisannya Singkat di Bawahnya */}
+      {/* Chip Interaktif Tap-to-Inspect (Sangat ramah mobile) */}
+      <div style={{ marginTop: 10 }}>
+        <div className="flex items-center justify-between mb-2 px-1">
+          <span style={{ fontFamily: PJS, fontSize: 11, fontWeight: 700, color: MUTED }}>
+            Ketuk kategori untuk info lengkap:
+          </span>
+          {activeDomain && (
+            <button
+              onClick={() => setActiveDomain(null)}
+              style={{ background: "none", border: "none", color: A, fontSize: 11, fontFamily: PJS, fontWeight: 700, cursor: "pointer", padding: 0 }}
+            >
+              Tutup detail ×
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {chartData.map((d) => {
+            const domainKey = d.subject as FungsionalKategori;
+            const meta = FUNGSIONAL_META[domainKey];
+            const isActive = activeDomain === domainKey;
+            return (
+              <button
+                key={d.subject}
+                type="button"
+                onClick={() => setActiveDomain(isActive ? null : domainKey)}
+                style={{
+                  background: isActive ? DEEP : meta.bg,
+                  color: isActive ? "#FFFFFF" : TEXT,
+                  border: `1.5px solid ${isActive ? DEEP : meta.color}40`,
+                  borderRadius: 12,
+                  padding: "5px 9px",
+                  fontSize: 11,
+                  fontFamily: PJS,
+                  fontWeight: 700,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 5,
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+                className="active:scale-95"
+              >
+                <span>{meta.icon}</span>
+                <span>{d.subject}</span>
+                <span
+                  style={{
+                    fontFamily: DMM,
+                    fontSize: 10.5,
+                    opacity: isActive ? 0.9 : 0.7,
+                    padding: "1px 5px",
+                    borderRadius: 8,
+                    background: isActive ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.06)",
+                  }}
+                >
+                  {d.A}%
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Detail Penjelasan Kategori yang Diketuk (Tap-to-Inspect Card) */}
+      {activeDomain && (() => {
+        const info = PENJELASAN_FUNGSIONAL_ORTU[activeDomain];
+        const meta = FUNGSIONAL_META[activeDomain];
+        const skor = chartData.find(c => c.subject === activeDomain)?.A ?? 0;
+        return (
+          <div
+            style={{
+              marginTop: 12,
+              background: "#FFFFFF",
+              border: `1.5px solid ${meta.color}60`,
+              borderRadius: 16,
+              padding: "14px",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+            }}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span style={{ fontSize: 18 }}>{meta.icon}</span>
+                <div>
+                  <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13, color: TEXT, margin: 0 }}>
+                    {activeDomain}
+                  </p>
+                  <p style={{ fontFamily: IPS, fontSize: 11, color: meta.color, fontWeight: 600, margin: 0 }}>
+                    {info.istilahOrtu}
+                  </p>
+                </div>
+              </div>
+              <span
+                style={{
+                  fontFamily: DMM,
+                  fontWeight: 800,
+                  fontSize: 12,
+                  color: meta.color,
+                  background: meta.bg,
+                  padding: "3px 8px",
+                  borderRadius: 99,
+                }}
+              >
+                Kemandirian: {skor}%
+              </span>
+            </div>
+
+            <p style={{ fontFamily: IPS, fontSize: 11.5, color: TEXT, lineHeight: 1.5, margin: "0 0 10px" }}>
+              {info.artinyaUntukAnak}
+            </p>
+
+            <div style={{ background: BG, borderRadius: 12, padding: "10px 12px", border: `1px solid ${BDR}`, display: "flex", flexDirection: "column", gap: 6 }}>
+              <div className="flex items-start gap-2">
+                <span style={{ fontSize: 12 }}>🏫</span>
+                <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>
+                  <strong style={{ color: TEXT }}>Di Sekolah:</strong> {info.contohSekolah}
+                </p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span style={{ fontSize: 12 }}>🏡</span>
+                <p style={{ fontSize: 11, color: MUTED, margin: 0, lineHeight: 1.4 }}>
+                  <strong style={{ color: TEXT }}>Di Rumah:</strong> {info.contohRumah}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 8, padding: "8px 10px", background: "#FEFCE8", borderRadius: 10, border: "1px solid #FEF08A" }} className="flex items-start gap-2">
+              <Lightbulb size={13} style={{ color: "#CA8A04", flexShrink: 0, marginTop: 2 }} />
+              <p style={{ fontSize: 10.5, color: "#854D0E", margin: 0, lineHeight: 1.4 }}>
+                <strong>Tips Pendampingan:</strong> {info.tipsPendampingan}
+              </p>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Keterangan Kesimpulan Ringkas */}
       <div
         style={{
           marginTop: 14,
@@ -334,9 +487,26 @@ export function ProfilKecenderunganBar({
           </h3>
         </div>
       </div>
-      <p style={{ fontSize: 12, color: MUTED, marginBottom: 16, paddingLeft: 4, lineHeight: 1.4 }}>
-        Tingkat ketertarikan anak berdasarkan model RIASEC. Nilai dominan menandai bakat utama.
+      <p style={{ fontSize: 12, color: MUTED, marginBottom: 12, paddingLeft: 4, lineHeight: 1.4 }}>
+        Tingkat ketertarikan anak berdasarkan model 6 tipe minat RIASEC. Nilai dominan menandai potensi bakat utama.
       </p>
+
+      {/* Panduan Membaca Diagram untuk Orang Tua */}
+      <div style={{
+        background: "#FFF7ED",
+        border: "1px solid #FFEDD5",
+        borderRadius: 14,
+        padding: "10px 12px",
+        marginBottom: 12,
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 8,
+      }}>
+        <Target size={15} style={{ color: "#C2410C", flexShrink: 0, marginTop: 1 }} />
+        <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#9A3412", margin: 0, lineHeight: 1.45 }}>
+          <strong>Cara membaca:</strong> Batang dengan persentase paling tinggi menunjukkan aktivitas yang paling disenangi dan membangkitkan rasa ingin tahu ananda. Ketuk batang atau chip di bawah untuk membaca arti tiap tipe minat.
+        </p>
+      </div>
 
       {/* Bar Chart */}
       <div style={{ width: '100%', height: 210 }}>
@@ -348,7 +518,12 @@ export function ProfilKecenderunganBar({
             <Tooltip cursor={{ fill: 'rgba(91,122,104,0.04)' }} content={<BarCustomTooltip />} />
             <Bar dataKey="skor" radius={[6, 6, 0, 0]} maxBarSize={40}>
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.color}
+                  cursor="pointer"
+                  onClick={() => setOpenTipe(entry.tipe)}
+                />
               ))}
               <LabelList dataKey="skor" position="top" fill={TEXT} fontSize={10} fontFamily={DMM} fontWeight={700} formatter={(v: any) => (v != null ? `${v}%` : "")} />
             </Bar>
@@ -356,22 +531,25 @@ export function ProfilKecenderunganBar({
         </ResponsiveContainer>
       </div>
 
-      {/* Quick Category Chips */}
+      {/* Quick Category Chips with Tap Action */}
       <div className="flex flex-wrap items-center justify-between gap-1 mt-3 pt-3 border-t border-slate-100">
         {chartData.map((item) => (
-          <div
+          <button
             key={item.label}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10.5px]"
+            type="button"
+            onClick={() => setOpenTipe(item.tipe)}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] active:scale-95 transition-transform"
             style={{
               background: item.label === dominant.label ? "#FFF7ED" : "#F8FAFC",
               border: item.label === dominant.label ? "1px solid #FDBA74" : `1px solid ${BDR}`,
               fontWeight: item.label === dominant.label ? 800 : 600,
-              color: item.label === dominant.label ? "#C2410C" : MUTED,
+              color: item.label === dominant.label ? "#C2410C" : TEXT,
+              cursor: "pointer",
             }}
           >
-            <span style={{ fontFamily: DMM }}>{item.label}:</span>
-            <span style={{ color: item.color }}>{item.skor}%</span>
-          </div>
+            <span style={{ fontFamily: DMM, fontWeight: 800 }}>{item.label}:</span>
+            <span style={{ color: item.color, fontWeight: 700 }}>{item.skor}%</span>
+          </button>
         ))}
       </div>
 
@@ -792,3 +970,184 @@ function RiasecTipeSheet({ tipe, skor, dominant, nama, onClose }: {
     </div>
   );
 }
+
+/** Bottom sheet penjelasan kategori fungsional untuk orang tua */
+export function ModalPenjelasanFungsional({
+  kategori,
+  skor,
+  namaAnak,
+  onClose,
+}: {
+  kategori: FungsionalKategori;
+  skor?: number | null;
+  namaAnak?: string;
+  onClose: () => void;
+}) {
+  const info = PENJELASAN_FUNGSIONAL_ORTU[kategori];
+  const meta = FUNGSIONAL_META[kategori];
+  const nama = namaAnak || "Anak";
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 80,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+      }}
+    >
+      <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.5)" }} />
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          position: "relative",
+          background: CARD,
+          borderRadius: "26px 26px 0 0",
+          padding: "14px 20px 28px",
+          maxHeight: "88%",
+          overflowY: "auto",
+        }}
+      >
+        {/* Drag handle + tombol tutup */}
+        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: "#D1D5DB" }} />
+          <button
+            type="button"
+            onClick={onClose}
+            title="Tutup"
+            className="active:scale-90 transition-transform"
+            style={{
+              position: "absolute", right: 0, top: -4,
+              width: 30, height: 30, borderRadius: "50%",
+              background: "#F1F5F9", border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "#64748B",
+            }}
+          >
+            <X size={16} strokeWidth={2.4} />
+          </button>
+        </div>
+
+        {/* Header kategori */}
+        <div className="flex items-center gap-3" style={{ marginBottom: 14 }}>
+          <div
+            style={{
+              width: 48, height: 48, borderRadius: 16,
+              background: meta.bg, border: `1.5px solid ${meta.color}35`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 24, flexShrink: 0,
+            }}
+          >
+            {meta.icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 17, color: TEXT, margin: 0 }}>
+              {kategori}
+            </h3>
+            <p style={{ fontFamily: IPS, fontSize: 12, color: meta.color, fontWeight: 600, margin: "2px 0 0" }}>
+              {info.istilahOrtu}
+            </p>
+          </div>
+          {typeof skor === "number" && (
+            <span
+              style={{
+                fontFamily: DMM, fontWeight: 800, fontSize: 13,
+                color: meta.color, background: meta.bg,
+                border: `1px solid ${meta.color}35`, borderRadius: 10,
+                padding: "4px 10px", flexShrink: 0,
+              }}
+            >
+              {skor}%
+            </span>
+          )}
+        </div>
+
+        <p style={{ fontFamily: IPS, fontSize: 13, color: TEXT, lineHeight: 1.55, margin: "0 0 14px" }}>
+          {info.artinyaUntukAnak}
+        </p>
+
+        {/* Contoh konkret */}
+        <div style={{ background: BG, borderRadius: 16, padding: "12px 14px", border: `1px solid ${BDR}`, display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
+          <div className="flex items-start gap-2.5">
+            <span style={{ fontSize: 16 }}>🏫</span>
+            <div className="min-w-0">
+              <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>
+                Contoh di Sekolah:
+              </p>
+              <p style={{ fontFamily: IPS, fontSize: 12, color: MUTED, margin: "2px 0 0", lineHeight: 1.45 }}>
+                {info.contohSekolah}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <span style={{ fontSize: 16 }}>🏡</span>
+            <div className="min-w-0">
+              <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: 0 }}>
+                Contoh di Rumah:
+              </p>
+              <p style={{ fontFamily: IPS, fontSize: 12, color: MUTED, margin: "2px 0 0", lineHeight: 1.45 }}>
+                {info.contohRumah}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Tips Pendampingan */}
+        <div
+          style={{
+            background: "#FEFCE8",
+            border: "1.5px solid #FEF08A",
+            borderRadius: 14,
+            padding: "12px 14px",
+            marginBottom: 16,
+          }}
+          className="flex items-start gap-2.5"
+        >
+          <div
+            style={{
+              width: 28, height: 28, borderRadius: "50%",
+              background: "#FEF08A",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0, marginTop: 1,
+            }}
+          >
+            <Lightbulb size={14} style={{ color: "#854D0E" }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12, color: "#854D0E", margin: "0 0 2px" }}>
+              Tips Pendampingan untuk Orang Tua di Rumah:
+            </p>
+            <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#713F12", lineHeight: 1.45, margin: 0 }}>
+              {info.tipsPendampingan}
+            </p>
+          </div>
+        </div>
+
+        {/* Tombol tutup */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="active:scale-95 transition-transform"
+          style={{
+            width: "100%",
+            minHeight: 48,
+            borderRadius: 16,
+            border: "none",
+            background: DEEP,
+            color: "#FFFFFF",
+            fontFamily: PJS,
+            fontWeight: 800,
+            fontSize: 14,
+            cursor: "pointer",
+          }}
+        >
+          Mengerti
+        </button>
+      </div>
+    </div>
+  );
+}
+
