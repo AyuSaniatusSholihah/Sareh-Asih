@@ -350,16 +350,13 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       {/* ── Header ── */}
       <div style={{ background: "#FFFFFF", padding: "14px 20px 12px", flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontFamily: IPS, fontSize: 12.5, color: MUTED, margin: 0, fontWeight: 500 }}>
-              Selamat pagi, {ibuName} 👋
-            </p>
-            <h1 style={{ fontFamily: PJS, fontSize: 22, fontWeight: 800, color: TEXT, margin: "2px 0 0", lineHeight: 1.15 }}>
+            <h1 style={{ fontFamily: PJS, fontSize: 22, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.15 }}>
               Beranda
             </h1>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
             <button
               style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
               className="active:scale-95 transition-transform" title="Cari">
