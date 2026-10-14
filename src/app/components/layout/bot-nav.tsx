@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Home, Users, Star, Calendar, FileText, CalendarDays, HeartPulse,
+  Home, Users, User, Star, Calendar, FileText, CalendarDays, HeartPulse,
 } from "lucide-react";
 import { CARD, BDR, DEEP, MUTED, PJS, IPS } from "../ui-kit";
 import { type Role, type Screen } from "../data";
@@ -15,7 +15,7 @@ export const GURU_NAV = [
 
 export const ORTU_NAV = [
   { k: "parent-dashboard", l: "Beranda", I: Home },
-  { k: "parent-detail", l: "Anak", I: Users },
+  { k: "parent-detail", l: "Anak", I: User },
   { k: "parent-calendar", l: "Kalender", I: CalendarDays },
   { k: "parent-training", l: "Pelatihan", I: HeartPulse },
 ];

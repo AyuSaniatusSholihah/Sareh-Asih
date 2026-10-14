@@ -22,6 +22,7 @@ import { KodeAksesScreen } from "./components/kode-manager";
 import {
   ParentDashboard, ParentDetailScreen, ParentCalendarScreen,
   ParentTrainingScreen, LinkCodeModal, RiwayatLaporanScreen, PerkembanganScreen, AspekDetailScreen, KemampuanDiamatiScreen,
+  KonsultasiGuruScreen,
 } from "./components/parent";
 
 // Layout components
@@ -435,6 +436,7 @@ export default function App() {
       case "kemampuan-diamati": return <KemampuanDiamatiScreen onBack={goBack} child={child} aspek={aspekTerpilih} />;
       case "parent-calendar": return <ParentCalendarScreen linked={!!child} sekolah={guru.sekolah} onOpenCode={() => setShowLinkCode(true)} go={go} />;
       case "parent-training": return <ParentTrainingScreen go={go} />;
+      case "konsultasi-guru": return <KonsultasiGuruScreen onBack={goBack} teacherName={child?.teacher || "Ibu Sari"} studentName={child ? child.name.split(" ")[0] : "Rafi"} kelas={child?.kelas || "VII A"} />;
       default: return null;
     }
   };

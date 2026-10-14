@@ -107,17 +107,59 @@ export function getMockJawaban(studentId: number): Record<number, number> {
 
 // --- Shared Chart Components ---
 
+// --- Penjelasan Fungsional Bahasa Ramah Orang Tua ---
+export const PENJELASAN_FUNGSIONAL_ORANGTUA: Record<FungsionalKategori, {
+  judulOrtu: string;
+  arti: string;
+  tipsRumah: string;
+}> = {
+  "Mobilitas": {
+    judulOrtu: "Gerak & Berpindah Tempat",
+    arti: "Kemampuan anak berjalan mandiri, menaiki tangga, menjaga keseimbangan, serta berpindah antar tempat secara aman.",
+    tipsRumah: "Ajak anak berjalan santai di sekitar rumah atau taman, serta pastikan area gerak anak di rumah bebas rintangan.",
+  },
+  "Kognisi": {
+    judulOrtu: "Pemahaman & Konsentrasi",
+    arti: "Kemampuan memahami petunjuk guru, mengingat materi pelajaran, mempertahankan fokus, dan memecahkan tugas sederhana.",
+    tipsRumah: "Beri petunjuk bertahap satu per satu dengan kalimat santai, serta beri pujian saat anak menyelesaikan tiap tahap.",
+  },
+  "Perawatan Diri": {
+    judulOrtu: "Kemandirian Harian",
+    arti: "Kemandirian saat makan, minum, mencuci tangan, ke toilet, serta merapikan pakaian sendiri.",
+    tipsRumah: "Beri ruang bagi anak mencoba memakai pakaian atau merapikan alat makan sendiri sebelum lekas dibantu.",
+  },
+  "Interaksi dengan Orang Lain": {
+    judulOrtu: "Sosialisasi & Teman",
+    arti: "Kemampuan menyapa, bermain bersama teman, bekerja sama dalam kelompok, serta mengutarakan perasaan secara santun.",
+    tipsRumah: "Ajak anak menceritakan hal seru bersama teman sekolahnya, dan biasakan kata tolong, maaf, dan terima kasih.",
+  },
+  "Aktivitas Sehari-hari": {
+    judulOrtu: "Rutinitas & Tanggung Jawab",
+    arti: "Kesiapan anak mengikuti jadwal kelas harian, menjaga peralatan milik sendiri, dan menuntaskan tugas rutin.",
+    tipsRumah: "Gunakan papan jadwal bergambar sederhana di kamar untuk menandai jam belajar, santai, dan istirahat.",
+  },
+  "Partisipasi": {
+    judulOrtu: "Keaktifan di Sekolah",
+    arti: "Keberanian anak bertanya, menjawab, mengikuti diskusi kelompok, dan berpartisipasi dalam kegiatan bersama.",
+    tipsRumah: "Dukung hobi anak di rumah dan berikan tepuk tangan atau senyuman hangat saat anak berani bercerita di depan keluarga.",
+  },
+};
+
 export function ProfilFungsionalRadar({
   jawaban,
   readOnly = false,
   studentName,
   studentId,
+  forParent = false,
 }: {
   jawaban: Record<number, number|"TDD">;
   readOnly?: boolean;
   studentName?: string;
   studentId?: number;
+  forParent?: boolean;
 }) {
+  const [selectedDomain, setSelectedDomain] = useState<FungsionalKategori | null>(null);
+
   const data = FUNGSIONAL_KATEGORI.map(domain => ({
     subject: domain,
     icon: FUNGSIONAL_META[domain].icon,
@@ -152,7 +194,7 @@ export function ProfilFungsionalRadar({
     if (selisih < 15 || tersedia.length < 2) {
       keteranganKemandirian = `${name} menunjukkan kapasitas fungsional yang cukup merata di seluruh domain yang teramati, dengan ${tertinggi.subject} (${tertinggi.A}%) sedikit paling menonjol.`;
     } else {
-      keteranganKemandirian = `${name} menunjukkan kapasitas fungsional paling menonjol pada aspek ${tertinggi.subject} (${tertinggi.A}%). Aspek ${terendah.subject} (${terendah.A}%) masih bisa terus dikembangkan lewat latihan bertahap dan dukungan rutin.`;
+      keteranganKemandirian = `${name} menunjukkan kapasitas fungsional paling menonjol pada aspek ${tertinggi.subject} (${tertinggi.A}%). Aspek ${terendah.subject} (${terendah.A}%) masih bisa terus dikembangkan lewat latihan bertahap dan dukungan rutin di rumah.`;
     }
   }
 
@@ -171,7 +213,7 @@ export function ProfilFungsionalRadar({
 
   return (
     <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 24, padding: "20px 16px", boxShadow: "0 2px 12px rgba(91,122,104,0.06)" }}>
-      {/* Header with Title & Average Badge */}
+      {/* Header with Title & Badge */}
       <div className="flex items-center justify-between gap-2 mb-1 px-1">
         <div className="flex items-center gap-2 min-w-0">
           <Activity size={18} style={{ color: DEEP }} className="flex-shrink-0" />
@@ -181,15 +223,86 @@ export function ProfilFungsionalRadar({
         </div>
       </div>
       <p style={{ fontSize: 12, color: MUTED, marginBottom: 14, paddingLeft: 4, lineHeight: 1.4 }}>
-        Kapasitas fungsional & kemandirian harian di 6 domain kehidupan (Skala 0–100%).
+        {forParent
+          ? "Rangkuman kesiapan dan kemandirian anak dalam aktivitas harian di sekolah."
+          : "Kapasitas fungsional & kemandirian harian di 6 domain kehidupan (Skala 0–100%)."}
       </p>
 
+      {/* ── 1. KESIMPULAN DITAMPILKAN DI ATAS GRAFIK ── */}
+      <div
+        style={{
+          marginBottom: 16,
+          background: "#F0F7F4",
+          border: `1.5px solid rgba(45, 84, 62, 0.20)`,
+          borderRadius: 18,
+          padding: "14px 16px",
+        }}
+      >
+        <div className="flex items-start gap-2.5">
+          <div
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 9,
+              background: "rgba(45, 84, 62, 0.12)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              marginTop: 1,
+            }}
+          >
+            <Sparkles size={16} style={{ color: DEEP }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p
+              style={{
+                fontFamily: PJS,
+                fontWeight: 800,
+                fontSize: 12.5,
+                color: DEEP,
+                marginBottom: 4,
+              }}
+            >
+              Kesimpulan Profil Fungsional {name}:
+            </p>
+            <p
+              style={{
+                fontFamily: IPS,
+                fontSize: 12,
+                color: TEXT,
+                lineHeight: 1.5,
+                margin: 0,
+              }}
+            >
+              {keteranganKemandirian}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 2. PANDUAN DAN DIAGRAM RADAR ── */}
+      <div style={{ marginBottom: 6, padding: "0 2px" }}>
+        <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT, margin: "0 0 2px" }}>
+          Peta Radar 6 Aspek Fungsional
+        </p>
+        <p style={{ fontSize: 11.5, color: MUTED, margin: 0, lineHeight: 1.4 }}>
+          Ketuk nama aspek di bawah diagram untuk melihat arti dan cara mendukungnya di rumah.
+        </p>
+      </div>
+
       {/* Radar Chart */}
-      <div style={{ width: '100%', height: 230 }}>
+      <div style={{ width: '100%', height: 220 }}>
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart cx="50%" cy="50%" outerRadius="55%" data={chartData} margin={{ top: 10, right: 35, bottom: 10, left: 35 }}>
             <PolarGrid stroke="#E2E8F0" />
-            <PolarAngleAxis dataKey="subject" tick={{ fill: TEXT, fontSize: 11, fontFamily: DMM, fontWeight: 600 }} />
+            <PolarAngleAxis
+              dataKey="subject"
+              tick={{ fill: TEXT, fontSize: 11, fontFamily: DMM, fontWeight: 600, cursor: "pointer" }}
+              onClick={(e: any) => {
+                if (e && e.value) setSelectedDomain(e.value as FungsionalKategori);
+              }}
+            />
             <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
             <Tooltip content={<RadarCustomTooltip />} />
             <Radar name="Fungsional" dataKey="A" stroke={DEEP} fill={DEEP} fillOpacity={0.25} strokeWidth={2.5} />
@@ -197,57 +310,116 @@ export function ProfilFungsionalRadar({
         </ResponsiveContainer>
       </div>
 
-      {/* Keterangan Tulisannya Singkat di Bawahnya */}
-      <div
-        style={{
-          marginTop: 14,
-          background: "#F0F7F4",
-          border: `1.5px solid rgba(45, 84, 62, 0.20)`,
-          borderRadius: 16,
-          padding: "12px 14px",
-        }}
-        className="flex items-start gap-2.5"
-      >
-        <div
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 8,
-            background: "rgba(45, 84, 62, 0.12)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            marginTop: 1,
-          }}
-        >
-          <Sparkles size={15} style={{ color: DEEP }} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p
-            style={{
-              fontFamily: PJS,
-              fontWeight: 800,
-              fontSize: 12,
-              color: DEEP,
-              marginBottom: 3,
-            }}
-          >
-            Kesimpulan Profil Fungsional:
-          </p>
-          <p
-            style={{
-              fontFamily: IPS,
-              fontSize: 11.5,
-              color: TEXT,
-              lineHeight: 1.45,
-              margin: 0,
-            }}
-          >
-            {keteranganKemandirian}
-          </p>
+      {/* ── 3. TOMBOL INTERAKTIF 6 ASPEK (TAP INTERACTION DI MOBILE) ── */}
+      <div style={{ marginTop: 12 }}>
+        <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 700, color: MUTED, marginBottom: 8 }}>
+          Ketuk aspek untuk info penjelasan ramah orang tua:
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
+          {FUNGSIONAL_KATEGORI.map(domain => {
+            const m = FUNGSIONAL_META[domain];
+            const isSelected = selectedDomain === domain;
+            const skor = skorDomain(jawaban, domain) ?? 0;
+            return (
+              <button
+                key={domain}
+                type="button"
+                onClick={() => setSelectedDomain(isSelected ? null : domain)}
+                className="active:scale-[0.97] transition-all"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  padding: "10px 12px",
+                  borderRadius: 14,
+                  border: `1.5px solid ${isSelected ? DEEP : BDR}`,
+                  background: isSelected ? "#EBF3ED" : "#FFFFFF",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  minHeight: 68,
+                  boxSizing: "border-box",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 6 }}>
+                  <span style={{ fontSize: 18 }}>{m.icon}</span>
+                  <span
+                    style={{
+                      fontFamily: DMM,
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      color: isSelected ? DEEP : TEXT,
+                      background: isSelected ? "rgba(45,84,62,0.12)" : "#F1F5F9",
+                      padding: "2px 7px",
+                      borderRadius: 99,
+                    }}
+                  >
+                    {skor}%
+                  </span>
+                </div>
+                <span
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 12,
+                    fontWeight: isSelected ? 800 : 700,
+                    color: TEXT,
+                    lineHeight: 1.3,
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {domain}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
+
+      {/* Pop-down Penjelasan Aspek yang Diketuk */}
+      {selectedDomain && (
+        <div
+          style={{
+            marginTop: 12,
+            background: "#FFFFFF",
+            border: `1.5px solid ${FUNGSIONAL_META[selectedDomain].color}60`,
+            borderRadius: 16,
+            padding: "13px 14px",
+            boxShadow: "0 4px 14px rgba(0,0,0,0.06)",
+          }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span style={{ fontSize: 20 }}>{FUNGSIONAL_META[selectedDomain].icon}</span>
+              <div>
+                <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0 }}>
+                  {selectedDomain} — {PENJELASAN_FUNGSIONAL_ORANGTUA[selectedDomain]?.judulOrtu}
+                </p>
+                <span style={{ fontSize: 11, fontWeight: 700, color: FUNGSIONAL_META[selectedDomain].color }}>
+                  Tingkat Kemandirian: {skorDomain(jawaban, selectedDomain)}%
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedDomain(null)}
+              style={{ width: 24, height: 24, borderRadius: "50%", background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: MUTED }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+          <div style={{ background: "#F8FAFC", borderRadius: 10, padding: "8px 10px", marginBottom: 6 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: MUTED, margin: "0 0 2px" }}>💡 Apa artinya bagi {name}?</p>
+            <p style={{ fontSize: 11.5, color: TEXT, margin: 0, lineHeight: 1.45 }}>
+              {PENJELASAN_FUNGSIONAL_ORANGTUA[selectedDomain]?.arti}
+            </p>
+          </div>
+          <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "8px 10px" }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: "#166534", margin: "0 0 2px" }}>🏡 Cara Mendukung di Rumah:</p>
+            <p style={{ fontSize: 11.5, color: "#166534", margin: 0, lineHeight: 1.45 }}>
+              {PENJELASAN_FUNGSIONAL_ORANGTUA[selectedDomain]?.tipsRumah}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -258,12 +430,14 @@ export function ProfilKecenderunganBar({
   studentName,
   studentId,
   onLearningRec,
+  forParent = false,
 }: {
   jawaban: Record<number, number|"TDD">;
   readOnly?: boolean;
   studentName?: string;
   studentId?: number;
   onLearningRec?: () => void;
+  forParent?: boolean;
 }) {
   const [openTipe, setOpenTipe] = useState<RiasecKategori | null>(null);
   const data = RIASEC_KATEGORI.map(tipe => ({
@@ -297,7 +471,7 @@ export function ProfilKecenderunganBar({
   const top2 = sortedRiasec[1] || sortedRiasec[0];
   let kalimatAkhir = "";
   if (name === "Rafi") {
-    kalimatAkhir = `${name} dapat diberikan kesempatan untuk mengeksplorasi aktivitas kreatif dan kegiatan yang melibatkan pengamatan atau pemecahan masalah.`;
+    kalimatAkhir = `${name} dapat diberikan kesempatan untuk mengeksplorasi aktivitas kreatif seperti menggambar dan kegiatan pengamatan visual.`;
   } else if (name === "Nisa") {
     kalimatAkhir = `${name} unggul dalam kepekaan visual, seni rupa, keterampilan tangan, dan tugas yang membutuhkan ketelitian motorik tinggi.`;
   } else if (name === "Arga") {
@@ -325,7 +499,7 @@ export function ProfilKecenderunganBar({
 
   return (
     <div style={{ background: CARD, border: `1px solid ${BDR}`, borderRadius: 24, padding: "20px 16px", boxShadow: "0 2px 12px rgba(91,122,104,0.06)" }}>
-      {/* Header with Title & Dominant Talent Badge */}
+      {/* Header with Title */}
       <div className="flex items-center justify-between gap-2 mb-1 px-1">
         <div className="flex items-center gap-2 min-w-0">
           <Target size={18} style={{ color: A }} className="flex-shrink-0" />
@@ -334,9 +508,118 @@ export function ProfilKecenderunganBar({
           </h3>
         </div>
       </div>
-      <p style={{ fontSize: 12, color: MUTED, marginBottom: 16, paddingLeft: 4, lineHeight: 1.4 }}>
-        Tingkat ketertarikan anak berdasarkan model RIASEC. Nilai dominan menandai bakat utama.
+      <p style={{ fontSize: 12, color: MUTED, marginBottom: 14, paddingLeft: 4, lineHeight: 1.4 }}>
+        {forParent
+          ? "Rangkuman minat alami anak berdasarkan pengamatan bakat di lingkungan sekolah."
+          : "Tingkat ketertarikan anak berdasarkan model RIASEC. Nilai dominan menandai bakat utama."}
       </p>
+
+      {/* ── 1. KESIMPULAN MINAT DITAMPILKAN DI ATAS GRAFIK ── */}
+      <div
+        style={{
+          marginBottom: 16,
+          background: "#FFF9F5",
+          border: `1.5px solid rgba(210, 110, 91, 0.22)`,
+          borderRadius: 18,
+          padding: "14px 16px",
+        }}
+      >
+        <div className="flex items-start gap-2.5">
+          <div
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 9,
+              background: "rgba(210, 110, 91, 0.12)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              marginTop: 1,
+            }}
+          >
+            <Target size={16} style={{ color: A }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p
+              style={{
+                fontFamily: PJS,
+                fontWeight: 800,
+                fontSize: 12.5,
+                color: "#C2410C",
+                marginBottom: 4,
+              }}
+            >
+              Kesimpulan Minat &amp; Bakat {name}:
+            </p>
+            <p
+              style={{
+                fontFamily: IPS,
+                fontSize: 12,
+                color: TEXT,
+                lineHeight: 1.5,
+                margin: 0,
+              }}
+            >
+              {kesimpulanMinat}
+            </p>
+          </div>
+        </div>
+        <div style={{ marginTop: 10, paddingTop: 9, borderTop: "1px solid rgba(210,110,91,0.16)" }}>
+          <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
+            <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 11.5, color: "#C2410C", margin: 0 }}>
+              Kecenderungan utama {name}
+            </p>
+            <button
+              type="button"
+              onClick={() => setOpenTipe(top1.tipe)}
+              title="Lihat penjelasan"
+              className="flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform"
+              style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(210,110,91,0.12)", border: "none", cursor: "pointer", color: "#C2410C" }}
+            >
+              <ChevronRight size={13} />
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-1">
+            {top4.map(c => {
+              const m = RIASEC_META[c.tipe];
+              return (
+                <button
+                  key={c.tipe}
+                  type="button"
+                  onClick={() => setOpenTipe(c.tipe)}
+                  title={`Lihat penjelasan ${c.tipe}`}
+                  className="flex items-center gap-1 flex-shrink-0 active:scale-95 transition-transform"
+                  style={{
+                    background: m.bg,
+                    border: `1px solid ${m.color}35`,
+                    borderRadius: 9,
+                    padding: "3px 6px 3px 3px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span style={{ width: 14, height: 14, borderRadius: "50%", background: m.color, color: "#fff", fontFamily: PJS, fontWeight: 800, fontSize: 8.5, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {m.letter}
+                  </span>
+                  <span style={{ fontFamily: PJS, fontWeight: 700, fontSize: 9, color: m.color, whiteSpace: "nowrap" }}>
+                    {c.tipe}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── 2. DIAGRAM BAR & PANDUAN ── */}
+      <div style={{ marginBottom: 6, padding: "0 2px" }}>
+        <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT, margin: "0 0 2px" }}>
+          Grafik Minat RIASEC
+        </p>
+        <p style={{ fontSize: 11.5, color: MUTED, margin: 0, lineHeight: 1.4 }}>
+          {forParent ? "Detail persentase minat anak di 6 bidang aktivitas:" : "Distribusi skor 6 model RIASEC:"}
+        </p>
+      </div>
 
       {/* Bar Chart */}
       <div style={{ width: '100%', height: 210 }}>
@@ -359,9 +642,11 @@ export function ProfilKecenderunganBar({
       {/* Quick Category Chips */}
       <div className="flex flex-wrap items-center justify-between gap-1 mt-3 pt-3 border-t border-slate-100">
         {chartData.map((item) => (
-          <div
+          <button
             key={item.label}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10.5px]"
+            type="button"
+            onClick={() => setOpenTipe(item.tipe)}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10.5px] cursor-pointer active:scale-95 transition-transform"
             style={{
               background: item.label === dominant.label ? "#FFF7ED" : "#F8FAFC",
               border: item.label === dominant.label ? "1px solid #FDBA74" : `1px solid ${BDR}`,
@@ -371,7 +656,7 @@ export function ProfilKecenderunganBar({
           >
             <span style={{ fontFamily: DMM }}>{item.label}:</span>
             <span style={{ color: item.color }}>{item.skor}%</span>
-          </div>
+          </button>
         ))}
       </div>
 
@@ -450,103 +735,6 @@ export function ProfilKecenderunganBar({
           <div className="flex items-center justify-center gap-1.5" style={{ marginTop: 8, marginBottom: 6 }}>
             <Info size={11} style={{ color: MUTED }} />
             <span style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED }}>Ketuk tipe untuk melihat penjelasan</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Keterangan Kesimpulan Ringkas Minat */}
-      <div
-        style={{
-          marginTop: 12,
-          background: "#FFF9F5",
-          border: `1.5px solid rgba(210, 110, 91, 0.22)`,
-          borderRadius: 16,
-          padding: "12px 14px",
-        }}
-      >
-        <div className="flex items-start gap-2.5">
-          <div
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 8,
-              background: "rgba(210, 110, 91, 0.12)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              marginTop: 1,
-            }}
-          >
-            <Target size={15} style={{ color: A }} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p
-              style={{
-                fontFamily: PJS,
-                fontWeight: 800,
-                fontSize: 12,
-                color: "#C2410C",
-                marginBottom: 3,
-              }}
-            >
-              Kesimpulan Minat &amp; Kecenderungan:
-            </p>
-            <p
-              style={{
-                fontFamily: IPS,
-                fontSize: 11.5,
-                color: TEXT,
-                lineHeight: 1.45,
-                margin: 0,
-              }}
-            >
-              {kesimpulanMinat}
-            </p>
-          </div>
-        </div>
-        <div style={{ marginTop: 10, paddingTop: 9, borderTop: "1px solid rgba(210,110,91,0.16)" }}>
-          <div className="flex items-center justify-between" style={{ marginBottom: 7 }}>
-            <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 11.5, color: "#C2410C", margin: 0 }}>
-              Kecenderungan utama {name}
-            </p>
-            <button
-              type="button"
-              onClick={() => setOpenTipe(top1.tipe)}
-              title="Lihat penjelasan"
-              className="flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform"
-              style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(210,110,91,0.12)", border: "none", cursor: "pointer", color: "#C2410C" }}
-            >
-              <ChevronRight size={13} />
-            </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-1">
-            {top4.map(c => {
-              const m = RIASEC_META[c.tipe];
-              return (
-                <button
-                  key={c.tipe}
-                  type="button"
-                  onClick={() => setOpenTipe(c.tipe)}
-                  title={`Lihat penjelasan ${c.tipe}`}
-                  className="flex items-center gap-1 flex-shrink-0 active:scale-95 transition-transform"
-                  style={{
-                    background: m.bg,
-                    border: `1px solid ${m.color}35`,
-                    borderRadius: 9,
-                    padding: "3px 6px 3px 3px",
-                    cursor: "pointer",
-                  }}
-                >
-                  <span style={{ width: 14, height: 14, borderRadius: "50%", background: m.color, color: "#fff", fontFamily: PJS, fontWeight: 800, fontSize: 8.5, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {m.letter}
-                  </span>
-                  <span style={{ fontFamily: PJS, fontWeight: 700, fontSize: 9, color: m.color, whiteSpace: "nowrap" }}>
-                    {c.tipe}
-                  </span>
-                </button>
-              );
-            })}
           </div>
         </div>
       </div>

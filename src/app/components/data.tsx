@@ -8,6 +8,10 @@ import fotoSiswa5 from "@/imports/foto-siswa-5.jpg";
 import fotoSiswa6 from "@/imports/foto-siswa-6.jpg";
 import fotoSiswa7 from "@/imports/foto-siswa-7.jpg";
 import fotoSiswa8 from "@/imports/foto-siswa-8.jpg";
+import artTrainingImg from "@/imports/art_training.jpg";
+import classActivityImg from "@/imports/class_activity.jpg";
+import classDrawingImg from "@/imports/class_drawing.jpg";
+import classGroupImg from "@/imports/class_group.jpg";
 
 // ─── Types ───────────────────────────────────────────────────────────
 export type Role   = "guru" | "ortu";
@@ -23,7 +27,8 @@ export type Screen =
   | "parent-dashboard" | "parent-detail"
   | "parent-calendar" | "parent-training"
   | "riwayat-laporan" | "riwayat-perkembangan" | "detail-aspek" | "kemampuan-diamati"
-  | "setup-ruang-belajar";
+  | "setup-ruang-belajar"
+  | "konsultasi-guru";
 
 export interface Student {
   id:number; name:string; abk:string; kelas:string; age:number; emoji:string;
@@ -108,7 +113,32 @@ export interface LaporanKirim {
 }
 
 export const seedLaporan: LaporanKirim[] = [
-  { id:1, studentId:1, judul:"Catatan Latihan Gambar", isi:"Rafi mulai ikut latihan persiapan FLS2N cabang menggambar setiap Rabu. Mohon dukungan agar tetap semangat!", dikirimPada:"18 Jun 2026", dibaca:false },
+  {
+    id: 3,
+    studentId: 1,
+    judul: "Perkembangan Kemandirian & Latihan FLS2N",
+    isi: "Alhamdulillah minggu ini Rafi sangat antusias mengikuti persiapan FLS2N cabang menggambar setiap Rabu. Yang paling menggembirakan, Rafi sekarang sudah dapat merapikan sendiri kuas dan cat airnya setelah selesai berkarya tanpa perlu diingatkan.",
+    dikirimPada: "18 Jun 2026",
+    dibaca: false,
+  },
+  {
+    id: 2,
+    studentId: 1,
+    judul: "Observasi Fokus Belajar & Partisipasi Kelompok",
+    isi: "Dalam kegiatan kelompok minggu ini, Rafi tampak lebih riang dan aktif berbagi ide warna dengan teman sebangkunya. Konsentrasi Rafi saat menyelesaikan tugas visual mencapai 35 menit berturut-turut tanpa terlihat lelah.",
+    dikirimPada: "28 Mei 2026",
+    dibaca: true,
+    dibacaPada: "29 Mei 2026",
+  },
+  {
+    id: 1,
+    studentId: 1,
+    judul: "Laporan Awal Asesmen Fungsional & Minat",
+    isi: "Guru pendamping telah menyelesaikan pemetaan awal minat dan profil fungsional. Minat Rafi sangat kuat di bidang Artistik (seni rupa). Di aspek mobilitas, kami terus mendampingi latihan langkah mandiri saat berpindah antar ruang kelas.",
+    dikirimPada: "15 Apr 2026",
+    dibaca: true,
+    dibacaPada: "16 Apr 2026",
+  },
 ];
 
 // ─── Students store (guru dapat menambah siswa sendiri) ──────────────
@@ -926,22 +956,135 @@ export const KIND_META: Record<EventKind,{label:string;color:string;bg:string;ic
  */
 export interface Layanan {
   id:number; nama:string; jenis:"Terapi"|"Pelatihan"|"Komunitas";
-  kategori:string; jarak:string; alamat:string; jadwal:string;
+  kategori:string; jarak:string; jarakKm?:number; alamat:string; jadwal:string;
   biaya:string; kontak:string; rating:number; emoji:string; catatan:string;
   terbuka:boolean;
+  terverifikasi?:boolean;
+  sumberData?:string;
+  penyelenggara?:string;
+  gambar?:string;
+  website?:string;
+  /** koordinat lokasi layanan */
+  lat?:number;
+  lng?:number;
   /** untuk program terbuka: tanggal penyelenggaraan berikutnya */
   agendaBerikutnya?:string;
 }
 
 export const LAYANAN: Layanan[] = [
-  { id:1, nama:"Klinik Tumbuh Kembang Asa", jenis:"Terapi", kategori:"Terapi Okupasi & Sensori Integrasi", jarak:"1,2 km", alamat:"Jl. Cikutra No. 45, Bandung", jadwal:"Buka Senin–Sabtu · 09.00–17.00", biaya:"Rp150.000/sesi · BPJS diterima", kontak:"0812-1234-5678", rating:4.8, emoji:"🩺", terbuka:false, catatan:"Cocok untuk anak dengan hambatan motorik halus dan regulasi sensorik." },
-  { id:2, nama:"Pusat Terapi Wicara Nusantara", jenis:"Terapi", kategori:"Terapi Wicara & Komunikasi", jarak:"2,4 km", alamat:"Jl. Dipatiukur No. 12, Bandung", jadwal:"Buka Senin–Jumat · 13.00–19.00", biaya:"Rp120.000/sesi", kontak:"0813-2222-9090", rating:4.6, emoji:"🗣️", terbuka:false, catatan:"Menerima anak ASD dan tunarungu, tersedia terapis bahasa isyarat." },
-  { id:3, nama:"Kelas Seni Inklusi — Rumah Kreatif Bandung", jenis:"Pelatihan", kategori:"Seni Lukis & Kriya", jarak:"3,1 km", alamat:"Jl. Braga No. 88, Bandung", jadwal:"Rabu & Sabtu · 14.00–16.00", biaya:"Gratis (subsidi Dinas Pendidikan)", kontak:"0821-5555-1122", rating:4.9, emoji:"🎨", terbuka:true, agendaBerikutnya:"9 September 2026", catatan:"Terbuka untuk umum. Cocok untuk anak dengan bakat seni visual yang menyiapkan FLS2N." },
-  { id:4, nama:"Sanggar Musik Ritme Anak", jenis:"Pelatihan", kategori:"Musik Perkusi Adaptif", jarak:"4,0 km", alamat:"Jl. Setiabudi No. 210, Bandung", jadwal:"Selasa & Kamis · 15.30–17.00", biaya:"Rp200.000/bulan", kontak:"0857-7788-3344", rating:4.5, emoji:"🥁", terbuka:false, catatan:"Kelas berlangganan — jadwal anak diatur langsung dengan sanggar. Metode berbasis getaran, ramah untuk anak tunarungu." },
-  { id:5, nama:"Fisioterapi Anak Sehat Mandiri", jenis:"Terapi", kategori:"Fisioterapi & Mobilitas", jarak:"2,8 km", alamat:"Jl. Pasteur No. 30, Bandung", jadwal:"Buka Senin–Sabtu · 08.00–15.00", biaya:"Rp175.000/sesi · BPJS diterima", kontak:"0811-4433-2211", rating:4.7, emoji:"🦿", terbuka:false, catatan:"Layanan untuk anak tunadaksa, tersedia alat bantu latihan." },
-  { id:6, nama:"Klinik Terapi Wicara Gratis Dinkes", jenis:"Terapi", kategori:"Terapi Wicara · Program Pemerintah", jarak:"1,8 km", alamat:"Balai RW 07 Cibeunying, Bandung", jadwal:"Digelar berkala · lihat kalender", biaya:"Gratis · kuota 40 anak", kontak:"0800-1000-100", rating:4.7, emoji:"🏥", terbuka:true, agendaBerikutnya:"26 Agustus 2026", catatan:"Terbuka untuk umum tanpa biaya, hasil kerja sama Dinas Kesehatan." },
-  { id:7, nama:"Skrining Tumbuh Kembang Puskesmas", jenis:"Terapi", kategori:"Skrining & Konsultasi Awal", jarak:"1,5 km", alamat:"Puskesmas Cibeunying, Bandung", jadwal:"Setiap bulan · lihat kalender", biaya:"Gratis · bawa KIA/BPJS", kontak:"022-720-1234", rating:4.6, emoji:"🔎", terbuka:true, agendaBerikutnya:"12 Agustus 2026", catatan:"Layanan umum untuk deteksi dini. Tidak perlu rujukan." },
-  { id:8, nama:"Komunitas Orang Tua ABK Bandung", jenis:"Komunitas", kategori:"Support Group & Sharing Session", jarak:"—", alamat:"Pertemuan bergilir · info via grup", jadwal:"Minggu ke-2 setiap bulan", biaya:"Gratis", kontak:"0895-1010-2020", rating:4.9, emoji:"🤝", terbuka:true, agendaBerikutnya:"13 September 2026", catatan:"Ruang berbagi pengalaman antar orang tua, sering menghadirkan psikolog anak." },
+  {
+    id: 1,
+    nama: "Klinik Terapi Wicara Pelita",
+    jenis: "Terapi",
+    kategori: "Terapi Wicara & Sensori",
+    jarak: "3,1 km",
+    jarakKm: 3.1,
+    alamat: "Jl. Melati No. 12, Bandung",
+    lat: -6.9025, lng: 107.6190,
+    jadwal: "08.00 - 16.00",
+    biaya: "Rp 100.000 - 150.000/sesi",
+    kontak: "0812-3456-7890",
+    rating: 4.8,
+    emoji: "🗣️",
+    gambar: classActivityImg,
+    penyelenggara: "Klinik Pratama Pelita",
+    terbuka: false,
+    terverifikasi: true,
+    sumberData: "Dinas Kesehatan Kota Bandung (Faskes Rujukan Terdaftar)",
+    website: "dinkes.bandung.go.id/faskes-pelita",
+    catatan: "Spesialisasi terapi wicara anak, artikulasi kata, dan penguatan motorik oral bagi anak berkebutuhan khusus.",
+  },
+  {
+    id: 2,
+    nama: "Kelas Seni Inklusi",
+    jenis: "Pelatihan",
+    kategori: "Seni Lukis & Kriya Kreatif",
+    jarak: "3,2 km",
+    jarakKm: 3.2,
+    alamat: "Jl. Anggrek No. 8, Bandung",
+    lat: -6.9145, lng: 107.6098,
+    jadwal: "10.00 - 15.00",
+    biaya: "Rp 50.000 - 75.000/sesi",
+    kontak: "0821-9988-7766",
+    rating: 4.9,
+    emoji: "🎨",
+    gambar: artTrainingImg,
+    penyelenggara: "Rumah Kreatif Bandung",
+    terbuka: true,
+    terverifikasi: true,
+    sumberData: "Binaan Dinas Kebudayaan & Yayasan Seni Ramah Anak",
+    website: "seni-inklusi.bandung.go.id",
+    agendaBerikutnya: "9 September 2026",
+    catatan: "Kelas melukis dan kriya adaptif bagi anak dengan bakat seni rupa, didampingi shadow teacher berpengalaman.",
+  },
+  {
+    id: 3,
+    nama: "Pusat Terapi Tumbuh Harapan",
+    jenis: "Terapi",
+    kategori: "Terapi Okupasi & Fisioterapi",
+    jarak: "1,5 km",
+    jarakKm: 1.5,
+    alamat: "Jl. Cikutra No. 45, Bandung",
+    lat: -6.8990, lng: 107.6350,
+    jadwal: "09.00 - 17.00",
+    biaya: "Rp 120.000 - 160.000/sesi",
+    kontak: "0813-8899-0011",
+    rating: 4.9,
+    emoji: "🩺",
+    gambar: classDrawingImg,
+    penyelenggara: "Yayasan Tumbuh Harapan",
+    terbuka: false,
+    terverifikasi: true,
+    sumberData: "Kementerian Kesehatan RI & RSHS (Klinik Pratama Terakreditasi)",
+    website: "tumbuhharapan-terapi.id",
+    catatan: "Menyediakan layanan sensori integrasi, fisioterapi gerak mandiri, dan terapi okupasi terpadu.",
+  },
+  {
+    id: 4,
+    nama: "Klinik Terapi Wicara Gratis Dinkes",
+    jenis: "Terapi",
+    kategori: "Terapi Wicara · Program Pemerintah",
+    jarak: "1,8 km",
+    jarakKm: 1.8,
+    alamat: "Balai RW 07 Cibeunying, Bandung",
+    lat: -6.8950, lng: 107.6280,
+    jadwal: "09.00 - 14.00",
+    biaya: "Gratis (Subsidi APBD)",
+    kontak: "0800-1000-100",
+    rating: 4.7,
+    emoji: "🏥",
+    gambar: classActivityImg,
+    penyelenggara: "Dinas Kesehatan Kota Bandung",
+    terbuka: true,
+    terverifikasi: true,
+    sumberData: "Program Kolaborasi Dinas Kesehatan Kota Bandung",
+    website: "dinkes.bandung.go.id",
+    agendaBerikutnya: "26 Agustus 2026",
+    catatan: "Terbuka untuk umum tanpa biaya, hasil kerja sama Dinas Kesehatan untuk skrining dan latihan wicara.",
+  },
+  {
+    id: 5,
+    nama: "Komunitas Sahabat Inklusi",
+    jenis: "Komunitas",
+    kategori: "Support Group & Konseling Ortu",
+    jarak: "2,0 km",
+    jarakKm: 2.0,
+    alamat: "Jl. R.E. Martadinata No. 50, Bandung",
+    lat: -6.9100, lng: 107.6150,
+    jadwal: "09.00 - 12.00",
+    biaya: "Gratis",
+    kontak: "0895-1010-2020",
+    rating: 4.9,
+    emoji: "🤝",
+    gambar: classGroupImg,
+    penyelenggara: "Forum Sahabat Anak Inklusif",
+    terbuka: true,
+    terverifikasi: true,
+    sumberData: "Forum Sahabat Anak Inklusif Jawa Barat",
+    website: "sahabatanakinklusif.org",
+    agendaBerikutnya: "13 September 2026",
+    catatan: "Wadah pendampingan psikologis, konsultasi pengasuhan di rumah, dan informasi bantuan subsidi pendidikan.",
+  },
 ];
 
 // ─── AI Knowledge & Custom Instructions (Guru Assistant Persona) ─────
