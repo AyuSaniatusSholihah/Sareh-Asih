@@ -6,7 +6,7 @@ import {
   Palette, Target, BookOpen, Settings, TrendingUp, Lightbulb, Laptop, Plus,
   BarChart3, ClipboardList, MessageCircle, Send, Paperclip, AtSign, MoreVertical,
   ShieldCheck, Check, CheckCheck, Globe, ExternalLink, LocateFixed, Loader,
-  ArrowRight,
+  ArrowRight, History,
 } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar, useUI,
@@ -594,7 +594,7 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
               {/* Card 4: Saran dari Guru */}
               <button
                 type="button"
-                onClick={() => go("riwayat-perkembangan")}
+                onClick={() => go("saran-rumah")}
                 style={{
                   background: "#FFFFFF",
                   borderRadius: 20,
@@ -700,7 +700,7 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
                 >
                   {/* Header Row */}
                   <div
-                    onClick={() => go("riwayat-perkembangan")}
+                    onClick={() => go("saran-rumah")}
                     className="flex items-center justify-between cursor-pointer active:scale-[0.99] transition-transform"
                     style={{ marginBottom: 14 }}
                   >
@@ -856,7 +856,7 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
                   >
                     <button
                       type="button"
-                      onClick={() => go("riwayat-perkembangan")}
+                      onClick={() => go("saran-rumah")}
                       className="w-full flex items-center justify-between active:scale-[0.99] transition-transform"
                       style={{
                         background: "none",
@@ -1169,7 +1169,7 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
 }) {
   const today = new Date("2026-08-05T00:00:00");
   const [cursor,setCursor] = useState({y:today.getFullYear(), m:today.getMonth()});
-  const [selected,setSelected] = useState<string|null>(null);
+  const [selected,setSelected] = useState<string|null>("2026-08-15");
   const [filter,setFilter] = useState<EventKind|"semua">("semua");
   const { openSettings } = useUI();
 
@@ -1265,39 +1265,39 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
 
           <div className="grid grid-cols-7 gap-1">
             {cells.map((d,i)=>{
-              if (d===null) return <div key={`p${i}`} style={{height:44}}/>;
+              if (d===null) return <div key={`p${i}`} style={{height:52}}/>;
               const evs = eventsOn(d);
               const isToday = key(d)===`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
               const isSel = selected===key(d);
+              const hasEvt = evs.length > 0;
               return (
                 <button key={d} onClick={()=>setSelected(isSel?null:key(d))}
                   style={{
-                    height:44, borderRadius:12,
-                    background: isSel ? T : evs.length ? SEC : "transparent",
-                    border: isToday ? `1.5px solid ${A}` : "1.5px solid transparent",
+                    height:52, borderRadius:14,
+                    background: isSel ? DEEP : hasEvt ? '#EEF6F1' : 'transparent',
+                    border: isToday && !isSel ? `2px solid ${A}` : '2px solid transparent',
+                    transition: 'background 0.15s, border-color 0.15s',
                   }}
-                  className="flex flex-col items-center justify-center">
-                  <span className="text-xs font-semibold" style={{color:isSel?"#fff":evs.length?DEEP:TEXT,fontFamily:DMM}}>{d}</span>
-                  <div className="flex gap-0.5 mt-0.5" style={{height:4}}>
-                    {evs.slice(0,3).map(e=>(
-                      <span key={e.id} style={{width:4,height:4,borderRadius:"50%",background:isSel?"#fff":KIND_META[e.kind].color}}/>
-                    ))}
-                  </div>
+                  className="flex flex-col items-center justify-center gap-0.5">
+                  <span style={{fontSize:12,fontWeight:700,color:isSel?'#fff':hasEvt?DEEP:TEXT,fontFamily:PJS,lineHeight:1.1}}>{d}</span>
+                  {hasEvt && (
+                    <span style={{fontSize:12,lineHeight:1,filter:isSel?'brightness(10)':'none'}}>{KIND_META[evs[0].kind].icon}</span>
+                  )}
                 </button>
               );
             })}
           </div>
 
-          <div className="flex flex-wrap gap-2.5 mt-3 pt-3" style={{borderTop:`1px solid ${BDR}`}}>
+          <div className="flex flex-wrap gap-3 mt-3 pt-3" style={{borderTop:`1px solid ${BDR}`}}>
             {Object.entries(KIND_META).map(([k,v])=>(
-              <div key={k} className="flex items-center gap-1.5">
-                <span style={{width:7,height:7,borderRadius:"50%",background:v.color}}/>
-                <span className="text-xs" style={{color:MUTED}}>{v.label}</span>
+              <div key={k} className="flex items-center gap-1">
+                <span style={{fontSize:12,lineHeight:1}}>{v.icon}</span>
+                <span className="text-xs" style={{color:MUTED,fontFamily:IPS}}>{v.label}</span>
               </div>
             ))}
-            <div className="flex items-center gap-1.5">
-              <span style={{width:9,height:9,borderRadius:3,border:`1.5px solid ${A}`}}/>
-              <span className="text-xs" style={{color:MUTED}}>Hari ini</span>
+            <div className="flex items-center gap-1">
+              <span style={{width:10,height:10,borderRadius:'50%',border:`2px solid ${BDR}`,display:'inline-block'}}/>
+              <span className="text-xs" style={{color:MUTED,fontFamily:IPS}}>Hari ini</span>
             </div>
           </div>
         </div>
@@ -1341,20 +1341,25 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
 function EventCard({e}:{e:AgendaEvent}) {
   const [open,setOpen] = useState(false);
   const meta = KIND_META[e.kind];
-  const d = new Date(e.date+"T00:00:00");
   return (
-    <div style={{background:CARD,border:`1px solid ${meta.color}25`,overflow:"hidden"}} className="rounded-2xl">
-      <button onClick={()=>setOpen(o=>!o)} className="w-full px-4 py-3 flex items-center gap-3 text-left">
-        <div style={{width:46,background:meta.bg,flexShrink:0,paddingTop:6,paddingBottom:6}} className="rounded-xl flex flex-col items-center justify-center">
-          <span className="text-xs font-bold" style={{color:meta.color,fontFamily:DMM}}>{d.toLocaleDateString("id-ID",{month:"short"})}</span>
-          <span className="font-bold" style={{color:meta.color,fontFamily:PJS,fontSize:17,lineHeight:1}}>{d.getDate()}</span>
+    <div style={{background:CARD,border:`1px solid ${BDR}`,overflow:"hidden"}} className="rounded-2xl">
+      <button onClick={()=>setOpen(o=>!o)} className="w-full px-4 py-3.5 flex items-center gap-3 text-left">
+        {/* Icon box */}
+        <div style={{width:48,height:48,background:meta.bg,flexShrink:0,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <span style={{fontSize:22,lineHeight:1}}>{meta.icon}</span>
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-bold text-sm leading-snug" style={{color:TEXT,fontFamily:PJS}}>{e.title}</p>
-          <p className="text-xs mt-0.5" style={{color:MUTED}}>{e.jam}</p>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block mt-1" style={{background:meta.bg,color:meta.color}}>{meta.icon} {meta.label}</span>
+          <div className="flex items-center gap-1 mt-1">
+            <Clock size={11} style={{color:MUTED,flexShrink:0}}/>
+            <span className="text-xs" style={{color:MUTED,fontFamily:IPS}}>{e.jam}</span>
+          </div>
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-1.5" style={{background:meta.bg,color:meta.color}}>
+            <span style={{width:6,height:6,borderRadius:'50%',background:meta.color,display:'inline-block'}}/>
+            {meta.label}
+          </span>
         </div>
-        <ChevronRight size={15} style={{color:MUTED,flexShrink:0,transform:open?"rotate(90deg)":"none",transition:"transform 0.2s"}}/>
+        <ChevronRight size={16} style={{color:MUTED,flexShrink:0,transform:open?"rotate(90deg)":"none",transition:"transform 0.2s"}}/>
       </button>
       {open && (
         <div className="px-4 pb-4 pt-1 space-y-2" style={{borderTop:`1px solid ${BDR}`}}>
@@ -2374,6 +2379,74 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
 
   const nama = child.name.split(" ")[0];
   const [activeInfoTab, setActiveInfoTab] = useState<"profil" | "riwayat" | "konsultasi" | null>(null);
+  const [selectedSemesterAsesmen, setSelectedSemesterAsesmen] = useState<string | null>(null);
+
+  if (selectedSemesterAsesmen) {
+    return (
+      <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+        <TBar title={`Profil & Asesmen ${nama}`} onBack={() => setSelectedSemesterAsesmen(null)} />
+        <div className="px-4 pt-4 pb-20 space-y-3.5">
+          {/* Header Info Semester */}
+          <div
+            style={{
+              background: CARD,
+              borderRadius: 18,
+              padding: "16px 18px",
+              border: `1px solid ${BDR}`,
+              boxShadow: "0 2px 10px rgba(91,122,104,0.05)",
+            }}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <CalendarDays size={16} style={{ color: T }} />
+                <span style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT }}>
+                  Semester 1 · TP 2026/2027
+                </span>
+              </div>
+              <span
+                style={{
+                  background: "#E7F4EB",
+                  color: "#246E44",
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  padding: "3px 10px",
+                  borderRadius: 999,
+                  border: "1px solid rgba(36,110,68,0.25)",
+                }}
+              >
+                Asesmen Selesai
+              </span>
+            </div>
+            <div className="flex items-center gap-4 mt-2.5 text-xs" style={{ color: MUTED }}>
+              <span>Tanggal: 12 Agustus 2026</span>
+              <span>•</span>
+              <span>Penilai: {child.teacher}</span>
+            </div>
+          </div>
+
+          {!child.hasObs ? (
+            <div style={{ background: "#FEF9EC", border: `1px solid rgba(217,142,30,0.25)` }} className="rounded-2xl px-4 py-3 flex items-start gap-2.5">
+              <Info size={14} style={{ color: A, flexShrink: 0, marginTop: 1 }} />
+              <p className="text-xs leading-relaxed" style={{ color: A }}>
+                Guru belum menyelesaikan asesmen pertama untuk {nama}. Hasil pemetaan bakat akan muncul di sini setelah asesmen selesai.
+              </p>
+            </div>
+          ) : (
+            <>
+              <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} studentName={nama} studentId={child.id} readOnly={true} forParent={true} />
+              <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} studentName={nama} studentId={child.id} readOnly={true} forParent={true} />
+              <div style={{ background: "#F0FDF4", border: `1px solid #BBF7D0` }} className="rounded-xl px-4 py-3 flex items-start gap-2.5">
+                <Info size={14} style={{ color: "#15803D", flexShrink: 0, marginTop: 1 }} />
+                <p className="text-xs leading-relaxed" style={{ color: "#15803D" }}>
+                  Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS,background:BG}}>
@@ -2474,32 +2547,257 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
               </div>
             </button>
 
-            {/* Expanded: Profil dan asesmen content */}
+            {/* Expanded: Riwayat Asesmen (pilih semester) */}
             {activeInfoTab === "profil" && (
-              <div style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-              }}>
-                {!child.hasObs ? (
-                  <div style={{background:"#FEF9EC",border:`1px solid rgba(217,142,30,0.25)`}} className="rounded-2xl px-4 py-3 flex items-start gap-2.5">
-                    <Info size={14} style={{color:A,flexShrink:0,marginTop:1}}/>
-                    <p className="text-xs leading-relaxed" style={{color:A}}>
-                      Guru belum menyelesaikan asesmen pertama untuk {nama}. Hasil pemetaan bakat akan muncul di sini setelah asesmen selesai.
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <ProfilFungsionalRadar jawaban={getMockJawaban(child.id)} studentName={nama} studentId={child.id} readOnly={true} forParent={true} />
-                    <ProfilKecenderunganBar jawaban={getMockJawaban(child.id)} studentName={nama} studentId={child.id} readOnly={true} forParent={true} />
-                    <div style={{background:"#F0FDF4",border:`1px solid #BBF7D0`}} className="rounded-xl px-4 py-3 flex items-start gap-2.5">
-                      <Info size={14} style={{color:"#15803D",flexShrink:0,marginTop:1}}/>
-                      <p className="text-xs leading-relaxed" style={{color:"#15803D"}}>
-                        Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
-                      </p>
+              <div
+                style={{
+                  background: CARD,
+                  borderRadius: 18,
+                  padding: "16px",
+                  border: `1px solid ${BDR}`,
+                  boxShadow: "0 2px 10px rgba(91,122,104,0.05)",
+                }}
+              >
+                {/* Header Riwayat Asesmen */}
+                <div className="flex items-center justify-between mb-1">
+                  <h3
+                    style={{
+                      fontFamily: PJS,
+                      fontSize: 16,
+                      fontWeight: 800,
+                      color: TEXT,
+                      margin: 0,
+                    }}
+                  >
+                    Riwayat Asesmen
+                  </h3>
+                  <History size={18} style={{ color: DEEP }} />
+                </div>
+                <p
+                  style={{
+                    fontFamily: IPS,
+                    fontSize: 12.5,
+                    color: MUTED,
+                    margin: "0 0 14px",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  Pilih semester untuk melihat hasil sebelumnya.
+                </p>
+
+                {/* List of Semesters */}
+                <div className="space-y-2.5">
+                  {/* Semester 1 (Selesai & Clickable) */}
+                  <div
+                    onClick={() => setSelectedSemesterAsesmen("Semester 1 - 2026/2027")}
+                    style={{
+                      background: "#FFFFFF",
+                      borderRadius: 14,
+                      border: "1.5px solid #8BB098",
+                      padding: "14px 16px",
+                      cursor: "pointer",
+                      boxShadow: "0 1px 4px rgba(91,122,104,0.06)",
+                    }}
+                    className="active:scale-[0.99] transition-transform flex items-center justify-between gap-3 hover:border-[#5B7A68]"
+                  >
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          background: "#E8F4EC",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                          marginTop: 1,
+                        }}
+                      >
+                        <CheckCircle size={17} style={{ color: "#2E5E43" }} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p
+                          style={{
+                            fontFamily: PJS,
+                            fontSize: 15,
+                            fontWeight: 700,
+                            color: TEXT,
+                            margin: 0,
+                            lineHeight: 1.25,
+                          }}
+                        >
+                          Semester 1
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: IPS,
+                            fontSize: 12.5,
+                            color: MUTED,
+                            margin: "3px 0 0",
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          2026/2027 · 12 Agustus 2026
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: IPS,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: "#5B7A68",
+                            margin: "4px 0 0",
+                          }}
+                        >
+                          Asesmen selesai
+                        </p>
+                      </div>
                     </div>
-                  </>
-                )}
+                    <ChevronRight size={18} style={{ color: "#5B7A68", flexShrink: 0 }} />
+                  </div>
+
+                  {/* Semester 2 (Belum tersedia) */}
+                  <div
+                    style={{
+                      background: "#FFFFFF",
+                      borderRadius: 14,
+                      border: `1px solid ${BDR}`,
+                      padding: "14px 16px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          background: "#F3F4F6",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Clock size={16} style={{ color: "#9CA3AF" }} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p
+                          style={{
+                            fontFamily: PJS,
+                            fontSize: 15,
+                            fontWeight: 700,
+                            color: TEXT,
+                            margin: 0,
+                            lineHeight: 1.25,
+                          }}
+                        >
+                          Semester 2
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: IPS,
+                            fontSize: 12.5,
+                            color: MUTED,
+                            margin: "3px 0 0",
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          2026/2027
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      style={{
+                        background: "#F3F4F6",
+                        border: "1px solid #E5E7EB",
+                        color: "#6B7280",
+                        fontSize: 11.5,
+                        fontWeight: 600,
+                        padding: "4px 10px",
+                        borderRadius: 999,
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                      }}
+                    >
+                      Belum tersedia
+                    </span>
+                  </div>
+
+                  {/* Semester 1 2027/2028 (Belum tersedia) */}
+                  <div
+                    style={{
+                      background: "#FFFFFF",
+                      borderRadius: 14,
+                      border: `1px solid ${BDR}`,
+                      padding: "14px 16px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          background: "#F3F4F6",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Clock size={16} style={{ color: "#9CA3AF" }} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p
+                          style={{
+                            fontFamily: PJS,
+                            fontSize: 15,
+                            fontWeight: 700,
+                            color: TEXT,
+                            margin: 0,
+                            lineHeight: 1.25,
+                          }}
+                        >
+                          Semester 1
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: IPS,
+                            fontSize: 12.5,
+                            color: MUTED,
+                            margin: "3px 0 0",
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          2027/2028
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      style={{
+                        background: "#F3F4F6",
+                        border: "1px solid #E5E7EB",
+                        color: "#6B7280",
+                        fontSize: 11.5,
+                        fontWeight: 600,
+                        padding: "4px 10px",
+                        borderRadius: 999,
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                      }}
+                    >
+                      Belum tersedia
+                    </span>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -2607,28 +2905,6 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
           </div>
         </div>
 
-        {/* ── Saran dari Guru ── */}
-        {child.hasObs && (
-          <SeksiCollapsible judul="Saran Guru untuk di Rumah" defaultTerbuka={true}>
-            <div style={{background:CARD,border:`1px solid ${BDR}`}} className="rounded-2xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2"><Heart size={13} style={{color:A}}/><p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Saran Guru untuk di Rumah</p></div>
-                <Lock size={12} style={{color:MUTED}}/>
-              </div>
-              {[
-                {i:"🎨",t:`Beri ${nama} waktu berlatih bebas minimal 20 menit setiap hari.`},
-                {i:"🧰",t:"Siapkan alat sederhana yang mudah dijangkau anak."},
-                {i:"👏",t:"Apresiasi setiap usaha, bukan hanya hasil akhirnya."},
-                {i:"🕒",t:`Jaga rutinitas yang sama setiap hari — ${nama} lebih tenang dengan jadwal yang dapat ditebak.`},
-              ].map(s=>(
-                <div key={s.t} className="flex items-start gap-2.5 py-2.5" style={{borderBottom:`1px solid ${BDR}`}}>
-                  <span className="text-lg flex-shrink-0">{s.i}</span>
-                  <p className="text-sm leading-relaxed" style={{color:TEXT}}>{s.t}</p>
-                </div>
-              ))}
-            </div>
-          </SeksiCollapsible>
-        )}
       </div>
     </div>
   );
@@ -3215,6 +3491,497 @@ export function KemampuanDiamatiScreen({ onBack, child, aspek }: {
           })}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─── Halaman Saran Guru untuk di Rumah (screen: "saran-rumah") ─────────────── */
+export function SaranRumahScreen({ onBack, child, go }: {
+  onBack: () => void;
+  child: Student | null;
+  go?: (s: Screen) => void;
+}) {
+  const nama = child ? child.name.split(" ")[0] : "Rafi";
+  const [selectedSaran, setSelectedSaran] = useState<any | null>(null);
+  const [showPanduan, setShowPanduan] = useState(false);
+  const [completedMap, setCompletedMap] = useState<Record<number, boolean>>({});
+
+  const toggleCompleted = (id: number) => {
+    setCompletedMap(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const saranList = [
+    {
+      id: 1, kategori: "KREATIVITAS", prioritas: true,
+      judul: "Waktu bereksplorasi",
+      deskripsi: "Berikan waktu 20 menit untuk menggambar atau mewarnai sesuai imajinasinya.",
+      waktu: "20 menit per hari", waktuDetail: "Kapan saja",
+      icon: Palette, iconBg: "#E8F3EB", iconColor: "#2E6B4F", badgeColor: "#2E6B4F",
+      img: "/images/saran/kreativitas.jpg",
+      langkah: [
+        "Siapkan alat gambar atau mewarnai di tempat yang tenang dan nyaman.",
+        `Biarkan ${nama} memilih warna dan gambar yang ia sukai tanpa batasan.`,
+        "Jangan memberi batasan, cukup dukung dan apresiasi prosesnya.",
+      ],
+    },
+    {
+      id: 2, kategori: "KEMANDIRIAN",
+      judul: "Belajar mandiri",
+      deskripsi: `Ajak ${nama} menyiapkan alat belajarnya sendiri sebelum mulai beraktivitas.`,
+      waktu: "Sebelum belajar", waktuDetail: "Sebelum beraktivitas",
+      icon: BookOpen, iconBg: "#FEF3C7", iconColor: "#D97706", badgeColor: "#B45309",
+      img: "/images/saran/kemandirian.jpg",
+      langkah: [
+        "Sediakan tempat penyimpanan alat tulis khusus yang mudah dijangkau anak.",
+        `Ajak ${nama} menyusun buku dan perlengkapan belajarnya satu per satu.`,
+        "Berikan pujian atas kemandirian dan kesiapannya dalam belajar.",
+      ],
+    },
+    {
+      id: 3, kategori: "SOSIAL EMOSIONAL",
+      judul: "Apresiasi usaha",
+      deskripsi: `Berikan pujian saat ${nama} mencoba, meski hasilnya belum sempurna.`,
+      waktu: "Setiap hari", waktuDetail: "Sepanjang hari",
+      icon: Heart, iconBg: "#FCE7F3", iconColor: "#DB2777", badgeColor: "#BE185D",
+      img: "/images/saran/sosial.jpg",
+      langkah: [
+        "Fokuskan perhatian dan apresiasi pada usahanya, bukan sekadar hasil akhir.",
+        `Katakan dengan tulus seperti 'Ibu bangga ${nama} sudah mau berusaha mencoba'.`,
+        "Berikan senyuman atau pelukan hangat untuk menumbuhkan rasa percaya diri.",
+      ],
+    },
+    {
+      id: 4, kategori: "KOMUNIKASI",
+      judul: "Latih percakapan sehari-hari",
+      deskripsi: `Mulai percakapan sederhana dan beri ${nama} waktu untuk menjawab.`,
+      waktu: "15 menit per hari", waktuDetail: "Saat sarapan / santai",
+      icon: MessageSquare, iconBg: "#EFF6FF", iconColor: "#2563EB", badgeColor: "#1D4ED8",
+      img: "/images/saran/komunikasi.jpg",
+      langkah: [
+        "Pilih topik ringan tentang hal menyenangkan yang baru saja terjadi.",
+        `Tatap matanya dengan ramah, gunakan kalimat sederhana, dan hindari terburu-buru.`,
+        "Berikan jeda waktu beberapa detik agar ia leluasa memproses dan menjawab.",
+      ],
+    },
+    {
+      id: 5, kategori: "FISIK & MOTORIK",
+      judul: "Gerak aktif menyenangkan",
+      deskripsi: "Ajak jalan santai atau permainan lempar tangkap bola ringan di halaman.",
+      waktu: "Sore hari", waktuDetail: "Waktu luang sore",
+      icon: Sparkles, iconBg: "#EDE9FE", iconColor: "#7C3AED", badgeColor: "#6D28D9",
+      img: "/images/saran/fisik.jpg",
+      langkah: [
+        "Ajak melakukan peregangan ringan dan pemanasan ceria bersama orang tua.",
+        "Gunakan bola spons empuk atau sasaran keranjang untuk melatih motorik kasar.",
+        "Hentikan sebelum terlalu lelah dan akhiri dengan minum air bersama.",
+      ],
+    },
+  ];
+
+  return (
+    <div className="flex-1 flex flex-col h-full overflow-hidden" style={{ fontFamily: IPS, background: BG }}>
+      {/* Top Header */}
+      <div style={{ background: "#FFFFFF", padding: "14px 16px 12px", borderBottom: `1px solid ${BDR}`, flexShrink: 0, position: "sticky", top: 0, zIndex: 20 }}>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onBack}
+            style={{ width: 36, height: 36, borderRadius: 10, background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+            className="active:scale-95 transition-transform"
+            title="Kembali"
+          >
+            <ChevronLeft size={22} style={{ color: TEXT }} />
+          </button>
+          <div>
+            <h2 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
+              Saran Guru untuk di Rumah
+            </h2>
+            <p style={{ fontFamily: IPS, fontSize: 12, color: MUTED, margin: "2px 0 0" }}>
+              Aktivitas sederhana untuk mendukung perkembangan {nama} di rumah.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-20 space-y-3.5">
+        {/* Banner Ilustrasi Inspiratif (Sesuai Referensi & Palette Aplikasi) */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, #EBF3ED 0%, #DCECE1 100%)",
+            borderRadius: 20,
+            border: "1.5px solid rgba(91,122,104,0.25)",
+            padding: "16px 18px",
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+            boxShadow: "0 2px 10px rgba(91,122,104,0.06)",
+          }}
+        >
+          {/* Avatar / Kid drawing illustration */}
+          <img
+            src="/images/saran/banner.jpg"
+            alt="Anak menggambar di rumah"
+            style={{ width: 72, height: 72, borderRadius: 16, objectFit: "cover", display: "block", flexShrink: 0 }}
+          />
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p
+              style={{
+                fontFamily: PJS,
+                fontSize: 13,
+                fontWeight: 700,
+                color: TEXT,
+                lineHeight: 1.45,
+                margin: 0,
+                fontStyle: "italic",
+              }}
+            >
+              “Langkah kecil di rumah, berdampak besar untuk perkembangannya ♡”
+            </p>
+          </div>
+        </div>
+
+        {/* List of Saran Cards */}
+        <div className="space-y-3">
+          {saranList.map((item) => {
+            const Icon = item.icon;
+            const isDone = completedMap[item.id];
+            return (
+              <div
+                key={item.id}
+                onClick={() => {
+                  setSelectedSaran(item);
+                  setShowPanduan(false);
+                }}
+                style={{
+                  background: CARD,
+                  borderRadius: 18,
+                  border: `1.5px solid ${isDone ? "#8BB098" : BDR}`,
+                  padding: "15px 16px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+                className="active:scale-[0.99] hover:border-slate-300"
+              >
+                <div className="flex items-start gap-3.5">
+                  <div
+                    style={{
+                      width: 64, height: 64, borderRadius: 14,
+                      overflow: "hidden", flexShrink: 0,
+                      border: `1px solid ${BDR}`,
+                    }}
+                  >
+                    <img
+                      src={item.img}
+                      alt={item.judul}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 800,
+                            fontFamily: PJS,
+                            letterSpacing: "0.04em",
+                            color: item.badgeColor,
+                          }}
+                        >
+                          {item.kategori}
+                        </span>
+                        {item.prioritas && (
+                          <span
+                            style={{
+                              fontSize: 9.5,
+                              fontWeight: 700,
+                              padding: "2px 7px",
+                              borderRadius: 6,
+                              background: "#2D3748",
+                              color: "#FFFFFF",
+                            }}
+                          >
+                            Prioritas
+                          </span>
+                        )}
+                        {isDone && (
+                          <span
+                            style={{
+                              fontSize: 9.5,
+                              fontWeight: 700,
+                              padding: "2px 7px",
+                              borderRadius: 6,
+                              background: "#DCFCE7",
+                              color: "#15803D",
+                            }}
+                          >
+                            ✓ Selesai
+                          </span>
+                        )}
+                      </div>
+                      <ChevronRight size={16} style={{ color: MUTED, flexShrink: 0 }} />
+                    </div>
+
+                    <h4
+                      style={{
+                        fontFamily: PJS,
+                        fontSize: 14.5,
+                        fontWeight: 800,
+                        color: TEXT,
+                        margin: "0 0 3px",
+                      }}
+                    >
+                      {item.judul}
+                    </h4>
+                    <p
+                      style={{
+                        fontFamily: IPS,
+                        fontSize: 12,
+                        color: MUTED,
+                        margin: "0 0 8px",
+                        lineHeight: 1.45,
+                      }}
+                    >
+                      {item.deskripsi}
+                    </p>
+
+                    <div className="flex items-center gap-1.5 text-xs" style={{ color: MUTED }}>
+                      <Clock size={12} style={{ color: MUTED, flexShrink: 0 }} />
+                      <span style={{ fontSize: 11, fontFamily: IPS }}>{item.waktu}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Modal Bottom Sheet: Detail & Panduan Aktivitas ── */}
+      {selectedSaran && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 80,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            width: "100%",
+            height: "100%",
+          }}
+          onClick={() => setSelectedSaran(null)}
+        >
+          <div style={{ position: "absolute", inset: 0, background: "rgba(15, 23, 42, 0.45)" }} />
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: "relative",
+              background: "#FFFFFF",
+              borderRadius: "24px 24px 0 0",
+              padding: "16px 20px 24px",
+              maxHeight: "88%",
+              overflowY: "auto",
+              boxShadow: "0 -10px 40px rgba(0,0,0,0.18)",
+              fontFamily: IPS,
+              zIndex: 1,
+            }}
+          >
+            {/* Pull handle */}
+            <div className="flex justify-center mb-3">
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: "#CBD5E1" }} />
+            </div>
+
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="flex items-center gap-3">
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 14,
+                    background: selectedSaran.iconBg,
+                    color: selectedSaran.iconColor,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <selectedSaran.icon size={22} strokeWidth={2.2} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span style={{ fontSize: 10, fontWeight: 800, color: selectedSaran.badgeColor, letterSpacing: "0.03em" }}>
+                      {selectedSaran.kategori}
+                    </span>
+                    {selectedSaran.prioritas && (
+                      <span style={{ fontSize: 9.5, fontWeight: 700, padding: "1px 6px", borderRadius: 6, background: "#2D3748", color: "#FFFFFF" }}>
+                        Prioritas
+                      </span>
+                    )}
+                  </div>
+                  <h3 style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, margin: 0 }}>
+                    {selectedSaran.judul}
+                  </h3>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedSaran(null)}
+                style={{ width: 30, height: 30, borderRadius: "50%", background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: MUTED }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <p style={{ fontFamily: IPS, fontSize: 13, color: TEXT, lineHeight: 1.5, margin: "0 0 12px" }}>
+              {selectedSaran.deskripsi}
+            </p>
+
+            {/* Meta Tags */}
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold" style={{ background: "#F8F6F1", border: `1px solid ${BDR}`, color: TEXT }}>
+                <Clock size={13} style={{ color: MUTED }} />
+                <span>{selectedSaran.waktu}</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold" style={{ background: "#F8F6F1", border: `1px solid ${BDR}`, color: TEXT }}>
+                <CalendarDays size={13} style={{ color: MUTED }} />
+                <span>{selectedSaran.waktuDetail}</span>
+              </div>
+            </div>
+
+            {/* Illustration — gambar asli per aktivitas */}
+            <div style={{ borderRadius: 18, overflow: "hidden", marginBottom: 16, border: "1px solid #ECE4D6", position: "relative" }}>
+              <img
+                src={selectedSaran.img}
+                alt={selectedSaran.judul}
+                style={{ width: "100%", height: 160, objectFit: "cover", display: "block" }}
+              />
+              <div
+                style={{
+                  position: "absolute", bottom: 0, left: 0, right: 0,
+                  background: "linear-gradient(transparent, rgba(46,62,53,0.65))",
+                  padding: "20px 14px 12px",
+                }}
+              >
+                <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: "#FFFFFF", margin: 0 }}>
+                  Aktivitas Ramah Anak & Menyenangkan
+                </p>
+              </div>
+            </div>
+
+            {/* Step-by-step guidance view or button toggle */}
+            {showPanduan ? (
+              <div style={{ background: "#F8FBF9", border: "1.5px solid #D4E8DA", borderRadius: 16, padding: "16px", marginBottom: 14 }}>
+                <h4 style={{ fontFamily: PJS, fontSize: 14, fontWeight: 800, color: DEEP, margin: "0 0 12px" }}>
+                  Langkah sederhana:
+                </h4>
+                <div className="space-y-3">
+                  {selectedSaran.langkah.map((l: string, idx: number) => (
+                    <div key={idx} className="flex items-start gap-3">
+                      <div
+                        style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: "50%",
+                          background: "#5B7A68",
+                          color: "#FFFFFF",
+                          fontSize: 11,
+                          fontWeight: 800,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                          marginTop: 1,
+                        }}
+                      >
+                        {idx + 1}
+                      </div>
+                      <p style={{ fontFamily: IPS, fontSize: 12.5, color: TEXT, lineHeight: 1.45, margin: 0 }}>
+                        {l}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setShowPanduan(false)}
+                  style={{
+                    width: "100%",
+                    marginTop: 14,
+                    padding: "10px",
+                    borderRadius: 12,
+                    background: "#5B7A68",
+                    color: "#FFFFFF",
+                    fontFamily: PJS,
+                    fontSize: 13,
+                    fontWeight: 700,
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                  className="active:scale-[0.99] transition-transform"
+                >
+                  Selesai Membaca Panduan
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                <button
+                  onClick={() => setShowPanduan(true)}
+                  style={{
+                    width: "100%",
+                    padding: "13px 16px",
+                    borderRadius: 16,
+                    background: "#5B7A68",
+                    color: "#FFFFFF",
+                    fontFamily: PJS,
+                    fontSize: 13.5,
+                    fontWeight: 800,
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                  }}
+                  className="active:scale-[0.99] transition-transform shadow-sm"
+                >
+                  <BookOpen size={16} />
+                  <span>Lihat panduan aktivitas</span>
+                  <ChevronRight size={16} />
+                </button>
+
+                <button
+                  onClick={() => {
+                    toggleCompleted(selectedSaran.id);
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "12px 16px",
+                    borderRadius: 16,
+                    background: completedMap[selectedSaran.id] ? "#E8F5EC" : "#FFFFFF",
+                    color: completedMap[selectedSaran.id] ? "#15803D" : TEXT,
+                    border: `1.5px solid ${completedMap[selectedSaran.id] ? "#8BB098" : BDR}`,
+                    fontFamily: PJS,
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                  }}
+                  className="active:scale-[0.99] transition-transform"
+                >
+                  <Check size={16} strokeWidth={completedMap[selectedSaran.id] ? 3 : 2} style={{ color: completedMap[selectedSaran.id] ? "#15803D" : MUTED }} />
+                  <span>{completedMap[selectedSaran.id] ? "Sudah diselesaikan hari ini ✓" : "Tandai sebagai selesai"}</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

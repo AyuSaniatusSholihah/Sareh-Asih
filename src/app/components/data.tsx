@@ -28,7 +28,8 @@ export type Screen =
   | "parent-calendar" | "parent-training"
   | "riwayat-laporan" | "riwayat-perkembangan" | "detail-aspek" | "kemampuan-diamati"
   | "setup-ruang-belajar"
-  | "konsultasi-guru";
+  | "konsultasi-guru"
+  | "saran-rumah";
 
 export interface Student {
   id:number; name:string; abk:string; kelas:string; age:number; emoji:string;
@@ -930,9 +931,10 @@ export interface AgendaEvent {
 
 export const AGENDA: AgendaEvent[] = [
   { id:1,  date:"2026-08-08", title:"Seleksi Kabupaten FLS3N PDBK", kind:"lomba",     lokasi:"SLB Negeri 1 Bandung",       jam:"08.00 – 12.00", desc:"Seleksi tingkat kabupaten cabang Seni Lukis dan Seni Pertunjukan untuk PDBK (Peserta Didik Berkebutuhan Khusus).", pendaftaran:"Melalui sekolah, paling lambat 5 Agustus", biaya:"Gratis" },
-  { id:2,  date:"2026-08-12", title:"Skrining Tumbuh Kembang Gratis", kind:"terapi",  lokasi:"Puskesmas Cibeunying",       jam:"08.00 – 12.00", desc:"Skrining perkembangan anak dan konsultasi awal dengan terapis, terbuka untuk umum tanpa biaya.", pendaftaran:"Datang langsung, bawa KIA/BPJS", biaya:"Gratis · terbuka umum" },
+  { id:2,  date:"2026-08-12", title:"Lomba Seni Lukis PDBK",          kind:"lomba",   lokasi:"Balai Budaya Bandung",        jam:"08.00 – 14.00", desc:"Lomba seni lukis terbuka untuk Peserta Didik Berkebutuhan Khusus (PDBK) tingkat kota.", pendaftaran:"Melalui sekolah, paling lambat 8 Agustus", biaya:"Gratis" },
   { id:3,  date:"2026-08-15", title:"Pelatihan Parenting PDBK",     kind:"pelatihan", lokasi:"Aula SLB Harapan Bangsa",    jam:"09.00 – 12.00", desc:"Workshop terbuka untuk semua orang tua: strategi mendampingi anak belajar di rumah sesuai gaya belajarnya.", pendaftaran:"Daftar via tautan panitia", biaya:"Gratis · terbuka umum" },
   { id:5,  date:"2026-08-22", title:"O2SN Diksus — Cabang Boccia",  kind:"lomba",     lokasi:"GOR Pajajaran, Bandung",     jam:"07.30 – 15.00", desc:"Kompetisi Boccia tingkat provinsi untuk kategori tunadaksa dan tunagrahita.", pendaftaran:"Kuota 2 PDBK per sekolah", biaya:"Gratis" },
+  { id:7,  date:"2026-08-19", title:"Skrining Tumbuh Kembang Gratis", kind:"terapi",  lokasi:"Puskesmas Cibeunying",       jam:"08.00 – 12.00", desc:"Skrining perkembangan anak dan konsultasi awal dengan terapis, terbuka untuk umum tanpa biaya.", pendaftaran:"Datang langsung, bawa KIA/BPJS", biaya:"Gratis · terbuka umum" },
   { id:6,  date:"2026-08-26", title:"Klinik Terapi Wicara Gratis",  kind:"terapi",    lokasi:"Balai RW 07 Cibeunying",     jam:"09.00 – 14.00", desc:"Layanan terapi wicara gratis hasil kerja sama Dinas Kesehatan. Terbuka untuk umum, kuota 40 anak.", pendaftaran:"Pendaftaran online dibuka 20 Agustus", biaya:"Gratis · kuota terbatas" },
   { id:8,  date:"2026-09-03", title:"LKSN Diksus — Desain Grafis",  kind:"lomba",     lokasi:"SMKN 4 Bandung",             jam:"08.00 – 16.00", desc:"Lomba Kompetensi Siswa Nasional bidang desain grafis untuk PDBK (Peserta Didik Berkebutuhan Khusus).", pendaftaran:"Pendaftaran dibuka 10 Agustus", biaya:"Gratis" },
   { id:9,  date:"2026-09-09", title:"Kelas Seni Inklusi Terbuka",   kind:"pelatihan", lokasi:"Rumah Kreatif Bandung",      jam:"14.00 – 16.00", desc:"Kelas melukis dan kriya terbuka untuk PDBK, didampingi instruktur seni dan shadow teacher.", pendaftaran:"Daftar via WhatsApp panitia", biaya:"Gratis (subsidi Dinas Pendidikan)" },
@@ -940,7 +942,7 @@ export const AGENDA: AgendaEvent[] = [
 
 export const KIND_META: Record<EventKind,{label:string;color:string;bg:string;icon:string}> = {
   lomba:     {label:"Lomba",            color:"#B45309", bg:"#FEF3C7", icon:"🏆"},
-  terapi:    {label:"Terapi Gratis",    color:"#0369A1", bg:"#E0F2FE", icon:"🩺"},
+  terapi:    {label:"Terapi Gratis",    color:"#0369A1", bg:"#E0F2FE", icon:"💙"},
   pelatihan: {label:"Pelatihan Umum",   color:"#6D28D9", bg:"#EDE9FE", icon:"🎓"},
 };
 

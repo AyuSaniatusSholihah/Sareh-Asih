@@ -22,7 +22,7 @@ import { KodeAksesScreen } from "./components/kode-manager";
 import {
   ParentDashboard, ParentDetailScreen, ParentCalendarScreen,
   ParentTrainingScreen, LinkCodeModal, RiwayatLaporanScreen, PerkembanganScreen, AspekDetailScreen, KemampuanDiamatiScreen,
-  KonsultasiGuruScreen,
+  KonsultasiGuruScreen, SaranRumahScreen,
 } from "./components/parent";
 
 // Layout components
@@ -304,6 +304,7 @@ export default function App() {
       case "parent-detail": return ["Perkembangan Anak", child ? child.name : "Belum terhubung"];
       case "parent-calendar": return ["Kalender", "Kegiatan terbuka untuk umum"];
       case "parent-training": return ["Pelatihan & Terapi", "Info umum layanan terdekat"];
+      case "saran-rumah": return ["Saran Guru untuk di Rumah", child ? `Aktivitas pendukung ${child.name.split(" ")[0]}` : "Aktivitas di rumah"];
       default: return ["", ""];
     }
   };
@@ -437,6 +438,7 @@ export default function App() {
       case "parent-calendar": return <ParentCalendarScreen linked={!!child} sekolah={guru.sekolah} onOpenCode={() => setShowLinkCode(true)} go={go} />;
       case "parent-training": return <ParentTrainingScreen go={go} />;
       case "konsultasi-guru": return <KonsultasiGuruScreen onBack={goBack} teacherName={child?.teacher || "Ibu Sari"} studentName={child ? child.name.split(" ")[0] : "Rafi"} kelas={child?.kelas || "VII A"} />;
+      case "saran-rumah": return <SaranRumahScreen onBack={goBack} child={child} go={go} />;
       default: return null;
     }
   };
@@ -506,7 +508,7 @@ export default function App() {
 
               {/* Content */}
               <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: BG, position: "relative", zoom: fontSize }}>
-                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && screen !== "parent-dashboard" && screen !== "parent-detail" && screen !== "parent-calendar" && screen !== "parent-training" && (
+                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && screen !== "parent-dashboard" && screen !== "parent-detail" && screen !== "parent-calendar" && screen !== "parent-training" && screen !== "saran-rumah" && screen !== "konsultasi-guru" && (
                   <GlobalHeader
                     title={title}
                     sub={sub}
