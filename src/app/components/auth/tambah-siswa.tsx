@@ -484,7 +484,7 @@ export function TambahSiswaPromptModal({
 
             <div>
               <label className="block text-xs font-bold text-gray-800 mb-2 flex items-center justify-between" style={{ fontFamily: PJS }}>
-                <span>Jenis Kekhususan (ABK)</span>
+                <span>Kekhususan / Kebutuhan Siswa</span>
                 <span className="text-gray-400 font-normal text-[11px]">(bisa pilih lebih dari satu)</span>
               </label>
               <div className="flex flex-wrap gap-2 pt-0.5">
@@ -521,7 +521,7 @@ export function TambahSiswaPromptModal({
               {manualAbkList.includes("Lainnya") && (
                 <div className="mt-2.5 p-2.5 rounded-xl border" style={{ background: "#FEF9C3", borderColor: "#FACC15" }}>
                   <label className="text-[11px] font-bold block mb-1" style={{ color: "#854D0E", fontFamily: PJS }}>
-                    Tuliskan Hambatan / ABK Lainnya (Mandiri):
+                    Tuliskan Kebutuhan Khusus Lainnya (Mandiri):
                   </label>
                   <input
                     value={manualCustomAbk}
@@ -1095,7 +1095,7 @@ export function UploadSiswaModal({
           <div style={{ border: `1px solid ${BDR}`, borderRadius: 14, overflow: "hidden", marginBottom: 14 }}>
             {/* Header */}
             <div style={{ display: "grid", gridTemplateColumns: "2.2fr 1.5fr 2.3fr", background: SEC, padding: "8px 12px", gap: 8 }}>
-              {["Nama Lengkap", "Kelas", "Hambatan / ABK"].map(h => (
+              {["Nama Lengkap", "Kelas", "Kekhususan Siswa"].map(h => (
                 <p key={h} style={{ fontSize: 10, fontWeight: 700, color: DEEP, fontFamily: IPS, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</p>
               ))}
             </div>

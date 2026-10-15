@@ -12,7 +12,7 @@ export const INFO_PANELS = [
     icon: <HelpCircle size={16} />,
     label: "Panduan Penggunaan",
     body: [
-      "Tambah siswa lewat tombol oranye “Tambah Siswa” yang selalu ada di pojok kanan bawah. Cukup 3 kolom wajib: nama, kelas, dan jenis ABK.",
+      "Tambah siswa lewat tombol oranye “Tambah Siswa” yang selalu ada di pojok kanan bawah. Cukup 3 kolom wajib: nama, kelas, dan kekhususan siswa.",
       "Buka Asesmen dari kartu siswa. Indikator dikelompokkan per kategori — Interaksi Sosial, Komunikasi, Motorik & Sensorik, Fokus & Kognitif, Minat & Bakat.",
       "Tahap Asesmen berisi dua kategori tes: Kemandirian dan Akademik & Bakat, dinilai dengan 4 tingkat.",
       "Catatan dan laporan bisa diisi dengan suara — tekan tombol mikrofon lalu bicara, tidak perlu mengetik.",

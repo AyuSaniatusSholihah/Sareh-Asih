@@ -132,7 +132,7 @@ export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }:
                 <div className="mt-2.5">
                   <input
                     type="text"
-                    placeholder="Tuliskan jenis ABK / kategori kelas secara mandiri..."
+                    placeholder="Tuliskan kategori kelas secara mandiri..."
                     value={customTag}
                     onChange={(e) => setCustomTag(e.target.value)}
                     className="w-full px-4 py-2.5 bg-[#EAEFEA] rounded-xl text-xs border border-transparent focus:border-gray-500 outline-none text-gray-800 placeholder-gray-400 shadow-inner"

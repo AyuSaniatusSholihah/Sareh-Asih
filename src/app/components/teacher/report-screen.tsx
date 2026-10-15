@@ -153,7 +153,7 @@ export function ReportScreen({
         "",
         "Dokumen laporan lengkap dalam format PDF telah disiapkan.",
         "Terima kasih atas perhatian dan kerja samanya.",
-        "_Sareh Asih - Sistem Pemetaan Bakat ABK_",
+        "_Sareh Asih - Sistem Pemetaan Potensi Siswa_",
       ].filter(Boolean);
     } else {
       const scopeLabel = `${filteredList.length} Siswa`;
@@ -167,7 +167,7 @@ export function ReportScreen({
         `Belum Diamati: ${filteredList.filter(s => !s.hasObs).length} siswa`,
         "",
         "Dokumen rekap laporan resmi format PDF telah disiapkan untuk dibagikan.",
-        "_Sareh Asih - Sistem Pemetaan Bakat ABK_",
+        "_Sareh Asih - Sistem Pemetaan Potensi Siswa_",
       ];
     }
 

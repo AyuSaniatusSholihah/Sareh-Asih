@@ -93,7 +93,7 @@ function csvSel(v:string) {
 
 export function exportSpreadsheet(list:Student[], namaSekolah:string) {
   const judul = [
-    `Data Siswa ABK - ${namaSekolah}`,
+    `Data Siswa - ${namaSekolah}`,
     `Diekspor ${tanggal()} - ${list.length} siswa`,
     "",
   ].join("\n");
@@ -104,7 +104,7 @@ export function exportSpreadsheet(list:Student[], namaSekolah:string) {
 
 export async function shareSpreadsheet(list:Student[], namaSekolah:string): Promise<{success:boolean; message:string}> {
   const judul = [
-    `Data Siswa ABK - ${namaSekolah}`,
+    `Data Siswa - ${namaSekolah}`,
     `Diekspor ${tanggal()} - ${list.length} siswa`,
     "",
   ].join("\n");
@@ -273,7 +273,7 @@ export function buildLaporanHTML(list:Student[], namaSekolah:string, parafGuru?:
 </style></head>
 <body>
   <div class="kop">
-    <h1>Laporan Pemetaan Bakat Siswa ABK</h1>
+    <h1>Laporan Pemetaan Potensi Siswa</h1>
     <p class="meta">${esc(namaSekolah)} &middot; Dicetak ${tanggal()} &middot; ${list.length} siswa</p>
   </div>
   ${satu ? "" : `<p class="meta">Daftar siswa: ${list.map(s=>esc(s.name)).join(", ")}</p>`}

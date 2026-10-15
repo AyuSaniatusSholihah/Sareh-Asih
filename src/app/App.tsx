@@ -14,7 +14,8 @@ import {
   type Role, type Screen, type Student, type LaporanKirim, type FungsionalKategori,
 } from "./components/data";
 import {
-  LandingScreen, RoleSelectScreen, GoogleLoginScreen, ParentCodeScreen, AkunGuruModal, type GuruProfile,
+  LandingScreen, RoleSelectScreen, GoogleLoginScreen, ParentCodeScreen,
+  AkunGuruModal, KonfirmasiAkunScreen, type GuruProfile,
 } from "./components/auth";
 import { AddStudentSheet } from "./components/add-student";
 import { ObservationScreen } from "./components/observation";
@@ -158,11 +159,8 @@ export default function App() {
 
   const googleSuccess = () => {
     if (pendingRole === "guru") {
-      setRole("guru"); setScreen("dashboard"); setTab("dashboard");
-      setGuru(g => ({ ...g, setupDone: false }));
-      // Tampilkan modal konfirmasi akun Google saja.
-      // Setup ruang belajar sepenuhnya dilakukan di tab Siswa.
-      setGuruSetup("akun");
+      // Arahkan ke full page konfirmasi akun untuk mencegah human error
+      go("konfirmasi-akun");
     } else {
       go("parent-code");
     }
@@ -351,6 +349,17 @@ export default function App() {
       case "landing": return <LandingScreen onNext={() => go("role-select")} />;
       case "role-select": return <RoleSelectScreen onPick={pickRole} onBack={() => go("landing")} />;
       case "google-login": return <GoogleLoginScreen role={pendingRole} onBack={() => go("role-select")} onSuccess={googleSuccess} />;
+      case "konfirmasi-akun": return (
+        <KonfirmasiAkunScreen
+          profile={guru}
+          onNext={(p) => {
+            setGuru(g => ({ ...g, ...p, setupDone: false }));
+            setRole("guru");
+            setScreen("dashboard");
+            setTab("dashboard");
+          }}
+        />
+      );
       case "parent-code": return (
         <ParentCodeScreen
           namaOrtu={namaOrtu}
@@ -432,7 +441,7 @@ export default function App() {
       case "parent-dashboard": return <ParentDashboard go={go} child={child} anakList={anakTerkirim} onPilihAnak={setChildId} namaOrtu={namaOrtu} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} />;
       case "parent-detail": return <ParentDetailScreen onBack={goBack} child={child} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} onBaca={tandaiDibaca} onLihatRiwayat={() => go("riwayat-laporan")} go={go} />;
       case "riwayat-laporan": return <RiwayatLaporanScreen onBack={goBack} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} namaAnak={child ? child.name.split(" ")[0] : ""} />;
-      case "riwayat-perkembangan": return <PerkembanganScreen onBack={goBack} child={child} onPilihAspek={(k) => { setAspekTerpilih(k); go("detail-aspek"); }} />;
+      case "riwayat-perkembangan": return <PerkembanganScreen onBack={goBack} child={child} onPilihAspek={(k) => { setAspekTerpilih(k); go("detail-aspek"); }} onGoKonsultasi={() => go("konsultasi-guru")} />;
       case "detail-aspek": return <AspekDetailScreen onBack={goBack} child={child} aspek={aspekTerpilih} onLihatKemampuan={() => go("kemampuan-diamati")} />;
       case "kemampuan-diamati": return <KemampuanDiamatiScreen onBack={goBack} child={child} aspek={aspekTerpilih} />;
       case "parent-calendar": return <ParentCalendarScreen linked={!!child} sekolah={guru.sekolah} onOpenCode={() => setShowLinkCode(true)} go={go} />;
@@ -544,16 +553,7 @@ export default function App() {
                   />
                 )}
 
-                {/* Modal konfirmasi akun Google saat login baru.
-                    Beranda TIDAK lagi memunculkan bottom sheet setup otomatis.
-                    Setup ruang belajar sepenuhnya dilakukan di tab Siswa. */}
-                {guruSetup === "akun" && (
-                  <AkunGuruModal
-                    profile={guru}
-                    onClose={() => setGuruSetup(null)}
-                    onNext={(p) => { setGuru(g => ({ ...g, ...p })); setGuruSetup(null); }}
-                  />
-                )}
+                {/* Konfirmasi akun sekarang dilakukan di full page screen "konfirmasi-akun" */}
 
                 {/* Sheet tambah siswa */}
                 {showAddStudent && (

@@ -1,6 +1,7 @@
 import {
   Percent, Star, Calendar, FileText, Search, Bell, Settings,
   ChevronRight, Activity, ClipboardCheck, User, PlayCircle, Sparkles,
+  ArrowUpRight,
 } from "lucide-react";
 import {
   A, BG, CARD, TEXT, MUTED, BDR, DEEP, PJS, IPS, DMM, useUI,
@@ -84,43 +85,71 @@ export function DashboardGuru({
 
   const quickActions = [
     {
-      icon: <Percent size={21} strokeWidth={2.6} />,
+      kategori: "Kelas & Siswa",
       label: "Kelas Saya",
-      sub: "Lihat perkembangan siswa di kelas.",
-      iconBg: "rgba(255,255,255,0.22)",
-      iconColor: "#FFFFFF",
-      img: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&q=80&auto=format&fit=crop",
-      overlay: "linear-gradient(160deg, rgba(30,70,50,0.72) 0%, rgba(15,40,30,0.88) 100%)",
+      stat: `${students.length} Siswa`,
+      badge: "Kelas VII-A ↗",
+      bg: "#CDE7D5", // Light Sage dari palette
+      border: "#A6D5B4",
+      labelColor: "#1B3E28",
+      statColor: "#112F1D",
+      badgeBg: "#FFFFFF",
+      badgeColor: "#112F1D",
+      btnBg: "#112F1D",
+      btnColor: "#FFFFFF",
+      waveColor: "#7AAFA0",
+      isDark: false,
       onClick: () => go("students"),
     },
     {
-      icon: <Star size={20} strokeWidth={2.4} />,
+      kategori: "Pemetaan Bakat",
       label: "Bakat Anak",
-      sub: "Lihat potensi & minat bakat anak.",
-      iconBg: "rgba(255,255,255,0.22)",
-      iconColor: "#FFFFFF",
-      img: "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=400&q=80&auto=format&fit=crop",
-      overlay: "linear-gradient(160deg, rgba(140,50,30,0.72) 0%, rgba(80,20,10,0.88) 100%)",
+      stat: "Minat & Potensi",
+      badge: "Peta RIASEC ↗",
+      bg: "#D8EEDF", // Mint Light Sage dari palette
+      border: "#B2DEC1",
+      labelColor: "#1B3E28",
+      statColor: "#112F1D",
+      badgeBg: "#FFFFFF",
+      badgeColor: "#112F1D",
+      btnBg: "#112F1D",
+      btnColor: "#FFFFFF",
+      waveColor: "#6FA585",
+      isDark: false,
       onClick: () => go("talent-map"),
     },
     {
-      icon: <Calendar size={20} strokeWidth={2.4} />,
+      kategori: "Agenda Lomba",
       label: "Agenda",
-      sub: "Jadwal O2SN, FLS3N & LKSN Diksus.",
-      iconBg: "rgba(255,255,255,0.22)",
-      iconColor: "#FFFFFF",
-      img: "https://images.unsplash.com/photo-1506784365847-bbad939e9335?w=400&q=80&auto=format&fit=crop",
-      overlay: "linear-gradient(160deg, rgba(20,60,90,0.72) 0%, rgba(10,30,60,0.88) 100%)",
+      stat: "Jadwal Diksus",
+      badge: "FLS3N & O2SN ↗",
+      bg: "#FCEBE7", // Soft Terracotta Tint dari palette #D27D6B
+      border: "#F5C9C0",
+      labelColor: "#893724",
+      statColor: "#6B2414",
+      badgeBg: "#FFFFFF",
+      badgeColor: "#6B2414",
+      btnBg: "#6B2414",
+      btnColor: "#FFFFFF",
+      waveColor: "#E09787",
+      isDark: false,
       onClick: () => go("competition"),
     },
     {
-      icon: <FileText size={20} strokeWidth={2.4} />,
+      kategori: "Laporan Siswa",
       label: "Laporan",
-      sub: "Unduh laporan kemajuan siswa.",
-      iconBg: "rgba(255,255,255,0.22)",
-      iconColor: "#FFFFFF",
-      img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&q=80&auto=format&fit=crop",
-      overlay: "linear-gradient(160deg, rgba(50,40,90,0.72) 0%, rgba(25,20,60,0.88) 100%)",
+      stat: "Kemajuan Belajar",
+      badge: "Siap Dikirim ↗",
+      bg: "#143522", // Deep Forest Green (kartu gelap kontras tinggi dari referensi)
+      border: "#0E2818",
+      labelColor: "#A6D6B6",
+      statColor: "#FFFFFF",
+      badgeBg: "#224A32",
+      badgeColor: "#CDE7D5",
+      btnBg: "#CDE7D5",
+      btnColor: "#143522",
+      waveColor: "#2A6140",
+      isDark: true,
       onClick: () => go("report"),
     },
   ];
@@ -179,12 +208,12 @@ export function DashboardGuru({
             }}
             className="active:scale-[0.98] transition-transform">
             <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-              <div style={{ width: 42, height: 42, borderRadius: 14, background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, backdropFilter: "blur(4px)" }}>
-                <Bell size={20} style={{ color: "#FFFFFF" }} />
+              <div style={{ width: 42, height: 42, borderRadius: 14, background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>
+                <Bell size={20} style={{ color: "#D27D6B" }} />
               </div>
               <div style={{ minWidth: 0 }}>
                 <p style={{ fontSize: 13.5, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, lineHeight: 1.2 }}>{pendingObs.length} asesmen perlu diperiksa</p>
-                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.88)", marginTop: 2, lineHeight: 1.3 }}>Tap untuk lengkapi asesmen siswa</p>
+                <p style={{ fontSize: 11, color: "#FDEEEB", marginTop: 2, lineHeight: 1.3, fontWeight: 500 }}>Tap untuk lengkapi asesmen siswa</p>
               </div>
             </div>
             <button onClick={() => go("asesmen-pending")}
@@ -215,62 +244,132 @@ export function DashboardGuru({
           <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, marginBottom: 10 }}>Akses Cepat</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             {quickActions.map((a, i) => (
-              <button key={i} onClick={a.onClick}
+              <button
+                key={i}
+                onClick={a.onClick}
                 style={{
                   position: "relative",
                   borderRadius: 22,
-                  overflow: "hidden",
                   cursor: "pointer",
                   textAlign: "left",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
-                  minHeight: 138,
-                  border: "none",
-                  padding: 0,
-                  boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
+                  minHeight: 148,
+                  background: a.bg,
+                  border: `1.5px solid ${a.border}`,
+                  padding: "16px 14px 14px",
+                  overflow: "hidden",
+                  boxShadow: a.isDark ? "0 8px 22px rgba(20,53,34,0.22)" : "0 4px 14px rgba(91,122,104,0.10)",
                 }}
-                className="active:scale-[0.97] transition-all hover:shadow-xl">
-
-                {/* Foto Unsplash */}
-                <img
-                  src={a.img}
-                  alt={a.label}
+                className="active:scale-[0.97] transition-all hover:brightness-105"
+              >
+                {/* Wave decorative line seperti mockup */}
+                <svg
                   style={{
-                    position: "absolute", inset: 0,
-                    width: "100%", height: "100%",
-                    objectFit: "cover", objectPosition: "center",
+                    position: "absolute",
+                    right: -10,
+                    top: 15,
+                    width: 130,
+                    height: 75,
+                    pointerEvents: "none",
                   }}
-                />
+                  viewBox="0 0 130 75"
+                  fill="none"
+                >
+                  <path
+                    d="M 0 48 Q 32 10 65 42 T 130 18"
+                    stroke={a.waveColor}
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    opacity={a.isDark ? "0.6" : "0.5"}
+                  />
+                </svg>
 
-                {/* Gradient overlay */}
-                <div style={{
-                  position: "absolute", inset: 0,
-                  background: a.overlay,
-                }} />
-
-                {/* Konten */}
-                <div style={{ position: "relative", zIndex: 1, padding: "14px 14px 12px", display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%" }}>
-                  {/* Top row: icon + arrow */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div style={{
-                      width: 40, height: 40, borderRadius: "50%",
-                      background: a.iconBg,
-                      backdropFilter: "blur(6px)",
-                      border: "1.5px solid rgba(255,255,255,0.3)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      color: a.iconColor,
-                    }}>
-                      {a.icon}
-                    </div>
-                    <ChevronRight size={17} style={{ color: "rgba(255,255,255,0.75)", marginTop: 4 }} strokeWidth={2.5} />
+                {/* Top row: category label + circular arrow button */}
+                <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
+                  <span
+                    style={{
+                      fontFamily: PJS,
+                      fontSize: 10,
+                      fontWeight: 800,
+                      letterSpacing: "0.03em",
+                      textTransform: "uppercase",
+                      color: a.labelColor,
+                      lineHeight: 1.25,
+                      maxWidth: "68%",
+                    }}
+                  >
+                    {a.kategori}
+                  </span>
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      background: a.btnBg,
+                      color: a.btnColor,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.14)",
+                    }}
+                  >
+                    <ArrowUpRight size={17} strokeWidth={2.6} />
                   </div>
+                </div>
 
-                  {/* Bottom: label + sub */}
-                  <div style={{ marginTop: 10 }}>
-                    <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 15, color: "#FFFFFF", marginBottom: 2, lineHeight: 1.2, textShadow: "0 1px 4px rgba(0,0,0,0.3)" }}>{a.label}</p>
-                    <p style={{ fontSize: 10.5, color: "rgba(255,255,255,0.82)", lineHeight: 1.35, fontWeight: 500 }}>{a.sub}</p>
-                  </div>
+                {/* Middle: big bold title */}
+                <div style={{ position: "relative", zIndex: 1, margin: "10px 0 12px" }}>
+                  <p
+                    style={{
+                      fontFamily: PJS,
+                      fontWeight: 800,
+                      fontSize: 17,
+                      color: a.statColor,
+                      margin: 0,
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {a.stat}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: IPS,
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      color: a.labelColor,
+                      margin: "3px 0 0",
+                      lineHeight: 1.25,
+                      opacity: a.isDark ? 0.9 : 0.85,
+                    }}
+                  >
+                    {a.label}
+                  </p>
+                </div>
+
+                {/* Bottom: pill badge with arrow */}
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 4,
+                      background: a.badgeBg,
+                      color: a.badgeColor,
+                      borderRadius: 20,
+                      padding: "4px 9px",
+                      fontFamily: PJS,
+                      fontSize: 10.5,
+                      fontWeight: 700,
+                      lineHeight: 1.2,
+                      border: a.isDark ? `1px solid ${a.border}` : "1px solid rgba(0,0,0,0.06)",
+                      boxShadow: a.isDark ? "none" : "0 1px 3px rgba(0,0,0,0.05)",
+                    }}
+                  >
+                    {a.badge}
+                  </span>
                 </div>
               </button>
             ))}
