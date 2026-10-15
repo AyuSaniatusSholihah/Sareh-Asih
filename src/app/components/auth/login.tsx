@@ -77,7 +77,7 @@ export function GoogleLoginScreen({ role, onBack, onSuccess }: { role: Role; onB
           Selamat Datang di<br />SarehAsih 👋
         </h1>
         <p className="text-sm leading-relaxed mb-6" style={{ color: MUTED }}>
-          {isGuru ? "Masuk untuk mengelola kelas dan pantau perkembangan siswa." : "Masuk untuk mendampingi perkembangan anak Anda."}
+          {isGuru ? "Masuk untuk mengelola kelas dan pantau perkembangan anak didik Anda." : "Masuk untuk mendampingi perkembangan anak Anda."}
         </p>
 
         {/* ── Masuk dengan Nomor Telepon ── */}

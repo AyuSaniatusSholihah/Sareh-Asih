@@ -59,7 +59,7 @@ export function ModalShell({ step, total, title, desc, children, onSkip, skipLab
           <div className="flex items-center justify-between gap-2">
             <div>
               <p className="font-bold" style={{ fontFamily: PJS, fontSize: 18, color: TEXT, margin: 0 }}>{title}</p>
-              <p className="text-xs mt-0.5" style={{ color: MUTED, fontFamily: IPS, margin: 0 }}>{desc}</p>
+              {desc ? <p className="text-xs mt-0.5" style={{ color: MUTED, fontFamily: IPS, margin: 0 }}>{desc}</p> : null}
             </div>
             {onSkip && (
               <button

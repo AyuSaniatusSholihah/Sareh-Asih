@@ -9,8 +9,8 @@ export function RoleSelectScreen({ onPick, onBack }: { onPick: (r: Role) => void
     {
       r: "guru" as Role,
       icon: guruIcon,
-      title: "Guru Pendamping",
-      tagline: "Kelola siswa & pantau perkembangan ABK",
+      title: "Guru",
+      tagline: "Kelola siswa & pantau perkembangannya",
       accent: "#5F806F",
       accentLight: "#E8F0E9",
       accentShadow: "rgba(95,128,111,0.3)",

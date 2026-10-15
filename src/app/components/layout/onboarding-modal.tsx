@@ -19,7 +19,7 @@ export const OBS_STEPS: OStep[] = [
   {
     targetScreen: "dashboard", ring: { x: "calc(100% - 235px)", y: 252, w: 219, h: 52, r: 0 }, cardPlacement: "top",
     icon: "👆", title: "Asesmen Pending",
-    desc: "Tap baris ini untuk membuka daftar siswa yang belum didampingi — AI sudah menyiapkan indikator sesuai profil ABK masing-masing siswa.",
+    desc: "Tap baris ini untuk membuka daftar siswa yang belum didampingi — AI sudah menyiapkan indikator sesuai profil masing-masing siswa.",
     badge: "Stats Card",
   },
   {

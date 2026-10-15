@@ -6,7 +6,7 @@ import {
   Palette, Target, BookOpen, Settings, TrendingUp, Lightbulb, Laptop, Plus,
   BarChart3, ClipboardList, MessageCircle, Send, Paperclip, AtSign, MoreVertical,
   ShieldCheck, Check, CheckCheck, Globe, ExternalLink, LocateFixed, Loader,
-  ArrowRight, History,
+  ArrowRight, History, ThumbsUp, Smile, Edit3, RotateCcw,
 } from "lucide-react";
 import {
   T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, TBar, useUI,
@@ -2375,53 +2375,274 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
   }
 
   const nama = child.name.split(" ")[0];
-  const [activeInfoTab, setActiveInfoTab] = useState<"profil" | "riwayat" | "konsultasi" | null>(null);
+  const [bukaSemesterDropdown, setBukaSemesterDropdown] = useState(false);
   const [selectedSemesterAsesmen, setSelectedSemesterAsesmen] = useState<string | null>(null);
+  const [detailDropdownOpen, setDetailDropdownOpen] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  const SEMESTER_LIST = [
+    {
+      id: "Semester 1 - 2026/2027",
+      title: "Semester 1",
+      tahun: "2026/2027",
+      tanggal: "12 Agustus 2026",
+      status: "completed" as const,
+      statusLabel: "Asesmen Selesai",
+      desc: "Asesmen pertama telah dinilai oleh guru pendamping.",
+    },
+    {
+      id: "Semester 2 - 2026/2027",
+      title: "Semester 2",
+      tahun: "2026/2027",
+      tanggal: "Januari – Juni 2027",
+      status: "pending" as const,
+      statusLabel: "Belum tersedia",
+      desc: "Periode asesmen genap belum dimulai.",
+    },
+    {
+      id: "Semester 1 - 2027/2028",
+      title: "Semester 1",
+      tahun: "2027/2028",
+      tanggal: "Juli – Desember 2027",
+      status: "pending" as const,
+      statusLabel: "Belum tersedia",
+      desc: "Tahun ajaran baru.",
+    },
+  ];
 
   if (selectedSemesterAsesmen) {
+    const currentSemester = SEMESTER_LIST.find(s => s.id === selectedSemesterAsesmen) || SEMESTER_LIST[0];
+    const isCompleted = currentSemester.status === "completed";
+
     return (
-      <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
-        <TBar title={`Profil & Asesmen ${nama}`} onBack={() => setSelectedSemesterAsesmen(null)} />
+      <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, background: BG }}>
+        {/* Floating Toast Notification */}
+        {toastMsg && (
+          <div
+            style={{
+              position: "fixed",
+              top: 20,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 9999,
+              background: "#1E382B",
+              color: "#FFFFFF",
+              padding: "10px 18px",
+              borderRadius: 14,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              fontFamily: PJS,
+              fontSize: 12.5,
+              fontWeight: 700,
+            }}
+          >
+            <div
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: "50%",
+                background: "#48BB78",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Check size={12} color="#FFFFFF" strokeWidth={3} />
+            </div>
+            {toastMsg}
+          </div>
+        )}
+
+        <TBar title={`Profil & Asesmen ${nama}`} onBack={() => { setSelectedSemesterAsesmen(null); setDetailDropdownOpen(false); }} />
         <div className="px-4 pt-4 pb-20 space-y-3.5">
-          {/* Header Info Semester */}
+          {/* Header Info Semester & Interactive Dropdown Switcher */}
           <div
             style={{
               background: CARD,
               borderRadius: 18,
-              padding: "16px 18px",
-              border: `1px solid ${BDR}`,
+              padding: "14px 16px",
+              border: `1.5px solid ${detailDropdownOpen ? T : BDR}`,
               boxShadow: "0 2px 10px rgba(91,122,104,0.05)",
+              transition: "border 0.2s ease",
             }}
           >
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <CalendarDays size={16} style={{ color: T }} />
-                <span style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT }}>
-                  Semester 1 · TP 2026/2027
-                </span>
-              </div>
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span style={{ fontFamily: PJS, fontSize: 11, fontWeight: 800, color: MUTED, letterSpacing: "0.5px", textTransform: "uppercase" }}>
+                Pilihan Semester Asesmen
+              </span>
               <span
                 style={{
-                  background: "#E7F4EB",
-                  color: "#246E44",
-                  fontSize: 11.5,
+                  background: isCompleted ? "#E7F4EB" : "#F3F4F6",
+                  color: isCompleted ? "#246E44" : "#6B7280",
+                  fontSize: 11,
                   fontWeight: 700,
                   padding: "3px 10px",
                   borderRadius: 999,
-                  border: "1px solid rgba(36,110,68,0.25)",
+                  border: `1px solid ${isCompleted ? "rgba(36,110,68,0.25)" : "#E5E7EB"}`,
                 }}
               >
-                Asesmen Selesai
+                {currentSemester.statusLabel}
               </span>
             </div>
+
+            {/* Dropdown Button */}
+            <button
+              type="button"
+              onClick={() => setDetailDropdownOpen(v => !v)}
+              className="w-full flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl transition-all"
+              style={{
+                background: detailDropdownOpen ? "#F0F6F2" : "#FAFCFA",
+                border: `1.5px solid ${detailDropdownOpen ? T : "#CBD5E1"}`,
+                cursor: "pointer",
+                textAlign: "left",
+              }}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <CalendarDays size={16} style={{ color: T, flexShrink: 0 }} />
+                <span style={{ fontFamily: PJS, fontSize: 14, fontWeight: 800, color: TEXT }}>
+                  {currentSemester.title} · TP {currentSemester.tahun}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <span style={{ fontFamily: IPS, fontSize: 11, fontWeight: 600, color: T }}>
+                  Ganti Semester
+                </span>
+                <ChevronDown
+                  size={16}
+                  style={{
+                    color: T,
+                    transform: detailDropdownOpen ? "rotate(180deg)" : "none",
+                    transition: "transform 0.2s ease",
+                  }}
+                />
+              </div>
+            </button>
+
+            {/* Dropdown Options */}
+            {detailDropdownOpen && (
+              <div
+                style={{
+                  background: "#FFFFFF",
+                  border: `1.5px solid #8BB098`,
+                  borderRadius: 14,
+                  marginTop: 8,
+                  boxShadow: "0 4px 16px rgba(91,122,104,0.12)",
+                  overflow: "hidden",
+                }}
+              >
+                {SEMESTER_LIST.map((sem, idx) => {
+                  const isSel = sem.id === currentSemester.id;
+                  const isAvail = sem.status === "completed";
+                  return (
+                    <button
+                      key={sem.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedSemesterAsesmen(sem.id);
+                        setDetailDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center justify-between gap-3 px-3.5 py-3 text-left transition-colors"
+                      style={{
+                        background: isSel ? "#F0F6F2" : "#FFFFFF",
+                        border: "none",
+                        borderBottom: idx < SEMESTER_LIST.length - 1 ? `1px solid ${BDR}` : "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          style={{
+                            width: 26,
+                            height: 26,
+                            borderRadius: "50%",
+                            background: isAvail ? "#E8F4EC" : "#F3F4F6",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {isAvail ? (
+                            <CheckCircle size={15} style={{ color: "#2E5E43" }} />
+                          ) : (
+                            <Clock size={15} style={{ color: "#9CA3AF" }} />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT, margin: 0 }}>
+                            {sem.title} ({sem.tahun})
+                          </p>
+                          <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: "2px 0 0" }}>
+                            {sem.desc}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <span
+                          style={{
+                            background: isAvail ? "#E8F4EC" : "#F3F4F6",
+                            color: isAvail ? "#2E5E43" : "#6B7280",
+                            fontSize: 10.5,
+                            fontWeight: 700,
+                            padding: "2px 8px",
+                            borderRadius: 999,
+                          }}
+                        >
+                          {sem.statusLabel}
+                        </span>
+                        {isSel && <Check size={14} style={{ color: T }} strokeWidth={2.5} />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             <div className="flex items-center gap-4 mt-2.5 text-xs" style={{ color: MUTED }}>
-              <span>Tanggal: 12 Agustus 2026</span>
+              <span>Tanggal: {currentSemester.tanggal}</span>
               <span>•</span>
               <span>Penilai: {child.teacher}</span>
             </div>
           </div>
 
-          {!child.hasObs ? (
+          {!isCompleted ? (
+            <div style={{ background: CARD, border: `1.5px dashed ${BDR}`, borderRadius: 20, padding: "32px 20px", textAlign: "center" }}>
+              <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+                <Clock size={26} style={{ color: "#64748B" }} />
+              </div>
+              <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, margin: "0 0 6px" }}>
+                Asesmen {currentSemester.title} Belum Tersedia
+              </p>
+              <p style={{ fontFamily: IPS, fontSize: 12.5, color: MUTED, lineHeight: 1.5, margin: "0 auto 16px", maxWidth: 300 }}>
+                Guru pendamping belum melaksanakan asesmen minat dan fungsional untuk periode {currentSemester.title} {currentSemester.tahun}. Hasil pemetaan bakat akan muncul di sini setelah periode penilaian selesai.
+              </p>
+              <button
+                type="button"
+                onClick={() => setSelectedSemesterAsesmen("Semester 1 - 2026/2027")}
+                style={{
+                  background: T,
+                  color: "#FFFFFF",
+                  fontFamily: PJS,
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  padding: "9px 18px",
+                  borderRadius: 12,
+                  border: "none",
+                  cursor: "pointer",
+                }}
+                className="active:scale-95 transition-transform"
+              >
+                Lihat Hasil Semester 1
+              </button>
+            </div>
+          ) : !child.hasObs ? (
             <div style={{ background: "#FEF9EC", border: `1px solid rgba(217,142,30,0.25)` }} className="rounded-2xl px-4 py-3 flex items-start gap-2.5">
               <Info size={14} style={{ color: A, flexShrink: 0, marginTop: 1 }} />
               <p className="text-xs leading-relaxed" style={{ color: A }}>
@@ -2438,6 +2659,17 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
                   Profil ini berdasarkan pengamatan guru di lingkungan sekolah, bukan laporan langsung dari anak.
                 </p>
               </div>
+
+              {/* Feedback Interaktif Orang Tua */}
+              <div className="pt-2">
+                <FeedbackPerkembanganOrtu
+                  childId={child.id}
+                  studentName={nama}
+                  teacherName={child.teacher}
+                  contextTitle={`Asesmen ${currentSemester.title} ${currentSemester.tahun}`}
+                  onGoKonsultasi={() => go("konsultasi-guru")}
+                />
+              </div>
             </>
           )}
         </div>
@@ -2446,7 +2678,46 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
   }
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS,background:BG}}>
+    <div className="flex-1 overflow-y-auto relative" style={{fontFamily:IPS,background:BG}}>
+      {/* Floating Toast Notification */}
+      {toastMsg && (
+        <div
+          style={{
+            position: "fixed",
+            top: 20,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 9999,
+            background: "#1E382B",
+            color: "#FFFFFF",
+            padding: "10px 18px",
+            borderRadius: 14,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontFamily: PJS,
+            fontSize: 12.5,
+            fontWeight: 700,
+          }}
+        >
+          <div
+            style={{
+              width: 20,
+              height: 20,
+              borderRadius: "50%",
+              background: "#48BB78",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Check size={12} color="#FFFFFF" strokeWidth={3} />
+          </div>
+          {toastMsg}
+        </div>
+      )}
+
       {/* ── Header ── */}
       <div style={{background:"#FFFFFF",padding:"14px 20px 12px",flexShrink:0}}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
@@ -2500,303 +2771,298 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
           </p>
 
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {/* Card 1: Profil dan asesmen */}
-            <button
-              type="button"
-              onClick={() => {
-                setActiveInfoTab(activeInfoTab === "profil" ? null : "profil");
-              }}
+            {/* Card 1: Profil dan asesmen (Dengan Dropdown Pilihan Semester) */}
+            <div
               style={{
-                background:CARD,
-                borderRadius:18,
-                padding:"16px",
-                border:`1.5px solid ${activeInfoTab === "profil" ? T : BDR}`,
-                boxShadow:"0 2px 10px rgba(91,122,104,0.05)",
-                display:"flex",
-                flexDirection:"column",
-                textAlign:"left",
-                cursor:"pointer",
-                width:"100%",
+                background: CARD,
+                borderRadius: 20,
+                border: `1.5px solid ${bukaSemesterDropdown ? T : BDR}`,
+                boxShadow: bukaSemesterDropdown
+                  ? "0 4px 16px rgba(91,122,104,0.12)"
+                  : "0 2px 10px rgba(91,122,104,0.05)",
+                overflow: "hidden",
+                transition: "all 0.2s ease",
               }}
-              className="active:scale-[0.99] transition-all"
             >
-              <div className="flex items-start gap-3" style={{width:"100%"}}>
-                <div style={{
-                  width:38,height:38,borderRadius:12,
-                  background:"#E4F1E9",
-                  display:"flex",alignItems:"center",justifyContent:"center",
-                  flexShrink:0,
-                }}>
-                  <ClipboardList size={18} style={{color:T}} strokeWidth={2.2} />
-                </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <p style={{fontFamily:PJS,fontSize:14,fontWeight:800,color:TEXT,margin:0,lineHeight:1.3}}>
-                    Profil dan asesmen
-                  </p>
-                  <p style={{fontFamily:IPS,fontSize:12,color:MUTED,margin:"4px 0 0",lineHeight:1.45}}>
-                    Lihat profil fungsional, kecenderungan minat, dan hasil asesmen anak.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-end gap-1 w-full" style={{marginTop:10}}>
-                <span style={{fontFamily:PJS,fontSize:12,fontWeight:700,color:T}}>Lihat profil</span>
-                <ChevronRight size={14} style={{color:T}} />
-              </div>
-            </button>
-
-            {/* Expanded: Riwayat Asesmen (pilih semester) */}
-            {activeInfoTab === "profil" && (
+              {/* Header Card */}
               <div
+                onClick={() => setBukaSemesterDropdown(v => !v)}
                 style={{
-                  background: CARD,
-                  borderRadius: 18,
-                  padding: "16px",
-                  border: `1px solid ${BDR}`,
-                  boxShadow: "0 2px 10px rgba(91,122,104,0.05)",
+                  padding: "16px 16px 12px",
+                  cursor: "pointer",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
                 }}
               >
-                {/* Header Riwayat Asesmen */}
-                <div className="flex items-center justify-between mb-1">
-                  <h3
-                    style={{
-                      fontFamily: PJS,
-                      fontSize: 16,
-                      fontWeight: 800,
-                      color: TEXT,
-                      margin: 0,
-                    }}
-                  >
-                    Riwayat Asesmen
-                  </h3>
-                  <History size={18} style={{ color: DEEP }} />
-                </div>
-                <p
-                  style={{
-                    fontFamily: IPS,
-                    fontSize: 12.5,
-                    color: MUTED,
-                    margin: "0 0 14px",
-                    lineHeight: 1.4,
-                  }}
-                >
-                  Pilih semester untuk melihat hasil sebelumnya.
-                </p>
-
-                {/* List of Semesters */}
-                <div className="space-y-2.5">
-                  {/* Semester 1 (Selesai & Clickable) */}
+                <div className="flex items-start gap-3">
                   <div
-                    onClick={() => setSelectedSemesterAsesmen("Semester 1 - 2026/2027")}
                     style={{
-                      background: "#FFFFFF",
-                      borderRadius: 14,
-                      border: "1.5px solid #8BB098",
-                      padding: "14px 16px",
-                      cursor: "pointer",
-                      boxShadow: "0 1px 4px rgba(91,122,104,0.06)",
+                      width: 40,
+                      height: 40,
+                      borderRadius: 13,
+                      background: "#E4F1E9",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
                     }}
-                    className="active:scale-[0.99] transition-transform flex items-center justify-between gap-3 hover:border-[#5B7A68]"
                   >
-                    <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div
+                    <ClipboardList size={20} style={{ color: T }} strokeWidth={2.2} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className="flex items-center justify-between gap-2">
+                      <p
                         style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: "50%",
+                          fontFamily: PJS,
+                          fontSize: 15,
+                          fontWeight: 800,
+                          color: TEXT,
+                          margin: 0,
+                          lineHeight: 1.25,
+                        }}
+                      >
+                        Profil dan Asesmen
+                      </p>
+                      <span
+                        style={{
                           background: "#E8F4EC",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                          marginTop: 1,
+                          color: "#2E5E43",
+                          fontSize: 10.5,
+                          fontWeight: 700,
+                          padding: "2px 8px",
+                          borderRadius: 999,
+                          border: "1px solid rgba(46,94,67,0.2)",
                         }}
                       >
-                        <CheckCircle size={17} style={{ color: "#2E5E43" }} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p
-                          style={{
-                            fontFamily: PJS,
-                            fontSize: 15,
-                            fontWeight: 700,
-                            color: TEXT,
-                            margin: 0,
-                            lineHeight: 1.25,
-                          }}
-                        >
-                          Semester 1
-                        </p>
-                        <p
-                          style={{
-                            fontFamily: IPS,
-                            fontSize: 12.5,
-                            color: MUTED,
-                            margin: "3px 0 0",
-                            lineHeight: 1.3,
-                          }}
-                        >
-                          2026/2027 · 12 Agustus 2026
-                        </p>
-                        <p
-                          style={{
-                            fontFamily: IPS,
-                            fontSize: 12,
-                            fontWeight: 600,
-                            color: "#5B7A68",
-                            margin: "4px 0 0",
-                          }}
-                        >
-                          Asesmen selesai
-                        </p>
-                      </div>
+                        Pilih Semester
+                      </span>
                     </div>
-                    <ChevronRight size={18} style={{ color: "#5B7A68", flexShrink: 0 }} />
-                  </div>
-
-                  {/* Semester 2 (Belum tersedia) */}
-                  <div
-                    style={{
-                      background: "#FFFFFF",
-                      borderRadius: 14,
-                      border: `1px solid ${BDR}`,
-                      padding: "14px 16px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 12,
-                    }}
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div
-                        style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: "50%",
-                          background: "#F3F4F6",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Clock size={16} style={{ color: "#9CA3AF" }} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p
-                          style={{
-                            fontFamily: PJS,
-                            fontSize: 15,
-                            fontWeight: 700,
-                            color: TEXT,
-                            margin: 0,
-                            lineHeight: 1.25,
-                          }}
-                        >
-                          Semester 2
-                        </p>
-                        <p
-                          style={{
-                            fontFamily: IPS,
-                            fontSize: 12.5,
-                            color: MUTED,
-                            margin: "3px 0 0",
-                            lineHeight: 1.3,
-                          }}
-                        >
-                          2026/2027
-                        </p>
-                      </div>
-                    </div>
-                    <span
+                    <p
                       style={{
-                        background: "#F3F4F6",
-                        border: "1px solid #E5E7EB",
-                        color: "#6B7280",
-                        fontSize: 11.5,
-                        fontWeight: 600,
-                        padding: "4px 10px",
-                        borderRadius: 999,
-                        whiteSpace: "nowrap",
-                        flexShrink: 0,
+                        fontFamily: IPS,
+                        fontSize: 12,
+                        color: MUTED,
+                        margin: "4px 0 0",
+                        lineHeight: 1.4,
                       }}
                     >
-                      Belum tersedia
-                    </span>
-                  </div>
-
-                  {/* Semester 1 2027/2028 (Belum tersedia) */}
-                  <div
-                    style={{
-                      background: "#FFFFFF",
-                      borderRadius: 14,
-                      border: `1px solid ${BDR}`,
-                      padding: "14px 16px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 12,
-                    }}
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div
-                        style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: "50%",
-                          background: "#F3F4F6",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Clock size={16} style={{ color: "#9CA3AF" }} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p
-                          style={{
-                            fontFamily: PJS,
-                            fontSize: 15,
-                            fontWeight: 700,
-                            color: TEXT,
-                            margin: 0,
-                            lineHeight: 1.25,
-                          }}
-                        >
-                          Semester 1
-                        </p>
-                        <p
-                          style={{
-                            fontFamily: IPS,
-                            fontSize: 12.5,
-                            color: MUTED,
-                            margin: "3px 0 0",
-                            lineHeight: 1.3,
-                          }}
-                        >
-                          2027/2028
-                        </p>
-                      </div>
-                    </div>
-                    <span
-                      style={{
-                        background: "#F3F4F6",
-                        border: "1px solid #E5E7EB",
-                        color: "#6B7280",
-                        fontSize: 11.5,
-                        fontWeight: 600,
-                        padding: "4px 10px",
-                        borderRadius: 999,
-                        whiteSpace: "nowrap",
-                        flexShrink: 0,
-                      }}
-                    >
-                      Belum tersedia
-                    </span>
+                      Lihat profil fungsional, kecenderungan minat, dan hasil asesmen anak per semester.
+                    </p>
                   </div>
                 </div>
               </div>
-            )}
+
+              {/* Dropdown Box Pilihan Semester */}
+              <div style={{ padding: "0 14px 14px" }}>
+                <div
+                  style={{
+                    background: "#FAFCFA",
+                    border: `1.5px solid ${bukaSemesterDropdown ? "#8BB098" : "#D4E2D8"}`,
+                    borderRadius: 14,
+                    overflow: "hidden",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  {/* Dropdown Trigger Bar */}
+                  <button
+                    type="button"
+                    onClick={() => setBukaSemesterDropdown(v => !v)}
+                    className="w-full flex items-center justify-between gap-2 px-3.5 py-2.5 text-left active:bg-[#EDF5EF] transition-colors"
+                    style={{
+                      background: bukaSemesterDropdown ? "#EDF5EF" : "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <CalendarDays size={16} style={{ color: T, flexShrink: 0 }} />
+                      <div className="min-w-0">
+                        <span
+                          style={{
+                            fontFamily: PJS,
+                            fontSize: 13,
+                            fontWeight: 700,
+                            color: TEXT,
+                            display: "block",
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          Semester 1 · 2026/2027
+                        </span>
+                        <span
+                          style={{
+                            fontFamily: IPS,
+                            fontSize: 11,
+                            color: MUTED,
+                            display: "block",
+                          }}
+                        >
+                          Asesmen selesai · Klik untuk buka pilihan
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <span
+                        style={{
+                          background: "#E7F4EB",
+                          color: "#246E44",
+                          fontSize: 10.5,
+                          fontWeight: 700,
+                          padding: "2px 7px",
+                          borderRadius: 999,
+                        }}
+                      >
+                        Selesai
+                      </span>
+                      <ChevronDown
+                        size={17}
+                        style={{
+                          color: T,
+                          transform: bukaSemesterDropdown ? "rotate(180deg)" : "none",
+                          transition: "transform 0.2s ease",
+                        }}
+                      />
+                    </div>
+                  </button>
+
+                  {/* Dropdown Menu Options */}
+                  {bukaSemesterDropdown && (
+                    <div
+                      style={{
+                        borderTop: "1px solid #D4E2D8",
+                        background: "#FFFFFF",
+                      }}
+                      className="divide-y divide-[#EBF2ED]"
+                    >
+                      <div style={{ padding: "8px 14px 4px", background: "#F7FAF8" }}>
+                        <p style={{ fontFamily: PJS, fontSize: 10.5, fontWeight: 800, color: MUTED, textTransform: "uppercase", letterSpacing: "0.5px", margin: 0 }}>
+                          Daftar Semester
+                        </p>
+                      </div>
+
+                      {SEMESTER_LIST.map((sem) => {
+                        const isAvailable = sem.status === "completed";
+                        return (
+                          <div
+                            key={sem.id}
+                            onClick={() => {
+                              if (isAvailable) {
+                                setSelectedSemesterAsesmen(sem.id);
+                                setBukaSemesterDropdown(false);
+                              } else {
+                                showToast(`Asesmen ${sem.title} (${sem.tahun}) belum dilaksanakan oleh guru.`);
+                              }
+                            }}
+                            className={`px-3.5 py-3 flex items-center justify-between gap-3 transition-colors ${
+                              isAvailable ? "hover:bg-[#F2F8F4] active:bg-[#E8F4EC] cursor-pointer" : "opacity-75 cursor-not-allowed hover:bg-slate-50"
+                            }`}
+                          >
+                            <div className="flex items-start gap-2.5 min-w-0">
+                              <div
+                                style={{
+                                  width: 28,
+                                  height: 28,
+                                  borderRadius: "50%",
+                                  background: isAvailable ? "#E8F4EC" : "#F3F4F6",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  flexShrink: 0,
+                                  marginTop: 1,
+                                }}
+                              >
+                                {isAvailable ? (
+                                  <CheckCircle size={16} style={{ color: "#2E5E43" }} />
+                                ) : (
+                                  <Clock size={16} style={{ color: "#9CA3AF" }} />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <p
+                                  style={{
+                                    fontFamily: PJS,
+                                    fontSize: 13.5,
+                                    fontWeight: 700,
+                                    color: TEXT,
+                                    margin: 0,
+                                    lineHeight: 1.25,
+                                  }}
+                                >
+                                  {sem.title}
+                                </p>
+                                <p
+                                  style={{
+                                    fontFamily: IPS,
+                                    fontSize: 11.5,
+                                    color: MUTED,
+                                    margin: "2px 0 0",
+                                  }}
+                                >
+                                  {sem.tahun} · {sem.tanggal}
+                                </p>
+                                <p
+                                  style={{
+                                    fontFamily: IPS,
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                    color: isAvailable ? "#44785B" : "#8A9990",
+                                    margin: "2px 0 0",
+                                  }}
+                                >
+                                  {sem.desc}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 flex-shrink-0">
+                              <span
+                                style={{
+                                  background: isAvailable ? "#E8F4EC" : "#F3F4F6",
+                                  border: `1px solid ${isAvailable ? "rgba(46,94,67,0.2)" : "#E5E7EB"}`,
+                                  color: isAvailable ? "#2E5E43" : "#6B7280",
+                                  fontSize: 10.5,
+                                  fontWeight: 700,
+                                  padding: "3px 8px",
+                                  borderRadius: 999,
+                                  whiteSpace: "nowrap",
+                                }}
+                              >
+                                {sem.statusLabel}
+                              </span>
+                              {isAvailable && (
+                                <ChevronRight size={15} style={{ color: T }} />
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Tombol aksi langsung */}
+                <div className="flex items-center justify-between gap-2 mt-3 pt-2">
+                  <span style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED }}>
+                    Status: <b style={{ color: "#2E5E43" }}>1 asesmen selesai</b>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSemesterAsesmen("Semester 1 - 2026/2027")}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
+                    style={{
+                      background: "#E8F4EC",
+                      border: "1px solid rgba(46,94,67,0.2)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: T }}>
+                      Buka Profil Lengkap
+                    </span>
+                    <ArrowRight size={13} style={{ color: T }} />
+                  </button>
+                </div>
+              </div>
+            </div>
 
             {/* Card 2: Riwayat laporan */}
             <button
@@ -3161,9 +3427,532 @@ function KartuMasukPerkembangan({ nama, data, onLihat }: {
   );
 }
 
+// ─── KOMPONEN FEEDBACK INTERAKTIF DARI ORANG TUA ───────────────────────
+export function FeedbackPerkembanganOrtu({
+  childId,
+  studentName,
+  teacherName = "Guru Pendamping",
+  contextTitle = "Perkembangan Siswa",
+  onGoKonsultasi,
+}: {
+  childId: number;
+  studentName: string;
+  teacherName?: string;
+  contextTitle?: string;
+  onGoKonsultasi?: () => void;
+}) {
+  const storageKey = `sareh_parent_feedback_${childId}_${contextTitle.replace(/\s+/g, "_")}`;
+
+  const [submittedData, setSubmittedData] = useState<{
+    reaksi: string[];
+    keselarasan: string;
+    catatan: string;
+    waktu: string;
+  } | null>(null);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedReaksi, setSelectedReaksi] = useState<string[]>([]);
+  const [keselarasan, setKeselarasan] = useState<string>("Sangat Sesuai");
+  const [catatan, setCatatan] = useState("");
+  const [sudahTinjau, setSudahTinjau] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setSubmittedData(parsed);
+        setSelectedReaksi(parsed.reaksi || []);
+        setKeselarasan(parsed.keselarasan || "Sangat Sesuai");
+        setCatatan(parsed.catatan || "");
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [storageKey]);
+
+  const DAFTAR_REAKSI = [
+    { id: "bangga", label: "🌟 Sangat Membanggakan" },
+    { id: "sesuai", label: "🏡 Sesuai di Rumah" },
+    { id: "latihan", label: "💪 Perlu Latihan Lagi" },
+    { id: "tips", label: "💡 Butuh Tips Guru" },
+    { id: "diskusi", label: "💬 Ingin Diskusi" },
+  ];
+
+  const PILIHAN_KESELARASAN = [
+    { id: "Sangat Sesuai", label: "Sangat Sesuai", icon: "✨" },
+    { id: "Cukup Sesuai", label: "Cukup Sesuai", icon: "👍" },
+    { id: "Ada Perbedaan", label: "Ada Perbedaan", icon: "🌱" },
+  ];
+
+  const QUICK_PROMPTS = [
+    `Di rumah ${studentName} sudah bisa mandiri saat...`,
+    `Masih butuh bantuan atau sering lupa saat...`,
+    `Terlihat sangat antusias saat kegiatan...`,
+    `Terima kasih bimbingannya untuk ${studentName}! 🙏`,
+  ];
+
+  const toggleReaksi = (label: string) => {
+    setSelectedReaksi(prev =>
+      prev.includes(label) ? prev.filter(r => r !== label) : [...prev, label]
+    );
+  };
+
+  const handleSimpan = async () => {
+    setIsSubmitting(true);
+    try {
+      const confettiModule = await import("canvas-confetti");
+      const confetti = confettiModule.default || confettiModule;
+      confetti({
+        particleCount: 45,
+        spread: 60,
+        origin: { y: 0.8 },
+        colors: ["#5B7A68", "#2E5E43", "#8BB098", "#F59E0B", "#10B981"],
+      });
+    } catch (e) {}
+
+    setTimeout(() => {
+      const now = new Date();
+      const waktuStr = `${now.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })} · ${String(now.getHours()).padStart(2, "0")}.${String(now.getMinutes()).padStart(2, "0")} WIB`;
+
+      const payload = {
+        reaksi: selectedReaksi.length > 0 ? selectedReaksi : ["🏡 Sesuai di Rumah"],
+        keselarasan,
+        catatan: catatan.trim(),
+        waktu: waktuStr,
+      };
+
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(payload));
+      } catch (e) {}
+
+      setSubmittedData(payload);
+      setIsSubmitting(false);
+      setIsEditing(false);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3500);
+    }, 500);
+  };
+
+  if (submittedData && !isEditing) {
+    return (
+      <div
+        style={{
+          background: "#FFFFFF",
+          borderRadius: 20,
+          border: "1.5px solid #A8CBB5",
+          padding: "18px 16px",
+          boxShadow: "0 4px 16px rgba(46,94,67,0.08)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: "linear-gradient(90deg, #5B7A68, #2E5E43, #8BB098)" }} />
+
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2.5">
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: "50%",
+                background: "#E8F4EC",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <CheckCircle size={20} style={{ color: "#2E5E43" }} />
+            </div>
+            <div>
+              <p style={{ fontFamily: PJS, fontSize: 14.5, fontWeight: 800, color: TEXT, margin: 0 }}>
+                Tanggapan Anda Tersimpan
+              </p>
+              <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#2E5E43", margin: "2px 0 0", fontWeight: 600 }}>
+                ✓ Terkirim ke {teacherName}
+              </p>
+            </div>
+          </div>
+          <span
+            style={{
+              background: "#E8F4EC",
+              color: "#2E5E43",
+              fontSize: 10.5,
+              fontWeight: 700,
+              padding: "3px 8px",
+              borderRadius: 999,
+              border: "1px solid rgba(46,94,67,0.2)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Feedback Orang Tua
+          </span>
+        </div>
+
+        <div className="mb-3">
+          <p style={{ fontFamily: PJS, fontSize: 11, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 6px" }}>
+            Reaksi Anda
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {submittedData.reaksi.map((r, i) => (
+              <span
+                key={i}
+                style={{
+                  background: "#F4F8F5",
+                  border: "1px solid #CBE0D3",
+                  color: "#1E3E2E",
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  padding: "4px 10px",
+                  borderRadius: 12,
+                }}
+              >
+                {r}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-3 flex items-center gap-2 p-2.5 rounded-xl" style={{ background: "#F8FAF8", border: `1px solid ${BDR}` }}>
+          <span style={{ fontSize: 16 }}>
+            {submittedData.keselarasan === "Sangat Sesuai" ? "✨" : submittedData.keselarasan === "Cukup Sesuai" ? "👍" : "🌱"}
+          </span>
+          <div className="min-w-0 flex-1">
+            <span style={{ fontFamily: IPS, fontSize: 11, color: MUTED, display: "block" }}>
+              Kesesuaian dengan Kebiasaan di Rumah
+            </span>
+            <span style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: TEXT }}>
+              {submittedData.keselarasan}
+            </span>
+          </div>
+        </div>
+
+        {submittedData.catatan && (
+          <div className="mb-3.5 p-3 rounded-xl" style={{ background: "#F9FBF9", borderLeft: "3.5px solid #5B7A68" }}>
+            <p style={{ fontFamily: PJS, fontSize: 11, fontWeight: 700, color: MUTED, margin: "0 0 4px" }}>
+              Catatan Pengamatan Anda:
+            </p>
+            <p style={{ fontFamily: IPS, fontSize: 12.5, color: TEXT, lineHeight: 1.5, margin: 0, fontStyle: "italic" }}>
+              "{submittedData.catatan}"
+            </p>
+          </div>
+        )}
+
+        <p style={{ fontFamily: IPS, fontSize: 11, color: MUTED, margin: "0 0 12px" }}>
+          Terkirim: {submittedData.waktu}
+        </p>
+
+        <div className="flex items-center gap-2 pt-2" style={{ borderTop: `1px solid ${BDR}` }}>
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl active:scale-98 transition-all"
+            style={{
+              background: "#F1F5F2",
+              border: `1px solid #D1DED6`,
+              color: TEXT,
+              fontFamily: PJS,
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            <Edit3 size={14} style={{ color: T }} />
+            Ubah Tanggapan
+          </button>
+
+          {onGoKonsultasi && (
+            <button
+              type="button"
+              onClick={onGoKonsultasi}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl active:scale-98 transition-all"
+              style={{
+                background: T,
+                border: "none",
+                color: "#FFFFFF",
+                fontFamily: PJS,
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              <MessageCircle size={14} />
+              Konsultasi Guru
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        background: CARD,
+        borderRadius: 20,
+        border: `1.5px solid #8BB098`,
+        padding: "18px 16px",
+        boxShadow: "0 4px 18px rgba(91,122,104,0.08)",
+      }}
+    >
+      {showToast && (
+        <div
+          style={{
+            position: "fixed",
+            top: 24,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 9999,
+            background: "#1E382B",
+            color: "#FFFFFF",
+            padding: "10px 18px",
+            borderRadius: 14,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontFamily: PJS,
+            fontSize: 12.5,
+            fontWeight: 700,
+          }}
+        >
+          <CheckCircle size={16} color="#48BB78" />
+          Tanggapan Anda berhasil dikirim ke guru!
+        </div>
+      )}
+
+      <div className="flex items-start gap-3 mb-3.5">
+        <div
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: 12,
+            background: "#E4F1E9",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <MessageSquare size={19} style={{ color: T }} strokeWidth={2.2} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: 0 }}>
+              Tanggapan Orang Tua
+            </p>
+            <span
+              style={{
+                background: "#E8F4EC",
+                color: "#2E5E43",
+                fontSize: 10,
+                fontWeight: 700,
+                padding: "2px 7px",
+                borderRadius: 999,
+              }}
+            >
+              Interaktif
+            </span>
+          </div>
+          <p style={{ fontFamily: IPS, fontSize: 12, color: MUTED, margin: "3px 0 0", lineHeight: 1.4 }}>
+            Beri tanggapan atau ceritakan pengamatan {studentName} di rumah untuk guru pendamping ({teacherName}).
+          </p>
+        </div>
+      </div>
+
+      <div className="mb-3.5">
+        <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 6px" }}>
+          1. Reaksi Cepat Anda:
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {DAFTAR_REAKSI.map(r => {
+            const isSel = selectedReaksi.includes(r.label);
+            return (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => toggleReaksi(r.label)}
+                className="px-2.5 py-1.5 rounded-xl text-xs font-semibold active:scale-95 transition-all"
+                style={{
+                  background: isSel ? "#E8F4EC" : "#FAFCFA",
+                  border: `1.5px solid ${isSel ? "#5B7A68" : "#E2ECE5"}`,
+                  color: isSel ? "#1E3E2E" : "#4B5563",
+                  fontFamily: PJS,
+                  cursor: "pointer",
+                }}
+              >
+                {r.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mb-3.5">
+        <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: TEXT, margin: "0 0 6px" }}>
+          2. Kesesuaian dengan Perilaku di Rumah:
+        </p>
+        <div className="grid grid-cols-3 gap-1.5">
+          {PILIHAN_KESELARASAN.map(p => {
+            const isSel = keselarasan === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setKeselarasan(p.id)}
+                className="p-2 rounded-xl text-center active:scale-95 transition-all flex flex-col items-center justify-center gap-1"
+                style={{
+                  background: isSel ? "#E8F4EC" : "#FAFCFA",
+                  border: `1.5px solid ${isSel ? "#5B7A68" : "#E2ECE5"}`,
+                  cursor: "pointer",
+                }}
+              >
+                <span style={{ fontSize: 16 }}>{p.icon}</span>
+                <span
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 11,
+                    fontWeight: isSel ? 800 : 600,
+                    color: isSel ? "#1E3E2E" : TEXT,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {p.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: TEXT, margin: 0 }}>
+            3. Catatan / Refleksi di Rumah:
+          </p>
+          <span style={{ fontFamily: IPS, fontSize: 10.5, color: MUTED }}>
+            {catatan.length}/300
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 mb-1.5 no-scrollbar">
+          {QUICK_PROMPTS.map((qp, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => {
+                setCatatan(prev => prev ? `${prev} ${qp}` : qp);
+              }}
+              className="text-[11px] whitespace-nowrap px-2.5 py-1 rounded-lg transition-colors active:bg-slate-200"
+              style={{
+                background: "#F1F5F2",
+                border: "1px solid #D4E2D8",
+                color: "#374151",
+                fontFamily: IPS,
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
+              + {qp.slice(0, 24)}...
+            </button>
+          ))}
+        </div>
+
+        <textarea
+          rows={3}
+          value={catatan}
+          maxLength={300}
+          onChange={e => setCatatan(e.target.value)}
+          placeholder={`Tuliskan perkembangan ${studentName} yang terlihat di rumah, respon anak saat belajar, atau hal yang ingin ditanyakan ke guru...`}
+          style={{
+            width: "100%",
+            borderRadius: 14,
+            border: `1.5px solid #CBD5E1`,
+            padding: "10px 12px",
+            fontFamily: IPS,
+            fontSize: 12.5,
+            color: TEXT,
+            background: "#FFFFFF",
+            outline: "none",
+            resize: "none",
+            boxSizing: "border-box",
+          }}
+          className="focus:border-[#5B7A68] transition-colors"
+        />
+      </div>
+
+      <label className="flex items-center gap-2 mb-3.5 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={sudahTinjau}
+          onChange={e => setSudahTinjau(e.target.checked)}
+          style={{ width: 16, height: 16, accentColor: T, cursor: "pointer" }}
+        />
+        <span style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED }}>
+          Saya telah meninjau laporan perkembangan ini sebagai orang tua
+        </span>
+      </label>
+
+      <div className="flex items-center gap-2">
+        {isEditing && (
+          <button
+            type="button"
+            onClick={() => setIsEditing(false)}
+            className="py-2.5 px-4 rounded-xl active:scale-95 transition-all"
+            style={{
+              background: "#F1F5F9",
+              border: "1px solid #CBD5E1",
+              color: "#475569",
+              fontFamily: PJS,
+              fontSize: 12.5,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Batal
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={handleSimpan}
+          disabled={isSubmitting}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl active:scale-98 transition-all"
+          style={{
+            background: isSubmitting ? "#8BB098" : T,
+            border: "none",
+            color: "#FFFFFF",
+            fontFamily: PJS,
+            fontSize: 13,
+            fontWeight: 800,
+            cursor: isSubmitting ? "not-allowed" : "pointer",
+            boxShadow: "0 2px 8px rgba(91,122,104,0.25)",
+          }}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader size={16} className="animate-spin" />
+              <span>Menyimpan Tanggapan...</span>
+            </>
+          ) : (
+            <>
+              <Send size={15} />
+              <span>Kirim Tanggapan ke {teacherName.split(" ")[0]}</span>
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* Halaman "Perkembangan {nama}" — screen riwayat-perkembangan */
-export function PerkembanganScreen({ onBack, child, onPilihAspek }: {
+export function PerkembanganScreen({ onBack, child, onPilihAspek, onGoKonsultasi }: {
   onBack: () => void; child: Student | null; onPilihAspek: (k: FungsionalKategori) => void;
+  onGoKonsultasi?: () => void;
 }) {
   const nama = child ? child.name.split(" ")[0] : "";
   const data = child ? seedPerkembangan[child.id] : undefined;
@@ -3196,7 +3985,7 @@ export function PerkembanganScreen({ onBack, child, onPilihAspek }: {
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       <TBar title={`Perkembangan ${nama}`} onBack={onBack} />
-      <div className="px-4 pt-4 pb-6 space-y-3">
+      <div className="px-4 pt-4 pb-12 space-y-3.5">
 
         {/* Pill periode + dropdown */}
         <div>
@@ -3285,6 +4074,17 @@ export function PerkembanganScreen({ onBack, child, onPilihAspek }: {
             </button>
           );
         })}
+
+        {/* ── Feedback Interaktif Orang Tua ── */}
+        <div className="pt-2">
+          <FeedbackPerkembanganOrtu
+            childId={child.id}
+            studentName={nama}
+            teacherName={child.teacher}
+            contextTitle={`Perkembangan ${periode}`}
+            onGoKonsultasi={onGoKonsultasi}
+          />
+        </div>
       </div>
     </div>
   );

@@ -28,12 +28,12 @@ export function ParentCodeScreen({
       return;
     }
     if (!KODE_ORTU_REGEX.test(k)) {
-      setErr("Kode tidak valid atau sudah kedaluwarsa. Hubungi guru pendamping anak Anda.");
+      setErr("Kode tidak valid atau sudah kedaluwarsa. Hubungi guru kelas atau pendamping anak Anda.");
       return;
     }
     const hasil = onLinked(k);
     if (!hasil) {
-      setErr("Kode tidak dikenali. Pastikan kode sesuai yang diberikan guru pendamping.");
+      setErr("Kode tidak dikenali. Pastikan kode sesuai yang diberikan guru kelas atau pendamping.");
       return;
     }
     setSukses(hasil);
@@ -191,7 +191,7 @@ export function ParentCodeScreen({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold" style={{ color: TEXT }}>Halo, {namaOrtu.split(" ")[0]} 👋</p>
-            <p className="text-xs" style={{ color: MUTED }}>Berhasil masuk dengan Google</p>
+            <p className="text-xs" style={{ color: MUTED }}>Berhasil masuk</p>
           </div>
           <CheckCircle size={18} style={{ color: T, flexShrink: 0 }} />
         </div>
@@ -207,7 +207,7 @@ export function ParentCodeScreen({
             <div className="relative">
               <Hash size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: MUTED }} />
               <input value={kode} onChange={e => { setKode(e.target.value); setErr(""); }}
-                placeholder="VIIA-RAFI-2026"
+                placeholder="Masukkan kode akses"
                 style={{ width: "100%", border: `1.5px solid ${err ? "#B91C1C" : BDR}`, borderRadius: 12, padding: "12px 12px 12px 36px", fontSize: 15, color: TEXT, fontFamily: DMM, background: BG, outline: "none", minHeight: 50, letterSpacing: "0.08em", textTransform: "uppercase" }} />
             </div>
             {err && (
@@ -223,8 +223,6 @@ export function ParentCodeScreen({
             className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
             <Key size={15} />Hubungkan Sekarang
           </button>
-
-          <p className="text-xs text-center" style={{ color: MUTED }}>Contoh kode aktif: <strong style={{ fontFamily: DMM, color: T }}>VIIA-RAFI-2026</strong></p>
         </div>
 
         {/* Opsi masuk tanpa kode */}

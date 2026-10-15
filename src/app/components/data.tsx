@@ -29,6 +29,7 @@ export type Screen =
   | "riwayat-laporan" | "riwayat-perkembangan" | "detail-aspek" | "kemampuan-diamati"
   | "setup-ruang-belajar"
   | "konsultasi-guru"
+  | "konfirmasi-akun"
   | "saran-rumah";
 
 export interface Student {

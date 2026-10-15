@@ -4,7 +4,7 @@ export type TeacherRole = "guru_slb" | "gpk" | "homeschool";
 
 export const TEACHER_ROLE_OPTIONS: { value: TeacherRole; label: string; desc: string; icon: string }[] = [
   { value: "guru_slb",   label: "Guru SLB",                          desc: "Mengajar di Sekolah Luar Biasa",                    icon: "🏫" },
-  { value: "gpk",        label: "Guru Pendamping Khusus (GPK)",      desc: "Mendampingi ABK di sekolah reguler / inklusif",     icon: "🤝" },
+  { value: "gpk",        label: "Guru Pendamping Khusus (GPK)",      desc: "Mendampingi siswa di sekolah reguler / inklusif",   icon: "🤝" },
   { value: "homeschool", label: "Homeschooling / Pendidik Mandiri",  desc: "Mengajar anak secara mandiri di rumah",             icon: "🏠" },
 ];
 

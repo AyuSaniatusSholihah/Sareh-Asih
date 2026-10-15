@@ -1779,7 +1779,7 @@ export function ObservationScreen({
                   {
                     num: "2",
                     title: "Pemetaan Bakat & Minat Holland",
-                    desc: "Menghitung kecenderungan bakat dominan dan profil fungsional siswa disesuaikan kebutuhan ABK.",
+                    desc: "Menghitung kecenderungan bakat dominan dan profil fungsional siswa disesuaikan kebutuhan setiap anak.",
                   },
                   {
                     num: "3",

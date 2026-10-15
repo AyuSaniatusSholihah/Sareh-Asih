@@ -508,10 +508,10 @@ export function AddStudentSheet({
             </button>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
-                Tambah PDBK
+                Tambah Siswa
               </h1>
               <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
-                Tambah data Peserta Didik Berkebutuhan Khusus
+                Tambah data profil siswa baru
               </p>
             </div>
           </div>
@@ -1205,7 +1205,7 @@ export function AddStudentSheet({
 
                   <div>
                     <label className="block text-xs font-bold text-gray-800 mb-2 flex items-center justify-between" style={{ fontFamily: PJS }}>
-                      <span>Jenis Kekhususan (ABK)</span>
+                      <span>Kekhususan / Kebutuhan Siswa</span>
                       <span className="text-gray-400 font-normal text-[11px]">(bisa pilih lebih dari satu)</span>
                     </label>
                     <div className="flex flex-wrap gap-2 pt-0.5">
@@ -1243,7 +1243,7 @@ export function AddStudentSheet({
                     {(form.extra_abk.includes("Lainnya") || form.jenis_abk === "Lainnya") && (
                       <div className="mt-2.5 p-2.5 rounded-xl border" style={{ background: "#FEF9C3", borderColor: "#FACC15" }}>
                         <label className="text-[11px] font-bold block mb-1" style={{ color: "#854D0E", fontFamily: PJS }}>
-                          Tuliskan Hambatan / ABK Lainnya (Mandiri):
+                          Tuliskan Kebutuhan Khusus Lainnya (Mandiri):
                         </label>
                         <input
                           value={form.custom_abk}
