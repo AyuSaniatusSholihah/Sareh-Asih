@@ -2017,7 +2017,7 @@ export function ObservationScreen({
                 fontFamily: PJS,
                 fontSize: 18,
                 fontWeight: 800,
-                color: "#1B2E24",
+                color: TEXT,
                 margin: "0 0 8px",
                 lineHeight: 1.3,
               }}

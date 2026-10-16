@@ -15,8 +15,8 @@ export default function TambahKelasForm({ onBack, onSave, defaultSekolah = '' }:
   const [showModal, setShowModal] = useState(false);
 
   const tags = [
-    'Tunadaksa (dengan hambatan intelektual / ganda)',
-    'Tunadaksa Ringan (tanpa hambatan intelektual)',
+    'Tunadaksa Ringan',
+    'Tunadaksa Ganda',
     'Tunanetra',
     'Tuna Rungu',
     'Tunagrahita Ringan',

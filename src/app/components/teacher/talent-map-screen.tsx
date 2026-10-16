@@ -262,7 +262,7 @@ export function TalentMapScreen({
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
               <div style={{ width: 42, height: 42, borderRadius: 14, background: "#FEF3C7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><AlertCircle size={22} style={{ color: "#D97706" }} /></div>
               <div>
-                <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: "#1B2E24", margin: 0 }}>Ada siswa belum diasesmen</p>
+                <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: 0 }}>Ada siswa belum diasesmen</p>
                 <p style={{ fontFamily: IPS, fontSize: 12, color: MUTED, margin: "2px 0 0" }}>{filterLabel} · <span style={{ color: "#B45309", fontWeight: 700 }}>{unassessedInScope.length} siswa</span> belum dinilai</p>
               </div>
             </div>

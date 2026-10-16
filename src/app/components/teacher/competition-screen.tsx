@@ -101,38 +101,10 @@ export function CompetitionScreen({
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
-      {/* ── Header dengan tombol kembali ── */}
-      <div style={{ background: "#FFFFFF", padding: "14px 20px 12px", flexShrink: 0, borderBottom: `1px solid ${BDR}` }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {(onBack || go) && (
-            <button
-              onClick={() => {
-                if (onBack) onBack();
-                else if (go) go("dashboard");
-              }}
-              style={{
-                width: 36, height: 36, borderRadius: 12,
-                background: "rgba(139,176,152,0.14)",
-                border: "none", cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0,
-              }}
-              className="active:scale-95 transition-transform"
-              title="Kembali"
-            >
-              <ChevronLeft size={18} style={{ color: DEEP }} strokeWidth={2.5} />
-            </button>
-          )}
-          <div>
-            <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>Agenda Lomba</h1>
-            <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: "2px 0 0" }}>O2SN · FLS3N · LKSN Diksus</p>
-          </div>
-        </div>
-      </div>
-      <div className="px-4 pt-4 pb-6 space-y-4">
+      <div className="px-4 pt-3 pb-6 space-y-4">
         <div className="space-y-3.5">
           {/* ── Filter Kategori Pills (Sticky terkunci saat scroll) ── */}
-          <div style={{ position: "sticky", top: 0, zIndex: 20, background: BG, paddingTop: 12, paddingBottom: 10, marginTop: -16, marginBottom: 8, borderBottom: `1px solid ${BDR}40` }}>
+          <div style={{ position: "sticky", top: 0, zIndex: 20, background: BG, paddingTop: 6, paddingBottom: 10, marginBottom: 8, borderBottom: `1px solid ${BDR}40` }}>
             <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar px-1">
               {[
                 { id: "Semua",        label: "Semua",        icon: <LayoutGrid    size={14} strokeWidth={2.2} /> },
@@ -235,7 +207,7 @@ export function CompetitionScreen({
                             fontFamily: PJS,
                             fontWeight: 800,
                             fontSize: 14,
-                            color: "#1B2E24",
+                            color: TEXT,
                             lineHeight: 1.25,
                             marginBottom: 2,
                           }}
@@ -345,7 +317,7 @@ export function CompetitionScreen({
                           style={{
                             fontSize: 13,
                             fontWeight: 800,
-                            color: "#1B2E24",
+                            color: TEXT,
                             fontFamily: PJS,
                             margin: 0,
                           }}

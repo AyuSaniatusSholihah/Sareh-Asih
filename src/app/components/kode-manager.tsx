@@ -17,7 +17,7 @@ export function KodeAksesCard({onOpen}:{onOpen:()=>void}) {
   const pct = students.length ? Math.round(punya.length/students.length*100) : 0;
 
   return (
-    <div style={{background:CARD,border:`1.5px solid ${belum.length?A:BDR}`}} className="rounded-2xl p-4">
+    <div style={{background:CARD,border:"1px solid rgba(91, 122, 104, 0.12)",borderRadius:20,boxShadow:"0 3px 10px -2px rgba(91, 122, 104, 0.06)"}} className="p-4">
       <div className="flex items-center gap-2 mb-1">
         <Key size={15} style={{color:T}}/>
         <p className="font-bold text-sm" style={{fontFamily:PJS,color:TEXT}}>Kode Akses Orang Tua</p>

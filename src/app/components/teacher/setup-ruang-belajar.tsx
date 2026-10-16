@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import {
   ArrowLeft, CheckCircle, School, Plus, XCircle, User, ChevronRight,
   BookOpen, Home,
@@ -21,8 +21,8 @@ const KEKHUSUSAN_LIST = [
   { kode: "B", nama: "Hambatan pendengaran (Tuna Rungu / B)", abk: "Tuna Rungu" },
   { kode: "C", nama: "Hambatan intelektual ringan (Tunagrahita Ringan / C)", abk: "Tunagrahita Ringan" },
   { kode: "C1", nama: "Hambatan intelektual sedang (Tunagrahita Sedang / C1)", abk: "Tunagrahita Sedang" },
-  { kode: "D", nama: "Tunadaksa Ringan — tanpa hambatan intelektual (D)", abk: "Tunadaksa Ringan (tanpa hambatan intelektual)" },
-  { kode: "D1", nama: "Tunadaksa — dengan hambatan intelektual/ganda (D1)", abk: "Tunadaksa (dengan hambatan intelektual / ganda)" },
+  { kode: "D", nama: "Tunadaksa Ringan (D)", abk: "Tunadaksa Ringan" },
+  { kode: "D1", nama: "Tunadaksa Ganda (D1)", abk: "Tunadaksa Ganda" },
   { kode: "Q", nama: "Spektrum autisme (Autis / Q)", abk: "Autis (ASD)" },
   { kode: "Lainnya", nama: "Lainnya (tulis sendiri)", abk: "Lainnya" },
 ];
@@ -71,6 +71,7 @@ export function SetupRuangBelajar({
 
   // Step 3 (homeschool) / Step 4 (SLB/GPK): siswa yang ditambahkan
   const [savedStudents, setSavedStudents] = useState<Student[]>([]);
+  const savedStudentsRef = useRef<Student[]>([]);
   const [activeAddModal, setActiveAddModal] = useState<"choice" | "db-sekolah" | "upload" | "identitas" | null>(null);
 
   // ── Derived ──
@@ -108,6 +109,7 @@ export function SetupRuangBelajar({
   const handleSaveStudent = async (studentData: Omit<Student, "id">) => {
     const newId = Date.now() + Math.floor(Math.random() * 1000);
     const created: Student = { ...studentData, id: newId };
+    savedStudentsRef.current = [...savedStudentsRef.current, created];
     setSavedStudents(prev => [...prev, created]);
     if (onSaveStudent) {
       onSaveStudent(studentData);
@@ -120,8 +122,9 @@ export function SetupRuangBelajar({
     }
   };
 
-  const handleDone = () => {
-    if (savedStudents.length === 0) return;
+  const handleDone = (overrideList?: Student[]) => {
+    const listToUse = overrideList || (savedStudentsRef.current.length > 0 ? savedStudentsRef.current : savedStudents);
+    if (listToUse.length === 0) return;
 
     const kelasAbkMap: Record<string, string> = {};
     if (!isHomeschool) {
@@ -135,7 +138,7 @@ export function SetupRuangBelajar({
       kelas: isHomeschool ? [] : [kelasLabel],
       kelasAbkMap,
       kelasKekhususanList: isHomeschool ? [] : [...selectedKekhususanAbk],
-      anakList: savedStudents,
+      anakList: listToUse,
     });
   };
 
@@ -178,14 +181,14 @@ export function SetupRuangBelajar({
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button
             onClick={prevStep}
-            style={{ width: 36, height: 36, borderRadius: 12, background: "rgba(139,176,152,0.14)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#1B2E24", flexShrink: 0 }}
+            style={{ width: 36, height: 36, borderRadius: 12, background: "rgba(139,176,152,0.16)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: TEXT, flexShrink: 0 }}
             className="active:scale-95 transition-transform"
             title="Kembali"
           >
             <ArrowLeft size={18} />
           </button>
           <div>
-            <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+            <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
               Setup Ruang Belajar
             </h1>
           </div>
@@ -274,8 +277,13 @@ export function SetupRuangBelajar({
                 targetKelas={isHomeschool ? (namaRuangBelajar || "Ruang Belajar Saya") : kelasLabel}
                 isHomeschool={isHomeschool}
                 initialStep={activeAddModal}
+                firstTime={true}
                 onClose={() => setActiveAddModal(null)}
                 onSave={handleSaveStudent}
+                onDone={() => {
+                  setActiveAddModal(null);
+                  handleDone(savedStudentsRef.current);
+                }}
               />
             )}
           </div>

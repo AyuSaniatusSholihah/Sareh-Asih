@@ -38,6 +38,7 @@ export interface AddStudentSheetProps {
   onClose: () => void;
   onBack?: () => void;
   onSave: (s: Omit<Student, "id">) => void;
+  onDone?: () => void;
   teacher: string;
   kelasAbkMap: Record<string, string>;
   firstTime?: boolean;
@@ -194,6 +195,7 @@ export function AddStudentSheet({
   onClose,
   onBack,
   onSave,
+  onDone,
   teacher,
   kelasAbkMap,
   firstTime,
@@ -498,7 +500,7 @@ export function AddStudentSheet({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#1B2E24",
+                color: TEXT,
                 flexShrink: 0,
               }}
               className="active:scale-95 transition-transform"
@@ -507,7 +509,7 @@ export function AddStudentSheet({
               <ArrowLeft size={18} />
             </button>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
                 Tambah Siswa
               </h1>
               <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
@@ -564,7 +566,7 @@ export function AddStudentSheet({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#1B2E24",
+                color: TEXT,
                 flexShrink: 0,
               }}
               className="active:scale-95 transition-transform"
@@ -573,7 +575,7 @@ export function AddStudentSheet({
               <ArrowLeft size={18} />
             </button>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
                 Database Sekolah
               </h1>
               <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
@@ -730,7 +732,7 @@ export function AddStudentSheet({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#1B2E24",
+                color: TEXT,
                 flexShrink: 0,
               }}
               className="active:scale-95 transition-transform"
@@ -739,7 +741,7 @@ export function AddStudentSheet({
               <ArrowLeft size={18} />
             </button>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
                 Upload Daftar Siswa
               </h1>
               <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
@@ -1225,7 +1227,7 @@ export function AddStudentSheet({
                               borderRadius: 20,
                               border: `1.5px solid ${isSelected ? "#738B7B" : "#D5E0D5"}`,
                               background: isSelected ? "#EAF2EC" : "#FFFFFF",
-                              color: isSelected ? "#1B2E24" : "#4B5563",
+                              color: isSelected ? TEXT : "#4B5563",
                               cursor: "pointer",
                               transition: "all 0.15s ease-in-out",
                               display: "inline-flex",
@@ -1366,7 +1368,13 @@ export function AddStudentSheet({
             </button>
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => {
+                if (onDone) {
+                  onDone();
+                } else {
+                  onClose();
+                }
+              }}
               style={{
                 width: "100%",
                 background: A,

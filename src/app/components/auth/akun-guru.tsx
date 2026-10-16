@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { CheckCircle, Edit3, User, Mail, Lock, Info, ShieldCheck } from "lucide-react";
-import { T, A, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS } from "../ui-kit";
+import { CheckCircle, Pencil, User, Mail, Lock, Info, ChevronLeft, ArrowRight } from "lucide-react";
+import { PJS, IPS } from "../ui-kit";
 import { motion } from "motion/react";
 
 // ─── GURU: Full Page — Konfirmasi nama & email setelah login ───────────────
@@ -19,14 +19,77 @@ export interface GuruProfile {
   kelasKekhususan?: string[];
 }
 
+function ShieldCheckBadge({ size = 46 }: { size?: number }) {
+  return (
+    <div className="relative inline-flex items-center" style={{ width: size + 24, height: size + 4 }}>
+      {/* Burst marks left */}
+      <svg
+        className="absolute"
+        style={{ left: -10, top: 8 }}
+        width="12"
+        height="18"
+        viewBox="0 0 12 18"
+        fill="none"
+      >
+        <path d="M10 5L2 2" stroke="#244D3B" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M11 12L3 14" stroke="#244D3B" strokeWidth="2.2" strokeLinecap="round" />
+      </svg>
+
+      {/* Shield container */}
+      <div
+        style={{
+          width: size,
+          height: size,
+          background: "#244D3B",
+          borderRadius: "14px 14px 20px 20px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 6px 16px rgba(36, 77, 59, 0.22)",
+        }}
+      >
+        <svg
+          width={size * 0.52}
+          height={size * 0.52}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#FFFFFF"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </div>
+
+      {/* Burst marks right */}
+      <svg
+        className="absolute"
+        style={{ right: -8, top: 4 }}
+        width="14"
+        height="22"
+        viewBox="0 0 14 22"
+        fill="none"
+      >
+        <path d="M3 4L11 2" stroke="#244D3B" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M3 11L12 11" stroke="#244D3B" strokeWidth="2.2" strokeLinecap="round" />
+        <path d="M3 18L11 20" stroke="#244D3B" strokeWidth="2.2" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+}
+
 export function KonfirmasiAkunScreen({
   profile,
   onNext,
+  onBack,
 }: {
   profile: GuruProfile;
   onNext: (p: { nama: string; email: string; jabatan: string; noHp: string }) => void;
+  onBack?: () => void;
 }) {
   const [nama, setNama] = useState(profile.nama);
+  const [tempNama, setTempNama] = useState(profile.nama);
   const [editNama, setEditNama] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -40,136 +103,261 @@ export function KonfirmasiAkunScreen({
       setIsSaving(false);
       setIsSaved(true);
       setTimeout(() => {
-        onNext({ nama: nama.trim(), email: profile.email, jabatan: "Guru Pendamping Khusus (GPK)", noHp: "" });
-      }, 700);
-    }, 800);
+        onNext({
+          nama: nama.trim(),
+          email: profile.email,
+          jabatan: profile.jabatan || "Guru Pendamping Khusus (GPK)",
+          noHp: profile.noHp || "",
+        });
+      }, 600);
+    }, 750);
+  };
+
+  const handleStartEdit = () => {
+    setTempNama(nama);
+    setEditNama(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (tempNama.trim()) {
+      setNama(tempNama.trim());
+      setEditNama(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setTempNama(nama);
+    setEditNama(false);
   };
 
   return (
     <div
-      className="flex-1 flex flex-col overflow-hidden"
-      style={{ fontFamily: IPS, background: BG, minHeight: "100%" }}
+      className="flex-1 flex flex-col overflow-y-auto"
+      style={{
+        fontFamily: IPS,
+        background: "#F4F8F5",
+        minHeight: "100%",
+        position: "relative",
+      }}
     >
-      {/* ── Header Hijau ── */}
+      {/* ── Soft organic background shape top-right ── */}
       <div
         style={{
-          background: "linear-gradient(160deg, #1F3A2B 0%, #2E5537 100%)",
-          paddingTop: 72,
-          paddingBottom: 36,
-          paddingLeft: 24,
-          paddingRight: 24,
+          position: "absolute",
+          top: -20,
+          right: -30,
+          width: 230,
+          height: 220,
+          borderRadius: "45% 55% 65% 35% / 40% 45% 55% 60%",
+          background: "#E2ECE5",
+          opacity: 0.65,
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      {/* ── Top Bar with Circular Back Button ── */}
+      <div
+        style={{
+          padding: "16px 20px 8px 20px",
           position: "relative",
-          overflow: "hidden",
+          zIndex: 2,
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        {/* Dekorasi */}
-        <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-        <div style={{ position: "absolute", top: 10, right: 60, width: 70, height: 70, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
-
-        <motion.div
-          initial={{ scale: 0.75, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
-          style={{
-            width: 54, height: 54,
-            borderRadius: 18,
-            background: "rgba(255,255,255,0.15)",
-            border: "1.5px solid rgba(255,255,255,0.22)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            marginBottom: 18,
+        <button
+          type="button"
+          onClick={() => {
+            if (onBack) onBack();
+            else window.history.back();
           }}
+          style={{
+            width: 42,
+            height: 42,
+            borderRadius: "50%",
+            background: "#FFFFFF",
+            border: "1px solid #E1ECE5",
+            boxShadow: "0 2px 8px rgba(36, 77, 59, 0.05)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+          }}
+          className="active:scale-95 transition-transform"
+          title="Kembali"
         >
-          <ShieldCheck size={28} color="#fff" strokeWidth={1.8} />
+          <ChevronLeft size={20} color="#244D3B" strokeWidth={2.4} />
+        </button>
+      </div>
+
+      {/* ── Header Section ── */}
+      <div
+        style={{
+          padding: "12px 24px 20px 24px",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          style={{ marginBottom: 14 }}
+        >
+          <ShieldCheckBadge size={46} />
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.12, duration: 0.32 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
         >
-          <h1 style={{
-            fontFamily: PJS, fontSize: 26, fontWeight: 800,
-            color: "#fff", lineHeight: 1.2, letterSpacing: "-0.4px", margin: 0,
-          }}>
-            Konfirmasi Data Akun
+          <h1
+            style={{
+              fontFamily: PJS,
+              fontSize: 28,
+              fontWeight: 800,
+              color: "#162C22",
+              lineHeight: 1.15,
+              letterSpacing: "-0.5px",
+              margin: "0 0 8px 0",
+            }}
+          >
+            Konfirmasi<br />Data Akun
           </h1>
-          <p style={{
-            fontFamily: IPS, fontSize: 13.5, color: "rgba(255,255,255,0.72)",
-            marginTop: 8, lineHeight: 1.5, margin: "8px 0 0",
-          }}>
+          <p
+            style={{
+              fontFamily: IPS,
+              fontSize: 14,
+              color: "#5D7568",
+              lineHeight: 1.45,
+              margin: 0,
+              maxWidth: 300,
+            }}
+          >
             Pastikan data berikut sudah benar sebelum melanjutkan.
           </p>
         </motion.div>
       </div>
 
-      {/* ── Konten ── */}
-      <div className="flex-1 overflow-y-auto" style={{ padding: "24px 20px 40px" }}>
-
-        {/* ── Card Nama ── */}
+      {/* ── Konten Form & Cards ── */}
+      <div
+        style={{
+          padding: "4px 20px 32px 20px",
+          position: "relative",
+          zIndex: 1,
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* ── Card 1: Nama Lengkap ── */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
+          transition={{ delay: 0.18, duration: 0.28 }}
           style={{
-            background: CARD,
-            border: `1.5px solid ${BDR}`,
+            background: "#FFFFFF",
+            border: "1px solid #E5ECE7",
             borderRadius: 20,
             padding: "16px 18px",
             marginBottom: 12,
-            boxShadow: "0 2px 10px rgba(91,122,104,0.07)",
+            boxShadow: "0 2px 10px rgba(35, 77, 58, 0.04)",
           }}
         >
-          {/* Label */}
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-            <User size={13} color={MUTED} strokeWidth={2} />
-            <span style={{ fontSize: 10.5, fontWeight: 800, color: MUTED, fontFamily: PJS, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-              Nama Lengkap
-            </span>
-          </div>
-
           {editNama ? (
             <div>
-              <input
-                autoFocus
-                value={nama}
-                onChange={e => setNama(e.target.value)}
-                placeholder="Nama lengkap Anda"
-                style={{
-                  width: "100%",
-                  border: `2px solid ${T}`,
-                  borderRadius: 12,
-                  padding: "10px 14px",
-                  fontSize: 16,
-                  fontFamily: PJS,
-                  fontWeight: 700,
-                  color: TEXT,
-                  background: BG,
-                  outline: "none",
-                  boxSizing: "border-box",
-                  boxShadow: `0 0 0 3px ${T}18`,
-                  marginBottom: 10,
-                }}
-              />
-              <div style={{ display: "flex", gap: 8 }}>
-                <button
-                  onClick={() => setEditNama(false)}
+              <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 10 }}>
+                <div
                   style={{
-                    background: "#F1F5F2", border: `1.5px solid ${BDR}`,
-                    color: MUTED, borderRadius: 10,
-                    padding: "7px 14px", fontSize: 12.5,
-                    fontWeight: 700, fontFamily: IPS, cursor: "pointer",
+                    width: 42,
+                    height: 42,
+                    borderRadius: "50%",
+                    background: "#EFF5F1",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <User size={19} color="#244D3B" strokeWidth={2.2} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <span
+                    style={{
+                      fontSize: 10.5,
+                      fontWeight: 800,
+                      color: "#7D9285",
+                      fontFamily: PJS,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    Edit Nama Lengkap
+                  </span>
+                  <input
+                    autoFocus
+                    value={tempNama}
+                    onChange={e => setTempNama(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") handleSaveEdit();
+                      if (e.key === "Escape") handleCancelEdit();
+                    }}
+                    placeholder="Nama lengkap Anda"
+                    style={{
+                      width: "100%",
+                      border: "1.5px solid #244D3B",
+                      borderRadius: 12,
+                      padding: "8px 12px",
+                      fontSize: 15.5,
+                      fontFamily: PJS,
+                      fontWeight: 700,
+                      color: "#162C22",
+                      background: "#F8FAF8",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      boxShadow: "0 0 0 3px rgba(36, 77, 59, 0.12)",
+                    }}
+                  />
+                </div>
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  style={{
+                    background: "#F1F5F2",
+                    border: "1px solid #D6E4DA",
+                    color: "#6B8070",
+                    borderRadius: 9999,
+                    padding: "6px 14px",
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    fontFamily: IPS,
+                    cursor: "pointer",
                   }}
                   className="active:scale-95 transition-transform"
                 >
                   Batal
                 </button>
                 <button
-                  onClick={() => setEditNama(false)}
+                  type="button"
+                  onClick={handleSaveEdit}
+                  disabled={!tempNama.trim()}
                   style={{
-                    background: T, color: "#fff",
-                    border: "none", borderRadius: 10,
-                    padding: "7px 18px", fontSize: 12.5,
-                    fontWeight: 700, fontFamily: IPS, cursor: "pointer",
+                    background: "#244D3B",
+                    color: "#FFFFFF",
+                    border: "none",
+                    borderRadius: 9999,
+                    padding: "6px 16px",
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    fontFamily: IPS,
+                    cursor: tempNama.trim() ? "pointer" : "not-allowed",
+                    opacity: tempNama.trim() ? 1 : 0.6,
                   }}
                   className="active:scale-95 transition-transform"
                 >
@@ -178,155 +366,311 @@ export function KonfirmasiAkunScreen({
               </div>
             </div>
           ) : (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 17, fontWeight: 700, color: TEXT, fontFamily: PJS }}>
-                {nama || "—"}
-              </span>
-              <button
-                onClick={() => setEditNama(true)}
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <div
                 style={{
-                  background: SEC, border: `1.5px solid ${BDR}`,
-                  borderRadius: 10, padding: "6px 13px",
-                  display: "flex", alignItems: "center", gap: 5,
-                  cursor: "pointer", flexShrink: 0,
+                  width: 42,
+                  height: 42,
+                  borderRadius: "50%",
+                  background: "#EFF5F1",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <User size={19} color="#244D3B" strokeWidth={2.2} />
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span
+                  style={{
+                    fontSize: 10.5,
+                    fontWeight: 800,
+                    color: "#7D9285",
+                    fontFamily: PJS,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    display: "block",
+                    marginBottom: 3,
+                  }}
+                >
+                  Nama Lengkap
+                </span>
+                <span
+                  style={{
+                    fontSize: 16.5,
+                    fontWeight: 700,
+                    color: "#162C22",
+                    fontFamily: PJS,
+                    display: "block",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {nama || "—"}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleStartEdit}
+                style={{
+                  background: "#E5EFE7",
+                  border: "1px solid #D6E4DA",
+                  borderRadius: 9999,
+                  padding: "6px 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  cursor: "pointer",
+                  flexShrink: 0,
                 }}
                 className="active:scale-95 transition-transform"
               >
-                <Edit3 size={12} color={DEEP} strokeWidth={2.2} />
-                <span style={{ fontSize: 12.5, fontWeight: 700, color: DEEP, fontFamily: IPS }}>Ubah</span>
+                <Pencil size={13} color="#244D3B" strokeWidth={2.2} />
+                <span
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: "#244D3B",
+                    fontFamily: IPS,
+                  }}
+                >
+                  Ubah
+                </span>
               </button>
             </div>
           )}
         </motion.div>
 
-        {/* ── Card Email (tidak dapat diubah) ── */}
+        {/* ── Card 2: Alamat Email (Tidak dapat diubah) ── */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.27, duration: 0.3 }}
+          transition={{ delay: 0.24, duration: 0.28 }}
           style={{
-            background: CARD,
-            border: `1.5px solid ${BDR}`,
+            background: "#FFFFFF",
+            border: "1px solid #E5ECE7",
             borderRadius: 20,
             padding: "16px 18px",
             marginBottom: 14,
-            boxShadow: "0 2px 10px rgba(91,122,104,0.07)",
+            boxShadow: "0 2px 10px rgba(35, 77, 58, 0.04)",
           }}
         >
-          {/* Label */}
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-            <Mail size={13} color={MUTED} strokeWidth={2} />
-            <span style={{ fontSize: 10.5, fontWeight: 800, color: MUTED, fontFamily: PJS, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-              Alamat Email
-            </span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 15.5, fontWeight: 600, color: TEXT, fontFamily: IPS }}>
-              {profile.email}
-            </span>
-            {/* Badge tidak dapat diubah */}
-            <div style={{
-              display: "flex", alignItems: "center", gap: 4,
-              background: "#F1F5F2", borderRadius: 10,
-              padding: "5px 10px", flexShrink: 0,
-              border: `1px solid ${BDR}`,
-            }}>
-              <Lock size={11} color={MUTED} strokeWidth={2.2} />
-              <span style={{ fontSize: 11, fontWeight: 600, color: MUTED, fontFamily: IPS, whiteSpace: "nowrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: "50%",
+                background: "#EFF5F1",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <Mail size={19} color="#244D3B" strokeWidth={2.2} />
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <span
+                style={{
+                  fontSize: 10.5,
+                  fontWeight: 800,
+                  color: "#7D9285",
+                  fontFamily: PJS,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  display: "block",
+                  marginBottom: 3,
+                }}
+              >
+                Alamat Email
+              </span>
+              <span
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: "#162C22",
+                  fontFamily: PJS,
+                  display: "block",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {profile.email}
+              </span>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+                background: "#EFF4F1",
+                borderRadius: 9999,
+                padding: "5px 11px",
+                border: "1px solid #E2EAE5",
+                flexShrink: 0,
+              }}
+            >
+              <Lock size={11} color="#788C80" strokeWidth={2.2} />
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: "#788C80",
+                  fontFamily: IPS,
+                  whiteSpace: "nowrap",
+                }}
+              >
                 Tidak dapat diubah
               </span>
             </div>
           </div>
         </motion.div>
 
-        {/* ── Info email ── */}
+        {/* ── Info Box / Callout Alert ── */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.34, duration: 0.3 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.28 }}
           style={{
-            background: "#EDF3F0",
-            border: `1px solid rgba(91,122,104,0.2)`,
-            borderRadius: 14,
-            padding: "11px 14px",
-            display: "flex", alignItems: "flex-start", gap: 9,
+            background: "#EEF4F0",
+            border: "1px solid rgba(139, 176, 152, 0.32)",
+            borderRadius: 18,
+            padding: "13px 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
             marginBottom: 32,
           }}
         >
-          <Info size={15} color={T} strokeWidth={2} style={{ flexShrink: 0, marginTop: 1 }} />
-          <p style={{ fontSize: 12.5, color: T, lineHeight: 1.55, fontFamily: IPS, margin: 0, fontWeight: 500 }}>
+          <div style={{ flexShrink: 0 }}>
+            <Info size={19} color="#244D3B" strokeWidth={2.2} />
+          </div>
+          <div
+            style={{
+              width: 1,
+              height: 32,
+              background: "#D1E1D7",
+              flexShrink: 0,
+            }}
+          />
+          <p
+            style={{
+              fontSize: 12.5,
+              color: "#304D3F",
+              lineHeight: 1.5,
+              fontFamily: IPS,
+              margin: 0,
+              fontWeight: 500,
+            }}
+          >
             Alamat email digunakan untuk masuk dan menerima pemberitahuan. Email tidak dapat diubah setelah akun dibuat.
           </p>
         </motion.div>
 
-        {/* ── Tombol Konfirmasi ── */}
+        {/* ── Spacer ── */}
+        <div style={{ flex: 1 }} />
+
+        {/* ── Tombol CTA Utama ── */}
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.3 }}
+          transition={{ delay: 0.36, duration: 0.28 }}
           type="button"
           onClick={handleConfirm}
           disabled={!valid || isSaving || isSaved}
           style={{
             width: "100%",
+            height: 56,
+            borderRadius: 9999,
             background: isSaved
-              ? "linear-gradient(135deg, #10B981 0%, #059669 100%)"
+              ? "#10B981"
               : isSaving
-              ? "#2E5537"
+              ? "#1E4233"
               : valid
-              ? "linear-gradient(135deg, #2E5537 0%, #3D6B4A 100%)"
-              : "#D1D5DB",
-            color: "#fff",
-            fontFamily: PJS,
-            fontWeight: 800,
-            fontSize: 16,
-            minHeight: 58,
-            borderRadius: 20,
+              ? "#244D3B"
+              : "#CBD5E1",
+            color: "#FFFFFF",
             border: "none",
             cursor: valid && !isSaving && !isSaved ? "pointer" : "not-allowed",
             boxShadow: isSaved
-              ? "0 8px 24px rgba(16,185,129,0.40)"
+              ? "0 8px 24px rgba(16, 185, 129, 0.35)"
               : valid
-              ? "0 8px 24px rgba(46,85,55,0.30)"
+              ? "0 8px 24px rgba(36, 77, 59, 0.28)"
               : "none",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            gap: 10,
+            justifyContent: isSaving ? "center" : "space-between",
+            padding: "0 22px",
             transition: "all 0.3s ease",
-            letterSpacing: "-0.2px",
           }}
           className="active:scale-[0.98]"
         >
           {isSaving ? (
-            <>
-              <span style={{
-                width: 18, height: 18,
-                border: "2.5px solid rgba(255,255,255,0.35)",
-                borderTopColor: "#fff",
-                borderRadius: "50%",
-                display: "inline-block",
-                animation: "spin 0.7s linear infinite",
-              }} />
-              Menyimpan…
-            </>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span
+                style={{
+                  width: 18,
+                  height: 18,
+                  border: "2.5px solid rgba(255,255,255,0.35)",
+                  borderTopColor: "#fff",
+                  borderRadius: "50%",
+                  display: "inline-block",
+                  animation: "spin 0.7s linear infinite",
+                }}
+              />
+              <span style={{ fontFamily: PJS, fontWeight: 700, fontSize: 15.5 }}>
+                Menyimpan…
+              </span>
+            </div>
           ) : isSaved ? (
-            <>
-              <CheckCircle size={20} strokeWidth={2.5} />
-              Data Tersimpan!
-            </>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", gap: 8 }}>
+              <CheckCircle size={20} color="#fff" strokeWidth={2.4} />
+              <span style={{ fontFamily: PJS, fontWeight: 700, fontSize: 15.5 }}>
+                Data Tersimpan!
+              </span>
+            </div>
           ) : (
             <>
-              <CheckCircle size={20} strokeWidth={2.2} />
-              Ya, Data Sudah Benar
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <CheckCircle size={22} color="#FFFFFF" strokeWidth={2.4} />
+                <span
+                  style={{
+                    fontFamily: PJS,
+                    fontWeight: 700,
+                    fontSize: 15.5,
+                    color: "#FFFFFF",
+                    letterSpacing: "-0.2px",
+                  }}
+                >
+                  Ya, Data Sudah Benar
+                </span>
+              </div>
+              <ArrowRight size={20} color="#FFFFFF" strokeWidth={2.4} />
             </>
           )}
         </motion.button>
 
-        <p style={{
-          textAlign: "center", fontSize: 12, color: MUTED,
-          marginTop: 14, fontFamily: IPS, lineHeight: 1.5,
-        }}>
+        {/* ── Subtext Footer ── */}
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: 12,
+            color: "#748A7E",
+            marginTop: 14,
+            marginBottom: 0,
+            fontFamily: IPS,
+            lineHeight: 1.5,
+            fontWeight: 500,
+          }}
+        >
           Nama dapat diubah melalui pengaturan profil.
         </p>
       </div>
@@ -348,3 +692,4 @@ export function AkunGuruModal({
 }) {
   return <KonfirmasiAkunScreen profile={profile} onNext={onNext} />;
 }
+

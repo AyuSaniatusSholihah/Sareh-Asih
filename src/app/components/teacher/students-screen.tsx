@@ -83,7 +83,7 @@ export function StudentsScreen({
           <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
             <button
               onClick={() => go("dashboard")}
-              style={{ width: 36, height: 36, borderRadius: 12, background: "rgba(139,176,152,0.14)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#1B2E24", flexShrink: 0 }}
+              style={{ width: 36, height: 36, borderRadius: 12, background: "rgba(139,176,152,0.16)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: TEXT, flexShrink: 0 }}
               title="Kembali"
               className="active:scale-95 transition-transform"
             >
@@ -91,7 +91,7 @@ export function StudentsScreen({
             </button>
 
             <div style={{ minWidth: 0 }}>
-              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.25 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.25 }}>
                 {isSetupDone ? "Daftar Siswa" : getLabel(role, "tabSiswa")}
               </h1>
               {isSetupDone && (
@@ -107,20 +107,20 @@ export function StudentsScreen({
             {isSetupDone && (
               <button
                 onClick={openSearch}
-                style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                style={{ width: 38, height: 38, background: "rgba(139,176,152,0.16)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                 className="active:scale-95 transition-transform"
                 title="Cari"
               >
-                <Search size={17} style={{ color: "#1B2E24" }} />
+                <Search size={17} style={{ color: TEXT }} />
               </button>
             )}
             <button
               onClick={openSettings}
-              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.16)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
               className="active:scale-95 transition-transform"
               title="Pengaturan"
             >
-              <Settings size={17} style={{ color: "#1B2E24" }} />
+              <Settings size={17} style={{ color: TEXT }} />
             </button>
           </div>
         </div>
@@ -133,7 +133,7 @@ export function StudentsScreen({
             <div style={{ width: 64, height: 64, borderRadius: 20, background: SEC, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", color: DEEP }}>
               <BookOpen size={32} />
             </div>
-            <h2 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", marginBottom: 8, lineHeight: 1.3 }}>
+            <h2 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, marginBottom: 8, lineHeight: 1.3 }}>
               Mulai dengan menyiapkan ruang belajarmu
             </h2>
             <p style={{ fontFamily: IPS, fontSize: 13, color: MUTED, marginBottom: 24, lineHeight: 1.5 }}>
@@ -285,7 +285,7 @@ export function StudentsScreen({
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                      <h3 style={{ fontFamily: PJS, fontSize: 14.5, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.25 }}>
+                      <h3 style={{ fontFamily: PJS, fontSize: 14.5, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.25 }}>
                         {s.name}
                       </h3>
                       <span style={{
