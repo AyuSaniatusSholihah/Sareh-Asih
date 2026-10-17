@@ -38,7 +38,7 @@ export function KodeOrtuCard({ s, onRegen }: { s: Student; onRegen: (id: number)
   };
 
   return (
-    <div style={{ background: CARD, border: `1.5px solid ${T}` }} className="rounded-2xl p-4">
+    <div style={{ background: CARD, border: "1px solid rgba(91, 122, 104, 0.12)", borderRadius: 20, boxShadow: "0 3px 10px -2px rgba(91, 122, 104, 0.06)" }} className="p-4">
       <div className="flex items-center gap-2 mb-1">
         <Key size={15} style={{ color: T }} />
         <p className="font-bold text-sm" style={{ fontFamily: PJS, color: TEXT }}>Kode Akses Orang Tua</p>
@@ -633,7 +633,7 @@ export function ProfileScreen({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#1B2E24",
+                color: TEXT,
               }}
               className="active:scale-95 transition-transform"
               title="Batal"
@@ -641,7 +641,7 @@ export function ProfileScreen({
               <ArrowLeft size={20} strokeWidth={2.4} />
             </button>
             <div>
-              <h1 style={{ fontFamily: PJS, fontSize: 17.5, fontWeight: 800, color: "#1B2E24", margin: 0 }}>
+              <h1 style={{ fontFamily: PJS, fontSize: 17.5, fontWeight: 800, color: TEXT, margin: 0 }}>
                 Edit Data Profil Siswa
               </h1>
               <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "1px 0 0" }}>
@@ -663,7 +663,7 @@ export function ProfileScreen({
           >
             <FotoProfil s={s} size={52} />
             <div className="flex-1 min-w-0">
-              <h2 style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: "#1B2E24", margin: 0 }}>
+              <h2 style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, margin: 0 }}>
                 {s.name}
               </h2>
               <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#5A6E63", margin: "2px 0 4px" }}>
@@ -712,7 +712,7 @@ export function ProfileScreen({
             <div>
               <div className="flex items-center gap-2 mb-2 px-1">
                 <User size={15} style={{ color: "#2E3E35" }} strokeWidth={2.4} />
-                <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: "#1B2E24", margin: 0, letterSpacing: "0.03em" }}>
+                <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: TEXT, margin: 0, letterSpacing: "0.03em" }}>
                   IDENTITAS SISWA
                 </h3>
               </div>
@@ -745,7 +745,7 @@ export function ProfileScreen({
                       fontFamily: PJS,
                       fontSize: 13.5,
                       fontWeight: 700,
-                      color: "#1B2E24",
+                      color: TEXT,
                       outline: "none",
                       background: "#F8FAF9",
                     }}
@@ -769,7 +769,7 @@ export function ProfileScreen({
                         fontFamily: PJS,
                         fontSize: 13.5,
                         fontWeight: 700,
-                        color: "#1B2E24",
+                        color: TEXT,
                         outline: "none",
                         background: "#F8FAF9",
                         appearance: "none",
@@ -802,7 +802,7 @@ export function ProfileScreen({
                         fontFamily: PJS,
                         fontSize: 13.5,
                         fontWeight: 700,
-                        color: "#1B2E24",
+                        color: TEXT,
                         outline: "none",
                         background: "#F8FAF9",
                       }}
@@ -818,7 +818,7 @@ export function ProfileScreen({
             <div>
               <div className="flex items-center gap-2 mb-2 px-1">
                 <Users size={15} style={{ color: "#2E3E35" }} strokeWidth={2.4} />
-                <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: "#1B2E24", margin: 0, letterSpacing: "0.03em" }}>
+                <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: TEXT, margin: 0, letterSpacing: "0.03em" }}>
                   INFORMASI KELUARGA
                 </h3>
               </div>
@@ -852,7 +852,7 @@ export function ProfileScreen({
                         fontFamily: PJS,
                         fontSize: 13,
                         fontWeight: 700,
-                        color: "#1B2E24",
+                        color: TEXT,
                         outline: "none",
                         background: "#F8FAF9",
                       }}
@@ -876,7 +876,7 @@ export function ProfileScreen({
                           fontFamily: PJS,
                           fontSize: 13,
                           fontWeight: 700,
-                          color: "#1B2E24",
+                          color: TEXT,
                           outline: "none",
                           background: "#F8FAF9",
                           appearance: "none",
@@ -911,7 +911,7 @@ export function ProfileScreen({
                       fontFamily: PJS,
                       fontSize: 13.5,
                       fontWeight: 700,
-                      color: "#1B2E24",
+                      color: TEXT,
                       outline: "none",
                       background: "#F8FAF9",
                     }}
@@ -925,7 +925,7 @@ export function ProfileScreen({
             <div>
               <div className="flex items-center gap-2 mb-2 px-1">
                 <Heart size={15} style={{ color: "#2E3E35" }} strokeWidth={2.4} />
-                <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: "#1B2E24", margin: 0, letterSpacing: "0.03em" }}>
+                <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: TEXT, margin: 0, letterSpacing: "0.03em" }}>
                   KONDISI & KEBUTUHAN SISWA
                 </h3>
               </div>
@@ -958,7 +958,7 @@ export function ProfileScreen({
                         fontFamily: PJS,
                         fontSize: 13.5,
                         fontWeight: 700,
-                        color: "#1B2E24",
+                        color: TEXT,
                         outline: "none",
                         background: "#F8FAF9",
                         appearance: "none",
@@ -994,7 +994,7 @@ export function ProfileScreen({
                       fontFamily: PJS,
                       fontSize: 13.5,
                       fontWeight: 600,
-                      color: "#1B2E24",
+                      color: TEXT,
                       outline: "none",
                       background: "#F8FAF9",
                     }}
@@ -1020,7 +1020,7 @@ export function ProfileScreen({
                       fontFamily: PJS,
                       fontSize: 13.5,
                       fontWeight: 600,
-                      color: "#1B2E24",
+                      color: TEXT,
                       outline: "none",
                       background: "#F8FAF9",
                     }}
@@ -1046,7 +1046,7 @@ export function ProfileScreen({
                       fontFamily: PJS,
                       fontSize: 13.5,
                       fontWeight: 600,
-                      color: "#1B2E24",
+                      color: TEXT,
                       outline: "none",
                       background: "#F8FAF9",
                     }}
@@ -1071,7 +1071,7 @@ export function ProfileScreen({
                         fontFamily: PJS,
                         fontSize: 13.5,
                         fontWeight: 700,
-                        color: "#1B2E24",
+                        color: TEXT,
                         outline: "none",
                         background: "#F8FAF9",
                         appearance: "none",
@@ -1110,7 +1110,7 @@ export function ProfileScreen({
                       fontFamily: PJS,
                       fontSize: 13.5,
                       fontWeight: 600,
-                      color: "#1B2E24",
+                      color: TEXT,
                       outline: "none",
                       background: "#F8FAF9",
                     }}
@@ -1136,7 +1136,7 @@ export function ProfileScreen({
                       fontFamily: PJS,
                       fontSize: 13.5,
                       fontWeight: 600,
-                      color: "#1B2E24",
+                      color: TEXT,
                       outline: "none",
                       background: "#F8FAF9",
                     }}
@@ -1162,7 +1162,7 @@ export function ProfileScreen({
                       fontFamily: PJS,
                       fontSize: 13.5,
                       fontWeight: 600,
-                      color: "#1B2E24",
+                      color: TEXT,
                       outline: "none",
                       background: "#F8FAF9",
                     }}
@@ -1260,7 +1260,7 @@ export function ProfileScreen({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "#1B2E24",
+                  color: TEXT,
                 }}
                 className="active:scale-95 transition-transform"
                 title="Kembali"
@@ -1268,7 +1268,7 @@ export function ProfileScreen({
                 <ArrowLeft size={20} strokeWidth={2.4} />
               </button>
               <div>
-                <h1 style={{ fontFamily: PJS, fontSize: 17.5, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>
+                <h1 style={{ fontFamily: PJS, fontSize: 17.5, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
                   Profil Siswa
                 </h1>
                 <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "2px 0 0", fontWeight: 500 }}>
@@ -1330,7 +1330,7 @@ export function ProfileScreen({
           >
             <FotoProfil s={s} size={64} />
             <div className="flex-1 min-w-0">
-              <h2 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.25 }}>
+              <h2 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.25 }}>
                 {s.name}
               </h2>
               <p style={{ fontFamily: IPS, fontSize: 12, color: "#5A6E63", margin: "3px 0 6px" }}>
@@ -1448,7 +1448,7 @@ export function ProfileScreen({
                     <FileText size={22} style={{ color: "#2E3E35" }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 14, color: "#1B2E24", margin: 0 }}>
+                    <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 14, color: TEXT, margin: 0 }}>
                       Asesmen Custom
                     </p>
                     <p style={{ fontFamily: IPS, fontSize: 12, color: "#486353", margin: "2px 0 0" }}>
@@ -1560,7 +1560,7 @@ export function ProfileScreen({
                   <div className="flex items-center justify-between mb-2 px-1">
                     <div className="flex items-center gap-2">
                       <User size={15} style={{ color: "#2E3E35" }} strokeWidth={2.4} />
-                      <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: "#1B2E24", margin: 0, letterSpacing: "0.03em" }}>
+                      <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: TEXT, margin: 0, letterSpacing: "0.03em" }}>
                         IDENTITAS SISWA
                       </h3>
                     </div>
@@ -1597,19 +1597,19 @@ export function ProfileScreen({
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 16px" }}>
                       <div>
                         <p style={{ fontSize: 11, color: "#64748B", fontFamily: IPS, margin: 0 }}>NISN</p>
-                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: "#1B2E24", margin: "3px 0 0" }}>
+                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: "3px 0 0" }}>
                           {s.nisn || "0012345602"}
                         </p>
                       </div>
                       <div>
                         <p style={{ fontSize: 11, color: "#64748B", fontFamily: IPS, margin: 0 }}>Jenis Kelamin</p>
-                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: "#1B2E24", margin: "3px 0 0" }}>
+                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: "3px 0 0" }}>
                           {s.gender === "L" ? "Laki-laki" : "Perempuan"}
                         </p>
                       </div>
                       <div style={{ gridColumn: "span 2" }}>
                         <p style={{ fontSize: 11, color: "#64748B", fontFamily: IPS, margin: 0 }}>Tanggal Lahir</p>
-                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: "#1B2E24", margin: "3px 0 0" }}>
+                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: "3px 0 0" }}>
                           {s.tanggalLahir || "05 Juli 2012"}
                         </p>
                       </div>
@@ -1622,7 +1622,7 @@ export function ProfileScreen({
                   <div className="flex items-center justify-between mb-2 px-1">
                     <div className="flex items-center gap-2">
                       <Users size={15} style={{ color: "#2E3E35" }} strokeWidth={2.4} />
-                      <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: "#1B2E24", margin: 0, letterSpacing: "0.03em" }}>
+                      <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: TEXT, margin: 0, letterSpacing: "0.03em" }}>
                         INFORMASI KELUARGA
                       </h3>
                     </div>
@@ -1659,13 +1659,13 @@ export function ProfileScreen({
                     <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "14px 16px" }}>
                       <div>
                         <p style={{ fontSize: 11, color: "#64748B", fontFamily: IPS, margin: 0 }}>Orang Tua / Wali</p>
-                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: "#1B2E24", margin: "3px 0 0" }}>
+                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: "3px 0 0" }}>
                           {s.namaOrtu ? `${s.namaOrtu}${s.statusOrtu ? ` (${s.statusOrtu})` : ""}` : "Bapak Haris (Kandung)"}
                         </p>
                       </div>
                       <div>
                         <p style={{ fontSize: 11, color: "#64748B", fontFamily: IPS, margin: 0 }}>Kode Ortu</p>
-                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: "#1B2E24", margin: "3px 0 0" }}>
+                        <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 13.5, color: TEXT, margin: "3px 0 0" }}>
                           {s.kodeOrtu || s.abk || "Tunadaksa"}
                         </p>
                       </div>
@@ -1678,7 +1678,7 @@ export function ProfileScreen({
                   <div className="flex items-center justify-between mb-2 px-1">
                     <div className="flex items-center gap-2">
                       <Heart size={15} style={{ color: "#2E3E35" }} strokeWidth={2.4} />
-                      <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: "#1B2E24", margin: 0, letterSpacing: "0.03em" }}>
+                      <h3 style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: TEXT, margin: 0, letterSpacing: "0.03em" }}>
                         KONDISI & KEBUTUHAN SISWA
                       </h3>
                     </div>
@@ -1729,14 +1729,14 @@ export function ProfileScreen({
                           borderBottom: idx < arr.length - 1 ? "1px solid rgba(91,122,104,0.08)" : "none",
                         }}
                       >
-                        <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: "#1B2E24", margin: 0 }}>
+                        <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: TEXT, margin: 0 }}>
                           {label}
                         </p>
                         <p
                           style={{
                             fontFamily: IPS,
                             fontSize: 13,
-                            color: val === "Belum diisi" ? "#94A3B8" : "#1B2E24",
+                            color: val === "Belum diisi" ? "#94A3B8" : TEXT,
                             fontWeight: val === "Belum diisi" ? 500 : 700,
                             margin: "3px 0 0",
                           }}

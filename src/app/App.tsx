@@ -28,7 +28,7 @@ import {
 
 // Layout components
 import {
-  StatusBar, SearchOverlay, SettingsSheet, GlobalHeader, BotNav, OnboardingModal,
+  StatusBar, SearchOverlay, SettingsSheet, GlobalHeader, BotNav, OnboardingModal, ProfileSheet,
 } from "./components/layout";
 
 
@@ -140,6 +140,7 @@ export default function App() {
   const [tts, setTts] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--font-size', `${fontSize * 16}px`);
@@ -296,7 +297,7 @@ export default function App() {
       case "asesmen-pending": return ["Asesmen Perlu Diperiksa", "Daftar siswa yang belum dinilai"];
       case "students": return ["Kelas Saya", "Kelola Siswa dengan Mudah"];
       case "talent-map": return ["Peta Bakat", guru.sekolah];
-      case "competition": return ["Agenda Ajang Talenta", "Jadwal O2SN, FLS3N & LKSN Diksus"];
+      case "competition": return ["Agenda Lomba", "Jadwal O2SN, FLS3N & LKSN Diksus"];
       case "report": return ["Laporan", "Rekap data siswa & pemetaan bakat"];
       case "parent-dashboard": return ["Beranda ♡", child ? `Orang Tua · ${child.name}` : "Orang Tua · belum terhubung"];
       case "parent-detail": return ["Perkembangan Anak", child ? child.name : "Belum terhubung"];
@@ -352,6 +353,7 @@ export default function App() {
       case "konfirmasi-akun": return (
         <KonfirmasiAkunScreen
           profile={guru}
+          onBack={goBack}
           onNext={(p) => {
             setGuru(g => ({ ...g, ...p, setupDone: false }));
             setRole("guru");
@@ -456,6 +458,7 @@ export default function App() {
     fontSize, setFontSize, tts, setTts,
     openSearch: () => setShowSearch(true),
     openSettings: () => setShowSettings(true),
+    openProfile: () => setShowProfile(true),
   };
 
   const [title, sub] = headerTitle();
@@ -510,7 +513,7 @@ export default function App() {
               )}
 
               {screen !== "landing" && (
-                <div style={{ background: "#FFFFFF", paddingTop: 36, flexShrink: 0 }}>
+                <div style={{ background: screen === "konfirmasi-akun" ? "#F4F8F5" : "#FFFFFF", paddingTop: 36, flexShrink: 0 }}>
                   <StatusBar />
                 </div>
               )}
@@ -521,12 +524,8 @@ export default function App() {
                   <GlobalHeader
                     title={title}
                     sub={sub}
-                    onProfile={() => {
-                      if (list.length > 0) {
-                        setSelectedStudentId(list[0].id);
-                        go("profile");
-                      }
-                    }}
+                    onBack={screen === "competition" ? () => go("dashboard") : (screenHistory.length > 0 ? goBack : undefined)}
+                    onProfile={() => setShowProfile(true)}
                   />
                 )}
                 {renderScreen()}
@@ -536,6 +535,36 @@ export default function App() {
                     onClose={() => setShowSettings(false)}
                     onLogout={handleLogout}
                     role={role}
+                  />
+                )}
+
+                {showSearch && (
+                  <SearchOverlay
+                    onClose={() => setShowSearch(false)}
+                    onSelect={(id) => {
+                      setSelectedStudentId(id);
+                      setShowSearch(false);
+                      go("profile");
+                    }}
+                    onGo={(scr) => {
+                      setShowSearch(false);
+                      go(scr);
+                    }}
+                  />
+                )}
+
+                {showProfile && (
+                  <ProfileSheet
+                    isOpen={showProfile}
+                    onClose={() => setShowProfile(false)}
+                    role={role}
+                    guru={guru}
+                    namaOrtu={namaOrtu}
+                    childName={child?.name}
+                    onEditProfile={() => go("konfirmasi-akun")}
+                    onOpenSettings={() => setShowSettings(true)}
+                    onLogout={handleLogout}
+                    onGoStudents={() => go("students")}
                   />
                 )}
 
@@ -563,6 +592,10 @@ export default function App() {
                     firstTime={addFirstTime}
                     savedCount={list.length}
                     onSave={addStudent}
+                    onDone={() => {
+                      setShowAddStudent(false);
+                      if (addFirstTime) { setAddFirstTime(false); finishGuruSetup(); }
+                    }}
                     onClose={() => {
                       setShowAddStudent(false);
                       if (addFirstTime) { setAddFirstTime(false); finishGuruSetup(); }

@@ -503,7 +503,7 @@ export function TambahSiswaPromptModal({
                         borderRadius: 20,
                         border: `1.5px solid ${isSelected ? "#738B7B" : "#D5E0D5"}`,
                         background: isSelected ? "#EAF2EC" : "#FFFFFF",
-                        color: isSelected ? "#1B2E24" : "#4B5563",
+                        color: isSelected ? TEXT : "#4B5563",
                         cursor: "pointer",
                         transition: "all 0.15s ease-in-out",
                         display: "inline-flex",

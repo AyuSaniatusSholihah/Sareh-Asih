@@ -28,11 +28,13 @@ export interface UICtx {
   setTts: (v:boolean)=>void;
   openSearch: ()=>void;
   openSettings: ()=>void;
+  openProfile: ()=>void;
 }
 export const UI = createContext<UICtx>({
   fontSize:1, setFontSize:()=>{},
   tts:false,  setTts:()=>{},
   openSearch:()=>{}, openSettings:()=>{},
+  openProfile:()=>{},
 });
 export const useUI = () => useContext(UI);
 
@@ -66,8 +68,8 @@ export function SBadge({ s }: { s:StatusType }) {
   return <span style={{background:bg,color:tx,border:`1px solid ${bdr}`,fontFamily:PJS}} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold"><I size={11} strokeWidth={2.2}/>{s}</span>;
 }
 
-export type PrimaryBtnVariant = "solid" | "light" | "outline";
-export type SecondaryBtnVariant = "sage" | "deep" | "light" | "outline";
+export type PrimaryBtnVariant = "solid" | "sage" | "deep" | "light" | "outline";
+export type SecondaryBtnVariant = "solid" | "terracotta" | "tint" | "light" | "outline" | "sage" | "deep";
 
 export function PBtn({
   label,
@@ -75,7 +77,7 @@ export function PBtn({
   onClick,
   full,
   disabled,
-  variant = "solid",
+  variant = "deep",
   size = "md",
   className = "",
   style = {},
@@ -94,7 +96,7 @@ export function PBtn({
   const fSize = size === "sm" ? 13 : size === "lg" ? 15 : 14;
   const pad = size === "sm" ? "8px 16px" : size === "lg" ? "14px 24px" : "12px 20px";
 
-  let bg = A;
+  let bg = DEEP;
   let color = "#FFFFFF";
   let border = "none";
   let shadow = "0 6px 18px rgba(91,122,104,0.30)";
@@ -103,15 +105,19 @@ export function PBtn({
     bg = "#CBD5E1";
     color = "#94A3B8";
     shadow = "none";
+  } else if (variant === "sage") {
+    bg = SAGE;
+    color = "#FFFFFF";
+    shadow = "0 6px 18px rgba(139,176,152,0.35)";
   } else if (variant === "light") {
-    bg = "rgba(91,122,104,0.14)";
-    color = A;
-    border = "1.5px solid rgba(91,122,104,0.35)";
+    bg = SEC;
+    color = DEEP;
+    border = `1.5px solid ${BDR}`;
     shadow = "none";
   } else if (variant === "outline") {
     bg = "transparent";
-    color = A;
-    border = `2.5px solid ${A}`;
+    color = DEEP;
+    border = `2px solid ${DEEP}`;
     shadow = "none";
   }
 
@@ -147,7 +153,7 @@ export function SBtn({
   onClick,
   full,
   disabled,
-  variant = "sage",
+  variant = "solid",
   size = "md",
   className = "",
   style = {},
@@ -166,29 +172,37 @@ export function SBtn({
   const fSize = size === "sm" ? 13 : size === "lg" ? 15 : 14;
   const pad = size === "sm" ? "8px 16px" : size === "lg" ? "14px 24px" : "12px 20px";
 
-  let bg = T;
+  let bg = TERRACOTTA;
   let color = "#FFFFFF";
   let border = "none";
-  let shadow = "0 6px 18px rgba(139,176,152,0.38)";
+  let shadow = "0 6px 18px rgba(210,125,107,0.30)";
 
   if (disabled) {
     bg = "#D1D5DB";
     color = "#9CA3AF";
     shadow = "none";
+  } else if (variant === "tint") {
+    bg = "#DC8A7A";
+    color = "#FFFFFF";
+    shadow = "0 4px 14px rgba(210,125,107,0.22)";
+  } else if (variant === "light") {
+    bg = "rgba(210,125,107,0.14)";
+    color = TERRACOTTA;
+    border = "1.5px solid rgba(210,125,107,0.35)";
+    shadow = "none";
+  } else if (variant === "outline") {
+    bg = "transparent";
+    color = TERRACOTTA;
+    border = `2px solid ${TERRACOTTA}`;
+    shadow = "none";
+  } else if (variant === "sage") {
+    bg = SAGE;
+    color = "#FFFFFF";
+    shadow = "0 6px 18px rgba(139,176,152,0.38)";
   } else if (variant === "deep") {
     bg = DEEP;
     color = "#FFFFFF";
     shadow = "0 6px 18px rgba(91,122,104,0.38)";
-  } else if (variant === "light") {
-    bg = SEC;
-    color = TEXT;
-    border = `1.5px solid rgba(91,122,104,0.22)`;
-    shadow = "0 2px 8px rgba(91,122,104,0.08)";
-  } else if (variant === "outline") {
-    bg = "transparent";
-    color = DEEP;
-    border = `2px solid ${DEEP}`;
-    shadow = "none";
   }
 
   return (

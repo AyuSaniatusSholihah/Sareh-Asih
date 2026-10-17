@@ -56,8 +56,8 @@ export const KEKHUSUSAN_DESCRIPTIVE: Record<string, string> = {
   "B":       "Hambatan pendengaran (Tuna Rungu / B)",
   "C":       "Hambatan intelektual ringan (Tunagrahita Ringan / C)",
   "C1":      "Hambatan intelektual sedang (Tunagrahita Sedang / C1)",
-  "D":       "Tunadaksa Ringan — tanpa hambatan intelektual (D)",
-  "D1":      "Tunadaksa — dengan hambatan intelektual/ganda (D1)",
+  "D":       "Tunadaksa Ringan (D)",
+  "D1":      "Tunadaksa Ganda (D1)",
   "Q":       "Spektrum autisme (Autis / Q)",
   "Lainnya": "Lainnya (tulis sendiri)",
 };

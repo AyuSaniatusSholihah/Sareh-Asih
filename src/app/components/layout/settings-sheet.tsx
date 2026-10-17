@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   HelpCircle, Heart, Shield, LogOut, Volume2, VolumeX, ChevronRight, X, Sparkles,
 } from "lucide-react";

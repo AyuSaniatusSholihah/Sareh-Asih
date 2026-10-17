@@ -1,6 +1,6 @@
 import {
   Percent, Star, Calendar, FileText, Search, Bell, Settings,
-  ChevronRight, Activity, ClipboardCheck, User, PlayCircle, Sparkles,
+  ChevronRight, Activity, ClipboardCheck, User, Users, PlayCircle, Sparkles,
   ArrowUpRight,
 } from "lucide-react";
 import {
@@ -28,10 +28,11 @@ export function DashboardGuru({
   laporan: LaporanKirim[];
 }) {
   const students = useStudents();
-  const { openSearch, openSettings } = useUI();
+  const { openSearch, openSettings, openProfile } = useUI();
   const pendingObs = students.filter(s => !s.hasObs);
   const firstName = guru.nama.split(" ")[0];
-
+  const completedObsCount = students.filter(s => s.hasObs).length;
+  const progressPercent = students.length > 0 ? Math.round((completedObsCount / students.length) * 100) : 0;
 
 
   // ── Aktivitas terbaru (feed guru: asesmen + laporan terkirim) ──
@@ -83,76 +84,7 @@ export function DashboardGuru({
     }),
   ].slice(0, 5);
 
-  const quickActions = [
-    {
-      kategori: "Kelas & Siswa",
-      label: "Kelas Saya",
-      stat: `${students.length} Siswa`,
-      badge: "Kelas VII-A ↗",
-      bg: "#CDE7D5", // Light Sage dari palette
-      border: "#A6D5B4",
-      labelColor: "#1B3E28",
-      statColor: "#112F1D",
-      badgeBg: "#FFFFFF",
-      badgeColor: "#112F1D",
-      btnBg: "#112F1D",
-      btnColor: "#FFFFFF",
-      waveColor: "#7AAFA0",
-      isDark: false,
-      onClick: () => go("students"),
-    },
-    {
-      kategori: "Pemetaan Bakat",
-      label: "Bakat Anak",
-      stat: "Minat & Potensi",
-      badge: "Peta RIASEC ↗",
-      bg: "#D8EEDF", // Mint Light Sage dari palette
-      border: "#B2DEC1",
-      labelColor: "#1B3E28",
-      statColor: "#112F1D",
-      badgeBg: "#FFFFFF",
-      badgeColor: "#112F1D",
-      btnBg: "#112F1D",
-      btnColor: "#FFFFFF",
-      waveColor: "#6FA585",
-      isDark: false,
-      onClick: () => go("talent-map"),
-    },
-    {
-      kategori: "Agenda Lomba",
-      label: "Agenda",
-      stat: "Jadwal Diksus",
-      badge: "FLS3N & O2SN ↗",
-      bg: "#FCEBE7", // Soft Terracotta Tint dari palette #D27D6B
-      border: "#F5C9C0",
-      labelColor: "#893724",
-      statColor: "#6B2414",
-      badgeBg: "#FFFFFF",
-      badgeColor: "#6B2414",
-      btnBg: "#6B2414",
-      btnColor: "#FFFFFF",
-      waveColor: "#E09787",
-      isDark: false,
-      onClick: () => go("competition"),
-    },
-    {
-      kategori: "Laporan Siswa",
-      label: "Laporan",
-      stat: "Kemajuan Belajar",
-      badge: "Siap Dikirim ↗",
-      bg: "#143522", // Deep Forest Green (kartu gelap kontras tinggi dari referensi)
-      border: "#0E2818",
-      labelColor: "#A6D6B6",
-      statColor: "#FFFFFF",
-      badgeBg: "#224A32",
-      badgeColor: "#CDE7D5",
-      btnBg: "#CDE7D5",
-      btnColor: "#143522",
-      waveColor: "#2A6140",
-      isDark: true,
-      onClick: () => go("report"),
-    },
-  ];
+
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
@@ -164,7 +96,7 @@ export function DashboardGuru({
               Beranda
             </h1>
             <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#5A6E63", margin: "4px 0 0", fontWeight: 500 }}>
-              Selamat pagi, {firstName} 👋 · {guru.sekolah}
+              Selamat pagi, {firstName} 👋{guru.sekolah?.trim() ? ` · ${guru.sekolah}` : ""}
             </p>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
@@ -174,10 +106,10 @@ export function DashboardGuru({
               title="Cari">
               <Search size={17} style={{ color: "#1B2E24" }} />
             </button>
-            <button onClick={() => go("students")}
+            <button onClick={openProfile}
               style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
               className="active:scale-95 transition-transform"
-              title="Profil Siswa">
+              title="Profil Akun">
               <User size={17} style={{ color: "#1B2E24" }} />
             </button>
             <button onClick={openSettings}
@@ -191,188 +123,456 @@ export function DashboardGuru({
       </div>
 
       <div style={{ padding: "14px 16px 90px", display: "flex", flexDirection: "column", gap: 16 }}>
-        {/* ── Alert Banner ── */}
+        {/* ── Alert Banner (Clean White Card with Muted Terracotta Attention Accent) ── */}
         {pendingObs.length > 0 && (
-          <div onClick={() => go("asesmen-pending")}
+          <div
+            onClick={() => go("asesmen-pending")}
             style={{
-              background: "#D27D6B",
+              background: "#FFFFFF",
               borderRadius: 22,
-              padding: "14px 16px",
+              padding: "16px 18px",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              flexDirection: "column",
               gap: 12,
-              boxShadow: "0 6px 18px rgba(210,125,107,0.30)",
-              color: "#FFFFFF",
+              border: "1px solid rgba(210, 125, 107, 0.25)",
+              boxShadow: "0 3px 12px rgba(91, 122, 104, 0.06)",
               cursor: "pointer",
             }}
-            className="active:scale-[0.98] transition-transform">
-            <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-              <div style={{ width: 42, height: 42, borderRadius: 14, background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>
-                <Bell size={20} style={{ color: "#D27D6B" }} />
+            className="active:scale-[0.98] transition-transform"
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <p style={{ fontSize: 15, fontWeight: 800, color: "#2E3E35", fontFamily: PJS, lineHeight: 1.2, margin: 0 }}>
+                  {pendingObs.length} asesmen perlu diperiksa
+                </p>
+                <p style={{ fontSize: 12, color: "#5B7A68", margin: "4px 0 0", lineHeight: 1.3, fontWeight: 500 }}>
+                  {completedObsCount} dari {students.length} siswa sudah selesai
+                </p>
               </div>
-              <div style={{ minWidth: 0 }}>
-                <p style={{ fontSize: 13.5, fontWeight: 800, color: "#FFFFFF", fontFamily: PJS, lineHeight: 1.2 }}>{pendingObs.length} asesmen perlu diperiksa</p>
-                <p style={{ fontSize: 11, color: "#FDEEEB", marginTop: 2, lineHeight: 1.3, fontWeight: 500 }}>Tap untuk lengkapi asesmen siswa</p>
-              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  go("asesmen-pending");
+                }}
+                style={{
+                  background: "#D27D6B",
+                  color: "#FFFFFF",
+                  border: "none",
+                  borderRadius: 12,
+                  padding: "8px 18px",
+                  fontFamily: PJS,
+                  fontSize: 12.5,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  flexShrink: 0,
+                  boxShadow: "0 3px 10px rgba(210,125,107,0.28)",
+                  letterSpacing: "0.02em",
+                }}
+                className="active:scale-95 transition-transform"
+              >
+                Lihat
+              </button>
             </div>
-            <button onClick={() => go("asesmen-pending")}
-              style={{
-                background: "#FFFFFF",
-                color: "#D27D6B",
-                border: "none",
-                borderRadius: 14,
-                padding: "9px 13px",
-                fontFamily: PJS,
-                fontSize: 12,
-                fontWeight: 800,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 3,
-                flexShrink: 0,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-              }}
-              className="active:scale-95 transition-transform">
-              Lihat <ChevronRight size={13} strokeWidth={2.5} />
-            </button>
+
+            {/* Progress bar (clean visible track on white) */}
+            <div style={{ width: "100%", height: 7, background: "rgba(91, 122, 104, 0.12)", borderRadius: 9999, overflow: "hidden" }}>
+              <div
+                style={{
+                  width: `${Math.max(7, progressPercent)}%`,
+                  height: "100%",
+                  background: "#D27D6B",
+                  borderRadius: 9999,
+                  transition: "width 0.4s ease",
+                }}
+              />
+            </div>
           </div>
         )}
 
-        {/* ── Akses Cepat ── */}
+        {/* ── Akses Cepat (4 Kotak Grid 2x2) ── */}
         <div>
-          <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, marginBottom: 10 }}>Akses Cepat</p>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, margin: 0 }}>Akses Cepat</p>
+            <span style={{ fontFamily: IPS, fontSize: 11, color: MUTED, fontWeight: 600 }}>4 menu</span>
+          </div>
+
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            {quickActions.map((a, i) => (
-              <button
-                key={i}
-                onClick={a.onClick}
-                style={{
-                  position: "relative",
-                  borderRadius: 22,
-                  cursor: "pointer",
-                  textAlign: "left",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  minHeight: 148,
-                  background: a.bg,
-                  border: `1.5px solid ${a.border}`,
-                  padding: "16px 14px 14px",
-                  overflow: "hidden",
-                  boxShadow: a.isDark ? "0 8px 22px rgba(20,53,34,0.22)" : "0 4px 14px rgba(91,122,104,0.10)",
-                }}
-                className="active:scale-[0.97] transition-all hover:brightness-105"
-              >
-                {/* Wave decorative line seperti mockup */}
-                <svg
+            {/* 1. Siswa (Kelas & Siswa) */}
+            <button
+              onClick={() => go("students")}
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid rgba(91, 122, 104, 0.14)",
+                borderRadius: 22,
+                padding: "14px 14px 13px",
+                cursor: "pointer",
+                textAlign: "left",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                minHeight: 148,
+                boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
+              }}
+              className="active:scale-[0.97] transition-all hover:shadow-md"
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
+                <div
                   style={{
-                    position: "absolute",
-                    right: -10,
-                    top: 15,
-                    width: 130,
-                    height: 75,
-                    pointerEvents: "none",
+                    width: 40,
+                    height: 40,
+                    borderRadius: 13,
+                    background: "#D4E8DA",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
                   }}
-                  viewBox="0 0 130 75"
-                  fill="none"
                 >
-                  <path
-                    d="M 0 48 Q 32 10 65 42 T 130 18"
-                    stroke={a.waveColor}
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    opacity={a.isDark ? "0.6" : "0.5"}
-                  />
-                </svg>
-
-                {/* Top row: category label + circular arrow button */}
-                <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
-                  <span
-                    style={{
-                      fontFamily: PJS,
-                      fontSize: 10,
-                      fontWeight: 800,
-                      letterSpacing: "0.03em",
-                      textTransform: "uppercase",
-                      color: a.labelColor,
-                      lineHeight: 1.25,
-                      maxWidth: "68%",
-                    }}
-                  >
-                    {a.kategori}
-                  </span>
-                  <div
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: "50%",
-                      background: a.btnBg,
-                      color: a.btnColor,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.14)",
-                    }}
-                  >
-                    <ArrowUpRight size={17} strokeWidth={2.6} />
-                  </div>
+                  <Users size={19} strokeWidth={2.2} style={{ color: "#2E3E35" }} />
                 </div>
+                <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
+              </div>
 
-                {/* Middle: big bold title */}
-                <div style={{ position: "relative", zIndex: 1, margin: "10px 0 12px" }}>
-                  <p
-                    style={{
-                      fontFamily: PJS,
-                      fontWeight: 800,
-                      fontSize: 17,
-                      color: a.statColor,
-                      margin: 0,
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {a.stat}
-                  </p>
-                  <p
-                    style={{
-                      fontFamily: IPS,
-                      fontSize: 11.5,
-                      fontWeight: 600,
-                      color: a.labelColor,
-                      margin: "3px 0 0",
-                      lineHeight: 1.25,
-                      opacity: a.isDark ? 0.9 : 0.85,
-                    }}
-                  >
-                    {a.label}
-                  </p>
-                </div>
+              <div style={{ margin: "10px 0 8px" }}>
+                <p
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 9,
+                    fontWeight: 800,
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                    color: "#5B7A68",
+                    margin: 0,
+                  }}
+                >
+                  KELAS & SISWA
+                </p>
+                <p
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 16.5,
+                    fontWeight: 800,
+                    color: "#2E3E35",
+                    margin: "3px 0 0",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {students.length} Siswa
+                </p>
+                <p
+                  style={{
+                    fontFamily: IPS,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: "#5B7A68",
+                    margin: "2px 0 0",
+                  }}
+                >
+                  Kelas saya
+                </p>
+              </div>
 
-                {/* Bottom: pill badge with arrow */}
-                <div style={{ position: "relative", zIndex: 1 }}>
-                  <span
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 4,
-                      background: a.badgeBg,
-                      color: a.badgeColor,
-                      borderRadius: 20,
-                      padding: "4px 9px",
-                      fontFamily: PJS,
-                      fontSize: 10.5,
-                      fontWeight: 700,
-                      lineHeight: 1.2,
-                      border: a.isDark ? `1px solid ${a.border}` : "1px solid rgba(0,0,0,0.06)",
-                      boxShadow: a.isDark ? "none" : "0 1px 3px rgba(0,0,0,0.05)",
-                    }}
-                  >
-                    {a.badge}
-                  </span>
+              <div>
+                <span
+                  style={{
+                    display: "inline-block",
+                    background: "#D4E8DA",
+                    color: "#2E3E35",
+                    fontFamily: PJS,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    padding: "4px 10px",
+                    borderRadius: 9999,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Kelas VII-A
+                </span>
+              </div>
+            </button>
+
+            {/* 2. Minat (Pemetaan Bakat) */}
+            <button
+              onClick={() => go("talent-map")}
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid rgba(91, 122, 104, 0.14)",
+                borderRadius: 22,
+                padding: "14px 14px 13px",
+                cursor: "pointer",
+                textAlign: "left",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                minHeight: 148,
+                boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
+              }}
+              className="active:scale-[0.97] transition-all hover:shadow-md"
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 13,
+                    background: "#5B7A68",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    boxShadow: "0 2px 6px rgba(91,122,104,0.20)",
+                  }}
+                >
+                  <Star size={19} strokeWidth={2.2} style={{ color: "#FFFFFF" }} />
                 </div>
-              </button>
-            ))}
+                <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
+              </div>
+
+              <div style={{ margin: "10px 0 8px" }}>
+                <p
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 9,
+                    fontWeight: 800,
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                    color: "#5B7A68",
+                    margin: 0,
+                  }}
+                >
+                  PEMETAAN BAKAT
+                </p>
+                <p
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 16,
+                    fontWeight: 800,
+                    color: "#2E3E35",
+                    margin: "3px 0 0",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Minat & Potensi
+                </p>
+                <p
+                  style={{
+                    fontFamily: IPS,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: "#5B7A68",
+                    margin: "2px 0 0",
+                  }}
+                >
+                  Bakat anak
+                </p>
+              </div>
+
+              <div>
+                <span
+                  style={{
+                    display: "inline-block",
+                    background: "#D4E8DA",
+                    color: "#2E3E35",
+                    fontFamily: PJS,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    padding: "4px 10px",
+                    borderRadius: 9999,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Peta RIASEC
+                </span>
+              </div>
+            </button>
+
+            {/* 3. Agenda (Agenda Lomba) */}
+            <button
+              onClick={() => go("competition")}
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid rgba(91, 122, 104, 0.14)",
+                borderRadius: 22,
+                padding: "14px 14px 13px",
+                cursor: "pointer",
+                textAlign: "left",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                minHeight: 148,
+                boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
+              }}
+              className="active:scale-[0.97] transition-all hover:shadow-md"
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 13,
+                    background: "rgba(210,125,107,0.15)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Calendar size={19} strokeWidth={2.2} style={{ color: "#D27D6B" }} />
+                </div>
+                <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
+              </div>
+
+              <div style={{ margin: "10px 0 8px" }}>
+                <p
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 9,
+                    fontWeight: 800,
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                    color: "#5B7A68",
+                    margin: 0,
+                  }}
+                >
+                  AGENDA LOMBA
+                </p>
+                <p
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 16,
+                    fontWeight: 800,
+                    color: "#2E3E35",
+                    margin: "3px 0 0",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Jadwal Diksus
+                </p>
+                <p
+                  style={{
+                    fontFamily: IPS,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: "#5B7A68",
+                    margin: "2px 0 0",
+                  }}
+                >
+                  Agenda
+                </p>
+              </div>
+
+              <div>
+                <span
+                  style={{
+                    display: "inline-block",
+                    background: "rgba(210,125,107,0.14)",
+                    color: "#D27D6B",
+                    fontFamily: PJS,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    padding: "4px 10px",
+                    borderRadius: 9999,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  FLS3N & O2SN
+                </span>
+              </div>
+            </button>
+
+            {/* 4. Laporan (Laporan Siswa) */}
+            <button
+              onClick={() => go("report")}
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid rgba(91, 122, 104, 0.14)",
+                borderRadius: 22,
+                padding: "14px 14px 13px",
+                cursor: "pointer",
+                textAlign: "left",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                minHeight: 148,
+                boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
+              }}
+              className="active:scale-[0.97] transition-all hover:shadow-md"
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 13,
+                    background: "#D4E8DA",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <FileText size={19} strokeWidth={2.2} style={{ color: "#5B7A68" }} />
+                </div>
+                <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
+              </div>
+
+              <div style={{ margin: "10px 0 8px" }}>
+                <p
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 9,
+                    fontWeight: 800,
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                    color: "#5B7A68",
+                    margin: 0,
+                  }}
+                >
+                  LAPORAN SISWA
+                </p>
+                <p
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 16,
+                    fontWeight: 800,
+                    color: "#2E3E35",
+                    margin: "3px 0 0",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Kemajuan Belajar
+                </p>
+                <p
+                  style={{
+                    fontFamily: IPS,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: "#5B7A68",
+                    margin: "2px 0 0",
+                  }}
+                >
+                  Laporan
+                </p>
+              </div>
+
+              <div>
+                <span
+                  style={{
+                    display: "inline-block",
+                    background: "#D4E8DA",
+                    color: "#2E3E35",
+                    fontFamily: PJS,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    padding: "4px 10px",
+                    borderRadius: 9999,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Siap dikirim
+                </span>
+              </div>
+            </button>
           </div>
         </div>
 
@@ -382,7 +582,7 @@ export function DashboardGuru({
             <Activity size={16} style={{ color: DEEP }} />
             <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT }}>Aktivitas Terbaru</p>
           </div>
-          <div style={{ background: CARD, border: `1.5px solid ${BDR}`, borderRadius: 22, padding: "4px 14px", boxShadow: "0 2px 10px rgba(91,122,104,0.08)" }}>
+          <div style={{ background: CARD, border: "1px solid rgba(91, 122, 104, 0.12)", borderRadius: 20, padding: "4px 14px", boxShadow: "0 3px 10px -2px rgba(91, 122, 104, 0.06)" }}>
             {aktivitas.map((a, i) => (
               <button
                 key={a.id}
