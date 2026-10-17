@@ -203,14 +203,14 @@ export function DashboardGuru({
               style={{
                 background: "#FFFFFF",
                 border: "1px solid rgba(91, 122, 104, 0.14)",
-                borderRadius: 22,
-                padding: "14px 14px 13px",
+                borderRadius: 20,
+                padding: "13px 13px 12px",
                 cursor: "pointer",
                 textAlign: "left",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                minHeight: 148,
+                minHeight: 116,
                 boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
               }}
               className="active:scale-[0.97] transition-all hover:shadow-md"
@@ -218,9 +218,9 @@ export function DashboardGuru({
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
                 <div
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 13,
+                    width: 38,
+                    height: 38,
+                    borderRadius: 12,
                     background: "#D4E8DA",
                     display: "flex",
                     alignItems: "center",
@@ -233,61 +233,31 @@ export function DashboardGuru({
                 <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
               </div>
 
-              <div style={{ margin: "10px 0 8px" }}>
+              <div style={{ marginTop: 10 }}>
                 <p
                   style={{
                     fontFamily: PJS,
-                    fontSize: 9,
-                    fontWeight: 800,
-                    letterSpacing: "0.04em",
-                    textTransform: "uppercase",
-                    color: "#5B7A68",
-                    margin: 0,
-                  }}
-                >
-                  KELAS & SISWA
-                </p>
-                <p
-                  style={{
-                    fontFamily: PJS,
-                    fontSize: 16.5,
+                    fontSize: 17,
                     fontWeight: 800,
                     color: "#2E3E35",
-                    margin: "3px 0 0",
-                    lineHeight: 1.2,
+                    margin: 0,
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.01em",
                   }}
                 >
-                  {students.length} Siswa
+                  Kelas & Siswa
                 </p>
                 <p
                   style={{
                     fontFamily: IPS,
-                    fontSize: 11,
+                    fontSize: 11.5,
                     fontWeight: 600,
                     color: "#5B7A68",
-                    margin: "2px 0 0",
+                    margin: "3px 0 0",
                   }}
                 >
                   Kelas saya
                 </p>
-              </div>
-
-              <div>
-                <span
-                  style={{
-                    display: "inline-block",
-                    background: "#D4E8DA",
-                    color: "#2E3E35",
-                    fontFamily: PJS,
-                    fontSize: 10,
-                    fontWeight: 700,
-                    padding: "4px 10px",
-                    borderRadius: 9999,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Kelas VII-A
-                </span>
               </div>
             </button>
 
@@ -297,14 +267,14 @@ export function DashboardGuru({
               style={{
                 background: "#FFFFFF",
                 border: "1px solid rgba(91, 122, 104, 0.14)",
-                borderRadius: 22,
-                padding: "14px 14px 13px",
+                borderRadius: 20,
+                padding: "13px 13px 12px",
                 cursor: "pointer",
                 textAlign: "left",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                minHeight: 148,
+                minHeight: 116,
                 boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
               }}
               className="active:scale-[0.97] transition-all hover:shadow-md"
@@ -312,9 +282,9 @@ export function DashboardGuru({
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
                 <div
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 13,
+                    width: 38,
+                    height: 38,
+                    borderRadius: 12,
                     background: "#5B7A68",
                     display: "flex",
                     alignItems: "center",
@@ -328,61 +298,31 @@ export function DashboardGuru({
                 <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
               </div>
 
-              <div style={{ margin: "10px 0 8px" }}>
+              <div style={{ marginTop: 10 }}>
                 <p
                   style={{
                     fontFamily: PJS,
-                    fontSize: 9,
-                    fontWeight: 800,
-                    letterSpacing: "0.04em",
-                    textTransform: "uppercase",
-                    color: "#5B7A68",
-                    margin: 0,
-                  }}
-                >
-                  PEMETAAN BAKAT
-                </p>
-                <p
-                  style={{
-                    fontFamily: PJS,
-                    fontSize: 16,
+                    fontSize: 17,
                     fontWeight: 800,
                     color: "#2E3E35",
-                    margin: "3px 0 0",
-                    lineHeight: 1.2,
+                    margin: 0,
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.01em",
                   }}
                 >
-                  Minat & Potensi
+                  Pemetaan Bakat
                 </p>
                 <p
                   style={{
                     fontFamily: IPS,
-                    fontSize: 11,
+                    fontSize: 11.5,
                     fontWeight: 600,
                     color: "#5B7A68",
-                    margin: "2px 0 0",
+                    margin: "3px 0 0",
                   }}
                 >
-                  Bakat anak
+                  Minat & potensi
                 </p>
-              </div>
-
-              <div>
-                <span
-                  style={{
-                    display: "inline-block",
-                    background: "#D4E8DA",
-                    color: "#2E3E35",
-                    fontFamily: PJS,
-                    fontSize: 10,
-                    fontWeight: 700,
-                    padding: "4px 10px",
-                    borderRadius: 9999,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Peta RIASEC
-                </span>
               </div>
             </button>
 
@@ -392,14 +332,14 @@ export function DashboardGuru({
               style={{
                 background: "#FFFFFF",
                 border: "1px solid rgba(91, 122, 104, 0.14)",
-                borderRadius: 22,
-                padding: "14px 14px 13px",
+                borderRadius: 20,
+                padding: "13px 13px 12px",
                 cursor: "pointer",
                 textAlign: "left",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                minHeight: 148,
+                minHeight: 116,
                 boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
               }}
               className="active:scale-[0.97] transition-all hover:shadow-md"
@@ -407,9 +347,9 @@ export function DashboardGuru({
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
                 <div
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 13,
+                    width: 38,
+                    height: 38,
+                    borderRadius: 12,
                     background: "rgba(210,125,107,0.15)",
                     display: "flex",
                     alignItems: "center",
@@ -422,61 +362,31 @@ export function DashboardGuru({
                 <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
               </div>
 
-              <div style={{ margin: "10px 0 8px" }}>
+              <div style={{ marginTop: 10 }}>
                 <p
                   style={{
                     fontFamily: PJS,
-                    fontSize: 9,
-                    fontWeight: 800,
-                    letterSpacing: "0.04em",
-                    textTransform: "uppercase",
-                    color: "#5B7A68",
-                    margin: 0,
-                  }}
-                >
-                  AGENDA LOMBA
-                </p>
-                <p
-                  style={{
-                    fontFamily: PJS,
-                    fontSize: 16,
+                    fontSize: 17,
                     fontWeight: 800,
                     color: "#2E3E35",
-                    margin: "3px 0 0",
-                    lineHeight: 1.2,
+                    margin: 0,
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.01em",
                   }}
                 >
-                  Jadwal Diksus
+                  Agenda Lomba
                 </p>
                 <p
                   style={{
                     fontFamily: IPS,
-                    fontSize: 11,
+                    fontSize: 11.5,
                     fontWeight: 600,
                     color: "#5B7A68",
-                    margin: "2px 0 0",
+                    margin: "3px 0 0",
                   }}
                 >
-                  Agenda
+                  Jadwal diksus
                 </p>
-              </div>
-
-              <div>
-                <span
-                  style={{
-                    display: "inline-block",
-                    background: "rgba(210,125,107,0.14)",
-                    color: "#D27D6B",
-                    fontFamily: PJS,
-                    fontSize: 10,
-                    fontWeight: 700,
-                    padding: "4px 10px",
-                    borderRadius: 9999,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  FLS3N & O2SN
-                </span>
               </div>
             </button>
 
@@ -486,14 +396,14 @@ export function DashboardGuru({
               style={{
                 background: "#FFFFFF",
                 border: "1px solid rgba(91, 122, 104, 0.14)",
-                borderRadius: 22,
-                padding: "14px 14px 13px",
+                borderRadius: 20,
+                padding: "13px 13px 12px",
                 cursor: "pointer",
                 textAlign: "left",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                minHeight: 148,
+                minHeight: 116,
                 boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
               }}
               className="active:scale-[0.97] transition-all hover:shadow-md"
@@ -501,9 +411,9 @@ export function DashboardGuru({
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
                 <div
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 13,
+                    width: 38,
+                    height: 38,
+                    borderRadius: 12,
                     background: "#D4E8DA",
                     display: "flex",
                     alignItems: "center",
@@ -516,61 +426,31 @@ export function DashboardGuru({
                 <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
               </div>
 
-              <div style={{ margin: "10px 0 8px" }}>
+              <div style={{ marginTop: 10 }}>
                 <p
                   style={{
                     fontFamily: PJS,
-                    fontSize: 9,
-                    fontWeight: 800,
-                    letterSpacing: "0.04em",
-                    textTransform: "uppercase",
-                    color: "#5B7A68",
-                    margin: 0,
-                  }}
-                >
-                  LAPORAN SISWA
-                </p>
-                <p
-                  style={{
-                    fontFamily: PJS,
-                    fontSize: 16,
+                    fontSize: 17,
                     fontWeight: 800,
                     color: "#2E3E35",
-                    margin: "3px 0 0",
-                    lineHeight: 1.2,
+                    margin: 0,
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.01em",
                   }}
                 >
-                  Kemajuan Belajar
+                  Laporan Siswa
                 </p>
                 <p
                   style={{
                     fontFamily: IPS,
-                    fontSize: 11,
+                    fontSize: 11.5,
                     fontWeight: 600,
                     color: "#5B7A68",
-                    margin: "2px 0 0",
+                    margin: "3px 0 0",
                   }}
                 >
-                  Laporan
+                  Kemajuan belajar
                 </p>
-              </div>
-
-              <div>
-                <span
-                  style={{
-                    display: "inline-block",
-                    background: "#D4E8DA",
-                    color: "#2E3E35",
-                    fontFamily: PJS,
-                    fontSize: 10,
-                    fontWeight: 700,
-                    padding: "4px 10px",
-                    borderRadius: 9999,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Siap dikirim
-                </span>
               </div>
             </button>
           </div>

@@ -8,7 +8,7 @@ import {
   CARD, TEXT, MUTED, BDR, PJS, IPS, DMM, BG, DEEP, A,
 } from "../ui-kit";
 import {
-  useStudents, LOMBA, studentCompDetail, type Student, type Screen,
+  useStudents, LOMBA, studentCompDetail, fotoSiswa, type Student, type Screen,
 } from "../data";
 
 // ─── Custom Card Icons matching Mockup ───────────────────────────────
@@ -345,21 +345,36 @@ export function CompetitionScreen({
                             >
                               {/* Header: Profile Icon + Nama + Kelas */}
                               <div className="flex items-center gap-2.5 mb-1.5">
-                                <div
-                                  style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: "50%",
-                                    background: m.student.gender === "L" ? "#EBF4EE" : "#FBF1EF",
-                                    border: `1.5px solid ${m.student.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  <User size={16} style={{ color: m.student.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
-                                </div>
+                                {fotoSiswa(m.student) ? (
+                                  <img
+                                    src={fotoSiswa(m.student)}
+                                    alt={m.student.name}
+                                    style={{
+                                      width: 32,
+                                      height: 32,
+                                      borderRadius: "50%",
+                                      objectFit: "cover",
+                                      flexShrink: 0,
+                                      border: `1.5px solid ${m.student.gender === "L" ? "rgba(45,84,62,0.25)" : "rgba(210,110,91,0.30)"}`,
+                                    }}
+                                  />
+                                ) : (
+                                  <div
+                                    style={{
+                                      width: 32,
+                                      height: 32,
+                                      borderRadius: "50%",
+                                      background: m.student.gender === "L" ? "#EBF4EE" : "#FBF1EF",
+                                      border: `1.5px solid ${m.student.gender === "L" ? "rgba(45,84,62,0.22)" : "rgba(210,110,91,0.28)"}`,
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      flexShrink: 0,
+                                    }}
+                                  >
+                                    <User size={16} style={{ color: m.student.gender === "L" ? "#3D7A5E" : "#C0603A" }} />
+                                  </div>
+                                )}
                                 <p
                                   style={{
                                     color: TEXT,
