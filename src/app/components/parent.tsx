@@ -370,6 +370,7 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
               <span style={{ position: "absolute", top: 6, right: 6, width: 7, height: 7, borderRadius: "50%", background: A, border: "1.5px solid #fff" }} />
             </button>
             <button
+              type="button"
               onClick={openSettings}
               style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
               className="active:scale-95 transition-transform" title="Pengaturan">
@@ -1175,7 +1176,7 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
               <Bell size={16} style={{color:DEEP}}/>
               <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
             </button>
-            <button onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
+            <button type="button" onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
               <Settings size={16} style={{color:DEEP}}/>
             </button>
           </div>
@@ -1341,6 +1342,7 @@ function EventCard({e}:{e:AgendaEvent}) {
 
 // ─── PELATIHAN & TERAPI TERDEKAT ──────────────────────────────────────
 export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
+  const { openSettings, openSearch } = useUI();
   const [q, setQ] = useState("");
   const [filterTerdekat, setFilterTerdekat] = useState(true);
   const [filterJenis, setFilterJenis] = useState<string>("Semua");
@@ -1363,18 +1365,41 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
     <div className="flex-1 relative flex flex-col h-full overflow-hidden" style={{fontFamily:IPS, background:BG}}>
       <div className="flex-1 overflow-y-auto">
         {/* ── Top Bar ── */}
-      <div style={{background:"#FFFFFF",padding:"14px 16px 12px",display:"flex",alignItems:"center",gap:12,borderBottom:`1px solid ${BDR}`,position:"sticky",top:0,zIndex:20}}>
-        <button
-          onClick={()=>go("parent-dashboard")}
-          style={{width:36,height:36,borderRadius:10,background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
-          className="active:scale-95 transition-transform"
-          title="Kembali"
-        >
-          <ChevronLeft size={22} style={{color:TEXT}}/>
-        </button>
-        <h2 style={{fontFamily:PJS,fontSize:18,fontWeight:800,color:TEXT,margin:0,lineHeight:1.2}}>
-          Pelatihan &amp; Terapi
-        </h2>
+      <div style={{background:"#FFFFFF",padding:"14px 16px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:`1px solid ${BDR}`,position:"sticky",top:0,zIndex:20}}>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <button
+            type="button"
+            onClick={()=>go("parent-dashboard")}
+            style={{width:36,height:36,borderRadius:10,background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
+            className="active:scale-95 transition-transform"
+            title="Kembali"
+          >
+            <ChevronLeft size={22} style={{color:TEXT}}/>
+          </button>
+          <h2 style={{fontFamily:PJS,fontSize:18,fontWeight:800,color:TEXT,margin:0,lineHeight:1.2}}>
+            Pelatihan &amp; Terapi
+          </h2>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:6}}>
+          <button
+            type="button"
+            onClick={openSearch}
+            style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
+            className="active:scale-95 transition-transform"
+            title="Cari"
+          >
+            <Search size={16} style={{color:DEEP}}/>
+          </button>
+          <button
+            type="button"
+            onClick={openSettings}
+            style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
+            className="active:scale-95 transition-transform"
+            title="Pengaturan"
+          >
+            <Settings size={16} style={{color:DEEP}}/>
+          </button>
+        </div>
       </div>
 
       <div className="px-4 pt-4 pb-20 space-y-3.5">
@@ -2311,7 +2336,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
                 <Bell size={16} style={{color:DEEP}}/>
                 <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
               </button>
-            <button onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
+            <button type="button" onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
               <Settings size={16} style={{color:DEEP}}/>
             </button>
             </div>
@@ -2692,7 +2717,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
               <Bell size={16} style={{color:DEEP}}/>
               <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
             </button>
-            <button onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
+            <button type="button" onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
               <Settings size={16} style={{color:DEEP}}/>
             </button>
           </div>

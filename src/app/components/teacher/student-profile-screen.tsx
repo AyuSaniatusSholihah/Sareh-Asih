@@ -1277,9 +1277,10 @@ export function ProfileScreen({
               </div>
             </div>
 
-            {/* Action Button di Kanan Atas */}
+            {/* Action Button di Kanan Atas - Pilih Asesmen */}
             <button
-              onClick={() => onStartObs(s.id)}
+              type="button"
+              onClick={() => go("pilih-asesmen")}
               style={{
                 background: "#2E3E35",
                 border: "none",
@@ -1412,149 +1413,6 @@ export function ProfileScreen({
           <div className="px-4 pt-4 pb-8 space-y-3.5">
             {tab === "abk" && (
               <>
-
-                {/* Box 2: Asesmen Custom (Toned-up / Prominent) */}
-                <button
-                  type="button"
-                  onClick={() => go("asesmen-custom")}
-                  style={{
-                    width: "100%",
-                    background: "linear-gradient(135deg, #F0F8F3 0%, #E3F2E9 100%)",
-                    border: "1.5px solid #6EBA8B",
-                    borderRadius: 18,
-                    padding: "14px 16px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    cursor: "pointer",
-                    textAlign: "left",
-                    boxShadow: "0 3px 12px rgba(61,90,73,0.08)",
-                  }}
-                  className="active:scale-[0.99] hover:shadow-md transition-all group"
-                >
-                  <div
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 14,
-                      background: "#D6EBDD",
-                      border: "1px solid #B8DCC4",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <FileText size={22} style={{ color: "#2E3E35" }} />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 14, color: TEXT, margin: 0 }}>
-                      Asesmen Custom
-                    </p>
-                    <p style={{ fontFamily: IPS, fontSize: 12, color: "#486353", margin: "2px 0 0" }}>
-                      Gunakan instrumen milik guru
-                    </p>
-                    <div className="flex items-center gap-1.5" style={{ marginTop: 4 }}>
-                      <FileSpreadsheet size={13} style={{ color: "#2E3E35", flexShrink: 0 }} />
-                      <span
-                        style={{
-                          fontSize: 10.5,
-                          color: "#2E3E35",
-                          fontWeight: 700,
-                          fontFamily: PJS,
-                          background: "#D5EBDE",
-                          padding: "2px 8px",
-                          borderRadius: 8,
-                        }}
-                      >
-                        XLSX · Template tersedia
-                      </span>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      width: 26,
-                      height: 26,
-                      borderRadius: "50%",
-                      background: "rgba(61,90,73,0.12)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <ChevronRight size={16} style={{ color: "#2E3E35" }} strokeWidth={2.5} />
-                  </div>
-                </button>
-
-                {/* Hasil Asesmen Card (Compact) */}
-                <div
-                  style={{
-                    background: "#FFFFFF",
-                    borderRadius: 18,
-                    border: "1px solid rgba(91,122,104,0.15)",
-                    overflow: "hidden",
-                    boxShadow: "0 2px 10px rgba(91,122,104,0.06)",
-                  }}
-                >
-                  <div
-                    style={{
-                      background: "#2E3E35",
-                      padding: "10px 14px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Sparkles size={15} style={{ color: "#D4E8DA" }} />
-                      <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 12.5, color: "#FFFFFF", margin: 0 }}>
-                        Hasil Asesmen Sem. 1 2026
-                      </p>
-                    </div>
-                    <span
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        fontFamily: PJS,
-                        background: "#5B7A68",
-                        color: "#FFFFFF",
-                        borderRadius: 20,
-                        padding: "2px 10px",
-                      }}
-                    >
-                      Selesai
-                    </span>
-                  </div>
-
-                  <div style={{ padding: "10px 14px" }}>
-                    <button
-                      type="button"
-                      onClick={() => go("talent-map-detail")}
-                      style={{
-                        width: "100%",
-                        background: "transparent",
-                        border: "1.5px solid #3D5A49",
-                        color: "#3D5A49",
-                        fontFamily: PJS,
-                        fontWeight: 800,
-                        fontSize: 12,
-                        minHeight: 38,
-                        borderRadius: 12,
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 6,
-                      }}
-                      className="active:scale-[0.99] transition-transform"
-                    >
-                      <Sparkles size={14} />
-                      Lihat Laporan Lengkap AI Talent Mapping
-                    </button>
-                  </div>
-                </div>
-
                 {/* ── Section: IDENTITAS SISWA ── */}
                 <div>
                   <div className="flex items-center justify-between mb-2 px-1">
@@ -1747,6 +1605,50 @@ export function ProfileScreen({
                     ))}
                   </div>
                 </div>
+
+                {/* ── Tombol Riwayat Asesmen (Sesuai Mockup 1) ── */}
+                <button
+                  type="button"
+                  onClick={() => go("riwayat-asesmen")}
+                  style={{
+                    width: "100%",
+                    background: "#FFFFFF",
+                    borderRadius: 18,
+                    border: "1.5px solid rgba(91,122,104,0.18)",
+                    padding: "14px 16px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    boxShadow: "0 2px 8px rgba(91,122,104,0.05)",
+                  }}
+                  className="active:scale-[0.99] hover:border-[#3D5A49] transition-all group"
+                >
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 14,
+                      background: "#EAF4EE",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <FileText size={22} style={{ color: "#2E3E35" }} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontFamily: PJS, fontWeight: 800, fontSize: 14, color: TEXT, margin: 0 }}>
+                      Riwayat Asesmen
+                    </p>
+                    <p style={{ fontFamily: IPS, fontSize: 12, color: "#64748B", margin: "3px 0 0" }}>
+                      Terakhir: {s.hasObs ? "Semester 1 2026" : "Belum ada asesmen"}
+                    </p>
+                  </div>
+                  <ChevronRight size={18} style={{ color: "#64748B" }} strokeWidth={2.4} />
+                </button>
 
                 {/* Banner Tip Bantuan Guru */}
                 <div

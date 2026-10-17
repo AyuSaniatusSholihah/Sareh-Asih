@@ -70,7 +70,7 @@ export function TalentMapScreen({
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
             <button onClick={openSearch} style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} className="active:scale-95 transition-transform" title="Cari"><Search size={17} style={{ color: TEXT }} /></button>
             <button onClick={() => { if (students.length > 0) { onSelect(students[0].id); go("profile"); } }} style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} className="active:scale-95 transition-transform" title="Profil Siswa"><User size={17} style={{ color: TEXT }} /></button>
-            <button onClick={openSettings} style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} className="active:scale-95 transition-transform" title="Pengaturan"><Settings size={17} style={{ color: TEXT }} /></button>
+            <button type="button" onClick={openSettings} style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} className="active:scale-95 transition-transform" title="Pengaturan"><Settings size={17} style={{ color: TEXT }} /></button>
           </div>
         </div>
       </div>

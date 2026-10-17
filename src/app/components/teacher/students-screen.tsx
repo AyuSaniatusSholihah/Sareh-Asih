@@ -115,6 +115,7 @@ export function StudentsScreen({
               </button>
             )}
             <button
+              type="button"
               onClick={openSettings}
               style={{ width: 38, height: 38, background: "rgba(139,176,152,0.16)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
               className="active:scale-95 transition-transform"

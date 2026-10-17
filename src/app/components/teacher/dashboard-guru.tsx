@@ -112,7 +112,9 @@ export function DashboardGuru({
               title="Profil Akun">
               <User size={17} style={{ color: "#1B2E24" }} />
             </button>
-            <button onClick={openSettings}
+            <button
+              type="button"
+              onClick={openSettings}
               style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
               className="active:scale-95 transition-transform"
               title="Pengaturan">

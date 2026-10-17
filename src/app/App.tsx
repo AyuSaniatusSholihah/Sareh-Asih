@@ -37,6 +37,7 @@ import {
   DashboardGuru, AsesmenPendingScreen, StudentsScreen,
   StudentProfileScreen, TalentMapScreen, TalentMapDetailScreen,
   LearningRecScreen, CompetitionScreen, ReportScreen, AsesmenCustomScreen,
+  PilihAsesmenScreen, RiwayatAsesmenScreen,
   SetupRuangBelajar, type AddedAnak,
 } from "./components/teacher";
 import type { TeacherRole } from "./components/role-labels";
@@ -424,6 +425,22 @@ export default function App() {
       case "talent-map-detail": return <TalentMapDetailScreen onBack={goBack} studentId={selectedStudentId} go={go} namaSekolah={guru.sekolah} />;
       case "learning-rec": return <LearningRecScreen onBack={goBack} studentId={selectedStudentId} />;
       case "asesmen-custom": return <AsesmenCustomScreen onBack={goBack} studentId={selectedStudentId} />;
+      case "pilih-asesmen": return (
+        <PilihAsesmenScreen
+          onBack={goBack}
+          go={go}
+          studentId={selectedStudentId}
+          onStartObs={startObs}
+        />
+      );
+      case "riwayat-asesmen": return (
+        <RiwayatAsesmenScreen
+          onBack={goBack}
+          go={go}
+          studentId={selectedStudentId}
+          onStartObs={startObs}
+        />
+      );
       case "competition": return <CompetitionScreen onStartObs={startObs} onBack={goBack} go={go} />;
       case "report": return (
         <ReportScreen
@@ -520,7 +537,7 @@ export default function App() {
 
               {/* Content */}
               <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: BG, position: "relative", zoom: fontSize }}>
-                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && screen !== "parent-dashboard" && screen !== "parent-detail" && screen !== "parent-calendar" && screen !== "parent-training" && screen !== "saran-rumah" && screen !== "konsultasi-guru" && (
+                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && screen !== "parent-dashboard" && screen !== "parent-detail" && screen !== "parent-calendar" && screen !== "parent-training" && screen !== "saran-rumah" && screen !== "konsultasi-guru" && screen !== "pilih-asesmen" && screen !== "riwayat-asesmen" && (
                   <GlobalHeader
                     title={title}
                     sub={sub}
@@ -535,6 +552,9 @@ export default function App() {
                     onClose={() => setShowSettings(false)}
                     onLogout={handleLogout}
                     role={role}
+                    guruName={guru.nama}
+                    parentName={namaOrtu}
+                    teacherRole={guru.role}
                   />
                 )}
 

@@ -44,15 +44,20 @@ export const INFO_PANELS = [
 
 export function SettingsSheet({
   onClose,
+  onLogout,
   onEditSetup,
   role,
   teacherRole,
+  guruName = "Sari Dewi, S.Pd.",
+  parentName = "Ani Rahmawati",
 }: {
   onClose: () => void;
   onLogout?: () => void;
   onEditSetup?: () => void;
   role?: Role | null;
   teacherRole?: TeacherRole;
+  guruName?: string;
+  parentName?: string;
 }) {
   const { fontSize, setFontSize, tts, setTts } = useUI();
   const [info, setInfo] = useState<string | null>(null);
@@ -64,9 +69,9 @@ export function SettingsSheet({
 
   return (
     <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.45)", zIndex: 80, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} onClick={onClose}>
-      <div style={{ background: CARD, borderRadius: "24px 24px 0 0", padding: "16px 20px 32px", maxHeight: "90%", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+      <div style={{ background: CARD, borderRadius: "24px 24px 0 0", padding: "16px 20px 28px", maxHeight: "90%", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
         {/* Top Handle Bar */}
-        <div style={{ width: 40, height: 4, borderRadius: 2, background: BDR, margin: "0 auto 12px" }} />
+        <div style={{ width: 40, height: 4, borderRadius: 2, background: "#CBD5E1", margin: "0 auto 14px" }} />
 
         {/* Modal Header with Close 'X' Button on Right */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
@@ -94,22 +99,23 @@ export function SettingsSheet({
         </div>
 
         {/* Akun & Logout */}
-        {role && onLogout && (
-          <div style={{ marginBottom: 18, padding: "14px", background: BG, borderRadius: 16, border: `1.5px solid ${BDR}`, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: role === "guru" ? 8 : 10 }}>
+        {role && (
+          <div style={{ marginBottom: 18, padding: "14px 16px", background: BG, borderRadius: 16, border: `1.5px solid ${BDR}`, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
               <div>
-                <p style={{ fontSize: 10, fontWeight: 700, color: MUTED, fontFamily: DMM, textTransform: "uppercase" }}>Akun Aktif</p>
-                <p style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: PJS }}>
-                  {role === "guru" ? `Guru (${roleLabel})` : "Orang Tua Siswa"}
+                <p style={{ fontSize: 10, fontWeight: 700, color: MUTED, fontFamily: DMM, textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 3px" }}>Akun Aktif</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: PJS, margin: 0 }}>
+                  {role === "guru" ? `Guru SLB (${guruName})` : `Orang Tua (${parentName})`}
                 </p>
               </div>
-              <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20, background: SEC, color: DEEP, fontFamily: IPS, border: `1px solid ${BDR}` }}>
-                {role === "guru" ? roleLabel : "Orang Tua"}
+              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: SEC, color: DEEP, fontFamily: IPS, border: `1px solid ${BDR}` }}>
+                {role === "guru" ? "Guru" : "Orang Tua"}
               </span>
             </div>
 
             {role === "guru" && onEditSetup && (
               <button
+                type="button"
                 onClick={() => { onClose(); onEditSetup(); }}
                 style={{ width: "100%", padding: "8px 12px", borderRadius: 10, border: `1px solid ${BDR}`, background: CARD, color: DEEP, fontFamily: IPS, fontSize: 12, fontWeight: 700, marginBottom: 10, cursor: "pointer", textAlign: "center" }}
               >
@@ -117,24 +123,28 @@ export function SettingsSheet({
               </button>
             )}
 
-            {!confirmLogout ? (
-              <button onClick={() => setConfirmLogout(true)}
-                style={{ width: "100%", padding: "10px", borderRadius: 12, border: "1px solid #FCA5A5", background: "#FEF2F2", color: "#DC2626", fontFamily: IPS, fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer" }}>
-                <LogOut size={16} /> Keluar Akun
+            {onLogout && !confirmLogout ? (
+              <button
+                type="button"
+                onClick={() => setConfirmLogout(true)}
+                style={{ width: "100%", padding: "10px", borderRadius: 12, border: "1.5px solid #FCA5A5", background: "#FEF2F2", color: "#DC2626", fontFamily: IPS, fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer" }}
+                className="active:scale-[0.98] transition-transform"
+              >
+                <LogOut size={16} strokeWidth={2.2} /> Keluar Akun
               </button>
-            ) : (
-              <div style={{ background: CARD, padding: 12, borderRadius: 12, border: "1px solid #FCA5A5", textAlign: "center" }}>
+            ) : onLogout ? (
+              <div style={{ background: CARD, padding: 12, borderRadius: 12, border: "1.5px solid #FCA5A5", textAlign: "center" }}>
                 <p style={{ fontSize: 12, fontWeight: 600, color: TEXT, marginBottom: 10, fontFamily: IPS }}>Apakah Anda yakin ingin keluar dari akun ini?</p>
                 <div style={{ display: "flex", gap: 8 }}>
-                  <button onClick={() => setConfirmLogout(false)} style={{ flex: 1, padding: "8px", borderRadius: 10, border: `1px solid ${BDR}`, background: BG, fontSize: 12, fontWeight: 600, fontFamily: IPS, color: TEXT, cursor: "pointer" }}>
+                  <button type="button" onClick={() => setConfirmLogout(false)} style={{ flex: 1, padding: "8px", borderRadius: 10, border: `1px solid ${BDR}`, background: BG, fontSize: 12, fontWeight: 600, fontFamily: IPS, color: TEXT, cursor: "pointer" }}>
                     Batal
                   </button>
-                  <button onClick={() => { onLogout(); onClose(); }} style={{ flex: 1, padding: "8px", borderRadius: 10, border: "none", background: "#DC2626", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: IPS, cursor: "pointer" }}>
+                  <button type="button" onClick={() => { onLogout(); onClose(); }} style={{ flex: 1, padding: "8px", borderRadius: 10, border: "none", background: "#DC2626", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: IPS, cursor: "pointer" }}>
                     Ya, Keluar
                   </button>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
         )}
 
@@ -252,8 +262,6 @@ export function SettingsSheet({
             );
           })}
         </div>
-
-        <button onClick={onClose} style={{ marginTop: 8, width: "100%", padding: "12px", borderRadius: 16, background: SEC, border: `1px solid ${BDR}`, color: DEEP, fontFamily: IPS, fontWeight: 700, fontSize: 14, cursor: "pointer", boxShadow: "0 2px 6px rgba(91,122,104,0.1)" }}>Tutup</button>
       </div>
     </div>
   );
