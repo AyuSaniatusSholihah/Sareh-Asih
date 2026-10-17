@@ -463,72 +463,53 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
             {/* 2. Sapaan Orang Tua */}
             <div style={{ margin: "2px 0 2px" }}>
               <h2 style={{ fontFamily: PJS, fontSize: 24, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
-                Halo, {ibuName || "Ani"}! 👋
+                Halo! 👋
               </h2>
               <p style={{ fontFamily: IPS, fontSize: 13, color: MUTED, margin: "4px 0 0", fontWeight: 500 }}>
-                Berikut ringkasan informasi {nama}.
+                Berikut ringkasan informasinya.
               </p>
             </div>
 
-            {/* 3. Grid 4 Kartu Menu Cepat (2x2) */}
+            {/* 3. Grid 4 Kartu Akses Cepat (2x2) */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, marginTop: 4 }}>
-                <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: 0 }}>Menu Utama</p>
-                <span style={{ fontFamily: IPS, fontSize: 11, color: MUTED, fontWeight: 500 }}>4 menu</span>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, margin: 0 }}>Akses Cepat</p>
+                <span style={{ fontFamily: IPS, fontSize: 11, color: MUTED, fontWeight: 600 }}>4 menu</span>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {[
                   {
-                    kategori: "LAPORAN GURU",
                     title: "Laporan Belajar",
                     label: "Catatan observasi",
-                    badge: latestLaporan ? "Terbaru" : "Lihat Semua",
                     icon: FileText,
-                    iconBg: "#FEF5DE",
-                    iconColor: "#8C6A1D",
-                    badgeBg: "#FEF5DE",
-                    badgeColor: "#825F18",
-                    arrowColor: "#8C6A1D",
+                    iconBg: "#D4E8DA",
+                    iconColor: "#5B7A68",
                     onClick: () => go("riwayat-laporan"),
                   },
                   {
-                    kategori: "POTENSI ANAK",
                     title: "Minat & Bakat",
-                    label: "Profil kecenderungan",
-                    badge: "Peta Potensi",
+                    label: "Peta potensi anak",
                     icon: Star,
-                    iconBg: "#E9EEFD",
-                    iconColor: "#2B3E84",
-                    badgeBg: "#E8EEFA",
-                    badgeColor: "#284282",
-                    arrowColor: "#2B3E84",
+                    iconBg: "#5B7A68",
+                    iconColor: "#FFFFFF",
+                    isFeatured: true,
                     onClick: () => go("parent-detail"),
                   },
                   {
-                    kategori: "PERKEMBANGAN",
                     title: "Tren Kemampuan",
                     label: "Riwayat capaian",
-                    badge: "Grafik Tren",
                     icon: TrendingUp,
-                    iconBg: "#E3EFE7",
-                    iconColor: "#1B432C",
-                    badgeBg: "#E4F1E8",
-                    badgeColor: "#1A4B2F",
-                    arrowColor: "#1B432C",
+                    iconBg: "rgba(210,125,107,0.15)",
+                    iconColor: "#D27D6B",
                     onClick: () => go("riwayat-perkembangan"),
                   },
                   {
-                    kategori: "SARAN RUMAH",
                     title: "Panduan Rumah",
                     label: "Stimulasi harian",
-                    badge: "Rekomendasi",
                     icon: Lightbulb,
-                    iconBg: "#FDECE8",
-                    iconColor: "#A34430",
-                    badgeBg: "#FBE8E2",
-                    badgeColor: "#973926",
-                    arrowColor: "#A34430",
+                    iconBg: "#FEF5DE",
+                    iconColor: "#8C6A1D",
                     onClick: () => go("saran-rumah"),
                   },
                 ].map((a, i) => {
@@ -539,110 +520,67 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
                       type="button"
                       onClick={a.onClick}
                       style={{
-                        position: "relative",
-                        borderRadius: 18,
+                        background: "#FFFFFF",
+                        border: "1px solid rgba(91, 122, 104, 0.14)",
+                        borderRadius: 20,
+                        padding: "13px 13px 12px",
                         cursor: "pointer",
                         textAlign: "left",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-between",
-                        minHeight: 134,
-                        background: "#FFFFFF",
-                        border: "1px solid rgba(91, 122, 104, 0.12)",
-                        padding: "12px 12px 10px",
-                        boxShadow: "0 3px 10px -2px rgba(91, 122, 104, 0.06)",
+                        minHeight: 116,
+                        boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
                       }}
                       className="active:scale-[0.97] transition-all hover:shadow-md"
                     >
-                      {/* Top row: pastel icon badge + top-right arrow */}
+                      {/* Top row: icon box + arrow */}
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
                         <div
                           style={{
-                            width: 30,
-                            height: 30,
-                            borderRadius: 9,
+                            width: 38,
+                            height: 38,
+                            borderRadius: 12,
                             background: a.iconBg,
                             color: a.iconColor,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             flexShrink: 0,
+                            ...(a.isFeatured ? { boxShadow: "0 2px 6px rgba(91,122,104,0.20)" } : {}),
                           }}
                         >
-                          <IconComp size={16} strokeWidth={2.2} />
+                          <IconComp size={19} strokeWidth={2.2} />
                         </div>
-                        <ArrowUpRight size={16} strokeWidth={2.2} style={{ color: a.arrowColor, marginTop: 1 }} />
+                        <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
                       </div>
 
-                      {/* Middle content: category + title + label (1 baris padat) */}
-                      <div style={{ margin: "7px 0 6px", minWidth: 0, width: "100%" }}>
+                      {/* Bottom content: title + label */}
+                      <div style={{ marginTop: 10 }}>
                         <p
                           style={{
                             fontFamily: PJS,
-                            fontSize: 8.5,
+                            fontSize: 17,
                             fontWeight: 800,
-                            letterSpacing: "0.04em",
-                            textTransform: "uppercase",
-                            color: "#283E32",
+                            color: "#2E3E35",
                             margin: 0,
-                            lineHeight: 1.2,
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
+                            lineHeight: 1.25,
+                            letterSpacing: "-0.01em",
                           }}
-                        >
-                          {a.kategori}
-                        </p>
-                        <p
-                          style={{
-                            fontFamily: PJS,
-                            fontWeight: 800,
-                            fontSize: 14.5,
-                            color: "#0E2619",
-                            margin: "2px 0 0",
-                            lineHeight: 1.2,
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                          title={a.title}
                         >
                           {a.title}
                         </p>
                         <p
                           style={{
                             fontFamily: IPS,
-                            fontSize: 11,
-                            fontWeight: 500,
-                            color: "#5C6F63",
-                            margin: "1.5px 0 0",
-                            lineHeight: 1.2,
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
+                            fontSize: 11.5,
+                            fontWeight: 600,
+                            color: "#5B7A68",
+                            margin: "3px 0 0",
                           }}
                         >
                           {a.label}
                         </p>
-                      </div>
-
-                      {/* Bottom: soft pastel pill badge */}
-                      <div>
-                        <span
-                          style={{
-                            display: "inline-block",
-                            background: a.badgeBg,
-                            color: a.badgeColor,
-                            borderRadius: 9999,
-                            padding: "2.5px 9px",
-                            fontFamily: PJS,
-                            fontSize: 9.5,
-                            fontWeight: 700,
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          {a.badge}
-                        </span>
                       </div>
                     </button>
                   );
