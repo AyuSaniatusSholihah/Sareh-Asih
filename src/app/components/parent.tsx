@@ -297,26 +297,43 @@ function PilihAnakSheet({ daftar, activeId, onPilih, onTambah, onClose }: {
           </button>
         </div>
 
-        <p className="font-bold" style={{ fontFamily: PJS, fontSize: 16, color: TEXT, margin: "0 0 10px" }}>Pilih anak</p>
+        <p className="font-bold" style={{ fontFamily: PJS, fontSize: 16, color: TEXT, margin: "0 0 12px" }}>Pilih anak</p>
 
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
           {daftar.map(s => {
             const aktif = s.id === activeId;
             return (
               <button key={s.id} onClick={() => onPilih(s.id)}
-                className="flex items-center gap-3 w-full"
+                className="flex items-center gap-3 w-full active:scale-[0.99] transition-transform"
                 style={{
                   background: aktif ? SEC : "transparent",
                   border: `1.5px solid ${aktif ? T : "transparent"}`,
-                  borderRadius: 16, padding: "10px 12px", cursor: "pointer", textAlign: "left",
+                  borderRadius: 16, padding: "10px 14px", cursor: "pointer", textAlign: "left",
                 }}>
-                <span style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${aktif ? T : BDR}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  {aktif && <span style={{ width: 8, height: 8, borderRadius: "50%", background: T }} />}
+                <span style={{
+                  width: 20, height: 20, borderRadius: "50%",
+                  border: `2px solid ${aktif ? T : BDR}`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                  background: "#FFFFFF",
+                }}>
+                  {aktif && <span style={{ width: 10, height: 10, borderRadius: "50%", background: T }} />}
                 </span>
-                <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1 }}>{s.emoji}</span>
+
+                <div style={{
+                  width: 42, height: 42, borderRadius: "50%",
+                  overflow: "hidden", flexShrink: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: "#D7E9DE",
+                  border: aktif ? "2px solid #FFFFFF" : "2px solid #E2E8F0",
+                  boxShadow: aktif ? "0 2px 6px rgba(46,62,53,0.12)" : "none",
+                }}>
+                  <FotoAnak child={s} size={42} border="none" />
+                </div>
+
                 <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontFamily: PJS, fontSize: 14, fontWeight: 800, color: TEXT, lineHeight: 1.25 }}>{s.name.split(" ")[0]}</span>
-                  <span style={{ display: "block", fontFamily: IPS, fontSize: 11.5, color: MUTED, marginTop: 1 }}>Kelas {s.kelas}</span>
+                  <span style={{ display: "block", fontFamily: PJS, fontSize: 14.5, fontWeight: 800, color: TEXT, lineHeight: 1.25 }}>{s.name.split(" ")[0]}</span>
+                  <span style={{ display: "block", fontFamily: IPS, fontSize: 12, color: MUTED, marginTop: 2 }}>Kelas {s.kelas}</span>
                 </span>
               </button>
             );
