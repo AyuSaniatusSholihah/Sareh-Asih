@@ -100,7 +100,6 @@ export function JurnalTab({
 }) {
   const generated = `${s.name} menunjukkan perkembangan positif pada ${s.hasObs ? kodeTigaHuruf(getMockJawaban(s.id)).toLowerCase() : "kegiatan belajarnya"} di Semester Genap 2026. Fokus dan kemandirian meningkat dibanding semester lalu.`;
   const [draft, setDraft] = useState(generated);
-  const [expanded, setExpanded] = useState(false);
   const [listening, setListening] = useState(false);
   const [saved, setSaved] = useState(false);
   const [filterCatatan, setFilterCatatan] = useState<"semua" | "hari" | "minggu" | "bulan">("semua");
@@ -164,9 +163,6 @@ export function JurnalTab({
     setListening(false);
   };
 
-  const firstLine = draft.split(/\n/)[0];
-  const isLong = draft.length > firstLine.length + 2 || firstLine.length > 80;
-
   const handleSave = () => {
     onKirim(s.id, draft);
     if (draft.trim()) {
@@ -188,7 +184,6 @@ export function JurnalTab({
       text = `Ananda ${p} hari ini berpartisipasi aktif dalam sesi kelas bersama teman sebaya. Di rumah, Ayah/Bunda dapat melanjutkan penguatan dengan memberi kesempatan ${p} merapikan barang mandiri secara bertahap. Salam hormat! 🤝`;
     }
     setDraft(text);
-    setExpanded(true);
   };
 
   const shortDate = (str: string) => {
@@ -205,69 +200,96 @@ export function JurnalTab({
         <div style={{ position: "relative" }}>
           <textarea
             value={draft}
-            onChange={e => {
-              setDraft(e.target.value);
-              if (!expanded && e.target.value !== firstLine) setExpanded(true);
-            }}
-            onFocus={() => setExpanded(true)}
-            rows={expanded ? 4 : 2}
+            onChange={e => setDraft(e.target.value)}
+            rows={4}
             placeholder="Tulis catatan untuk orang tua..."
             style={{
               width: "100%", border: "none", outline: "none", resize: "none",
-              padding: "12px 14px 8px", fontSize: 13, lineHeight: 1.6,
+              padding: "12px 14px 10px", fontSize: 13, lineHeight: 1.6,
               color: TEXT, fontFamily: IPS, background: CARD,
-              overflow: expanded ? "auto" : "hidden",
               display: "block",
+              boxSizing: "border-box",
+              minHeight: 90,
             }}
           />
-          {!expanded && isLong && (
-            <button
-              onClick={() => setExpanded(true)}
-              style={{ position: "absolute", bottom: 4, right: 10, fontSize: 11, fontWeight: 700, color: T, background: "transparent", border: "none", cursor: "pointer", fontFamily: IPS }}>
-              Selengkapnya...
-            </button>
-          )}
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px 8px", borderTop: `1px solid ${BDR}`, background: BG }}>
+        {/* Action Button Bar: Bicara untuk Menulis */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px 10px", background: BG, borderTop: `1px solid ${BDR}` }}>
           <button
+            type="button"
             onClick={listening ? stopMic : startMic}
             style={{
-              display: "flex", alignItems: "center", gap: 5, padding: "5px 10px",
-              borderRadius: 10, border: "none", cursor: "pointer", fontFamily: IPS,
-              fontSize: 11, fontWeight: 700,
-              background: listening ? A : SEC,
-              color: listening ? "#fff" : T,
-              animation: listening ? "vt-pulse 1.5s infinite" : undefined,
-            }}>
-            {listening ? <MicOff size={12} /> : <Mic size={12} />}
-            {listening ? "Berhenti" : "Bicara untuk Menulis"}
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 7,
+              padding: "10px 14px",
+              borderRadius: 12,
+              border: listening ? "1.5px solid #DC2626" : "none",
+              cursor: "pointer",
+              fontFamily: PJS,
+              fontSize: 12.5,
+              fontWeight: 800,
+              background: listening ? "#FEF2F2" : DEEP,
+              color: listening ? "#DC2626" : "#FFFFFF",
+              boxShadow: listening ? "0 0 0 3px rgba(220,38,38,0.2)" : "0 3px 10px rgba(91,122,104,0.22)",
+              transition: "all 0.2s ease",
+            }}
+            className="active:scale-[0.98] transition-transform"
+          >
+            {listening ? (
+              <>
+                <MicOff size={15} strokeWidth={2.4} />
+                <span>Berhenti</span>
+              </>
+            ) : (
+              <>
+                <Mic size={15} strokeWidth={2.4} />
+                <span>Bicara untuk Menulis</span>
+              </>
+            )}
           </button>
+
           <button
+            type="button"
             onClick={handleGenerateAiDraft}
             style={{
-              display: "flex", alignItems: "center", gap: 5, padding: "5px 10px",
-              borderRadius: 10, border: "none", cursor: "pointer", fontFamily: IPS,
-              fontSize: 11, fontWeight: 700,
-              background: "rgba(45,84,62,0.10)",
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              padding: "10px 14px",
+              borderRadius: 12,
+              border: "1px solid rgba(91,122,104,0.22)",
+              cursor: "pointer",
+              fontFamily: PJS,
+              fontSize: 12,
+              fontWeight: 700,
+              background: CARD,
               color: DEEP,
+              transition: "all 0.15s ease",
             }}
             title="Draf pesan sesuai AI Knowledge Guru"
-            className="active:scale-95 transition-transform"
+            className="active:scale-[0.98] hover:bg-[#EAF3ED]"
           >
-            <Sparkles size={12} style={{ color: "#FFA000" }} />
+            <Sparkles size={13} style={{ color: "#D97706" }} />
             <span>Draf AI</span>
           </button>
-          {listening && (
-            <span style={{ fontSize: 10, color: A, fontFamily: IPS, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: A, display: "inline-block" }} />
-              Mendengarkan…
-            </span>
-          )}
-          <span style={{ marginLeft: "auto", fontSize: 11, color: MUTED, fontFamily: IPS }}>
+
+          <span style={{ fontSize: 11, color: MUTED, fontFamily: IPS, whiteSpace: "nowrap", paddingRight: 2 }}>
             {draft.trim().split(/\s+/).filter(Boolean).length} kata
           </span>
         </div>
+
+        {listening && (
+          <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "6px 14px 8px", background: "#FEF2F2", borderTop: "1px solid #FECACA" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#DC2626", display: "inline-block" }} />
+            <p style={{ fontFamily: IPS, fontSize: 11, color: "#DC2626", margin: 0, fontWeight: 600 }}>
+              Mendengarkan suara guru... Silakan bicara langsung.
+            </p>
+          </div>
+        )}
       </div>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
@@ -344,9 +366,14 @@ export function JurnalTab({
 
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{
-                    fontSize: 12, color: TEXT, fontFamily: IPS, lineHeight: 1.55,
-                    display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden"
-                  } as React.CSSProperties}>
+                    fontSize: 12,
+                    color: TEXT,
+                    fontFamily: IPS,
+                    lineHeight: 1.55,
+                    margin: 0,
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}>
                     {r.isi}
                   </p>
                   {r.dibaca && r.dibacaPada && (

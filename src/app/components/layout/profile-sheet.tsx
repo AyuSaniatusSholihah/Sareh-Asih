@@ -8,6 +8,7 @@ import {
 } from "../ui-kit";
 import { type Role } from "../data";
 import { type GuruProfile } from "../auth";
+import { WebDashboardCard } from "./web-dashboard-card";
 
 export function ProfileSheet({
   isOpen,
@@ -18,6 +19,7 @@ export function ProfileSheet({
   childName,
   onEditProfile,
   onOpenSettings,
+  onOpenWebDashboard,
   onLogout,
   onGoStudents,
 }: {
@@ -29,6 +31,7 @@ export function ProfileSheet({
   childName?: string;
   onEditProfile?: () => void;
   onOpenSettings?: () => void;
+  onOpenWebDashboard?: () => void;
   onLogout?: () => void;
   onGoStudents?: () => void;
 }) {
@@ -341,6 +344,14 @@ export function ProfileSheet({
             </button>
           )}
         </div>
+
+        {/* Gunakan Sareh Asih di Web (Khusus Pengaturan User Guru) */}
+        {isGuru && (
+          <WebDashboardCard
+            style={{ marginBottom: 14 }}
+            onOpenWebDashboard={onOpenWebDashboard ? () => { onClose(); onOpenWebDashboard(); } : undefined}
+          />
+        )}
 
         {/* Logout Button */}
         {onLogout && (

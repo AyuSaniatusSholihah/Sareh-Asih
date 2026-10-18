@@ -7,6 +7,7 @@ import {
 } from "../ui-kit";
 import { type Role } from "../data";
 import { type TeacherRole, TEACHER_ROLE_OPTIONS } from "../role-labels";
+import { WebDashboardCard } from "./web-dashboard-card";
 
 export const INFO_PANELS = [
   {
@@ -46,6 +47,7 @@ export function SettingsSheet({
   onClose,
   onLogout,
   onEditSetup,
+  onOpenWebDashboard,
   role,
   teacherRole,
   guruName = "Sari Dewi, S.Pd.",
@@ -54,6 +56,7 @@ export function SettingsSheet({
   onClose: () => void;
   onLogout?: () => void;
   onEditSetup?: () => void;
+  onOpenWebDashboard?: () => void;
   role?: Role | null;
   teacherRole?: TeacherRole;
   guruName?: string;
@@ -146,6 +149,14 @@ export function SettingsSheet({
               </div>
             ) : null}
           </div>
+        )}
+
+        {/* Gunakan Sareh Asih di Web (Khusus Pengaturan User Guru) */}
+        {role === "guru" && (
+          <WebDashboardCard
+            style={{ marginBottom: 18 }}
+            onOpenWebDashboard={onOpenWebDashboard ? () => { onClose(); onOpenWebDashboard(); } : undefined}
+          />
         )}
 
         {/* Slider Pengatur Ukuran Teks */}

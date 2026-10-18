@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   CheckCircle, FileSpreadsheet, FileText, Download, Users, User,
   Check, MessageCircle, Printer, X, Share2,
@@ -42,16 +42,24 @@ export function ReportScreen({
   onProfile,
   onBack,
   go,
+  initialView = "main",
+  onViewChange,
 }: {
   namaSekolah: string;
   namaGuru?: string;
   onProfile?: () => void;
   onBack?: () => void;
   go?: (s: Screen) => void;
+  initialView?: ReportView;
+  onViewChange?: (v: ReportView) => void;
 }) {
   const { openSearch, openSettings } = useUI();
   const students = useStudents();
-  const [view, setView] = useState<ReportView>("main");
+  const [view, setView] = useState<ReportView>(initialView);
+
+  useEffect(() => {
+    setView(initialView);
+  }, [initialView]);
   const aiConfig = useMemo(() => loadAiKnowledge(), []);
   // Paraf guru: ikut tercetak di blok tanda tangan laporan (.doc / PDF)
   const [parafGuru, setParafGuru] = useState<string>(() => muatParafGuru() || namaGuru || "");
@@ -229,7 +237,11 @@ export function ReportScreen({
         {/* Header Hubungkan ke Web */}
         <div style={{ background: "#FFFFFF", padding: "16px 20px 14px", borderBottom: "1px solid rgba(91,122,104,0.12)", display: "flex", alignItems: "center", gap: 12, position: "sticky", top: 0, zIndex: 30 }}>
           <button
-            onClick={() => setView("main")}
+            onClick={() => {
+              setView("main");
+              if (onViewChange) onViewChange("main");
+              if (initialView === "web-connect" && onBack) onBack();
+            }}
             style={{ width: 36, height: 36, borderRadius: 12, background: "rgba(139,176,152,0.16)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: TEXT, flexShrink: 0 }}
             className="active:scale-95 transition-transform"
             aria-label="Kembali"
@@ -613,22 +625,6 @@ export function ReportScreen({
               <SignaturePad value={ttdGuru} onChange={ubahTtd} />
             </div>
           </div>
-
-          {/* Shortcut Ekspor via PC */}
-          <div
-            onClick={() => setView("web-connect")}
-            style={{ background: "#F0FDF4", border: "1.5px solid #BBF7D0", borderRadius: 14, padding: "12px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
-            className="active:scale-[0.99] transition-transform"
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <Laptop size={18} style={{ color: "#166534" }} />
-              <div>
-                <p style={{ fontFamily: PJS, fontSize: 12, fontWeight: 800, color: "#166534", margin: 0 }}>Ekspor Lengkap via Laptop / PC</p>
-                <p style={{ fontFamily: IPS, fontSize: 10.5, color: "#15803D", margin: 0 }}>Buka sareh_asih.id untuk cetak massal</p>
-              </div>
-            </div>
-            <ChevronRight size={16} style={{ color: "#166534" }} />
-          </div>
         </div>
 
         {/* Action Bar Sticky Bottom */}
@@ -811,38 +807,6 @@ export function ReportScreen({
             <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: "#065F46", margin: 0 }}>{toastMsg}</p>
           </div>
         )}
-
-        {/* Banner: Export PDF & Excel lengkap via PC (Simple Style sesuai screenshot) */}
-        <div
-          onClick={() => setView("web-connect")}
-          style={{
-            background: "#EAF6EE",
-            borderRadius: 16,
-            padding: "13px 16px",
-            border: "1px solid rgba(45,84,62,0.12)",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 12,
-            transition: "all 0.15s ease",
-          }}
-          className="active:scale-[0.99] transition-transform"
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1, minWidth: 0 }}>
-            <Laptop size={22} style={{ color: "#164E36", flexShrink: 0 }} strokeWidth={1.8} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: "#164E36", margin: 0, lineHeight: 1.25 }}>
-                Export PDF & Excel lengkap via PC
-              </p>
-              <p style={{ fontFamily: IPS, fontSize: 11, color: "#5E7E6E", margin: "3px 0 0", lineHeight: 1.2 }}>
-                Hubungkan HP ke Web Dashboard Sareh Asih
-              </p>
-            </div>
-          </div>
-          <ChevronRight size={18} style={{ color: "#164E36", flexShrink: 0 }} />
-        </div>
-
 
         {/* Format Rekapan Guru langsung di awal */}
         <div style={{ background: "#FFFFFF", borderRadius: 20, padding: "16px", border: "1px solid rgba(91,122,104,0.12)", boxShadow: "0 2px 8px rgba(91,122,104,0.04)" }}>

@@ -142,6 +142,16 @@ export default function App() {
   const [showSearch, setShowSearch] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [reportInitialView, setReportInitialView] = useState<"main" | "detail" | "web-connect">("main");
+
+  const handleOpenWebConnect = () => {
+    setShowSettings(false);
+    setShowProfile(false);
+    setReportInitialView("web-connect");
+    setScreenHistory(prev => [...prev, screen]);
+    setScreen("report");
+    setTab("report");
+  };
 
   useEffect(() => {
     document.documentElement.style.setProperty('--font-size', `${fontSize * 16}px`);
@@ -155,6 +165,9 @@ export default function App() {
     setScreenHistory(prev => [...prev, screen]);
     setScreen(s);
     setTab(s);
+    if (s === "report") {
+      setReportInitialView("main");
+    }
   };
 
   const pickRole = (r: Role) => { setPending(r); go("google-login"); };
@@ -448,6 +461,8 @@ export default function App() {
           go={go}
           namaSekolah={guru.sekolah}
           namaGuru={guru.nama}
+          initialView={reportInitialView}
+          onViewChange={setReportInitialView}
           onProfile={() => {
             if (list.length > 0) {
               setSelectedStudentId(list[0].id);
@@ -555,6 +570,7 @@ export default function App() {
                     guruName={guru.nama}
                     parentName={namaOrtu}
                     teacherRole={guru.role}
+                    onOpenWebDashboard={handleOpenWebConnect}
                   />
                 )}
 
@@ -583,6 +599,7 @@ export default function App() {
                     childName={child?.name}
                     onEditProfile={() => go("konfirmasi-akun")}
                     onOpenSettings={() => setShowSettings(true)}
+                    onOpenWebDashboard={handleOpenWebConnect}
                     onLogout={handleLogout}
                     onGoStudents={() => go("students")}
                   />
