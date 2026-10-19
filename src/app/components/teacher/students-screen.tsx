@@ -345,6 +345,7 @@ export function StudentsScreen({
           <div style={{ position: "sticky", bottom: 20, display: "flex", justifyContent: "flex-end", paddingRight: 16, pointerEvents: "none", marginTop: -70, zIndex: 40 }}>
             <button
               onClick={onAddStudent}
+              data-cm="guru-tambah-siswa"
               style={{ background: "#5B7A68", color: "#FFFFFF", fontFamily: PJS, fontWeight: 800, fontSize: 13, padding: "12px 20px", borderRadius: 24, border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, boxShadow: "0 6px 18px rgba(91,122,104,0.35)", pointerEvents: "auto" }}
               className="active:scale-95 transition-transform"
             >

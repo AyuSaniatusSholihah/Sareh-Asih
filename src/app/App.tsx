@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { LogOut } from "lucide-react";
 import {
   saveStudentToFirestore,
@@ -28,7 +28,10 @@ import {
 
 // Layout components
 import {
-  StatusBar, SearchOverlay, SettingsSheet, GlobalHeader, BotNav, OnboardingModal, ProfileSheet,
+  StatusBar, SearchOverlay, SettingsSheet, GlobalHeader, BotNav,
+  OnboardingSlides, isOnboardingSeen,
+  CoachMark, COACH_MARKS, isCoachSeen, markCoachSeen, type CoachRect,
+  ProfileSheet,
 } from "./components/layout";
 
 
@@ -122,6 +125,8 @@ export default function App() {
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [addFirstTime, setAddFirstTime] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const [coach, setCoach] = useState<{ def: (typeof COACH_MARKS)[number]; rect: CoachRect } | null>(null);
 
   const [namaOrtu] = useState("Ani Rahmawati");
   const [childId, setChildId] = useState<number | null>(null);
@@ -188,7 +193,7 @@ export default function App() {
   const enterParent = (linkedId: number | null) => {
     setRole("ortu"); setChildId(linkedId); setChildIds(linkedId ? [linkedId] : []);
     setScreen("parent-dashboard"); setTab("parent-dashboard");
-    setShowOnboarding(true);
+    setShowOnboarding(!isOnboardingSeen("ortu"));
   };
 
   const handleLogout = () => {
@@ -206,7 +211,7 @@ export default function App() {
     setScreenHistory([]);
     if (r === "guru") {
       setGuruSetup(null);
-      setShowOnboarding(false);
+      setShowOnboarding(!isOnboardingSeen("guru"));
       setGuru({
         nama: "Sari Dewi, S.Pd.",
         email: "sari.dewi@gmail.com",
@@ -225,6 +230,7 @@ export default function App() {
       const id = childId ?? 1;
       setChildId(id);
       setChildIds(prev => (prev.length ? prev : [id]));
+      setShowOnboarding(!isOnboardingSeen("ortu"));
       goTab("parent-dashboard");
     }
   };
@@ -292,6 +298,68 @@ export default function App() {
 
   const isMain = MAIN_SCREENS.includes(screen);
   const showNav = !!role && isMain && !guruSetup;
+
+  // ── Coach mark: ukur target, pilih kandidat, dan tutup ─────────────────
+  const measureTarget = (target: string): CoachRect | null => {
+    const frame = frameRef.current;
+    if (!frame) return null;
+    const el = frame.querySelector<HTMLElement>(`[data-cm="${target}"]`);
+    if (!el) return null;
+    const t = el.getBoundingClientRect();
+    const f = frame.getBoundingClientRect();
+    return {
+      x: t.left - f.left, y: t.top - f.top, w: t.width, h: t.height,
+      frameW: f.width, frameH: f.height,
+    };
+  };
+
+  const coachEligible = (def: (typeof COACH_MARKS)[number]) => {
+    if (role !== def.role || screen !== def.screen) return false;
+    if (isCoachSeen(def.id)) return false;
+    if (def.id === "guru_tambah_siswa" && list.length > 0) return false;
+    if (def.id === "guru_laporan" && reportInitialView !== "main") return false;
+    return true;
+  };
+
+  const closeCoach = () => {
+    if (coach) markCoachSeen(coach.def.id);
+    setCoach(null);
+  };
+
+  // Kunjungan pertama sebuah layar → tampilkan coach mark-nya
+  // (tidak saat onboarding, tidak bersamaan dengan coach mark lain)
+  useEffect(() => {
+    if (showOnboarding) { setCoach(null); return; }
+    if (coach) return;
+    const def = COACH_MARKS.find(coachEligible);
+    if (!def) return;
+    const el = frameRef.current?.querySelector<HTMLElement>(`[data-cm="${def.target}"]`);
+    if (!el) return;
+    el.scrollIntoView({ block: "nearest" });
+    const raf = requestAnimationFrame(() => {
+      const rect = measureTarget(def.target);
+      if (rect) setCoach({ def, rect });
+    });
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, screen, showOnboarding, coach, list.length, reportInitialView]);
+
+  // Sinkronkan ring/bubble saat scroll/resize; tutup bila target hilang
+  useEffect(() => {
+    if (!coach) return;
+    const update = () => {
+      const rect = measureTarget(coach.def.target);
+      if (!rect) { setCoach(null); return; }
+      setCoach(c => (c ? { ...c, rect } : c));
+    };
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coach?.def.id, screen]);
 
   const goBack = () => {
     setScreenHistory(prev => {
@@ -373,6 +441,7 @@ export default function App() {
             setRole("guru");
             setScreen("dashboard");
             setTab("dashboard");
+            setShowOnboarding(!isOnboardingSeen("guru"));
           }}
         />
       );
@@ -526,7 +595,9 @@ export default function App() {
             )}
 
             {/* Phone frame */}
-            <div style={isMobile ? {
+            <div
+              ref={frameRef}
+              style={isMobile ? {
               width: "100%", height: "100vh", background: BG, borderRadius: 0,
               display: "flex", flexDirection: "column", overflow: "hidden",
               position: "relative",
@@ -646,15 +717,18 @@ export default function App() {
 
               {showNav && <BotNav role={role!} screen={screen} go={goTab} />}
 
-              {showOnboarding && (
-                <OnboardingModal
-                  role={role!}
+              {showOnboarding && !!role && (
+                <OnboardingSlides
+                  role={role}
                   onClose={() => {
                     setShowOnboarding(false);
                     goTab(role === "guru" ? "dashboard" : "parent-dashboard");
                   }}
-                  goTab={goTab}
                 />
+              )}
+
+              {!showOnboarding && coach && (
+                <CoachMark def={coach.def} rect={coach.rect} onClose={closeCoach} />
               )}
             </div>
 

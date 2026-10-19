@@ -3,7 +3,7 @@ import {
   Bell, Users, MessageSquare, Sparkles, Lock, Info, Heart, Star,
   Key, Hash, XCircle, ChevronRight, ChevronLeft, MapPin, Phone,
   Clock, Wallet, CalendarDays, CheckCircle, Search, FileText, ChevronDown, X,
-  Palette, Target, BookOpen, Settings, TrendingUp, Lightbulb, Laptop, Plus,
+  Palette, Target, BookOpen, Settings, SlidersHorizontal, TrendingUp, Lightbulb, Laptop, Plus,
   BarChart3, ClipboardList, MessageCircle, Send, Paperclip, AtSign, MoreVertical,
   ShieldCheck, Check, CheckCheck, Globe, ExternalLink, LocateFixed, Loader,
   ArrowRight, ArrowUpRight, History, ThumbsUp, Smile, Edit3, RotateCcw,
@@ -173,23 +173,24 @@ function MotivationalKidBanner() {
   return (
     <div
       style={{
-        background: "linear-gradient(135deg, #E6F3EA 0%, #D8EDE0 100%)",
-        border: "1px solid rgba(91,122,104,0.18)",
-        borderRadius: 22,
-        padding: "14px 16px 14px 14px",
+        background: "#D4E5DA",
+        border: "1px solid #BFD6C6",
+        borderRadius: 16,
+        padding: "0 12px 0 16px",
+        gap: 12,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: 10,
         position: "relative",
         overflow: "hidden",
-        boxShadow: "0 2px 10px rgba(91,122,104,0.06)",
+        minHeight: 96,
+        boxSizing: "border-box",
       }}
     >
       {/* Bagian kiri: Ornamen daun & Teks Motivasi */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 9, flex: 1, minWidth: 0 }}>
-        {/* Ornamen tangkai daun alami seperti di screenshot */}
-        <svg width="28" height="52" viewBox="0 0 28 52" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
+        {/* Ornamen tangkai daun alami */}
+        <svg width="28" height="52" viewBox="0 0 28 52" fill="none" style={{ flexShrink: 0 }}>
           {/* Ranting atas */}
           <path d="M12 2 C13 8, 12 16, 15 22" stroke="#689377" strokeWidth="1.8" strokeLinecap="round" />
           <path d="M12 5 C7 4, 3 8, 6 12 C9 14, 13 8, 12 5 Z" fill="#6B9679" />
@@ -203,22 +204,22 @@ function MotivationalKidBanner() {
           <path d="M9 44 C4 44, 3 49, 7 51 C11 52, 12 47, 9 44 Z" fill="#8BB298" />
         </svg>
 
-        <div style={{ flex: 1, minWidth: 0, paddingTop: 1 }}>
-          <p style={{ fontFamily: IPS, fontSize: 12.5, color: "#3A5645", margin: 0, lineHeight: 1.45, fontWeight: 500 }}>
+        <div style={{ flex: 1, minWidth: 0, padding: "14px 0" }}>
+          <span style={{ fontFamily: IPS, fontSize: 13, color: "#24352C", margin: 0, display: "block" }}>
             Setiap anak punya cara
-          </p>
-          <p style={{ fontFamily: PJS, fontSize: 13.5, color: "#1E3A2B", margin: "1px 0 0", lineHeight: 1.35, fontWeight: 800 }}>
+          </span>
+          <b style={{ fontFamily: PJS, fontSize: 13, color: "#24352C", margin: "1px 0 0", display: "block", fontWeight: 800 }}>
             unik untuk berkembang.
-          </p>
-          <p style={{ fontFamily: IPS, fontSize: 11.5, color: "#547862", margin: "4px 0 0", lineHeight: 1.35 }}>
+          </b>
+          <span style={{ fontFamily: IPS, fontSize: 12, color: "#3E5D4B", margin: "2px 0 0", display: "block", fontWeight: 500 }}>
             Mari terus dukung langkah kecilnya.
-          </p>
+          </span>
         </div>
       </div>
 
-      {/* Bagian kanan: Ilustrasi anak dengan tas ransel (gaya Rafi di gambar) */}
-      <div style={{ flexShrink: 0, width: 84, height: 90, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-        <svg viewBox="0 0 96 104" width="84" height="90" fill="none">
+      {/* Bagian kanan: Ilustrasi anak dengan tas ransel (gaya Rafi ramah & ceria) */}
+      <div style={{ flexShrink: 0, width: 84, height: 92, display: "flex", alignItems: "flex-end", justifyContent: "center", alignSelf: "flex-end" }}>
+        <svg viewBox="0 0 96 104" width="84" height="92" fill="none">
           {/* Tas ransel di belakang punggung */}
           <rect x="18" y="38" width="60" height="60" rx="18" fill="#D97706" />
           <rect x="22" y="42" width="52" height="54" rx="15" fill="#EA580C" />
@@ -364,758 +365,433 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
   const [pilihOpen, setPilihOpen] = useState(false);
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
+    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: "#E8F1EA" }}>
       {/* ── Header ── */}
-      <div style={{ background: "#FFFFFF", padding: "14px 20px 12px", flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h1 style={{ fontFamily: PJS, fontSize: 22, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.15 }}>
-              Beranda
-            </h1>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-            <button
-              onClick={openSearch}
-              style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-              className="active:scale-95 transition-transform" title="Cari">
-              <Search size={16} style={{ color: DEEP }} />
-            </button>
-            <button
-              style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
-              className="active:scale-95 transition-transform" title="Notifikasi">
-              <Bell size={16} style={{ color: DEEP }} />
-              <span style={{ position: "absolute", top: 6, right: 6, width: 7, height: 7, borderRadius: "50%", background: A, border: "1.5px solid #fff" }} />
-            </button>
-            <button
-              type="button"
-              onClick={openSettings}
-              style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-              className="active:scale-95 transition-transform" title="Pengaturan">
-              <Settings size={16} style={{ color: DEEP }} />
-            </button>
-          </div>
+      <div style={{ background: "#FFFFFF", padding: "18px 16px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: "#24352C", fontFamily: PJS }}>
+          Beranda
+        </h1>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button
+            type="button"
+            aria-label="Cari"
+            onClick={openSearch}
+            style={{ width: 44, height: 44, border: 0, borderRadius: 12, background: "#E8F1EA", color: "#24352C", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+            className="active:scale-95 transition-transform"
+            title="Cari"
+          >
+            <Search size={22} strokeWidth={1.8} />
+          </button>
+          <button
+            type="button"
+            aria-label="Notifikasi"
+            onClick={() => go("parent-calendar")}
+            style={{ width: 44, height: 44, border: 0, borderRadius: 12, background: "#E8F1EA", color: "#24352C", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
+            className="active:scale-95 transition-transform"
+            title="Notifikasi"
+          >
+            <Bell size={22} strokeWidth={1.8} />
+            <span style={{ position: "absolute", top: 10, right: 10, width: 7, height: 7, borderRadius: "50%", background: "#B5584A", border: "1.5px solid #E8F1EA" }} />
+          </button>
+          <button
+            type="button"
+            aria-label="Pengaturan"
+            onClick={openSettings}
+            style={{ width: 44, height: 44, border: 0, borderRadius: 12, background: "#E8F1EA", color: "#24352C", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+            className="active:scale-95 transition-transform"
+            title="Pengaturan"
+          >
+            <SlidersHorizontal size={22} strokeWidth={1.8} />
+          </button>
         </div>
       </div>
 
-      <div style={{ padding: "16px 16px 90px", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ padding: "16px 16px 90px", display: "flex", flexDirection: "column", gap: 18 }}>
 
         {/* ── Belum terhubung ── */}
         {!child && (
-          <div style={{ background: CARD, border: `1.5px dashed ${BDR}`, borderRadius: 20, padding: "24px 18px", textAlign: "center" }}>
-            <div style={{ width: 56, height: 56, borderRadius: 16, background: SEC, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
-              <Key size={24} style={{ color: DEEP }} />
+          <div style={{ background: "#FFFFFF", border: "1px dashed #D5E3D9", borderRadius: 18, padding: "24px 18px", textAlign: "center" }}>
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: "#D4E5DA", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px", color: "#3E5D4B" }}>
+              <Key size={26} />
             </div>
-            <p style={{ fontFamily: PJS, fontSize: 15, fontWeight: 800, color: TEXT, margin: "0 0 6px" }}>Hubungkan dengan Anak Anda</p>
-            <p style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.5, margin: "0 0 16px" }}>
+            <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: "#24352C", margin: "0 0 6px" }}>Hubungkan dengan Anak Anda</p>
+            <p style={{ fontSize: 12.5, color: "#55675C", lineHeight: 1.5, margin: "0 0 16px" }}>
               Masukkan kode akses dari guru pendamping untuk melihat perkembangan anak.
             </p>
-            <button onClick={onOpenCode}
-              style={{ width: "100%", background: A, color: "#fff", fontFamily: IPS, minHeight: 48, border: "none", cursor: "pointer" }}
-              className="rounded-2xl text-sm font-bold flex items-center justify-center gap-2">
-              <Hash size={15} />Masukkan Kode Akses
+            <button
+              onClick={onOpenCode}
+              style={{ width: "100%", background: "#5B7A68", color: "#fff", fontFamily: PJS, minHeight: 48, border: "none", borderRadius: 14, cursor: "pointer", fontWeight: 700, fontSize: 14 }}
+              className="flex items-center justify-center gap-2 active:scale-98 transition-transform"
+            >
+              <Hash size={16} /> Masukkan Kode Akses
             </button>
           </div>
         )}
 
         {/* ── Sudah terhubung ── */}
         {child && (() => {
-          const talent = studentTalentDetail[child.id];
-          const domains = talent?.domains ?? [];
-          const utama = domains[0];
-          const pendukung = domains[1];
           const nama = child.name.split(" ")[0];
-          const hariMenuju = (() => {
-            const target = new Date("2026-08-08T00:00:00");
-            const now = new Date();
-            const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-            return diff > 0 ? diff : 0;
-          })();
 
           return (
-          <>
-            {/* ── Ringkasan Cepat & Pilihan Anak (Sesuai Desain Baru) ── */}
-            {/* 1. Pill Pemilih Anak */}
-            <button
-              type="button"
-              onClick={() => setPilihOpen(true)}
-              style={{
-                width: "100%",
-                background: "#E8F4EC",
-                border: "1.5px solid rgba(91,122,104,0.18)",
-                borderRadius: 24,
-                padding: "8px 16px 8px 10px",
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                cursor: "pointer",
-                textAlign: "left",
-                boxShadow: "0 2px 8px rgba(91,122,104,0.06)",
-              }}
-              className="active:scale-[0.99] transition-transform"
-              title="Ganti Anak"
-            >
-              <div style={{
-                width: 44, height: 44, borderRadius: "50%",
-                background: "#D7E9DE",
-                overflow: "hidden",
-                flexShrink: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "2px solid #FFFFFF",
-                boxShadow: "0 2px 6px rgba(46,62,53,0.08)",
-              }}>
-                <FotoAnak child={child} size={44} border="none" />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.25 }}>
-                  {nama}
-                </p>
-                <p style={{ fontFamily: IPS, fontSize: 12, color: "#5B7A68", margin: "2px 0 0", fontWeight: 500 }}>
-                  Kelas {child.kelas}
-                </p>
-              </div>
-              <ChevronDown size={20} style={{ color: "#2D5A43", flexShrink: 0 }} />
-            </button>
+            <>
+              {/* 1. Kartu Profil Anak / Pemilih Anak */}
+              <button
+                type="button"
+                onClick={() => setPilihOpen(true)}
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid #D5E3D9",
+                  borderRadius: 16,
+                  padding: "10px 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  width: "100%",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  boxSizing: "border-box",
+                }}
+                className="active:scale-[0.99] transition-transform"
+                title="Pilih Anak"
+              >
+                <div style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  background: "#5B7A68",
+                  color: "#FFFFFF",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: 800,
+                  fontSize: 16,
+                  fontFamily: PJS,
+                  flexShrink: 0,
+                  overflow: "hidden"
+                }}>
+                  {nama.charAt(0).toUpperCase()}
+                </div>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <b style={{ fontSize: 15, display: "block", color: "#24352C", fontFamily: PJS, lineHeight: 1.25 }}>{nama}</b>
+                  <span style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>Kelas {child.kelas}</span>
+                </span>
+                <ChevronDown size={22} style={{ color: "#24352C", flexShrink: 0 }} />
+              </button>
 
-            {/* 2. Sapaan Orang Tua */}
-            <div style={{ margin: "2px 0 2px" }}>
-              <h2 style={{ fontFamily: PJS, fontSize: 24, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
-                Halo! 👋
-              </h2>
-              <p style={{ fontFamily: IPS, fontSize: 13, color: MUTED, margin: "4px 0 0", fontWeight: 500 }}>
-                Berikut ringkasan informasinya.
-              </p>
-            </div>
-
-            {/* 3. Grid 4 Kartu Akses Cepat (2x2) */}
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, margin: 0 }}>Akses Cepat</p>
-                <span style={{ fontFamily: IPS, fontSize: 11, color: MUTED, fontWeight: 600 }}>4 menu</span>
+              {/* 2. Sapaan */}
+              <div style={{ margin: "0 4px", display: "flex", flexDirection: "column", gap: 2 }}>
+                <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#24352C", fontFamily: PJS, lineHeight: 1.2 }}>
+                  Halo! 👋
+                </h2>
+                <span style={{ fontSize: 13, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>
+                  Berikut ringkasan informasinya.
+                </span>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                {[
-                  {
-                    title: "Laporan Belajar",
-                    label: "Catatan observasi",
-                    icon: FileText,
-                    iconBg: "#D4E8DA",
-                    iconColor: "#5B7A68",
-                    onClick: () => go("riwayat-laporan"),
-                  },
-                  {
-                    title: "Minat & Bakat",
-                    label: "Peta potensi anak",
-                    icon: Star,
-                    iconBg: "#5B7A68",
-                    iconColor: "#FFFFFF",
-                    isFeatured: true,
-                    onClick: () => go("parent-detail"),
-                  },
-                  {
-                    title: "Tren Kemampuan",
-                    label: "Riwayat capaian",
-                    icon: TrendingUp,
-                    iconBg: "rgba(210,125,107,0.15)",
-                    iconColor: "#D27D6B",
-                    onClick: () => go("riwayat-perkembangan"),
-                  },
-                  {
-                    title: "Panduan Rumah",
-                    label: "Stimulasi harian",
-                    icon: Lightbulb,
-                    iconBg: "#FEF5DE",
-                    iconColor: "#8C6A1D",
-                    onClick: () => go("saran-rumah"),
-                  },
-                ].map((a, i) => {
-                  const IconComp = a.icon;
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={a.onClick}
-                      style={{
-                        background: "#FFFFFF",
-                        border: "1px solid rgba(91, 122, 104, 0.14)",
-                        borderRadius: 20,
-                        padding: "13px 13px 12px",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        minHeight: 116,
-                        boxShadow: "0 3px 10px rgba(91, 122, 104, 0.06)",
-                      }}
-                      className="active:scale-[0.97] transition-all hover:shadow-md"
-                    >
-                      {/* Top row: icon box + arrow */}
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
-                        <div
-                          style={{
-                            width: 38,
-                            height: 38,
-                            borderRadius: 12,
-                            background: a.iconBg,
-                            color: a.iconColor,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexShrink: 0,
-                            ...(a.isFeatured ? { boxShadow: "0 2px 6px rgba(91,122,104,0.20)" } : {}),
-                          }}
-                        >
-                          <IconComp size={19} strokeWidth={2.2} />
-                        </div>
-                        <ArrowUpRight size={17} strokeWidth={2.4} style={{ color: "#5B7A68", marginTop: 2 }} />
-                      </div>
+              {/* 3. Akses Cepat (4 menu grid 2x2) */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "0 4px" }}>
+                  <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: "#24352C", fontFamily: PJS }}>Akses Cepat</h2>
+                  <span style={{ fontSize: 12, color: "#55675C", fontWeight: 700, fontFamily: IPS }}>4 menu</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <button
+                    type="button"
+                    onClick={() => go("riwayat-laporan")}
+                    style={{
+                      background: "#FFFFFF",
+                      border: "1px solid #D5E3D9",
+                      borderRadius: 18,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
+                      padding: 14,
+                      minHeight: 112,
+                      boxSizing: "border-box",
+                      textAlign: "left",
+                      cursor: "pointer",
+                    }}
+                    className="active:scale-[0.98] transition-transform"
+                  >
+                    <span style={{ width: 40, height: 40, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, background: "#D4E5DA", color: "#3E5D4B" }}>
+                      <FileText size={22} strokeWidth={1.8} />
+                    </span>
+                    <b style={{ fontSize: 15, marginTop: "auto", color: "#24352C", fontFamily: PJS, fontWeight: 800 }}>Laporan Belajar</b>
+                    <small style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>Catatan observasi</small>
+                  </button>
 
-                      {/* Bottom content: title + label */}
-                      <div style={{ marginTop: 10 }}>
-                        <p
-                          style={{
-                            fontFamily: PJS,
-                            fontSize: 17,
-                            fontWeight: 800,
-                            color: "#2E3E35",
-                            margin: 0,
-                            lineHeight: 1.25,
-                            letterSpacing: "-0.01em",
-                          }}
-                        >
-                          {a.title}
-                        </p>
-                        <p
-                          style={{
-                            fontFamily: IPS,
-                            fontSize: 11.5,
-                            fontWeight: 600,
-                            color: "#5B7A68",
-                            margin: "3px 0 0",
-                          }}
-                        >
-                          {a.label}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => go("parent-detail")}
+                    style={{
+                      background: "#FFFFFF",
+                      border: "1px solid #D5E3D9",
+                      borderRadius: 18,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
+                      padding: 14,
+                      minHeight: 112,
+                      boxSizing: "border-box",
+                      textAlign: "left",
+                      cursor: "pointer",
+                    }}
+                    className="active:scale-[0.98] transition-transform"
+                  >
+                    <span style={{ width: 40, height: 40, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, background: "#5B7A68", color: "#FFFFFF" }}>
+                      <Star size={22} strokeWidth={1.8} fill="#FFFFFF" />
+                    </span>
+                    <b style={{ fontSize: 15, marginTop: "auto", color: "#24352C", fontFamily: PJS, fontWeight: 800 }}>Minat &amp; Bakat</b>
+                    <small style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>Peta potensi anak</small>
+                  </button>
 
-            {/* 4. Banner Kutipan Motivasi Anak */}
-            <MotivationalKidBanner />
+                  <button
+                    type="button"
+                    onClick={() => go("riwayat-perkembangan")}
+                    style={{
+                      background: "#FFFFFF",
+                      border: "1px solid #D5E3D9",
+                      borderRadius: 18,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
+                      padding: 14,
+                      minHeight: 112,
+                      boxSizing: "border-box",
+                      textAlign: "left",
+                      cursor: "pointer",
+                    }}
+                    className="active:scale-[0.98] transition-transform"
+                  >
+                    <span style={{ width: 40, height: 40, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, background: "#F9DDD6", color: "#B5584A" }}>
+                      <TrendingUp size={22} strokeWidth={1.8} />
+                    </span>
+                    <b style={{ fontSize: 15, marginTop: "auto", color: "#24352C", fontFamily: PJS, fontWeight: 800 }}>Tren Kemampuan</b>
+                    <small style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>Riwayat capaian</small>
+                  </button>
 
-
-
-            {/* ── Laporan Terbaru dari Guru ── */}
-            {latestLaporan && (
-              <div style={{ background: CARD, borderRadius: 20, padding: "16px", border: `1px solid ${BDR}`, boxShadow: "0 1px 8px rgba(91,122,104,0.05)" }}>
-                <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
-                  <div className="flex items-center gap-2.5">
-                    <div style={{ width: 34, height: 34, borderRadius: 11, background: "linear-gradient(135deg, #FFE8E0 0%, #FFD5C8 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <FileText size={16} style={{ color: "#C4695A" }} strokeWidth={2.2} />
-                    </div>
-                    <p style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>Laporan Terbaru dari Guru</p>
-                  </div>
-                  <button onClick={() => go("riwayat-laporan")} className="flex items-center gap-1.5"
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                    <span style={{ fontFamily: DMM, fontSize: 10, color: MUTED }}>{latestLaporan.dikirimPada}</span>
-                    <ChevronRight size={14} style={{ color: MUTED }} />
+                  <button
+                    type="button"
+                    onClick={() => go("saran-rumah")}
+                    style={{
+                      background: "#FFFFFF",
+                      border: "1px solid #D5E3D9",
+                      borderRadius: 18,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
+                      padding: 14,
+                      minHeight: 112,
+                      boxSizing: "border-box",
+                      textAlign: "left",
+                      cursor: "pointer",
+                    }}
+                    className="active:scale-[0.98] transition-transform"
+                  >
+                    <span style={{ width: 40, height: 40, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, background: "#FBEFC9", color: "#8A6A12" }}>
+                      <Lightbulb size={22} strokeWidth={1.8} />
+                    </span>
+                    <b style={{ fontSize: 15, marginTop: "auto", color: "#24352C", fontFamily: PJS, fontWeight: 800 }}>Panduan Rumah</b>
+                    <small style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>Stimulasi harian</small>
                   </button>
                 </div>
+              </div>
 
-                {/* Guru pengirim */}
-                <div className="flex items-center gap-1.5" style={{ marginBottom: 8 }}>
-                  <Users size={13} style={{ color: MUTED, flexShrink: 0 }} />
-                  <p style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED, margin: 0 }}>
-                    {child.teacher} · Guru Pendamping
-                  </p>
+              {/* 4. Banner Motivasi (Ilustrasi Anak & Ornamen) */}
+              <MotivationalKidBanner />
+
+              {/* 5. Terbaru dari Guru */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "0 4px" }}>
+                  <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: "#24352C", fontFamily: PJS }}>Terbaru dari Guru</h2>
+                  <button
+                    type="button"
+                    onClick={() => go("riwayat-laporan")}
+                    style={{ background: "none", border: "none", fontSize: 12, fontWeight: 700, color: "#B5584A", cursor: "pointer", fontFamily: PJS, padding: 0 }}
+                  >
+                    Lihat semua
+                  </button>
                 </div>
+                <div style={{ background: "#FFFFFF", border: "1px solid #D5E3D9", borderRadius: 18, overflow: "hidden" }}>
+                  {/* Row 1: Laporan */}
+                  <button
+                    type="button"
+                    onClick={() => go("riwayat-laporan")}
+                    data-cm="ortu-baca-laporan"
+                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: "none", border: "none", textAlign: "left", cursor: "pointer" }}
+                    className="active:bg-slate-50 transition-colors"
+                  >
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 6, display: "inline-block", background: "#D4E5DA", color: "#2F4A3B", fontFamily: PJS }}>
+                        Laporan
+                      </span>
+                      <b style={{ fontSize: 14, display: "block", marginTop: 4, color: "#24352C", fontFamily: PJS, fontWeight: 800 }}>
+                        {latestLaporan ? (latestLaporan.isi.length > 34 ? latestLaporan.isi.slice(0, 34) + "…" : latestLaporan.isi) : "Laporan Semester Genap 2026"}
+                      </b>
+                      <span style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>
+                        {child.teacher || "Bu Sari"} · {latestLaporan?.dikirimPada || "18 Okt 2026"}
+                      </span>
+                    </span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#B5584A", flexShrink: 0, fontFamily: PJS }}>Baru</span>
+                    <ChevronRight size={20} style={{ color: "#55675C", flexShrink: 0 }} />
+                  </button>
 
-                <p style={{ fontFamily: IPS, fontSize: 12, color: "#8BA892", lineHeight: 1.55, margin: "0 0 4px" }}>
-                  {latestLaporan.isi.length > 100 ? latestLaporan.isi.slice(0, 100) + "…" : latestLaporan.isi}
-                </p>
+                  <div style={{ height: 1, background: "#E3ECE5", margin: "0 14px" }} />
 
-                <button onClick={() => go("riwayat-laporan")} className="flex items-center gap-1.5"
-                  style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: T, background: "none", border: "none", padding: "10px 0 0", cursor: "pointer" }}>
-                  Lihat laporan lengkap <span>→</span>
+                  {/* Row 2: Saran 1 */}
+                  <button
+                    type="button"
+                    onClick={() => go("saran-rumah")}
+                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: "none", border: "none", textAlign: "left", cursor: "pointer" }}
+                    className="active:bg-slate-50 transition-colors"
+                  >
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 6, display: "inline-block", background: "#F9DDD6", color: "#8E3F32", fontFamily: PJS }}>
+                        Saran
+                      </span>
+                      <b style={{ fontSize: 14, display: "block", marginTop: 4, color: "#24352C", fontFamily: PJS, fontWeight: 800 }}>
+                        Latih komunikasi sehari-hari
+                      </b>
+                      <span style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>
+                        Beri {nama} waktu untuk menjawab
+                      </span>
+                    </span>
+                    <ChevronRight size={20} style={{ color: "#55675C", flexShrink: 0 }} />
+                  </button>
+
+                  <div style={{ height: 1, background: "#E3ECE5", margin: "0 14px" }} />
+
+                  {/* Row 3: Saran 2 */}
+                  <button
+                    type="button"
+                    onClick={() => go("saran-rumah")}
+                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: "none", border: "none", textAlign: "left", cursor: "pointer" }}
+                    className="active:bg-slate-50 transition-colors"
+                  >
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 6, display: "inline-block", background: "#F9DDD6", color: "#8E3F32", fontFamily: PJS }}>
+                        Saran
+                      </span>
+                      <b style={{ fontSize: 14, display: "block", marginTop: 4, color: "#24352C", fontFamily: PJS, fontWeight: 800 }}>
+                        Dukung interaksi dengan teman
+                      </b>
+                      <span style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>
+                        Ajak bermain bersama teman yang sabar
+                      </span>
+                    </span>
+                    <ChevronRight size={20} style={{ color: "#55675C", flexShrink: 0 }} />
+                  </button>
+                </div>
+              </div>
+
+              {/* 6. Grid 2 Kolom: Agenda Terdekat & Rekomendasi Pelatihan */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                {/* Card 1: Agenda Terdekat */}
+                <button
+                  type="button"
+                  onClick={() => go("parent-calendar")}
+                  style={{
+                    background: "#FFFFFF",
+                    border: "1px solid #D5E3D9",
+                    borderRadius: 18,
+                    padding: 14,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                    textAlign: "left",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                  }}
+                  className="active:scale-[0.98] transition-transform"
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+                    <b style={{ fontSize: 14, color: "#24352C", fontFamily: PJS, fontWeight: 800 }}>Agenda Terdekat</b>
+                    <ChevronRight size={18} style={{ color: "#55675C", flexShrink: 0 }} />
+                  </div>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: "2px 8px",
+                    borderRadius: 6,
+                    background: "#F9DDD6",
+                    color: "#8E3F32",
+                    alignSelf: "flex-start",
+                    fontFamily: PJS,
+                    marginTop: 2,
+                  }}>
+                    {upcoming.length > 0
+                      ? `${new Date(upcoming[0].date + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })} ${new Date(upcoming[0].date + "T00:00:00").getFullYear()}`
+                      : "8 Agu 2026"}
+                  </span>
+                  <b style={{ fontSize: 13, color: "#24352C", fontFamily: PJS, fontWeight: 800, marginTop: 2, lineHeight: 1.3 }}>
+                    {upcoming.length > 0
+                      ? (upcoming[0].title.length > 25 ? upcoming[0].title.slice(0, 25) + "…" : upcoming[0].title)
+                      : "Seleksi Kabupaten FLS3N"}
+                  </b>
+                  <span style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>
+                    {upcoming.length > 0 ? upcoming[0].jam : "08.00 – 12.00"}
+                  </span>
+                  <span style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>
+                    {upcoming.length > 0
+                      ? (upcoming[0].lokasi.length > 22 ? upcoming[0].lokasi.slice(0, 22) + "…" : upcoming[0].lokasi)
+                      : "SLB Negeri 1 Bandung"}
+                  </span>
+                </button>
+
+                {/* Card 2: Rekomendasi Pelatihan */}
+                <button
+                  type="button"
+                  onClick={() => go("parent-training")}
+                  style={{
+                    background: "#FFFFFF",
+                    border: "1px solid #D5E3D9",
+                    borderRadius: 18,
+                    padding: 14,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                    textAlign: "left",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                  }}
+                  className="active:scale-[0.98] transition-transform"
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+                    <b style={{ fontSize: 14, color: "#24352C", fontFamily: PJS, fontWeight: 800 }}>Rekomendasi Pelatihan</b>
+                    <ChevronRight size={18} style={{ color: "#55675C", flexShrink: 0 }} />
+                  </div>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: "2px 8px",
+                    borderRadius: 6,
+                    background: "#E3ECE5",
+                    color: "#2F4A3B",
+                    alignSelf: "flex-start",
+                    fontFamily: PJS,
+                    marginTop: 2,
+                  }}>
+                    Kelas Seni Visual
+                  </span>
+                  <span style={{ fontSize: 12, color: "#55675C", fontWeight: 500, fontFamily: IPS, marginTop: 4 }}>
+                    Sesuai minat {nama}
+                  </span>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: "2px 8px",
+                    borderRadius: 6,
+                    background: "#D4E5DA",
+                    color: "#2F4A3B",
+                    alignSelf: "flex-start",
+                    fontFamily: PJS,
+                    marginTop: "auto",
+                  }}>
+                    Online
+                  </span>
                 </button>
               </div>
-            )}
-
-            {/* ── Saran dari Guru (Sesuai Desain Referensi) ── */}
-            {(() => {
-              const teacherName = child.teacher || "Bu Sari";
-              const saranItems = [
-                {
-                  icon: MessageSquare,
-                  title: "Latih komunikasi sehari-hari",
-                  desc: `Mulai percakapan sederhana dan beri ${nama} waktu untuk menjawab.`,
-                },
-                {
-                  icon: Users,
-                  title: "Dukung interaksi dengan teman",
-                  desc: `Ajak ${nama} bermain bersama teman yang sabar dan suportif.`,
-                },
-              ];
-
-              return (
-                <div
-                  style={{
-                    background: "#FFFBF9",
-                    border: "1.5px solid #F5D5CB",
-                    borderRadius: 22,
-                    padding: "16px",
-                    boxShadow: "0 2px 10px rgba(196,105,90,0.05)",
-                  }}
-                >
-                  {/* Header Row */}
-                  <div
-                    onClick={() => go("saran-rumah")}
-                    className="flex items-center justify-between cursor-pointer active:scale-[0.99] transition-transform"
-                    style={{ marginBottom: 14 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        style={{
-                          width: 42,
-                          height: 42,
-                          borderRadius: 12,
-                          background: "#FFE8E0",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Lightbulb size={20} style={{ color: "#C4695A" }} strokeWidth={2.2} />
-                      </div>
-                      <div>
-                        <h3
-                          style={{
-                            fontFamily: PJS,
-                            fontSize: 15,
-                            fontWeight: 800,
-                            color: TEXT,
-                            margin: 0,
-                            lineHeight: 1.25,
-                          }}
-                        >
-                          Saran dari Guru
-                        </h3>
-                        <p
-                          style={{
-                            fontFamily: IPS,
-                            fontSize: 12,
-                            color: MUTED,
-                            margin: "2px 0 0",
-                          }}
-                        >
-                          {teacherName} · Guru Pendamping
-                        </p>
-                      </div>
-                    </div>
-                    <ChevronRight size={18} style={{ color: "#797673" }} />
-                  </div>
-
-                  {/* Inner Container: Rekomendasi Terbaru */}
-                  <div
-                    style={{
-                      background: "#FFF4EF",
-                      borderRadius: 16,
-                      border: "1.5px solid #F8DCD4",
-                      padding: "14px 14px 12px",
-                    }}
-                  >
-                    {/* Sub-header row */}
-                    <div className="flex items-center justify-between mb-3">
-                      <span
-                        style={{
-                          background: "#FFE8DF",
-                          color: "#C4695A",
-                          borderRadius: 99,
-                          fontSize: 11,
-                          fontWeight: 700,
-                          padding: "3px 10px",
-                          fontFamily: IPS,
-                        }}
-                      >
-                        Rekomendasi terbaru
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: IPS,
-                          fontSize: 11.5,
-                          color: MUTED,
-                        }}
-                      >
-                        {saranItems.length} saran
-                      </span>
-                    </div>
-
-                    {/* Recommendation Cards */}
-                    <div className="space-y-2.5">
-                      {saranItems.map((item, idx) => {
-                        const Icon = item.icon;
-                        return (
-                          <div
-                            key={idx}
-                            style={{
-                              background: "#FFFFFF",
-                              borderRadius: 12,
-                              padding: "12px 14px",
-                              border: "1px solid rgba(245, 213, 203, 0.4)",
-                              boxShadow: "0 1px 4px rgba(0,0,0,0.02)",
-                              display: "flex",
-                              alignItems: "flex-start",
-                              gap: 12,
-                            }}
-                          >
-                            <div
-                              style={{
-                                width: 34,
-                                height: 34,
-                                borderRadius: 8,
-                                background: "#FFF0EB",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flexShrink: 0,
-                                marginTop: 1,
-                              }}
-                            >
-                              <Icon size={16} style={{ color: "#C4695A" }} strokeWidth={2.2} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h4
-                                style={{
-                                  fontFamily: PJS,
-                                  fontSize: 13.5,
-                                  fontWeight: 800,
-                                  color: TEXT,
-                                  margin: 0,
-                                  lineHeight: 1.3,
-                                }}
-                              >
-                                {item.title}
-                              </h4>
-                              <p
-                                style={{
-                                  fontFamily: IPS,
-                                  fontSize: 12,
-                                  color: MUTED,
-                                  margin: "4px 0 0",
-                                  lineHeight: 1.45,
-                                }}
-                              >
-                                {item.desc}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Bottom Action: Lihat semua saran */}
-                  <div
-                    style={{
-                      borderTop: "1px solid #F5D5CB",
-                      marginTop: 14,
-                      paddingTop: 12,
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => go("saran-rumah")}
-                      className="w-full flex items-center justify-between active:scale-[0.99] transition-transform"
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: 0,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: PJS,
-                          fontSize: 13,
-                          fontWeight: 800,
-                          color: "#C4695A",
-                        }}
-                      >
-                        Lihat semua saran
-                      </span>
-                      <ArrowRight size={15} style={{ color: "#C4695A" }} strokeWidth={2.4} />
-                    </button>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* ── Dua kartu info 2 kolom: Agenda Terdekat & Rekomendasi Pelatihan ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              {/* 1. Agenda Terdekat */}
-              <div
-                style={{
-                  background: "#FFFFFF",
-                  border: "1.5px solid rgba(210,125,107,0.25)",
-                  borderRadius: 20,
-                  padding: "13px 12px 12px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  boxShadow: "0 2px 10px rgba(210,125,107,0.05)",
-                  minHeight: 180,
-                }}
-              >
-                <div>
-                  {/* Header */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 9,
-                        background: "rgba(210,125,107,0.14)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}>
-                        <CalendarDays size={16} style={{ color: "#C4695A" }} strokeWidth={2.3} />
-                      </div>
-                      <h4 style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
-                        Agenda Terdekat
-                      </h4>
-                    </div>
-                    <button
-                      onClick={() => go("parent-calendar")}
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: "50%",
-                        background: "rgba(210,125,107,0.12)",
-                        border: "none",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                        flexShrink: 0,
-                        padding: 0,
-                      }}
-                      title="Lihat Kalender"
-                    >
-                      <ChevronRight size={13} style={{ color: "#C4695A" }} />
-                    </button>
-                  </div>
-
-                  {/* Badge Tanggal */}
-                  <div style={{ marginTop: 10 }}>
-                    <span style={{
-                      background: "rgba(210,125,107,0.14)",
-                      color: "#C4695A",
-                      fontFamily: PJS,
-                      fontSize: 9.5,
-                      fontWeight: 800,
-                      padding: "2.5px 8px",
-                      borderRadius: 6,
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}>
-                      <CalendarDays size={10} style={{ color: "#C4695A" }} />
-                      {upcoming.length > 0
-                        ? `${new Date(upcoming[0].date + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short" })} ${new Date(upcoming[0].date + "T00:00:00").getFullYear()}`
-                        : "8 Agu 2026"}
-                    </span>
-                  </div>
-
-                  {/* Event Title */}
-                  <p style={{ fontFamily: PJS, fontSize: 11.5, fontWeight: 800, color: TEXT, margin: "7px 0 0", lineHeight: 1.3 }}>
-                    {upcoming.length > 0
-                      ? (upcoming[0].title.length > 24 ? upcoming[0].title.slice(0, 24) + "…" : upcoming[0].title)
-                      : "Seleksi Kabupaten FLS3N ..."}
-                  </p>
-
-                  {/* Time & Location */}
-                  <div className="flex items-center gap-1.5" style={{ marginTop: 5 }}>
-                    <Clock size={10.5} style={{ color: "#8BA892", flexShrink: 0 }} />
-                    <span style={{ fontFamily: DMM, fontSize: 9.5, color: MUTED }}>
-                      {upcoming.length > 0 ? upcoming[0].jam.split("–")[0].trim() : "08.00"} – {upcoming.length > 0 ? upcoming[0].jam.split("–")[1]?.trim() || "12.00" : "12.00"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5" style={{ marginTop: 3 }}>
-                    <MapPin size={10.5} style={{ color: "#8BA892", flexShrink: 0 }} />
-                    <span style={{ fontFamily: IPS, fontSize: 9.5, color: MUTED }}>
-                      {upcoming.length > 0
-                        ? (upcoming[0].lokasi.length > 20 ? upcoming[0].lokasi.slice(0, 20) + "…" : upcoming[0].lokasi)
-                        : "SLB Negeri 1 Bandung"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Tombol aksi */}
-                <div style={{ marginTop: 12 }}>
-                  <button
-                    onClick={() => go("parent-calendar")}
-                    style={{
-                      background: "#FFFFFF",
-                      border: "1.5px solid rgba(210,125,107,0.45)",
-                      borderRadius: 999,
-                      padding: "6px 12px",
-                      color: "#C4695A",
-                      fontFamily: PJS,
-                      fontSize: 10,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "100%",
-                      gap: 4,
-                      boxShadow: "0 1px 3px rgba(210,125,107,0.08)",
-                    }}
-                    className="hover:bg-orange-50 active:scale-98 transition-all"
-                  >
-                    Lihat Kalender →
-                  </button>
-                </div>
-              </div>
-
-              {/* 2. Rekomendasi Pelatihan */}
-              <div
-                style={{
-                  background: "#FFFFFF",
-                  border: "1.5px solid rgba(91,122,104,0.25)",
-                  borderRadius: 20,
-                  padding: "13px 12px 12px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  boxShadow: "0 2px 10px rgba(91,122,104,0.05)",
-                  minHeight: 180,
-                }}
-              >
-                <div>
-                  {/* Header */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 9,
-                        background: "rgba(91,122,104,0.14)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}>
-                        <Lightbulb size={16} style={{ color: "#2D5A43" }} strokeWidth={2.3} />
-                      </div>
-                      <h4 style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
-                        Rekomendasi Pelatihan
-                      </h4>
-                    </div>
-                    <button
-                      onClick={() => go("parent-training")}
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: "50%",
-                        background: "rgba(91,122,104,0.12)",
-                        border: "none",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                        flexShrink: 0,
-                        padding: 0,
-                      }}
-                      title="Lihat Pelatihan"
-                    >
-                      <ChevronRight size={13} style={{ color: "#2D5A43" }} />
-                    </button>
-                  </div>
-
-                  {/* Badge Kategori */}
-                  <div style={{ marginTop: 10 }}>
-                    <span style={{
-                      background: "rgba(91,122,104,0.16)",
-                      color: "#2D5A43",
-                      fontFamily: PJS,
-                      fontSize: 9.5,
-                      fontWeight: 800,
-                      padding: "2.5px 8px",
-                      borderRadius: 6,
-                      display: "inline-block",
-                    }}>
-                      Kelas Seni Visual
-                    </span>
-                  </div>
-
-                  {/* Subtitle minat */}
-                  <div className="flex items-center gap-1.5" style={{ marginTop: 7 }}>
-                    <Users size={11} style={{ color: MUTED, flexShrink: 0 }} />
-                    <span style={{ fontFamily: IPS, fontSize: 10, color: MUTED }}>
-                      Sesuai minat {nama}
-                    </span>
-                  </div>
-
-                  {/* Mode Online Tag */}
-                  <div style={{ marginTop: 5 }}>
-                    <span style={{
-                      fontFamily: PJS,
-                      fontSize: 9.5,
-                      fontWeight: 700,
-                      color: "#2D5A43",
-                      background: "#E2EFE6",
-                      border: "1px solid rgba(91,122,104,0.25)",
-                      borderRadius: 5,
-                      padding: "2px 7px",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 3,
-                    }}>
-                      <Laptop size={9.5} style={{ color: "#2D5A43" }} />
-                      Online
-                    </span>
-                  </div>
-                </div>
-
-                {/* Tombol aksi */}
-                <div style={{ marginTop: 12 }}>
-                  <button
-                    onClick={() => go("parent-training")}
-                    style={{
-                      background: "#FFFFFF",
-                      border: "1.5px solid rgba(91,122,104,0.45)",
-                      borderRadius: 999,
-                      padding: "6px 12px",
-                      color: "#2D5A43",
-                      fontFamily: PJS,
-                      fontSize: 10,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "100%",
-                      gap: 4,
-                      boxShadow: "0 1px 3px rgba(91,122,104,0.08)",
-                    }}
-                    className="hover:bg-emerald-50 active:scale-98 transition-all"
-                  >
-                    Lihat Semua →
-                  </button>
-                </div>
-              </div>
-            </div>
-          </>
+            </>
           );
         })()}
 

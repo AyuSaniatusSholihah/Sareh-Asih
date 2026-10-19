@@ -22,23 +22,46 @@ export const ORTU_NAV = [
 
 export function BotNav({ role, screen, go }: { role: Role; screen: Screen; go: (s: Screen) => void }) {
   const nav = role === "guru" ? GURU_NAV : ORTU_NAV;
+  const isOrtu = role === "ortu";
+
   return (
-    <div style={{ background: CARD, borderTop: `1px solid ${BDR}`, flexShrink: 0 }}>
-      <div className="flex px-2 py-1">
+    <div style={{ background: "#FFFFFF", borderTop: "1px solid #D5E3D9", flexShrink: 0, padding: isOrtu ? "6px 8px 12px" : undefined }}>
+      <div className="flex px-2 py-0.5">
         {nav.map(({ k, l, I }) => {
           const active = screen === k;
           return (
-            <button key={k} onClick={() => go(k as Screen)} style={{ fontFamily: IPS, minHeight: 52 }} className="flex-1 flex flex-col items-center justify-center gap-0.5 transition-all">
+            <button
+              key={k}
+              onClick={() => go(k as Screen)}
+              style={{
+                fontFamily: active ? PJS : IPS,
+                minHeight: isOrtu ? 48 : 52,
+                color: active ? (isOrtu ? "#24352C" : DEEP) : (isOrtu ? "#55675C" : MUTED),
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+              className="flex-1 flex flex-col items-center justify-center gap-1 transition-all"
+            >
               <div style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                padding: active ? "3px 14px" : "3px 0",
-                borderRadius: 16,
-                background: active ? "rgba(91,122,104,0.16)" : "transparent",
-                transition: "all 0.2s ease"
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: active ? (isOrtu ? "4px 18px" : "3px 14px") : "4px 0",
+                borderRadius: isOrtu ? 14 : 16,
+                background: active ? (isOrtu ? "#D4E5DA" : "rgba(91,122,104,0.16)") : "transparent",
+                transition: "all 0.2s ease",
               }}>
-                <I size={20} strokeWidth={active ? 2.5 : 1.8} style={{ color: active ? DEEP : MUTED }} />
+                <I size={20} strokeWidth={active ? 2.2 : 1.8} style={{ color: active ? (isOrtu ? "#24352C" : DEEP) : (isOrtu ? "#55675C" : MUTED) }} />
               </div>
-              <span style={{ fontSize: 10, fontWeight: active ? 800 : 500, color: active ? DEEP : MUTED, fontFamily: active ? PJS : IPS }}>{l}</span>
+              <span style={{
+                fontSize: 11,
+                fontWeight: active ? (isOrtu ? 800 : 700) : (isOrtu ? 600 : 500),
+                color: active ? (isOrtu ? "#24352C" : DEEP) : (isOrtu ? "#55675C" : MUTED),
+                fontFamily: PJS,
+              }}>
+                {l}
+              </span>
             </button>
           );
         })}

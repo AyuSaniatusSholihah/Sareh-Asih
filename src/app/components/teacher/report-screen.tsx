@@ -879,6 +879,7 @@ export function ReportScreen({
       <div style={{ position: "sticky", bottom: 20, display: "flex", justifyContent: "center", paddingInline: 16, marginTop: -60, zIndex: 10, pointerEvents: "none" }}>
         <button
           onClick={() => setView("detail")}
+          data-cm="guru-laporan-periksa"
           style={{ background: "linear-gradient(135deg, #3F6851, #5B9A6E)", color: "#FFFFFF", fontFamily: PJS, fontWeight: 800, fontSize: 14.5, padding: "14px 28px", borderRadius: 28, border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 8px 24px rgba(45,84,62,0.40)", pointerEvents: "auto" }}
           className="active:scale-[0.96] transition-transform"
         >

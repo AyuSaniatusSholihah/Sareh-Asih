@@ -129,6 +129,7 @@ export function DashboardGuru({
         {pendingObs.length > 0 && (
           <div
             onClick={() => go("asesmen-pending")}
+            data-cm="guru-periksa-asesmen"
             style={{
               background: "#FFFFFF",
               borderRadius: 22,

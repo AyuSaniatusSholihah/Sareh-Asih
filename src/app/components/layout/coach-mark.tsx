@@ -1,198 +1,228 @@
-import { useState, useEffect } from "react";
-import { T, A, CARD, TEXT, MUTED, BDR, PJS, IPS, DMM, DEEP } from "../ui-kit";
-import { type Screen } from "../data";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { CARD, PJS, IPS } from "../ui-kit";
+import { type Role, type Screen } from "../data";
 
-// ─── Coach Mark Steps ─────────────────────────────────────────────────
-export interface CoachStep {
-  id: string;              // unique key for localStorage flag
-  targetScreen: Screen;
-  spotlightStyle: React.CSSProperties; // position & size of the spotlight hole
-  cardPlacement: "top" | "bottom" | "center";
-  text: string;
-  badge: string;
-}
+export type CoachDef = {
+  id: string;
+  role: Role;
+  screen: Screen;
+  target: string; // nilai atribut data-cm pada elemen yang disorot
+  radius: number; // radius ring mengikuti radius elemen target
+  text: string;   // maksimal satu baris, diawali kata kerja
+};
 
-export const COACH_STEPS: CoachStep[] = [
+export const COACH_MARKS: CoachDef[] = [
   {
-    id: "cm_tab_siswa",
-    targetScreen: "dashboard",
-    spotlightStyle: { left: "20%", bottom: 0, width: "20%", height: 56 },
-    cardPlacement: "top",
-    text: "Mulai dari sini: atur peranmu dan tambahkan kelas atau anak didikmu.",
-    badge: "Tab Siswa",
+    id: "guru_asesmen",
+    role: "guru",
+    screen: "dashboard",
+    target: "guru-periksa-asesmen",
+    radius: 24,
+    text: "Mulai dari sini: periksa asesmen yang menunggu.",
   },
   {
-    id: "cm_mulai_setup",
-    targetScreen: "students",
-    spotlightStyle: { left: "50%", top: "55%", width: 200, height: 52, transform: "translateX(-50%)" },
-    cardPlacement: "top",
-    text: "Pilih peranmu dulu supaya aplikasi menyesuaikan diri dengan cara mengajarmu.",
-    badge: "Mulai Setup",
+    id: "guru_tambah_siswa",
+    role: "guru",
+    screen: "students",
+    target: "guru-tambah-siswa",
+    radius: 26,
+    text: "Tambah siswa untuk memulai.",
   },
   {
-    id: "cm_pilih_peran",
-    targetScreen: "setup-ruang-belajar",
-    spotlightStyle: { left: 16, top: 160, width: "calc(100% - 32px)", height: 280 },
-    cardPlacement: "bottom",
-    text: "Pilih yang paling sesuai. Kamu bisa mengubahnya nanti di Pengaturan.",
-    badge: "Pilih Peran",
+    id: "guru_laporan",
+    role: "guru",
+    screen: "report",
+    target: "guru-laporan-periksa",
+    radius: 30,
+    text: "Periksa laporan sebelum dikirim.",
   },
   {
-    id: "cm_tambah_siswa",
-    targetScreen: "students",
-    spotlightStyle: { right: 16, bottom: 76, width: 160, height: 48 },
-    cardPlacement: "top",
-    text: "Tambahkan anak didik berikutnya di sini.",
-    badge: "Tambah Anak",
+    id: "ortu_laporan",
+    role: "ortu",
+    screen: "parent-dashboard",
+    target: "ortu-baca-laporan",
+    radius: 14,
+    text: "Ketuk untuk membaca laporan.",
   },
 ];
 
-// ─── Utility: localStorage flags ──────────────────────────────────────
-const CM_PREFIX = "sareh_asih_cm_";
+const CM_PREFIX = "sareh_asih_cm_v2_";
 
-export function isCoachStepSeen(stepId: string): boolean {
-  try { return localStorage.getItem(CM_PREFIX + stepId) === "1"; } catch { return false; }
-}
-
-export function markCoachStepSeen(stepId: string): void {
-  try { localStorage.setItem(CM_PREFIX + stepId, "1"); } catch {}
-}
-
-export function resetAllCoachMarks(): void {
-  COACH_STEPS.forEach(s => {
-    try { localStorage.removeItem(CM_PREFIX + s.id); } catch {}
-  });
-}
-
-/** Find the next unseen coach step for a given screen. Returns null if none. */
-export function getNextCoachStep(currentScreen: Screen): CoachStep | null {
-  for (const step of COACH_STEPS) {
-    if (step.targetScreen === currentScreen && !isCoachStepSeen(step.id)) {
-      return step;
-    }
+export function isCoachSeen(id: string): boolean {
+  try {
+    return sessionStorage.getItem(CM_PREFIX + id) === "1";
+  } catch {
+    return false;
   }
-  return null;
 }
 
-// ─── Coach Mark Overlay Component ─────────────────────────────────────
-export function CoachMarkOverlay({
-  step,
-  onNext,
-  onSkip,
+export function markCoachSeen(id: string): void {
+  try {
+    sessionStorage.setItem(CM_PREFIX + id, "1");
+  } catch {
+    /* sessionStorage tidak tersedia — abaikan */
+  }
+}
+
+export type CoachRect = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  frameW: number;
+  frameH: number;
+};
+
+const PANEL = "rgba(0,0,0,0.65)";
+
+export function CoachMark({
+  def,
+  rect,
+  onClose,
 }: {
-  step: CoachStep;
-  onNext: () => void;
-  onSkip: () => void;
+  def: CoachDef;
+  rect: CoachRect;
+  onClose: () => void;
 }) {
-  // Animate in
-  const [visible, setVisible] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const [bubble, setBubble] = useState<{ w: number; h: number } | null>(null);
 
-  const handleNext = () => {
-    markCoachStepSeen(step.id);
-    onNext();
-  };
+  // Ukur bubble agar posisi & panah presisi dan tidak menutupi target
+  useLayoutEffect(() => {
+    const el = bubbleRef.current;
+    if (el) setBubble({ w: el.offsetWidth, h: el.offsetHeight });
+  }, [def.id, rect.x, rect.y]);
 
-  const handleSkip = () => {
-    // Mark all remaining steps as seen
-    COACH_STEPS.forEach(s => markCoachStepSeen(s.id));
-    onSkip();
-  };
+  // Mengetuk target (menembus lubang) atau area gelap → tutup coach mark.
+  // Klik pada bubble diabaikan.
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const t = e.target as Node | null;
+      if (t && bubbleRef.current?.contains(t)) return;
+      onClose();
+    };
+    document.addEventListener("click", handler, true);
+    return () => document.removeEventListener("click", handler, true);
+  }, [onClose]);
 
-  // Build the spotlight mask
-  const spotStyle = step.spotlightStyle;
+  const { x, y, w, h, frameW, frameH } = rect;
+  const bw = bubble?.w ?? 260;
+  const bh = bubble?.h ?? 40;
+  const pad = 4;
+  const xc = x + w / 2;
+
+  const placeBelow = y + h + 14 + bh + 16 <= frameH - 12;
+  const top = placeBelow ? y + h + 14 : y - 14 - bh;
+  const left = Math.min(Math.max(xc - bw / 2, 12), Math.max(12, frameW - bw - 12));
+  const arrowX = Math.min(Math.max(xc - left, 16), Math.max(16, bw - 16));
 
   return (
-    <>
-      <style>{`@keyframes cm-pulse{0%,100%{box-shadow:0 0 0 3px rgba(91,122,104,0.4),0 0 16px rgba(91,122,104,0.25)}50%{box-shadow:0 0 0 6px rgba(91,122,104,0.25),0 0 24px rgba(91,122,104,0.35)}}`}</style>
+    <div
+      ref={rootRef}
+      style={{ position: "absolute", inset: 0, zIndex: 70, pointerEvents: "none" }}
+    >
+      <style>{`@keyframes cm-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.65;transform:scale(1.02)}}`}</style>
 
+      {/* Empat panel gelap mengelilingi target — lubang tetap tembus ketuk */}
+      <div
+        onClick={onClose}
+        style={{ position: "absolute", top: 0, left: 0, right: 0, height: y, background: PANEL, pointerEvents: "auto" }}
+      />
+      <div
+        onClick={onClose}
+        style={{ position: "absolute", top: y + h, left: 0, right: 0, bottom: 0, background: PANEL, pointerEvents: "auto" }}
+      />
+      <div
+        onClick={onClose}
+        style={{ position: "absolute", top: y, left: 0, width: x, height: h, background: PANEL, pointerEvents: "auto" }}
+      />
+      <div
+        onClick={onClose}
+        style={{ position: "absolute", top: y, left: x + w, right: 0, height: h, background: PANEL, pointerEvents: "auto" }}
+      />
+
+      {/* Ring putih penyorot target */}
       <div
         style={{
-          position: "absolute", inset: 0, zIndex: 70,
-          opacity: visible ? 1 : 0, transition: "opacity 0.3s ease",
+          position: "absolute",
+          top: y - pad,
+          left: x - pad,
+          width: w + pad * 2,
+          height: h + pad * 2,
+          borderRadius: def.radius + pad,
+          border: "2.5px solid #FFFFFF",
+          boxShadow: "0 0 0 3px rgba(255,255,255,0.22), 0 0 14px rgba(255,255,255,0.35)",
+          animation: "cm-pulse 1.7s ease-in-out infinite",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Bubble + panah menunjuk target */}
+      <div
+        ref={bubbleRef}
+        style={{
+          position: "absolute",
+          top,
+          left,
+          maxWidth: frameW - 24,
+          background: CARD,
+          borderRadius: 14,
+          padding: "9px 13px",
+          boxShadow: "0 10px 28px rgba(0,0,0,0.30)",
           pointerEvents: "auto",
         }}
       >
-        {/* Dark overlay */}
-        <div
-          style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.6)" }}
-          onClick={handleNext}
-        />
-
-        {/* Spotlight ring */}
-        <div
+        <p
           style={{
-            position: "absolute",
-            ...spotStyle,
-            borderRadius: 16,
-            border: `2.5px solid ${T}`,
-            animation: "cm-pulse 1.8s ease-in-out infinite",
-            pointerEvents: "none",
-            zIndex: 71,
-          }}
-        />
-
-        {/* Tooltip card */}
-        <div
-          style={{
-            position: "absolute",
-            left: 16, right: 16,
-            ...(step.cardPlacement === "top" ? { top: 100 } : step.cardPlacement === "bottom" ? { bottom: 80 } : { top: "40%" }),
-            zIndex: 72,
+            margin: 0,
+            fontFamily: PJS,
+            fontSize: 12,
+            fontWeight: 700,
+            color: "#2E3E35",
+            whiteSpace: "nowrap",
           }}
         >
-          <div style={{
-            background: CARD, borderRadius: 20, padding: "16px 18px",
-            boxShadow: "0 12px 40px rgba(0,0,0,0.35)",
-            border: `1.5px solid ${BDR}`,
-          }}>
-            {/* Badge */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: DEEP, fontFamily: DMM, letterSpacing: "0.08em" }}>
-                PANDUAN
-              </span>
-              <span style={{
-                fontSize: 10, fontWeight: 600, color: MUTED, fontFamily: IPS,
-                background: "#F3F4F6", padding: "2px 8px", borderRadius: 6
-              }}>
-                {step.badge}
-              </span>
-            </div>
-
-            {/* Text */}
-            <p style={{ fontFamily: IPS, fontSize: 13, color: TEXT, lineHeight: 1.65, marginBottom: 14 }}>
-              {step.text}
-            </p>
-
-            {/* Actions */}
-            <div style={{ display: "flex", gap: 8 }}>
-              <button
-                onClick={handleSkip}
-                style={{
-                  flex: 1, border: `1.5px solid ${BDR}`, color: MUTED,
-                  fontFamily: IPS, minHeight: 40, borderRadius: 12,
-                  fontSize: 12, fontWeight: 600, background: CARD, cursor: "pointer",
-                }}
-                className="active:scale-[0.98] transition-transform"
-              >
-                Lewati
-              </button>
-              <button
-                onClick={handleNext}
-                style={{
-                  flex: 2, background: T, color: "#fff",
-                  fontFamily: IPS, minHeight: 40, borderRadius: 12,
-                  fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(91,122,104,0.35)",
-                }}
-                className="active:scale-[0.98] transition-transform"
-              >
-                Lanjut →
-              </button>
-            </div>
-          </div>
-        </div>
+          {def.text}
+        </p>
+        <div
+          style={{
+            position: "absolute",
+            left: arrowX,
+            transform: "translateX(-50%)",
+            ...(placeBelow
+              ? { top: -7, width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderBottom: `8px solid ${CARD}` }
+              : { bottom: -7, width: 0, height: 0, borderLeft: "7px solid transparent", borderRight: "7px solid transparent", borderTop: `8px solid ${CARD}` }),
+          }}
+        />
       </div>
-    </>
+
+      {/* Teks bantu di bawah layar */}
+      <div
+        onClick={onClose}
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 22,
+          textAlign: "center",
+          pointerEvents: "auto",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: IPS,
+            fontSize: 10.5,
+            fontWeight: 500,
+            color: "rgba(255,255,255,0.88)",
+            background: "rgba(0,0,0,0.35)",
+            borderRadius: 99,
+            padding: "5px 12px",
+          }}
+        >
+          Ketuk bagian yang disorot, atau ketuk di luar untuk menutup
+        </span>
+      </div>
+    </div>
   );
 }
