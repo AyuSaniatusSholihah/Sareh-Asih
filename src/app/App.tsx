@@ -29,7 +29,6 @@ import {
 // Layout components
 import {
   StatusBar, SearchOverlay, SettingsSheet, GlobalHeader, BotNav,
-  OnboardingSlides, isOnboardingSeen,
   CoachMark, COACH_MARKS, isCoachSeen, markCoachSeen, type CoachRect,
   ProfileSheet,
 } from "./components/layout";
@@ -124,9 +123,11 @@ export default function App() {
   const [guruSetup, setGuruSetup] = useState<GuruSetup>(null);
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [addFirstTime, setAddFirstTime] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);
   const [coach, setCoach] = useState<{ def: (typeof COACH_MARKS)[number]; rect: CoachRect } | null>(null);
+  // Navigasi yang dipicu klik user (tab/kartu/kembali) — coach mark hanya muncul untuk ini
+  const [navClick, setNavClick] = useState<{ seq: number; screen: Screen } | null>(null);
+  const noteClick = (s: Screen) => setNavClick(prev => ({ seq: (prev?.seq ?? 0) + 1, screen: s }));
 
   const [namaOrtu] = useState("Ani Rahmawati");
   const [childId, setChildId] = useState<number | null>(null);
@@ -165,11 +166,13 @@ export default function App() {
   const go = (s: Screen) => {
     setScreenHistory(prev => [...prev, screen]);
     setScreen(s);
+    noteClick(s);
   };
   const goTab = (s: Screen) => {
     setScreenHistory(prev => [...prev, screen]);
     setScreen(s);
     setTab(s);
+    noteClick(s);
     if (s === "report") {
       setReportInitialView("main");
     }
@@ -193,7 +196,6 @@ export default function App() {
   const enterParent = (linkedId: number | null) => {
     setRole("ortu"); setChildId(linkedId); setChildIds(linkedId ? [linkedId] : []);
     setScreen("parent-dashboard"); setTab("parent-dashboard");
-    setShowOnboarding(!isOnboardingSeen("ortu"));
   };
 
   const handleLogout = () => {
@@ -211,7 +213,6 @@ export default function App() {
     setScreenHistory([]);
     if (r === "guru") {
       setGuruSetup(null);
-      setShowOnboarding(!isOnboardingSeen("guru"));
       setGuru({
         nama: "Sari Dewi, S.Pd.",
         email: "sari.dewi@gmail.com",
@@ -224,19 +225,20 @@ export default function App() {
         setupDone: true,
       });
       setList(seedStudents.map(s => ({ ...s })));
-      goTab("dashboard");
+      setScreen("dashboard");
+      setTab("dashboard");
     }
     else {
       const id = childId ?? 1;
       setChildId(id);
       setChildIds(prev => (prev.length ? prev : [id]));
-      setShowOnboarding(!isOnboardingSeen("ortu"));
-      goTab("parent-dashboard");
+      setScreen("parent-dashboard");
+      setTab("parent-dashboard");
     }
   };
 
   const logout = () => {
-    setRole(null); setGuruSetup(null); setShowOnboarding(false);
+    setRole(null); setGuruSetup(null);
     setChildId(null); setChildIds([]); setScreen("landing"); setScreenHistory([]);
   };
 
@@ -315,7 +317,15 @@ export default function App() {
 
   const coachEligible = (def: (typeof COACH_MARKS)[number]) => {
     if (role !== def.role || screen !== def.screen) return false;
+    // Coach beranda tampil saat awal masuk; lainnya hanya bila user mengeklik halaman/tab ini
+    if (!def.entry && (!navClick || navClick.screen !== screen)) return false;
     if (isCoachSeen(def.id)) return false;
+    // Antrean: satu per satu — coach sebelumnya di layar yang sama harus sudah dilihat
+    const idx = COACH_MARKS.indexOf(def);
+    const adaSebelumnyaYangBelum = COACH_MARKS.slice(0, idx).some(c =>
+      c.role === def.role && c.screen === def.screen && !isCoachSeen(c.id)
+    );
+    if (adaSebelumnyaYangBelum) return false;
     if (def.id === "guru_tambah_siswa" && list.length > 0) return false;
     if (def.id === "guru_laporan" && reportInitialView !== "main") return false;
     return true;
@@ -326,10 +336,8 @@ export default function App() {
     setCoach(null);
   };
 
-  // Kunjungan pertama sebuah layar → tampilkan coach mark-nya
-  // (tidak saat onboarding, tidak bersamaan dengan coach mark lain)
+  // User mengeklik halaman/tab → tampilkan coach mark-nya (sekali, maksimal 1 per layar)
   useEffect(() => {
-    if (showOnboarding) { setCoach(null); return; }
     if (coach) return;
     const def = COACH_MARKS.find(coachEligible);
     if (!def) return;
@@ -342,7 +350,7 @@ export default function App() {
     });
     return () => cancelAnimationFrame(raf);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, screen, showOnboarding, coach, list.length, reportInitialView]);
+  }, [role, screen, navClick, coach, list.length, reportInitialView]);
 
   // Sinkronkan ring/bubble saat scroll/resize; tutup bila target hilang
   useEffect(() => {
@@ -362,15 +370,14 @@ export default function App() {
   }, [coach?.def.id, screen]);
 
   const goBack = () => {
-    setScreenHistory(prev => {
-      if (prev.length === 0) return prev;
-      const history = [...prev];
-      const last = history.pop()!;
-      const isTabScreen = MAIN_SCREENS.includes(last);
-      setScreen(last);
-      if (isTabScreen) setTab(last);
-      return history;
-    });
+    if (screenHistory.length === 0) return;
+    const history = [...screenHistory];
+    const last = history.pop()!;
+    const isTabScreen = MAIN_SCREENS.includes(last);
+    setScreenHistory(history);
+    setScreen(last);
+    if (isTabScreen) setTab(last);
+    noteClick(last);
   };
 
   const headerTitle = (): [string, string] => {
@@ -441,7 +448,6 @@ export default function App() {
             setRole("guru");
             setScreen("dashboard");
             setTab("dashboard");
-            setShowOnboarding(!isOnboardingSeen("guru"));
           }}
         />
       );
@@ -717,17 +723,7 @@ export default function App() {
 
               {showNav && <BotNav role={role!} screen={screen} go={goTab} />}
 
-              {showOnboarding && !!role && (
-                <OnboardingSlides
-                  role={role}
-                  onClose={() => {
-                    setShowOnboarding(false);
-                    goTab(role === "guru" ? "dashboard" : "parent-dashboard");
-                  }}
-                />
-              )}
-
-              {!showOnboarding && coach && (
+              {coach && (
                 <CoachMark def={coach.def} rect={coach.rect} onClose={closeCoach} />
               )}
             </div>

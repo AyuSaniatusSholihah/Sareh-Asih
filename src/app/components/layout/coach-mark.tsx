@@ -9,6 +9,7 @@ export type CoachDef = {
   target: string; // nilai atribut data-cm pada elemen yang disorot
   radius: number; // radius ring mengikuti radius elemen target
   text: string;   // maksimal satu baris, diawali kata kerja
+  entry?: boolean; // true: tampil saat pengguna awal masuk layar (tanpa perlu klik tab dulu)
 };
 
 export const COACH_MARKS: CoachDef[] = [
@@ -19,6 +20,7 @@ export const COACH_MARKS: CoachDef[] = [
     target: "guru-periksa-asesmen",
     radius: 24,
     text: "Mulai dari sini: periksa asesmen yang menunggu.",
+    entry: true,
   },
   {
     id: "guru_tambah_siswa",
@@ -27,6 +29,30 @@ export const COACH_MARKS: CoachDef[] = [
     target: "guru-tambah-siswa",
     radius: 26,
     text: "Tambah siswa untuk memulai.",
+  },
+  {
+    id: "guru_bakat",
+    role: "guru",
+    screen: "talent-map",
+    target: "guru-bakat-kelompok",
+    radius: 14,
+    text: "Siswa terkelompok menurut bakatnya.",
+  },
+  {
+    id: "guru_agenda",
+    role: "guru",
+    screen: "competition",
+    target: "guru-agenda-lomba",
+    radius: 22,
+    text: "Lomba disarankan sesuai bakat siswa.",
+  },
+  {
+    id: "guru_petunjuk_asesmen",
+    role: "guru",
+    screen: "observation",
+    target: "guru-asesmen-petunjuk",
+    radius: 999,
+    text: "Ketuk untuk lihat arti skala penilaian.",
   },
   {
     id: "guru_laporan",
@@ -42,7 +68,25 @@ export const COACH_MARKS: CoachDef[] = [
     screen: "parent-dashboard",
     target: "ortu-baca-laporan",
     radius: 14,
-    text: "Ketuk untuk membaca laporan.",
+    text: "Laporan dari guru muncul di sini.",
+    entry: true,
+  },
+  {
+    id: "ortu_saran_rumah",
+    role: "ortu",
+    screen: "parent-dashboard",
+    target: "ortu-saran-guru",
+    radius: 18,
+    text: "Saran harian dari guru pendamping.",
+    entry: true,
+  },
+  {
+    id: "ortu_minat_bakat",
+    role: "ortu",
+    screen: "parent-detail",
+    target: "ortu-minat-bakat",
+    radius: 20,
+    text: "Lihat minat, bakat, dan asesmen anak.",
   },
 ];
 

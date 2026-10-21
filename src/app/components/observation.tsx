@@ -898,83 +898,86 @@ export function ObservationScreen({
                     />
                   </button>
 
-                  {isExpanded && (
-                    <div style={{ padding: "0 14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
-                      {(hasRelevant ? relevanPanduan : panduan).map((akt, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            background: "#FFFFFF",
-                            borderRadius: 16,
-                            border: "1px solid #FDE68A",
-                            padding: "14px 16px",
-                            boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
-                          }}
-                        >
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                            <Play size={13} style={{ color: "#D97706", flexShrink: 0 }} />
-                            <h5 style={{
-                              fontFamily: PJS, fontSize: 13, fontWeight: 800,
-                              color: "#1E293B", margin: 0,
-                            }}>
-                              {akt.judul}
-                            </h5>
-                            {akt.cocokUntuk && akt.cocokUntuk.includes(student.abk) && (
-                              <span style={{
-                                fontSize: 10, fontWeight: 700, fontFamily: PJS,
-                                padding: "2px 8px", borderRadius: 9999,
-                                background: "#D1FAE5", color: "#065F46", flexShrink: 0,
+                  {isExpanded && (() => {
+                    const daftar = hasRelevant ? relevanPanduan : panduan;
+                    const ditampilkan = daftar.slice(0, 2);
+                    const sisa = daftar.length - ditampilkan.length;
+                    return (
+                      <div style={{ padding: "0 14px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
+                        {ditampilkan.map((akt, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              background: "#FFFFFF",
+                              borderRadius: 16,
+                              border: "1px solid #FDE68A",
+                              padding: "12px 14px",
+                              boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
+                            }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                              <Play size={13} style={{ color: "#D97706", flexShrink: 0 }} />
+                              <h5 style={{
+                                fontFamily: PJS, fontSize: 13, fontWeight: 800,
+                                color: "#1E293B", margin: 0,
                               }}>
-                                Cocok
-                              </span>
-                            )}
-                          </div>
-                          <p style={{
-                            fontFamily: IPS, fontSize: 12, fontWeight: 400,
-                            color: "#475569", margin: "0 0 10px", lineHeight: 1.45,
-                          }}>
-                            {akt.deskripsi}
-                          </p>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                            <Eye size={12} style={{ color: "#64748B" }} />
-                            <span style={{
-                              fontFamily: PJS, fontSize: 11, fontWeight: 700, color: "#64748B",
+                                {akt.judul}
+                              </h5>
+                              {akt.cocokUntuk && akt.cocokUntuk.includes(student.abk) && (
+                                <span style={{
+                                  fontSize: 10, fontWeight: 700, fontFamily: PJS,
+                                  padding: "2px 8px", borderRadius: 9999,
+                                  background: "#D1FAE5", color: "#065F46", flexShrink: 0,
+                                }}>
+                                  Cocok
+                                </span>
+                              )}
+                            </div>
+                            <p style={{
+                              fontFamily: IPS, fontSize: 12, fontWeight: 400,
+                              color: "#475569", margin: "0 0 8px", lineHeight: 1.4,
                             }}>
-                              Perilaku yang diamati:
-                            </span>
+                              {akt.deskripsi}
+                            </p>
+                            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 4 }}>
+                              <Eye size={12} style={{ color: "#64748B", flexShrink: 0 }} />
+                              {akt.perilakuDiamati.map((p, j) => (
+                                <span
+                                  key={j}
+                                  style={{
+                                    fontSize: 10.5, fontWeight: 600, fontFamily: PJS,
+                                    padding: "3px 10px", borderRadius: 9999,
+                                    background: "#F0F9FF", color: "#0369A1",
+                                    border: "1px solid #BAE6FD",
+                                  }}
+                                >
+                                  {p}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                            {akt.perilakuDiamati.map((p, j) => (
-                              <span
-                                key={j}
-                                style={{
-                                  fontSize: 10.5, fontWeight: 600, fontFamily: PJS,
-                                  padding: "3px 10px", borderRadius: 9999,
-                                  background: "#F0F9FF", color: "#0369A1",
-                                  border: "1px solid #BAE6FD",
-                                }}
-                              >
-                                {p}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                      <div style={{
-                        display: "flex", alignItems: "flex-start", gap: 8,
-                        padding: "10px 14px", borderRadius: 12,
-                        background: "rgba(217, 119, 6, 0.08)",
-                      }}>
-                        <Info size={13} style={{ color: "#B45309", flexShrink: 0, marginTop: 1 }} />
-                        <p style={{
-                          fontFamily: IPS, fontSize: 11, fontWeight: 500,
-                          color: "#92400E", margin: 0, lineHeight: 1.4,
+                        ))}
+                        {sisa > 0 && (
+                          <p style={{ fontFamily: IPS, fontSize: 11, fontWeight: 600, color: "#B45309", margin: 0 }}>
+                            +{sisa} contoh aktivitas lainnya
+                          </p>
+                        )}
+                        <div style={{
+                          display: "flex", alignItems: "flex-start", gap: 8,
+                          padding: "8px 12px", borderRadius: 12,
+                          background: "rgba(217, 119, 6, 0.08)",
                         }}>
-                          Berikan aktivitas di atas kepada anak, lalu <strong>amati perilaku yang muncul</strong> dan catat di indikator-indikator di atas. Anda juga bisa menggunakan aktivitas lain yang sesuai.
-                        </p>
+                          <Info size={13} style={{ color: "#B45309", flexShrink: 0, marginTop: 1 }} />
+                          <p style={{
+                            fontFamily: IPS, fontSize: 11, fontWeight: 500,
+                            color: "#92400E", margin: 0, lineHeight: 1.4,
+                          }}>
+                            Amati perilaku anak saat aktivitas, lalu catat di indikator di atas.
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
               );
             })()}
@@ -1472,84 +1475,86 @@ export function ObservationScreen({
                   </button>
 
                   {/* Expanded content */}
-                  {isExpanded && (
-                    <div style={{ padding: "0 14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
-                      {(hasRelevant ? relevanPanduan : panduan).map((akt, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            background: "#FFFFFF",
-                            borderRadius: 16,
-                            border: "1px solid #FDE68A",
-                            padding: "14px 16px",
-                            boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
-                          }}
-                        >
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                            <Play size={13} style={{ color: "#D97706", flexShrink: 0 }} />
-                            <h5 style={{
-                              fontFamily: PJS, fontSize: 13, fontWeight: 800,
-                              color: "#1E293B", margin: 0,
-                            }}>
-                              {akt.judul}
-                            </h5>
-                            {akt.cocokUntuk && akt.cocokUntuk.includes(student.abk) && (
-                              <span style={{
-                                fontSize: 10, fontWeight: 700, fontFamily: PJS,
-                                padding: "2px 8px", borderRadius: 9999,
-                                background: "#D1FAE5", color: "#065F46", flexShrink: 0,
+                  {isExpanded && (() => {
+                    const daftar = hasRelevant ? relevanPanduan : panduan;
+                    const ditampilkan = daftar.slice(0, 2);
+                    const sisa = daftar.length - ditampilkan.length;
+                    return (
+                      <div style={{ padding: "0 14px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
+                        {ditampilkan.map((akt, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              background: "#FFFFFF",
+                              borderRadius: 16,
+                              border: "1px solid #FDE68A",
+                              padding: "12px 14px",
+                              boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
+                            }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                              <Play size={13} style={{ color: "#D97706", flexShrink: 0 }} />
+                              <h5 style={{
+                                fontFamily: PJS, fontSize: 13, fontWeight: 800,
+                                color: "#1E293B", margin: 0,
                               }}>
-                                Cocok
-                              </span>
-                            )}
-                          </div>
-                          <p style={{
-                            fontFamily: IPS, fontSize: 12, fontWeight: 400,
-                            color: "#475569", margin: "0 0 10px", lineHeight: 1.45,
-                          }}>
-                            {akt.deskripsi}
-                          </p>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                            <Eye size={12} style={{ color: "#64748B" }} />
-                            <span style={{
-                              fontFamily: PJS, fontSize: 11, fontWeight: 700, color: "#64748B",
+                                {akt.judul}
+                              </h5>
+                              {akt.cocokUntuk && akt.cocokUntuk.includes(student.abk) && (
+                                <span style={{
+                                  fontSize: 10, fontWeight: 700, fontFamily: PJS,
+                                  padding: "2px 8px", borderRadius: 9999,
+                                  background: "#D1FAE5", color: "#065F46", flexShrink: 0,
+                                }}>
+                                  Cocok
+                                </span>
+                              )}
+                            </div>
+                            <p style={{
+                              fontFamily: IPS, fontSize: 12, fontWeight: 400,
+                              color: "#475569", margin: "0 0 8px", lineHeight: 1.4,
                             }}>
-                              Kecenderungan yang diamati:
-                            </span>
+                              {akt.deskripsi}
+                            </p>
+                            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 4 }}>
+                              <Eye size={12} style={{ color: "#64748B", flexShrink: 0 }} />
+                              {akt.perilakuDiamati.map((p, j) => (
+                                <span
+                                  key={j}
+                                  style={{
+                                    fontSize: 10.5, fontWeight: 600, fontFamily: PJS,
+                                    padding: "3px 10px", borderRadius: 9999,
+                                    background: "#FEF3C7", color: "#B45309",
+                                    border: "1px solid #FDE68A",
+                                  }}
+                                >
+                                  {p}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                            {akt.perilakuDiamati.map((p, j) => (
-                              <span
-                                key={j}
-                                style={{
-                                  fontSize: 10.5, fontWeight: 600, fontFamily: PJS,
-                                  padding: "3px 10px", borderRadius: 9999,
-                                  background: "#FEF3C7", color: "#B45309",
-                                  border: "1px solid #FDE68A",
-                                }}
-                              >
-                                {p}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                      {/* Info box */}
-                      <div style={{
-                        display: "flex", alignItems: "flex-start", gap: 8,
-                        padding: "10px 14px", borderRadius: 12,
-                        background: "rgba(217, 119, 6, 0.08)",
-                      }}>
-                        <Info size={13} style={{ color: "#B45309", flexShrink: 0, marginTop: 1 }} />
-                        <p style={{
-                          fontFamily: IPS, fontSize: 11, fontWeight: 500,
-                          color: "#92400E", margin: 0, lineHeight: 1.4,
+                        ))}
+                        {sisa > 0 && (
+                          <p style={{ fontFamily: IPS, fontSize: 11, fontWeight: 600, color: "#B45309", margin: 0 }}>
+                            +{sisa} contoh aktivitas lainnya
+                          </p>
+                        )}
+                        <div style={{
+                          display: "flex", alignItems: "flex-start", gap: 8,
+                          padding: "8px 12px", borderRadius: 12,
+                          background: "rgba(217, 119, 6, 0.08)",
                         }}>
-                          Berikan aktivitas pemicu minat di atas kepada anak, lalu <strong>amati antusiasme dan responnya</strong> untuk mengisi skala frekuensi minat di atas.
-                        </p>
+                          <Info size={13} style={{ color: "#B45309", flexShrink: 0, marginTop: 1 }} />
+                          <p style={{
+                            fontFamily: IPS, fontSize: 11, fontWeight: 500,
+                            color: "#92400E", margin: 0, lineHeight: 1.4,
+                          }}>
+                            Amati antusiasme anak, lalu isi skala frekuensi minat di atas.
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
               );
             })()}
@@ -1902,6 +1907,7 @@ export function ObservationScreen({
       {!showResultModal && !showIncompleteModal && !showScaleModal && !showRiasecScaleModal && (
         <button
           type="button"
+          data-cm="guru-asesmen-petunjuk"
           onClick={() => {
             setScaleModalTab(tahap === "kecenderungan" ? "riasec" : "fungsional");
             setShowScaleModal(true);

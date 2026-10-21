@@ -210,8 +210,8 @@ export function TalentMapScreen({
         ) : (
           <div style={{ background: "#FFFFFF", borderRadius: 20, border: ("1px solid " + BDR), boxShadow: "0 2px 8px rgba(91,122,104,0.05)", overflow: "hidden" }}>
             <div className="divide-y divide-[rgba(91,122,104,0.08)]">
-              {statusFiltered.map(s => (
-                <div key={s.id} style={{ padding: "14px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, background: s.hasObs ? "#FFFFFF" : "rgba(251,241,239,0.35)" }}>
+              {statusFiltered.map((s, iRow) => (
+                <div key={s.id} data-cm={iRow === 0 ? "guru-bakat-kelompok" : undefined} style={{ padding: "14px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, background: s.hasObs ? "#FFFFFF" : "rgba(251,241,239,0.35)" }}>
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     {fotoSiswa(s) ? (
                       <img

@@ -573,6 +573,7 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
                   <button
                     type="button"
                     onClick={() => go("saran-rumah")}
+                    data-cm="ortu-saran-guru"
                     style={{
                       background: "#FFFFFF",
                       border: "1px solid #D5E3D9",
@@ -2451,6 +2452,7 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
             {/* Card 1: Profil dan asesmen (Dengan Dropdown Pilihan Semester) */}
             <div
+              data-cm="ortu-minat-bakat"
               style={{
                 background: CARD,
                 borderRadius: 20,

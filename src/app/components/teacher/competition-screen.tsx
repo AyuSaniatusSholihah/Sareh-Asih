@@ -154,7 +154,7 @@ export function CompetitionScreen({
 
           {/* ── List Lomba Cards ── */}
           <div className="space-y-3">
-            {filteredLomba.map(lomba => {
+            {filteredLomba.map((lomba, idx) => {
               const matched = studentCompDetail[lomba.k] ?? [];
               const matchedStudents = matched
                 .map(m => ({ ...m, student: students.find(s => s.id === m.id) }))
@@ -165,6 +165,7 @@ export function CompetitionScreen({
               return (
                 <div
                   key={lomba.k}
+                  data-cm={idx === 0 ? "guru-agenda-lomba" : undefined}
                   style={{
                     background: "#FFFFFF",
                     border: "1.5px solid #E6ECE8",
