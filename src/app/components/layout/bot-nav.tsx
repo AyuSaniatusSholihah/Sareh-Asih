@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Home, Users, User, Star, Calendar, FileText, CalendarDays, HeartPulse,
+  Home, Users, User, ChartSpline, Calendar, FileText, CalendarDays, HeartPulse,
 } from "lucide-react";
 import { CARD, BDR, DEEP, MUTED, PJS, IPS } from "../ui-kit";
 import { type Role, type Screen } from "../data";
@@ -8,7 +8,7 @@ import { type Role, type Screen } from "../data";
 export const GURU_NAV = [
   { k: "dashboard", l: "Beranda", I: Home },
   { k: "students", l: "Siswa", I: Users },
-  { k: "talent-map", l: "Bakat", I: Star },
+  { k: "talent-map", l: "Asesmen", I: ChartSpline },
   { k: "competition", l: "Agenda", I: Calendar },
   { k: "report", l: "Laporan", I: FileText },
 ];

@@ -298,7 +298,7 @@ function PilihAnakSheet({ daftar, activeId, onPilih, onTambah, onClose }: {
           </button>
         </div>
 
-        <p className="font-bold" style={{ fontFamily: PJS, fontSize: 16, color: TEXT, margin: "0 0 12px" }}>Pilih anak</p>
+        <p className="font-bold" style={{ fontFamily: PJS, fontSize: 16, color: TEXT, margin: "0 0 12px" }}>Pilih profil anak</p>
 
         <div className="flex flex-col gap-2">
           {daftar.map(s => {
@@ -346,7 +346,7 @@ function PilihAnakSheet({ daftar, activeId, onPilih, onTambah, onClose }: {
         <button onClick={onTambah}
           className="flex items-center justify-center gap-2"
           style={{ width: "100%", background: BG, border: `1.5px solid ${T}`, borderRadius: 14, minHeight: 46, color: T, fontFamily: PJS, fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>
-          <Plus size={16} /> Tambahkan anak
+          <Plus size={16} /> Tambahkan profil anak
         </button>
       </div>
     </div>
@@ -492,7 +492,7 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "0 4px" }}>
                   <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: "#24352C", fontFamily: PJS }}>Akses Cepat</h2>
-                  <span style={{ fontSize: 12, color: "#55675C", fontWeight: 700, fontFamily: IPS }}>4 menu</span>
+                  <span style={{ fontSize: 12, color: "#55675C", fontWeight: 700, fontFamily: IPS }}></span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <button
@@ -860,7 +860,7 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
           <div style={{flex:1,minWidth:0}}>
             <h1 style={{fontFamily:PJS,fontSize:22,fontWeight:800,color:TEXT,margin:0,lineHeight:1.15}}>Kalender Kegiatan</h1>
-            <p style={{fontFamily:IPS,fontSize:12.5,color:MUTED,margin:"2px 0 0",fontWeight:500}}>Agenda ajang talenta, pelatihan & terapi terbuka untuk PDBK</p>
+            <p style={{fontFamily:IPS,fontSize:12.5,color:MUTED,margin:"2px 0 0",fontWeight:500}}>Agenda ajang talenta, pelatihan & terapi terbuka untuk anak</p>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0,marginTop:2}}>
             <button style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Cari">
@@ -4070,7 +4070,7 @@ export function SaranRumahScreen({ onBack, child, go }: {
           </button>
           <div>
             <h2 style={{ fontFamily: PJS, fontSize: 18, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>
-              Saran Guru untuk di Rumah
+              Saran untuk di Rumah
             </h2>
             <p style={{ fontFamily: IPS, fontSize: 12, color: MUTED, margin: "2px 0 0" }}>
               Aktivitas sederhana untuk mendukung perkembangan {nama} di rumah.

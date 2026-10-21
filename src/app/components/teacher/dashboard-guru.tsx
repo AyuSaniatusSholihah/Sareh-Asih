@@ -196,7 +196,7 @@ export function DashboardGuru({
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <p style={{ fontFamily: PJS, fontSize: 16, fontWeight: 800, color: TEXT, margin: 0 }}>Akses Cepat</p>
-            <span style={{ fontFamily: IPS, fontSize: 11, color: MUTED, fontWeight: 600 }}>4 menu</span>
+            <span style={{ fontFamily: IPS, fontSize: 11, color: MUTED, fontWeight: 600 }}></span>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
