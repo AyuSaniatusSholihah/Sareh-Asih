@@ -64,8 +64,8 @@ export function TalentMapScreen({
       <div style={{ background: "#FFFFFF", padding: "14px 20px 8px", borderBottom: "1px solid rgba(91,122,104,0.08)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
           <div>
-            <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>Peta Bakat Siswa</h1>
-            <p style={{ fontFamily: IPS, fontSize: 12.5, color: MUTED, margin: "4px 0 0", fontWeight: 500 }}>Semua siswa · Berdasarkan asesmen AI</p>
+            <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>Hasil Asesmen Siswa</h1>
+            <p style={{ fontFamily: IPS, fontSize: 12.5, color: MUTED, margin: "4px 0 0", fontWeight: 500 }}>Semua siswa</p>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
             <button onClick={openSearch} style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} className="active:scale-95 transition-transform" title="Cari"><Search size={17} style={{ color: TEXT }} /></button>

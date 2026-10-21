@@ -386,8 +386,8 @@ export default function App() {
       case "asesmen-pending": return ["Asesmen Perlu Diperiksa", "Daftar siswa yang belum dinilai"];
       case "students": return ["Kelas Saya", "Kelola Siswa dengan Mudah"];
       case "talent-map": return ["Peta Bakat", guru.sekolah];
-      case "competition": return ["Agenda Lomba", "Jadwal O2SN, FLS3N & LKSN Diksus"];
-      case "report": return ["Laporan", "Rekap data siswa & pemetaan bakat"];
+      case "competition": return ["Agenda Lomba", ""];
+      case "report": return ["Laporan", "Rekap data siswa & hasil pemetaannya"];
       case "parent-dashboard": return ["Beranda ♡", child ? `Orang Tua · ${child.name}` : "Orang Tua · belum terhubung"];
       case "parent-detail": return ["Perkembangan Anak", child ? child.name : "Belum terhubung"];
       case "parent-calendar": return ["Kalender", "Kegiatan terbuka untuk umum"];

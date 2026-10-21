@@ -731,7 +731,7 @@ export function ReportScreen({
                 Laporan
               </h1>
               <p style={{ fontFamily: IPS, fontSize: 12.5, color: MUTED, margin: "4px 0 0", fontWeight: 500 }}>
-                Rekap data siswa & pemetaan bakat
+                Rekap data siswa & hasil pemetaannya
               </p>
             </div>
           </div>

@@ -313,7 +313,7 @@ export function DashboardGuru({
                     letterSpacing: "-0.01em",
                   }}
                 >
-                  Pemetaan Bakat
+                  Hasil Asesmen
                 </p>
                 <p
                   style={{

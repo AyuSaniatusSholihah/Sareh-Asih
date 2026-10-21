@@ -11,6 +11,16 @@ import {
   useStudents, LOMBA, studentCompDetail, fotoSiswa, type Student, type Screen,
 } from "../data";
 
+// ─── Category label mapping (RIASEC → Indonesian) ────────────────────
+const CATEGORY_LABEL: Record<string, string> = {
+  Artistic: "Seni",
+  Realistic: "Olahraga",
+  Investigative: "Akademik",
+  Social: "Sosial",
+  Enterprising: "Kewirausahaan",
+  Conventional: "Keterampilan",
+};
+
 // ─── Custom Card Icons matching Mockup ───────────────────────────────
 function PaletteMintIcon() {
   return (
@@ -103,13 +113,14 @@ export function CompetitionScreen({
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       <div className="px-4 pt-3 pb-6 space-y-4">
         <div className="space-y-3.5">
+
           {/* ── Filter Kategori Pills (Sticky terkunci saat scroll) ── */}
           <div style={{ position: "sticky", top: 0, zIndex: 20, background: BG, paddingTop: 6, paddingBottom: 10, marginBottom: 8, borderBottom: `1px solid ${BDR}40` }}>
             <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar px-1">
               {[
                 { id: "Semua",        label: "Semua",        icon: <LayoutGrid    size={14} strokeWidth={2.2} /> },
                 { id: "Realistic",    label: "Realistic",    icon: <Wrench        size={14} strokeWidth={2.2} /> },
-                { id: "Investigative",label: "Investigasi",  icon: <Microscope    size={14} strokeWidth={2.2} /> },
+                { id: "Investigative",label: "Investigasi",  icon: <Heart         size={14} strokeWidth={2.2} /> },
                 { id: "Artistic",     label: "Artistic",     icon: <Palette       size={14} strokeWidth={2.2} /> },
                 { id: "Social",       label: "Social",       icon: <Heart         size={14} strokeWidth={2.2} /> },
                 { id: "Enterprising", label: "Enterprising", icon: <TrendingUp    size={14} strokeWidth={2.2} /> },
@@ -147,9 +158,9 @@ export function CompetitionScreen({
           </div>
 
           {/* ── Subtitle / Tip Bar ── */}
-          <div className="flex items-center gap-2 px-1 text-[11.5px]" style={{ color: "#5B7A68" }}>
-            <Lightbulb size={14} className="text-[#5B7A68] flex-shrink-0" strokeWidth={2.2} />
-            <span style={{ fontWeight: 500 }}>Ketuk agenda untuk melihat siswa yang direkomendasikan</span>
+          <div className="flex items-start gap-2 px-1 text-[11.5px]" style={{ color: "#5B7A68" }}>
+            <Sparkles size={14} className="text-[#5B7A68] flex-shrink-0" strokeWidth={2.2} style={{ marginTop: 1 }} />
+            <span style={{ fontWeight: 500, lineHeight: 1.4 }}>Lomba yang direkomendasikan untuk siswa berdasarkan kecenderungan minat dan kebutuhan mereka.</span>
           </div>
 
           {/* ── List Lomba Cards ── */}
@@ -161,6 +172,13 @@ export function CompetitionScreen({
                 .filter((m): m is typeof m & { student: Student } => !!m.student);
 
               const isExpanded = expandedLomba === lomba.k;
+
+              // Split level into two lines (e.g. "Tingkat\nNasional")
+              const levelParts = lomba.level.split(" ");
+              const levelLine1 = levelParts[0] || "";
+              const levelLine2 = levelParts.slice(1).join(" ") || "";
+
+              const categoryLabel = CATEGORY_LABEL[lomba.category] || lomba.category;
 
               return (
                 <div
@@ -237,8 +255,8 @@ export function CompetitionScreen({
                             color: "#FFFFFF",
                             fontFamily: PJS,
                             fontWeight: 700,
-                            fontSize: 11,
-                            padding: "5px 9px",
+                            fontSize: 10.5,
+                            padding: "5px 10px",
                             borderRadius: 9999,
                             display: "flex",
                             alignItems: "center",
@@ -262,7 +280,7 @@ export function CompetitionScreen({
 
                     {/* Bottom Meta Row (Date | Level | Category) */}
                     <div
-                      className="flex items-center gap-2 mt-3 pt-2.5 text-[11px] font-medium"
+                      className="flex items-center gap-2.5 mt-3 pt-2.5 text-[11px] font-medium"
                       style={{
                         borderTop: "1px solid #F1F5F3",
                         color: "#4B5563",
@@ -278,14 +296,16 @@ export function CompetitionScreen({
 
                       <div className="flex items-center gap-1">
                         <MapPin size={12} className="text-[#5B7A68] stroke-[2.2]" />
-                        <span>{lomba.level}</span>
+                        <span style={{ lineHeight: 1.25 }}>
+                          {levelLine1}<br />{levelLine2}
+                        </span>
                       </div>
 
                       <span style={{ color: "#D1D5DB" }}>|</span>
 
                       <div className="flex items-center gap-1">
                         <Tag size={12} className="text-[#5B7A68] stroke-[2.2]" />
-                        <span>{lomba.category}</span>
+                        <span>{categoryLabel}</span>
                       </div>
                     </div>
                   </div>

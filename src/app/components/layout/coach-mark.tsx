@@ -36,7 +36,7 @@ export const COACH_MARKS: CoachDef[] = [
     screen: "talent-map",
     target: "guru-bakat-kelompok",
     radius: 14,
-    text: "Lihat hasil asesmen",
+    text: "Pilih siswa untuk melihat hasil asesmen",
   },
   {
     id: "guru_agenda",
