@@ -1,7 +1,7 @@
 import {
   Percent, Star, Calendar, FileText, Search, Bell, Settings,
   ChevronRight, Activity, ClipboardCheck, User, Users, PlayCircle, Sparkles,
-  ArrowUpRight,
+  ArrowUpRight, Heart,
 } from "lucide-react";
 import {
   A, BG, CARD, TEXT, MUTED, BDR, DEEP, PJS, IPS, DMM, useUI,
@@ -65,21 +65,36 @@ export function DashboardGuru({
       isPending: false,
       action: () => go("observation"),
     })),
-    ...laporan.slice().reverse().slice(0, 3).map(l => {
+    // 1. Tanggapan Orang Tua Terbaru
+    {
+      id: "tanggapan-ortu-1",
+      studentId: 1,
+      I: <Heart size={16} strokeWidth={2.3} style={{ color: "#E11D48" }} />,
+      bg: "#FFE4E6",
+      foto: fotoSiswa(students.find(s => s.id === 1) || students[0]),
+      tipe: "Tanggapan Ortu",
+      judul: "Tanggapan Orang Tua Masuk",
+      ket: "Ibu Ani (Rafi) · '✨ Sangat Sesuai di Rumah'",
+      waktu: "Hari ini",
+      tint: "#E11D48",
+      isPending: false,
+      action: () => go("students"),
+    },
+    ...laporan.slice().reverse().slice(0, 2).map(l => {
       const s = students.find(x => x.id === l.studentId);
       return {
         id: `l${l.id}`,
         studentId: l.studentId,
-        I: <FileText size={16} strokeWidth={2.3} style={{ color: DEEP }} />,
-        bg: "rgba(91,122,104,0.12)",
+        I: <FileText size={16} strokeWidth={2.3} style={{ color: l.dibaca ? "#0D9488" : DEEP }} />,
+        bg: l.dibaca ? "#E8F4EC" : "rgba(91,122,104,0.12)",
         foto: s ? fotoSiswa(s) : undefined,
         tipe: "Laporan",
-        judul: "Laporan dikirim ke orang tua",
-        ket: `${s?.name.split(" ")[0] ?? "Siswa"} · ${l.isi.substring(0, 30)}...`,
-        waktu: l.dikirimPada,
-        tint: DEEP,
+        judul: l.dibaca ? "Laporan telah dibaca orang tua" : "Laporan dikirim ke orang tua",
+        ket: `${s?.name.split(" ")[0] ?? "Siswa"} · ${l.dibaca ? `Ditinjau oleh orang tua` : l.isi.substring(0, 30) + "..."}`,
+        waktu: l.dibaca && l.dibacaPada ? l.dibacaPada : l.dikirimPada,
+        tint: l.dibaca ? "#0D9488" : DEEP,
         isPending: false,
-        action: () => go("report"),
+        action: () => go("students"),
       };
     }),
   ].slice(0, 5);
@@ -89,7 +104,7 @@ export function DashboardGuru({
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       {/* ── Header ── */}
-      <div style={{ background: "#FFFFFF", padding: "14px 20px 10px", flexShrink: 0 }}>
+      <div style={{ background: "#FFFFFF", padding: "12px 20px 12px", flexShrink: 0, position: "sticky", top: 0, zIndex: 30, borderBottom: "1px solid rgba(91,122,104,0.10)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: "#1B2E24", margin: 0, lineHeight: 1.2 }}>

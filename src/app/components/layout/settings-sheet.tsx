@@ -52,6 +52,8 @@ export function SettingsSheet({
   teacherRole,
   guruName = "Sari Dewi, S.Pd.",
   parentName = "Ani Rahmawati",
+  childName,
+  childKelas,
 }: {
   onClose: () => void;
   onLogout?: () => void;
@@ -61,6 +63,8 @@ export function SettingsSheet({
   teacherRole?: TeacherRole;
   guruName?: string;
   parentName?: string;
+  childName?: string;
+  childKelas?: string;
 }) {
   const { fontSize, setFontSize, tts, setTts } = useUI();
   const [info, setInfo] = useState<string | null>(null);
@@ -71,14 +75,16 @@ export function SettingsSheet({
     : "Guru SLB";
 
   return (
-    <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.45)", zIndex: 80, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} onClick={onClose}>
+    <div style={{ position: "absolute", inset: 0, background: "rgba(30,45,38,0.45)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 80, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} onClick={onClose}>
       <div style={{ background: CARD, borderRadius: "24px 24px 0 0", padding: "16px 20px 28px", maxHeight: "90%", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
         {/* Top Handle Bar */}
         <div style={{ width: 40, height: 4, borderRadius: 2, background: "#CBD5E1", margin: "0 auto 14px" }} />
 
         {/* Modal Header with Close 'X' Button on Right */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-          <p style={{ fontSize: 16, fontWeight: 700, color: TEXT, fontFamily: PJS, margin: 0 }}>Pengaturan & Bantuan</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: TEXT, fontFamily: PJS, margin: 0 }}>
+            {role === "ortu" ? "Pengaturan & Akun Saya" : "Pengaturan & Bantuan"}
+          </p>
           <button
             type="button"
             onClick={onClose}
@@ -105,11 +111,23 @@ export function SettingsSheet({
         {role && (
           <div style={{ marginBottom: 18, padding: "14px 16px", background: BG, borderRadius: 16, border: `1.5px solid ${BDR}`, boxShadow: "0 2px 8px rgba(91,122,104,0.06)" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <div>
-                <p style={{ fontSize: 10, fontWeight: 700, color: MUTED, fontFamily: DMM, textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 3px" }}>Akun Aktif</p>
-                <p style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: PJS, margin: 0 }}>
-                  {role === "guru" ? `Guru SLB (${guruName})` : `Orang Tua (${parentName})`}
-                </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: SEC, display: "flex", alignItems: "center", justifyContent: "center", color: DEEP, fontWeight: 800, fontSize: 16 }}>
+                  {role === "guru" ? (guruName[0] || "G") : (parentName[0] || "O")}
+                </div>
+                <div>
+                  <p style={{ fontSize: 10, fontWeight: 700, color: MUTED, fontFamily: DMM, textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 2px" }}>
+                    {role === "guru" ? "Akun Guru Aktif" : "Akun Orang Tua (Wali Murid)"}
+                  </p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: PJS, margin: 0 }}>
+                    {role === "guru" ? `Guru SLB (${guruName})` : parentName}
+                  </p>
+                  {role === "ortu" && (
+                    <p style={{ fontSize: 11.5, color: DEEP, fontFamily: IPS, margin: "2px 0 0", fontWeight: 600 }}>
+                      {childName ? `Anak: ${childName}${childKelas ? ` (${childKelas})` : ""}` : "Belum terhubung ke data anak"}
+                    </p>
+                  )}
+                </div>
               </div>
               <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: SEC, color: DEEP, fontFamily: IPS, border: `1px solid ${BDR}` }}>
                 {role === "guru" ? "Guru" : "Orang Tua"}

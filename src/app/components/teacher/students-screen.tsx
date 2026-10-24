@@ -78,7 +78,7 @@ export function StudentsScreen({
   return (
     <div className="flex-1 overflow-y-auto relative flex flex-col" style={{ fontFamily: IPS, background: BG }}>
       {/* ── Header ── */}
-      <div style={{ background: "#FFFFFF", padding: "14px 20px 14px", flexShrink: 0, borderBottom: "1px solid rgba(91,122,104,0.10)" }}>
+      <div style={{ background: "#FFFFFF", padding: "12px 20px 12px", flexShrink: 0, borderBottom: "1px solid rgba(91,122,104,0.10)", position: "sticky", top: 0, zIndex: 30 }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
             <button

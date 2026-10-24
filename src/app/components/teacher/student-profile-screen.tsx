@@ -402,6 +402,49 @@ export function JurnalTab({
             ))}
           </div>
         )}
+
+        {/* ── Tanggapan & Konfirmasi dari Orang Tua di Rumah ── */}
+        <div style={{ marginTop: 18 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <Heart size={14} style={{ color: "#2E5E43" }} />
+              <p style={{ fontFamily: PJS, fontSize: 13, fontWeight: 800, color: TEXT, margin: 0 }}>
+                Tanggapan Orang Tua di Rumah
+              </p>
+            </div>
+            <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 99, background: "#E8F4EC", color: "#246E44", fontFamily: PJS }}>
+              Terhubung
+            </span>
+          </div>
+
+          <div
+            style={{
+              background: "#FFFFFF",
+              borderRadius: 16,
+              border: "1.5px solid #D5E5DA",
+              padding: "14px 16px",
+              boxShadow: "0 2px 8px rgba(91,122,104,0.05)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#2E5E43", background: "#EBF5EF", padding: "3px 9px", borderRadius: 8, fontFamily: PJS }}>
+                ✨ Sangat Sesuai di Rumah
+              </span>
+              <span style={{ fontSize: 10.5, color: MUTED, fontFamily: IPS }}>Hari ini · 09.30 WIB</span>
+            </div>
+            <p style={{ fontSize: 12.5, color: TEXT, fontFamily: IPS, lineHeight: 1.5, margin: "0 0 8px" }}>
+              "Alhamdulillah di rumah {student.name.split(" ")[0]} juga semakin mandiri, sekarang perlengkapan karyanya selalu dirapikan sendiri ke dalam tas setelah selesai menggambar tanpa perlu diingatkan."
+            </p>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 11, color: MUTED, fontFamily: IPS }}>
+                Oleh: <strong>Ibu Ani Rahmawati</strong> (Wali Murid)
+              </span>
+              <span style={{ fontSize: 10.5, fontWeight: 700, color: "#0D9488", fontFamily: IPS }}>
+                ✓ Terverifikasi
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <style>{`@keyframes vt-pulse{0%,100%{box-shadow:0 0 0 0 rgba(210,125,107,0.45)}70%{box-shadow:0 0 0 8px rgba(210,125,107,0)}}`}</style>

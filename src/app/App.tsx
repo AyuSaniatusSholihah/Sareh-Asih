@@ -25,12 +25,13 @@ import {
   ParentTrainingScreen, LinkCodeModal, RiwayatLaporanScreen, PerkembanganScreen, AspekDetailScreen, KemampuanDiamatiScreen,
   KonsultasiGuruScreen, SaranRumahScreen,
 } from "./components/parent";
+import { NotificationScreen } from "./components/notification-screen";
 
 // Layout components
 import {
   StatusBar, SearchOverlay, SettingsSheet, GlobalHeader, BotNav,
   CoachMark, COACH_MARKS, isCoachSeen, markCoachSeen, type CoachRect,
-  ProfileSheet,
+  ProfileSheet, ParentNotificationSheet,
 } from "./components/layout";
 
 
@@ -57,12 +58,13 @@ type GuruSetup = null | "akun";
 const DEFAULT_GURU: GuruProfile = {
   nama: "Sari Dewi, S.Pd.",
   email: "sari.dewi@gmail.com",
-  sekolah: "",
+  sekolah: "SLB Negeri 1 Surabaya",
   jabatan: "Guru Kelas / Wali Kelas",
   noHp: "081234567890",
-  kelas: [],
-  abk: [],
-  kelasAbkMap: {},
+  kelas: ["VII A", "VIII B"],
+  abk: ["Tunadaksa", "Autisme", "Tunagrahita"],
+  kelasAbkMap: { "VII A": "Tunadaksa", "VIII B": "Autisme" },
+  setupDone: true,
 };
 
 function useIsMobile() {
@@ -148,7 +150,9 @@ export default function App() {
   const [showSearch, setShowSearch] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [reportInitialView, setReportInitialView] = useState<"main" | "detail" | "web-connect">("main");
+  const isAnyModalOpen = showSettings || showSearch || showProfile || showNotifications || showLinkCode || showAddStudent || !!coach;
 
   const handleOpenWebConnect = () => {
     setShowSettings(false);
@@ -393,6 +397,7 @@ export default function App() {
       case "parent-calendar": return ["Kalender", "Kegiatan terbuka untuk umum"];
       case "parent-training": return ["Pelatihan & Terapi", "Info umum layanan terdekat"];
       case "saran-rumah": return ["Saran Guru untuk di Rumah", child ? `Aktivitas pendukung ${child.name.split(" ")[0]}` : "Aktivitas di rumah"];
+      case "notifikasi": return ["Notifikasi", ""];
       default: return ["", ""];
     }
   };
@@ -444,7 +449,7 @@ export default function App() {
           profile={guru}
           onBack={goBack}
           onNext={(p) => {
-            setGuru(g => ({ ...g, ...p, setupDone: false }));
+            setGuru(g => ({ ...g, ...p, setupDone: true }));
             setRole("guru");
             setScreen("dashboard");
             setTab("dashboard");
@@ -550,13 +555,23 @@ export default function App() {
       case "parent-dashboard": return <ParentDashboard go={go} child={child} anakList={anakTerkirim} onPilihAnak={setChildId} namaOrtu={namaOrtu} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} />;
       case "parent-detail": return <ParentDetailScreen onBack={goBack} child={child} onOpenCode={() => setShowLinkCode(true)} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} onBaca={tandaiDibaca} onLihatRiwayat={() => go("riwayat-laporan")} go={go} />;
       case "riwayat-laporan": return <RiwayatLaporanScreen onBack={goBack} laporan={child ? laporan.filter(l => l.studentId === child.id) : []} namaAnak={child ? child.name.split(" ")[0] : ""} />;
-      case "riwayat-perkembangan": return <PerkembanganScreen onBack={goBack} child={child} onPilihAspek={(k) => { setAspekTerpilih(k); go("detail-aspek"); }} onGoKonsultasi={() => go("konsultasi-guru")} />;
+      case "riwayat-perkembangan": return <PerkembanganScreen onBack={goBack} child={child} onPilihAspek={(k) => { setAspekTerpilih(k); go("detail-aspek"); }} />;
       case "detail-aspek": return <AspekDetailScreen onBack={goBack} child={child} aspek={aspekTerpilih} onLihatKemampuan={() => go("kemampuan-diamati")} />;
       case "kemampuan-diamati": return <KemampuanDiamatiScreen onBack={goBack} child={child} aspek={aspekTerpilih} />;
       case "parent-calendar": return <ParentCalendarScreen linked={!!child} sekolah={guru.sekolah} onOpenCode={() => setShowLinkCode(true)} go={go} />;
       case "parent-training": return <ParentTrainingScreen go={go} />;
       case "konsultasi-guru": return <KonsultasiGuruScreen onBack={goBack} teacherName={child?.teacher || "Ibu Sari"} studentName={child ? child.name.split(" ")[0] : "Rafi"} kelas={child?.kelas || "VII A"} />;
       case "saran-rumah": return <SaranRumahScreen onBack={goBack} child={child} go={go} />;
+      case "notifikasi": return (
+        <NotificationScreen
+          onBack={goBack}
+          laporan={child ? laporan.filter(l => l.studentId === child.id) : laporan}
+          child={child}
+          onBaca={tandaiDibaca}
+          onGo={go}
+          teacherName={child?.teacher || guru.nama}
+        />
+      );
       default: return null;
     }
   };
@@ -566,6 +581,7 @@ export default function App() {
     openSearch: () => setShowSearch(true),
     openSettings: () => setShowSettings(true),
     openProfile: () => setShowProfile(true),
+    openNotifications: () => go("notifikasi"),
   };
 
   const [title, sub] = headerTitle();
@@ -575,16 +591,10 @@ export default function App() {
       <UI.Provider value={uiCtx}>
         <div
           className="min-h-screen w-full flex items-center justify-center"
-          style={{ background: "#EBF3ED", fontFamily: PJS }}
+          style={{ background: "#FFFFFF", fontFamily: PJS }}
         >
-          {!isMobile && (
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-16 left-16 w-72 h-72 rounded-full opacity-30 blur-3xl" style={{ background: `${T}25` }} />
-              <div className="absolute bottom-16 right-16 w-80 h-80 rounded-full opacity-30 blur-3xl" style={{ background: `${A}18` }} />
-            </div>
-          )}
 
-          <div className={isMobile ? "w-full h-full" : "relative z-10 flex flex-col items-center gap-5 py-8"}>
+          <div className={isMobile ? "w-full h-full" : "relative z-10 flex flex-col items-center gap-5"} style={!isMobile ? { padding: "60px 80px" } : undefined}>
             {/* Demo switcher — hanya di desktop */}
             {!!role && !isMobile && (
               <div className="flex items-center gap-1 p-1 rounded-2xl" style={{ background: "rgba(255,255,255,0.85)", border: `1px solid rgba(91,122,104,0.12)` }}>
@@ -608,28 +618,35 @@ export default function App() {
               display: "flex", flexDirection: "column", overflow: "hidden",
               position: "relative",
             } : {
-              width: 393, height: 852, background: BG, borderRadius: 47,
+              width: 393, height: 852, background: BG, borderRadius: 0,
               display: "flex", flexDirection: "column", overflow: "hidden",
-              boxShadow: "0 40px 80px rgba(91,122,104,0.22), 0 0 0 8px #1A1F23, 0 0 0 9.5px #2E3438",
               position: "relative",
+              border: "1px solid #D0D0D0",
             }}>
-              {/* Notch */}
-              {!isMobile && (
-                <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: 126, height: 34, background: "#1A1F23", borderRadius: "0 0 20px 20px", zIndex: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#2E3438" }} />
-                  <div style={{ width: 48, height: 6, borderRadius: 3, background: "#2E3438" }} />
-                </div>
-              )}
 
-              {screen !== "landing" && (
-                <div style={{ background: screen === "konfirmasi-akun" ? "#F4F8F5" : "#FFFFFF", paddingTop: 36, flexShrink: 0 }}>
-                  <StatusBar />
-                </div>
-              )}
+
+              {/* ── Status Bar at the Top (always rendered, including landing & early screens) ── */}
+              <div style={{
+                background: screen === "landing" ? "transparent" : (screen === "role-select" || screen === "google-login" || screen === "parent-code" || screen === "konfirmasi-akun") ? BG : "#FFFFFF",
+                paddingTop: 14,
+                paddingBottom: 6,
+                flexShrink: 0,
+                zIndex: screen === "landing" ? 60 : 20,
+                position: screen === "landing" ? "absolute" : "relative",
+                top: screen === "landing" ? 0 : undefined,
+                left: screen === "landing" ? 0 : undefined,
+                right: screen === "landing" ? 0 : undefined,
+                filter: isAnyModalOpen ? "blur(3.5px)" : "none",
+                opacity: isAnyModalOpen ? 0.6 : 1,
+                transition: "filter 0.2s ease, opacity 0.2s ease",
+                pointerEvents: "none",
+              }}>
+                <StatusBar />
+              </div>
 
               {/* Content */}
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: BG, position: "relative", zoom: fontSize }}>
-                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && screen !== "parent-dashboard" && screen !== "parent-detail" && screen !== "parent-calendar" && screen !== "parent-training" && screen !== "saran-rumah" && screen !== "konsultasi-guru" && screen !== "pilih-asesmen" && screen !== "riwayat-asesmen" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: (screen === "role-select" || screen === "google-login" || screen === "parent-code" || screen === "konfirmasi-akun") ? BG : "#FFFFFF", position: "relative", zoom: fontSize }}>
+                {showNav && screen !== "dashboard" && screen !== "students" && screen !== "talent-map" && screen !== "report" && screen !== "parent-dashboard" && screen !== "parent-detail" && screen !== "parent-calendar" && screen !== "parent-training" && screen !== "saran-rumah" && screen !== "konsultasi-guru" && screen !== "pilih-asesmen" && screen !== "riwayat-asesmen" && screen !== "notifikasi" && (
                   <GlobalHeader
                     title={title}
                     sub={sub}
@@ -638,97 +655,140 @@ export default function App() {
                   />
                 )}
                 {renderScreen()}
-
-                {showSettings && (
-                  <SettingsSheet
-                    onClose={() => setShowSettings(false)}
-                    onLogout={handleLogout}
-                    role={role}
-                    guruName={guru.nama}
-                    parentName={namaOrtu}
-                    teacherRole={guru.role}
-                    onOpenWebDashboard={handleOpenWebConnect}
-                  />
-                )}
-
-                {showSearch && (
-                  <SearchOverlay
-                    onClose={() => setShowSearch(false)}
-                    onSelect={(id) => {
-                      setSelectedStudentId(id);
-                      setShowSearch(false);
-                      go("profile");
-                    }}
-                    onGo={(scr) => {
-                      setShowSearch(false);
-                      go(scr);
-                    }}
-                  />
-                )}
-
-                {showProfile && (
-                  <ProfileSheet
-                    isOpen={showProfile}
-                    onClose={() => setShowProfile(false)}
-                    role={role}
-                    guru={guru}
-                    namaOrtu={namaOrtu}
-                    childName={child?.name}
-                    onEditProfile={() => go("konfirmasi-akun")}
-                    onOpenSettings={() => setShowSettings(true)}
-                    onOpenWebDashboard={handleOpenWebConnect}
-                    onLogout={handleLogout}
-                    onGoStudents={() => go("students")}
-                  />
-                )}
-
-                {/* Modal kode akses orang tua */}
-                {showLinkCode && (
-                  <LinkCodeModal
-                    students={list}
-                    linkedIds={childIds}
-                    onClose={() => setShowLinkCode(false)}
-                    onLinked={(s) => {
-                      linkChild(s.id);
-                      setShowLinkCode(false);
-                      if (screen !== "parent-dashboard") goTab("parent-dashboard");
-                    }}
-                  />
-                )}
-
-                {/* Konfirmasi akun sekarang dilakukan di full page screen "konfirmasi-akun" */}
-
-                {/* Sheet tambah siswa */}
-                {showAddStudent && (
-                  <AddStudentSheet
-                    teacher={guru.nama}
-                    kelasAbkMap={guru.kelasAbkMap ?? {}}
-                    firstTime={addFirstTime}
-                    savedCount={list.length}
-                    onSave={addStudent}
-                    onDone={() => {
-                      setShowAddStudent(false);
-                      if (addFirstTime) { setAddFirstTime(false); finishGuruSetup(); }
-                    }}
-                    onClose={() => {
-                      setShowAddStudent(false);
-                      if (addFirstTime) { setAddFirstTime(false); finishGuruSetup(); }
-                    }}
-                    onBack={() => {
-                      setShowAddStudent(false);
-                    }}
-                  />
-                )}
               </div>
 
-              {showNav && <BotNav role={role!} screen={screen} go={goTab} />}
+              {showNav ? (
+                <BotNav role={role!} screen={screen} go={goTab} />
+              ) : (
+                /* iPhone 16 Home Indicator untuk layar tanpa bottom nav (landing, login, role-select, dll.) */
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    display: "flex",
+                    justifyContent: "center",
+                    paddingBottom: 8,
+                    paddingTop: 4,
+                    zIndex: 35,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 134,
+                      height: 5,
+                      background: "#1A1A1A",
+                      borderRadius: 100,
+                      opacity: 0.22,
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* ── Modals & Overlays at Frame Level (Covers StatusBar, Content, and BotNav with blur) ── */}
+              {showSettings && (
+                <SettingsSheet
+                  onClose={() => setShowSettings(false)}
+                  onLogout={handleLogout}
+                  role={role}
+                  guruName={guru.nama}
+                  parentName={namaOrtu}
+                  childName={child?.name}
+                  childKelas={child?.kelas}
+                  teacherRole={guru.role}
+                  onOpenWebDashboard={handleOpenWebConnect}
+                />
+              )}
+
+              {showNotifications && (
+                <ParentNotificationSheet
+                  isOpen={showNotifications}
+                  onClose={() => setShowNotifications(false)}
+                  laporan={child ? laporan.filter(l => l.studentId === child.id) : laporan}
+                  child={child}
+                  onBaca={tandaiDibaca}
+                  onGo={(scr) => {
+                    setShowNotifications(false);
+                    go(scr);
+                  }}
+                />
+              )}
+
+              {showSearch && (
+                <SearchOverlay
+                  onClose={() => setShowSearch(false)}
+                  onSelect={(id) => {
+                    setSelectedStudentId(id);
+                    setShowSearch(false);
+                    go("profile");
+                  }}
+                  onGo={(scr) => {
+                    setShowSearch(false);
+                    go(scr);
+                  }}
+                />
+              )}
+
+              {showProfile && (
+                <ProfileSheet
+                  isOpen={showProfile}
+                  onClose={() => setShowProfile(false)}
+                  role={role}
+                  guru={guru}
+                  namaOrtu={namaOrtu}
+                  childName={child?.name}
+                  onEditProfile={() => go("konfirmasi-akun")}
+                  onOpenSettings={() => setShowSettings(true)}
+                  onOpenWebDashboard={handleOpenWebConnect}
+                  onLogout={handleLogout}
+                  onGoStudents={() => go("students")}
+                />
+              )}
+
+              {/* Modal kode akses orang tua */}
+              {showLinkCode && (
+                <LinkCodeModal
+                  students={list}
+                  linkedIds={childIds}
+                  onClose={() => setShowLinkCode(false)}
+                  onLinked={(s) => {
+                    linkChild(s.id);
+                    setShowLinkCode(false);
+                    if (screen !== "parent-dashboard") goTab("parent-dashboard");
+                  }}
+                />
+              )}
+
+              {/* Sheet tambah siswa */}
+              {showAddStudent && (
+                <AddStudentSheet
+                  teacher={guru.nama}
+                  kelasAbkMap={guru.kelasAbkMap ?? {}}
+                  firstTime={addFirstTime}
+                  savedCount={list.length}
+                  onSave={addStudent}
+                  onDone={() => {
+                    setShowAddStudent(false);
+                    if (addFirstTime) { setAddFirstTime(false); finishGuruSetup(); }
+                  }}
+                  onClose={() => {
+                    setShowAddStudent(false);
+                    if (addFirstTime) { setAddFirstTime(false); finishGuruSetup(); }
+                  }}
+                  onBack={() => {
+                    setShowAddStudent(false);
+                  }}
+                />
+              )}
 
               {coach && (
                 <CoachMark def={coach.def} rect={coach.rect} onClose={closeCoach} />
               )}
             </div>
 
-            {!isMobile && <p className="text-xs font-semibold" style={{ color: T, fontFamily: IPS, opacity: 0.8 }}>Sareh Asih · GEMASTIK XVII · UX Design</p>}
+
           </div>
         </div>
       </UI.Provider>

@@ -700,7 +700,7 @@ export function ReportScreen({
   return (
     <div className="flex-1 overflow-y-auto relative" style={{ fontFamily: IPS, background: BG }}>
       {/* Header Laporan Utama (Sesuai header lainnya: Search, Profile, Settings) */}
-      <div style={{ background: "#FFFFFF", padding: "14px 20px 10px", borderBottom: "1px solid rgba(91,122,104,0.10)", position: "sticky", top: 0, zIndex: 15 }}>
+      <div style={{ background: "#FFFFFF", padding: "12px 20px 12px", borderBottom: "1px solid rgba(91,122,104,0.10)", position: "sticky", top: 0, zIndex: 15 }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
             {onBack && (

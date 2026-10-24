@@ -61,7 +61,7 @@ export function TalentMapScreen({
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
-      <div style={{ background: "#FFFFFF", padding: "14px 20px 8px", borderBottom: "1px solid rgba(91,122,104,0.08)" }}>
+      <div style={{ background: "#FFFFFF", padding: "12px 20px 10px", borderBottom: "1px solid rgba(91,122,104,0.08)", position: "sticky", top: 0, zIndex: 30 }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
           <div>
             <h1 style={{ fontFamily: PJS, fontSize: 20, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.2 }}>Hasil Asesmen Siswa</h1>

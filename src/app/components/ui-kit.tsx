@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 
 // ─── Official Sareh Asih Color Palette ──────────────────────────────
-export const BG         = "#EBF3ED";   // Mint White — Background
+export const BG         = "#F4F7F5";   // Soft Mint White — Standard Unified Background
 export const SAGE       = "#8BB098";   // Sage Green — Primary
 export const DEEP       = "#5B7A68";   // Deep Forest — Secondary / Positive Actions
 export const T          = "#5B7A68";   // Deep Forest alias
@@ -29,12 +29,13 @@ export interface UICtx {
   openSearch: ()=>void;
   openSettings: ()=>void;
   openProfile: ()=>void;
+  openNotifications: ()=>void;
 }
 export const UI = createContext<UICtx>({
   fontSize:1, setFontSize:()=>{},
   tts:false,  setTts:()=>{},
   openSearch:()=>{}, openSettings:()=>{},
-  openProfile:()=>{},
+  openProfile:()=>{}, openNotifications:()=>{},
 });
 export const useUI = () => useContext(UI);
 
@@ -234,8 +235,8 @@ export function SBtn({
 // ─── Top nav bar inside phone ─────────────────────────────────────────
 export function TBar({title,sub,onBack,right}:{title:string;sub?:string;onBack?:()=>void;right?:React.ReactNode}) {
   return (
-    <div style={{background:CARD,borderBottom:`1px solid ${BDR}`,flexShrink:0}}>
-      <div className="flex items-center gap-2 px-4 py-2.5">
+    <div style={{background:CARD,borderBottom:`1px solid ${BDR}`,flexShrink:0,position:"sticky",top:0,zIndex:30}}>
+      <div className="flex items-center gap-2 px-4 py-2">
         {onBack && (
           <button onClick={onBack} style={{minWidth:44,minHeight:44}} className="flex items-center justify-center rounded-2xl hover:bg-[#D4E8DA] transition-colors">
             <ArrowLeft size={20} style={{color:TEXT}}/>

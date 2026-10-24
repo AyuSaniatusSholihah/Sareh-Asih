@@ -20,7 +20,7 @@ export function GlobalHeader({
   const { openSearch, openSettings } = useUI();
 
   return (
-    <div style={{ background: "#FFFFFF", padding: "14px 20px 10px", flexShrink: 0 }}>
+    <div style={{ background: "#FFFFFF", padding: "12px 20px 12px", flexShrink: 0 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
           {onBack && (
