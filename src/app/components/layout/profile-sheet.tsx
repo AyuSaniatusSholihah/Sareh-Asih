@@ -46,7 +46,9 @@ export function ProfileSheet({
       style={{
         position: "absolute",
         inset: 0,
-        background: "rgba(46,62,53,0.5)",
+        background: "rgba(30,45,38,0.5)",
+        backdropFilter: "blur(6px)",
+        WebkitBackdropFilter: "blur(6px)",
         zIndex: 85,
         display: "flex",
         flexDirection: "column",

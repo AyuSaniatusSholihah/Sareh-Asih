@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CheckCircle, Pencil, User, Mail, Lock, Info, ChevronLeft, ArrowRight } from "lucide-react";
-import { PJS, IPS } from "../ui-kit";
+import { BG, PJS, IPS } from "../ui-kit";
 import { motion } from "motion/react";
 
 // ─── GURU: Full Page — Konfirmasi nama & email setelah login ───────────────
@@ -135,7 +135,7 @@ export function KonfirmasiAkunScreen({
       className="flex-1 flex flex-col overflow-y-auto"
       style={{
         fontFamily: IPS,
-        background: "#F4F8F5",
+        background: BG,
         minHeight: "100%",
         position: "relative",
       }}

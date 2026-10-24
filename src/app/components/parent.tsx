@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  Bell, Users, MessageSquare, Sparkles, Lock, Info, Heart, Star,
+  Bell, Users, User, MessageSquare, Sparkles, Lock, Info, Heart, Star,
   Key, Hash, XCircle, ChevronRight, ChevronLeft, MapPin, Phone,
   Clock, Wallet, CalendarDays, CheckCircle, Search, FileText, ChevronDown, X,
   Palette, Target, BookOpen, Settings, SlidersHorizontal, TrendingUp, Lightbulb, Laptop, Plus,
@@ -41,7 +41,7 @@ export function LinkCodeModal({onClose,onLinked,students,linkedIds=[]}:{onClose:
     const nama = sukses.name.split(" ")[0];
     return (
       <div style={{position:"absolute",inset:0,zIndex:70,display:"flex",flexDirection:"column",justifyContent:"flex-end"}} onClick={onClose}>
-        <div style={{position:"absolute",inset:0,background:"rgba(46,62,53,0.5)"}}/>
+        <div style={{position:"absolute",inset:0,background:"rgba(30,45,38,0.5)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}}/>
         <div onClick={e=>e.stopPropagation()} style={{position:"relative",background:CARD,borderRadius:"26px 26px 0 0",padding:"14px 20px 28px",textAlign:"center"}}>
           <div className="flex justify-center mb-4"><div style={{width:36,height:4,borderRadius:2,background:"#D1D5DB"}}/></div>
           <div className="flex flex-col items-center">
@@ -65,7 +65,7 @@ export function LinkCodeModal({onClose,onLinked,students,linkedIds=[]}:{onClose:
 
   return (
     <div style={{position:"absolute",inset:0,zIndex:70,display:"flex",flexDirection:"column",justifyContent:"flex-end"}} onClick={onClose}>
-      <div style={{position:"absolute",inset:0,background:"rgba(46,62,53,0.5)"}}/>
+      <div style={{position:"absolute",inset:0,background:"rgba(30,45,38,0.5)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}}/>
       <div onClick={e=>e.stopPropagation()} style={{position:"relative",background:CARD,borderRadius:"26px 26px 0 0",padding:"14px 20px 28px"}}>
         {/* Top bar with drag handle and close button */}
         <div style={{position:"relative", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:14}}>
@@ -361,48 +361,52 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
   const upcoming = AGENDA.slice(0, 1);
   const latestLaporan = laporan.length > 0 ? laporan[laporan.length - 1] : null;
   const ibuName = namaOrtu.split(" ")[0];
-  const { openSettings, openSearch } = useUI();
+  const { openSettings, openSearch, openNotifications } = useUI();
+  const unreadCount = (laporan || []).filter(l => !l.dibaca).length + 1;
   const [pilihOpen, setPilihOpen] = useState(false);
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: "#E8F1EA" }}>
+    <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
       {/* ── Header ── */}
-      <div style={{ background: "#FFFFFF", padding: "18px 16px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: "#24352C", fontFamily: PJS }}>
-          Beranda
-        </h1>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <button
-            type="button"
-            aria-label="Cari"
-            onClick={openSearch}
-            style={{ width: 44, height: 44, border: 0, borderRadius: 12, background: "#E8F1EA", color: "#24352C", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-            className="active:scale-95 transition-transform"
-            title="Cari"
-          >
-            <Search size={22} strokeWidth={1.8} />
-          </button>
-          <button
-            type="button"
-            aria-label="Notifikasi"
-            onClick={() => go("parent-calendar")}
-            style={{ width: 44, height: 44, border: 0, borderRadius: 12, background: "#E8F1EA", color: "#24352C", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
-            className="active:scale-95 transition-transform"
-            title="Notifikasi"
-          >
-            <Bell size={22} strokeWidth={1.8} />
-            <span style={{ position: "absolute", top: 10, right: 10, width: 7, height: 7, borderRadius: "50%", background: "#B5584A", border: "1.5px solid #E8F1EA" }} />
-          </button>
-          <button
-            type="button"
-            aria-label="Pengaturan"
-            onClick={openSettings}
-            style={{ width: 44, height: 44, border: 0, borderRadius: 12, background: "#E8F1EA", color: "#24352C", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-            className="active:scale-95 transition-transform"
-            title="Pengaturan"
-          >
-            <SlidersHorizontal size={22} strokeWidth={1.8} />
-          </button>
+      <div style={{ background: "#FFFFFF", padding: "12px 20px 12px", flexShrink: 0, position: "sticky", top: 0, zIndex: 30, borderBottom: "1px solid rgba(91,122,104,0.10)" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1 style={{ fontFamily: PJS, fontSize: 22, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.15 }}>
+              Beranda
+            </h1>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, marginTop: 2 }}>
+            <button
+              type="button"
+              onClick={openSearch}
+              style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform"
+              title="Cari"
+            >
+              <Search size={16} style={{ color: DEEP }} />
+            </button>
+            <button
+              type="button"
+              onClick={openNotifications}
+              style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
+              className="active:scale-95 transition-transform"
+              title="Notifikasi & Feedback Guru"
+            >
+              <Bell size={16} style={{ color: DEEP }} />
+              {unreadCount > 0 && (
+                <span style={{ position: "absolute", top: 6, right: 6, width: 7, height: 7, borderRadius: "50%", background: A, border: "1.5px solid #fff" }} />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={openSettings}
+              style={{ width: 36, height: 36, background: BG, borderRadius: 10, border: `1px solid ${BDR}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+              className="active:scale-95 transition-transform"
+              title="Pengaturan & Akun"
+            >
+              <Settings size={16} style={{ color: DEEP }} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -478,15 +482,7 @@ export function ParentDashboard({ go, child, anakList, onPilihAnak, namaOrtu, on
                 <ChevronDown size={22} style={{ color: "#24352C", flexShrink: 0 }} />
               </button>
 
-              {/* 2. Sapaan */}
-              <div style={{ margin: "0 4px", display: "flex", flexDirection: "column", gap: 2 }}>
-                <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#24352C", fontFamily: PJS, lineHeight: 1.2 }}>
-                  Halo! 👋
-                </h2>
-                <span style={{ fontSize: 13, color: "#55675C", fontWeight: 500, fontFamily: IPS }}>
-                  Berikut ringkasan informasinya.
-                </span>
-              </div>
+
 
               {/* 3. Akses Cepat (4 menu grid 2x2) */}
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -823,7 +819,7 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
   const [cursor,setCursor] = useState({y:today.getFullYear(), m:today.getMonth()});
   const [selected,setSelected] = useState<string|null>("2026-08-15");
   const [filter,setFilter] = useState<EventKind|"semua">("semua");
-  const { openSettings } = useUI();
+  const { openSettings, openSearch, openNotifications } = useUI();
 
   // Kalender memuat kegiatan umum/terbuka (lomba, terapi, pelatihan)
   const list = AGENDA.filter(e=>filter==="semua"||e.kind===filter);
@@ -856,21 +852,21 @@ export function ParentCalendarScreen({linked,sekolah,onOpenCode,go}:{
   return (
     <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS,background:BG}}>
       {/* ── Header ── */}
-      <div style={{background:"#FFFFFF",padding:"14px 20px 12px",flexShrink:0}}>
+      <div style={{background:"#FFFFFF",padding:"12px 20px 12px",flexShrink:0,position:"sticky",top:0,zIndex:30,borderBottom:"1px solid rgba(91,122,104,0.10)"}}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
           <div style={{flex:1,minWidth:0}}>
             <h1 style={{fontFamily:PJS,fontSize:22,fontWeight:800,color:TEXT,margin:0,lineHeight:1.15}}>Kalender Kegiatan</h1>
             <p style={{fontFamily:IPS,fontSize:12.5,color:MUTED,margin:"2px 0 0",fontWeight:500}}>Agenda ajang talenta, pelatihan & terapi terbuka untuk anak</p>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0,marginTop:2}}>
-            <button style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Cari">
+            <button type="button" onClick={openSearch} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Cari">
               <Search size={16} style={{color:DEEP}}/>
             </button>
-            <button style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}} className="active:scale-95 transition-transform" title="Notifikasi">
+            <button type="button" onClick={openNotifications} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}} className="active:scale-95 transition-transform" title="Notifikasi & Feedback Guru">
               <Bell size={16} style={{color:DEEP}}/>
               <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
             </button>
-            <button type="button" onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
+            <button type="button" onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan & Akun">
               <Settings size={16} style={{color:DEEP}}/>
             </button>
           </div>
@@ -1036,7 +1032,7 @@ function EventCard({e}:{e:AgendaEvent}) {
 
 // ─── PELATIHAN & TERAPI TERDEKAT ──────────────────────────────────────
 export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
-  const { openSettings, openSearch } = useUI();
+  const { openSettings, openSearch, openNotifications } = useUI();
   const [q, setQ] = useState("");
   const [filterTerdekat, setFilterTerdekat] = useState(true);
   const [filterJenis, setFilterJenis] = useState<string>("Semua");
@@ -1059,7 +1055,7 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
     <div className="flex-1 relative flex flex-col h-full overflow-hidden" style={{fontFamily:IPS, background:BG}}>
       <div className="flex-1 overflow-y-auto">
         {/* ── Top Bar ── */}
-      <div style={{background:"#FFFFFF",padding:"14px 16px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:`1px solid ${BDR}`,position:"sticky",top:0,zIndex:20}}>
+      <div style={{background:"#FFFFFF",padding:"12px 16px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:`1px solid ${BDR}`,position:"sticky",top:0,zIndex:20}}>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
           <button
             type="button"
@@ -1086,10 +1082,20 @@ export function ParentTrainingScreen({go}:{go:(s:Screen)=>void}) {
           </button>
           <button
             type="button"
+            onClick={openNotifications}
+            style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}
+            className="active:scale-95 transition-transform"
+            title="Notifikasi & Feedback Guru"
+          >
+            <Bell size={16} style={{color:DEEP}}/>
+            <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
+          </button>
+          <button
+            type="button"
             onClick={openSettings}
             style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
             className="active:scale-95 transition-transform"
-            title="Pengaturan"
+            title="Pengaturan & Akun"
           >
             <Settings size={16} style={{color:DEEP}}/>
           </button>
@@ -2012,27 +2018,30 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
   onBack:()=>void; child:Student|null; onOpenCode:()=>void;
   laporan:LaporanKirim[]; onBaca:(id:number)=>void; onLihatRiwayat?:()=>void; go:(s:Screen)=>void;
 }) {
-  const { openSettings } = useUI();
+  const { openSettings, openSearch, openNotifications } = useUI();
+  const unreadCount = (laporan || []).filter(l => !l.dibaca).length + 1;
   if (!child) {
     return (
       <div className="flex-1 overflow-y-auto" style={{fontFamily:IPS,background:BG}}>
         {/* ── Header ── */}
-        <div style={{background:"#FFFFFF",padding:"14px 20px 12px",flexShrink:0}}>
+        <div style={{background:"#FFFFFF",padding:"12px 20px 12px",flexShrink:0,position:"sticky",top:0,zIndex:30,borderBottom:"1px solid rgba(91,122,104,0.10)"}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
             <div style={{flex:1,minWidth:0}}>
                 <h1 style={{fontFamily:PJS,fontSize:22,fontWeight:800,color:TEXT,margin:0,lineHeight:1.15}}>Anak</h1>
               </div>
             <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0,marginTop:2}}>
-              <button style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Cari">
+              <button type="button" onClick={openSearch} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Cari">
                 <Search size={16} style={{color:DEEP}}/>
               </button>
-              <button style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}} className="active:scale-95 transition-transform" title="Notifikasi">
+              <button type="button" onClick={openNotifications} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}} className="active:scale-95 transition-transform" title="Notifikasi & Feedback Guru">
                 <Bell size={16} style={{color:DEEP}}/>
-                <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
+                {unreadCount > 0 && (
+                  <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
+                )}
               </button>
-            <button type="button" onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
-              <Settings size={16} style={{color:DEEP}}/>
-            </button>
+              <button type="button" onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan & Akun">
+                <Settings size={16} style={{color:DEEP}}/>
+              </button>
             </div>
           </div>
         </div>
@@ -2346,7 +2355,6 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
                   studentName={nama}
                   teacherName={child.teacher}
                   contextTitle={`Asesmen ${currentSemester.title} ${currentSemester.tahun}`}
-                  onGoKonsultasi={() => go("konsultasi-guru")}
                 />
               </div>
             </>
@@ -2398,20 +2406,22 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
       )}
 
       {/* ── Header ── */}
-      <div style={{background:"#FFFFFF",padding:"14px 20px 12px",flexShrink:0}}>
+      <div style={{background:"#FFFFFF",padding:"12px 20px 12px",flexShrink:0,position:"sticky",top:0,zIndex:30,borderBottom:"1px solid rgba(91,122,104,0.10)"}}>
         <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}>
           <div style={{flex:1,minWidth:0}}>
             <h1 style={{fontFamily:PJS,fontSize:22,fontWeight:800,color:TEXT,margin:0,lineHeight:1.15}}>Anak</h1>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0,marginTop:2}}>
-            <button style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Cari">
+            <button type="button" onClick={openSearch} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Cari">
               <Search size={16} style={{color:DEEP}}/>
             </button>
-            <button style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}} className="active:scale-95 transition-transform" title="Notifikasi">
+            <button type="button" onClick={openNotifications} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}} className="active:scale-95 transition-transform" title="Notifikasi & Feedback Guru">
               <Bell size={16} style={{color:DEEP}}/>
-              <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
+              {unreadCount > 0 && (
+                <span style={{position:"absolute",top:6,right:6,width:7,height:7,borderRadius:"50%",background:A,border:"1.5px solid #fff"}}/>
+              )}
             </button>
-            <button type="button" onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan">
+            <button type="button" onClick={openSettings} style={{width:36,height:36,background:BG,borderRadius:10,border:`1px solid ${BDR}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} className="active:scale-95 transition-transform" title="Pengaturan & Akun">
               <Settings size={16} style={{color:DEEP}}/>
             </button>
           </div>
@@ -2794,55 +2804,6 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
               <div className="flex items-center justify-end gap-1 w-full" style={{marginTop:10}}>
                 <span style={{fontFamily:PJS,fontSize:12,fontWeight:700,color:T}}>Lihat riwayat</span>
                 <ChevronRight size={14} style={{color:T}} />
-              </div>
-            </button>
-
-            {/* Card 3: Konsultasi dengan guru */}
-            <button
-              type="button"
-              onClick={() => {
-                go("konsultasi-guru");
-              }}
-              style={{
-                background:CARD,
-                borderRadius:18,
-                padding:"16px",
-                border:`1.5px solid ${BDR}`,
-                boxShadow:"0 2px 10px rgba(91,122,104,0.05)",
-                display:"flex",
-                flexDirection:"column",
-                textAlign:"left",
-                cursor:"pointer",
-                width:"100%",
-              }}
-              className="active:scale-[0.99] transition-all"
-            >
-              <div className="flex items-start gap-3" style={{width:"100%"}}>
-                <div style={{
-                  width:38,height:38,borderRadius:12,
-                  background:"#FAF5FF",
-                  display:"flex",alignItems:"center",justifyContent:"center",
-                  flexShrink:0,
-                }}>
-                  <MessageCircle size={18} style={{color:"#7C3AED"}} strokeWidth={2.2} />
-                </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div className="flex items-center gap-2">
-                    <p style={{fontFamily:PJS,fontSize:14,fontWeight:800,color:TEXT,margin:0,lineHeight:1.3}}>
-                      Konsultasi dengan guru
-                    </p>
-                    <span style={{ fontSize: 10, fontWeight: 800, background: "#7C3AED", color: "#fff", padding: "1px 7px", borderRadius: 99, fontFamily: PJS }}>
-                      Interaktif
-                    </span>
-                  </div>
-                  <p style={{fontFamily:IPS,fontSize:12,color:MUTED,margin:"4px 0 0",lineHeight:1.45}}>
-                    Tanyakan perkembangan anak atau diskusikan hasil observasi bersama guru pendamping.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-end gap-1 w-full" style={{marginTop:10}}>
-                <span style={{fontFamily:PJS,fontSize:12,fontWeight:700,color:"#7C3AED"}}>Buka konsultasi</span>
-                <ChevronRight size={14} style={{color:"#7C3AED"}} />
               </div>
             </button>
           </div>
@@ -3343,26 +3304,6 @@ export function FeedbackPerkembanganOrtu({
             <Edit3 size={14} style={{ color: T }} />
             Ubah Tanggapan
           </button>
-
-          {onGoKonsultasi && (
-            <button
-              type="button"
-              onClick={onGoKonsultasi}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl active:scale-98 transition-all"
-              style={{
-                background: T,
-                border: "none",
-                color: "#FFFFFF",
-                fontFamily: PJS,
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
-            >
-              <MessageCircle size={14} />
-              Konsultasi Guru
-            </button>
-          )}
         </div>
       </div>
     );
@@ -3762,7 +3703,6 @@ export function PerkembanganScreen({ onBack, child, onPilihAspek, onGoKonsultasi
             studentName={nama}
             teacherName={child.teacher}
             contextTitle={`Perkembangan ${periode}`}
-            onGoKonsultasi={onGoKonsultasi}
           />
         </div>
       </div>

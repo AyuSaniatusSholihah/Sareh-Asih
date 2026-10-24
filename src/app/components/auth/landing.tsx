@@ -178,7 +178,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
             className="absolute inset-0 flex flex-col bg-[#F1F5F2]"
           >
             {/* HEADER */}
-            <div className="flex justify-end items-center px-5 pt-11 pb-2 z-10" style={{ minHeight: 64 }}>
+            <div className="flex justify-end items-center px-6 pb-2 z-10" style={{ paddingTop: 56, minHeight: 78 }}>
               {step < 5 && (
                 <button
                   onClick={skip}
@@ -186,7 +186,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                   style={{
                     fontSize: 13, fontWeight: 600, color: "#526B5C",
                     fontFamily: IPS, border: "none", background: "transparent",
-                    cursor: "pointer"
+                    cursor: "pointer", padding: "4px 6px"
                   }}
                 >
                   Lewati
@@ -309,7 +309,7 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                       Kembangkan Potensi<br />Secara Terarah
                     </h2>
                     <p style={{ fontFamily: IPS, fontSize: 13, color: "#526B5C", lineHeight: 1.45, marginTop: 8 }}>
-                      Rekomendasi strategi belajar, saran aktivitas rumah, dan konsultasi bersama.
+                      Rekomendasi strategi belajar, saran aktivitas rumah, dan laporan perkembangan berkala.
                     </p>
                   </div>
 
@@ -394,10 +394,10 @@ export function LandingScreen({ onNext }: { onNext: () => void }) {
                         display: "flex", alignItems: "center", justifyContent: "center",
                         flexShrink: 0
                       }}>
-                        <MessageCircle size={19} color="#D4A843" strokeWidth={2.2} />
+                        <FileText size={19} color="#D4A843" strokeWidth={2.2} />
                       </div>
                       <span style={{ fontFamily: PJS, fontSize: 13.5, fontWeight: 700, color: "#1F3A2B" }}>
-                        Konsultasi guru & orang tua
+                        Laporan perkembangan berkala
                       </span>
                     </div>
                   </div>

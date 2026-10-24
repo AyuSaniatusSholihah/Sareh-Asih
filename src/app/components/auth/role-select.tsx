@@ -1,5 +1,5 @@
 import { ArrowLeft, ChevronRight, ShieldCheck } from "lucide-react";
-import { TEXT, MUTED, DEEP, PJS, IPS } from "../ui-kit";
+import { BG, TEXT, MUTED, DEEP, PJS, IPS } from "../ui-kit";
 import { type Role } from "../data";
 import guruIcon from "@/imports/guru-icon.png";
 import ortuIcon from "@/imports/ortu-icon.png";
@@ -27,7 +27,7 @@ export function RoleSelectScreen({ onPick, onBack }: { onPick: (r: Role) => void
   ];
 
   return (
-    <div className="flex-1 flex flex-col" style={{ fontFamily: IPS, background: "#FDFBF7" }}>
+    <div className="flex-1 flex flex-col" style={{ fontFamily: IPS, background: BG }}>
       <div className="px-4 pt-4 pb-2">
         <button onClick={onBack} style={{ minWidth: 40, minHeight: 40, background: "#FFF", border: "1px solid #E5E7EB" }} className="flex items-center justify-center rounded-2xl shadow-sm">
           <ArrowLeft size={18} style={{ color: TEXT }} />

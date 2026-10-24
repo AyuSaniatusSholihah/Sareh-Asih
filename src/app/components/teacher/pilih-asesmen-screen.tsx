@@ -1,7 +1,7 @@
 import {
-  FileText, FileSpreadsheet, ChevronRight, ChevronLeft, LayoutGrid,
+  FileText, FileSpreadsheet, ChevronRight, ChevronLeft, LayoutGrid, Sparkles, Check,
 } from "lucide-react";
-import { PJS, IPS } from "../ui-kit";
+import { BG, PJS, IPS, TEXT, MUTED } from "../ui-kit";
 import { useStudents, type Screen } from "../data";
 
 export function PilihAsesmenScreen({
@@ -23,7 +23,7 @@ export function PilihAsesmenScreen({
       className="flex-1 overflow-y-auto"
       style={{
         fontFamily: IPS,
-        background: "#F5F8F5",
+        background: BG,
         minHeight: "100%",
       }}
     >
@@ -31,9 +31,9 @@ export function PilihAsesmenScreen({
       <div
         style={{
           position: "relative",
-          background: "#F5F8F5",
+          background: BG,
           padding: "24px 20px 20px",
-          borderBottom: "1px solid #E3ECE6",
+          borderBottom: "1px solid #E1ECE5",
           overflow: "hidden",
         }}
       >
@@ -52,35 +52,11 @@ export function PilihAsesmenScreen({
           }}
           aria-hidden="true"
         >
-          {/* Organic wave background */}
-          <path
-            d="M130 0H20C35 32 65 68 130 78V0Z"
-            fill="#E5EFE8"
-          />
-
-          {/* Plant stem */}
-          <path
-            d="M96 74C92 56 89 40 86 28"
-            stroke="#5D8369"
-            strokeWidth="2.8"
-            strokeLinecap="round"
-          />
-
-          {/* Leaves */}
-          <path
-            d="M90 54C80 50 75 39 82 36C87 34 91 43 90 54Z"
-            fill="#759A81"
-          />
-          <path
-            d="M91 62C101 62 108 52 103 46C97 42 92 50 91 62Z"
-            fill="#759A81"
-          />
-          <path
-            d="M88 40C98 37 102 26 96 23C90 21 87 31 88 40Z"
-            fill="#759A81"
-          />
-
-          {/* Coral Heart at tip */}
+          <path d="M130 0H20C35 32 65 68 130 78V0Z" fill="#E2EFE7" />
+          <path d="M96 74C92 56 89 40 86 28" stroke="#5D8369" strokeWidth="2.8" strokeLinecap="round" />
+          <path d="M90 54C80 50 75 39 82 36C87 34 91 43 90 54Z" fill="#759A81" />
+          <path d="M91 62C101 62 108 52 103 46C97 42 92 50 91 62Z" fill="#759A81" />
+          <path d="M88 40C98 37 102 26 96 23C90 21 87 31 88 40Z" fill="#759A81" />
           <g transform="translate(73, 8) scale(0.7) rotate(-8 12 12)">
             <path
               d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
@@ -122,7 +98,7 @@ export function PilihAsesmenScreen({
                 letterSpacing: "-0.01em",
               }}
             >
-              Asesmen
+              Pilih Asesmen
             </h1>
             <p
               style={{
@@ -133,20 +109,20 @@ export function PilihAsesmenScreen({
                 fontWeight: 500,
               }}
             >
-              Kelas {s?.kelas || "7"} • {s?.name || "Dinda Sari"}
+              Kelas {s?.kelas || "VII A"} • {s?.name || "Dinda Sari"}
             </p>
           </div>
         </div>
       </div>
 
       {/* ── Main Content ── */}
-      <div className="px-5 pt-6 pb-8 space-y-4">
+      <div className="px-5 pt-6 pb-12 space-y-4">
         {/* ── Section Title: Pilih Jenis Asesmen ── */}
-        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
           <div
             style={{
-              width: 44,
-              height: 44,
+              width: 40,
+              height: 40,
               borderRadius: "50%",
               background: "#E2ECE5",
               display: "flex",
@@ -155,36 +131,36 @@ export function PilihAsesmenScreen({
               flexShrink: 0,
             }}
           >
-            <LayoutGrid size={22} style={{ color: "#1B4332" }} strokeWidth={2.2} />
+            <LayoutGrid size={20} style={{ color: "#1B4332" }} strokeWidth={2.2} />
           </div>
           <div>
             <h2
               style={{
                 fontFamily: PJS,
-                fontSize: 16,
-                fontWeight: 700,
+                fontSize: 15.5,
+                fontWeight: 800,
                 color: "#163828",
                 margin: 0,
                 lineHeight: 1.25,
               }}
             >
-              Pilih Jenis Asesmen
+              Pilihan Paket Instrumen
             </h2>
             <p
               style={{
                 fontFamily: IPS,
-                fontSize: 13,
-                color: "#617A6D",
-                margin: "3px 0 0",
+                fontSize: 12.5,
+                color: "#5C7667",
+                margin: "2px 0 0",
                 lineHeight: 1.3,
               }}
             >
-              Pilih instrumen yang ingin digunakan.
+              Pilih instrumen yang ingin digunakan untuk observasi.
             </p>
           </div>
         </div>
 
-        {/* ── Card 1: Asesmen Bawaan ── */}
+        {/* ── Card 1: Asesmen Standar Minat & Bakat (Kotakan putih tegas dengan border & badge) ── */}
         <button
           type="button"
           onClick={() => {
@@ -192,120 +168,204 @@ export function PilihAsesmenScreen({
           }}
           style={{
             width: "100%",
-            background: "#F2F8F4",
-            border: "1.5px solid #DDEEE3",
-            borderRadius: 22,
-            padding: "18px 20px",
+            background: "#FFFFFF",
+            border: "1.5px solid #D5E5DA",
+            borderRadius: 20,
+            padding: "18px",
             display: "flex",
-            alignItems: "center",
-            gap: 16,
+            flexDirection: "column",
+            gap: 12,
             cursor: "pointer",
             textAlign: "left",
-            boxShadow: "0 1px 3px rgba(30, 60, 40, 0.03)",
+            boxShadow: "0 4px 16px rgba(36, 68, 50, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02)",
           }}
-          className="active:scale-[0.98] transition-all hover:border-[#BFDDC9] hover:shadow-sm"
+          className="active:scale-[0.98] transition-all hover:border-[#4B795D] hover:shadow-md"
         >
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                background: "#E8F4EC",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                border: "1px solid rgba(46,110,68,0.15)",
+              }}
+            >
+              <FileText size={24} style={{ color: "#246E44" }} strokeWidth={2.2} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 4 }}>
+                <span
+                  style={{
+                    background: "#E8F4EC",
+                    color: "#236B42",
+                    fontSize: 10.5,
+                    fontWeight: 800,
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    border: "1px solid rgba(35,107,66,0.22)",
+                    fontFamily: PJS,
+                    letterSpacing: "0.2px",
+                  }}
+                >
+                  Rekomendasi Sareh Asih
+                </span>
+                <ChevronRight size={18} style={{ color: "#5C7667" }} strokeWidth={2.4} />
+              </div>
+              <h3
+                style={{
+                  fontFamily: PJS,
+                  fontWeight: 800,
+                  fontSize: 16,
+                  color: "#163828",
+                  margin: 0,
+                  lineHeight: 1.25,
+                }}
+              >
+                Asesmen Standar Minat &amp; Bakat
+              </h3>
+              <p
+                style={{
+                  fontFamily: IPS,
+                  fontSize: 12.5,
+                  color: "#5C7667",
+                  margin: "5px 0 0",
+                  lineHeight: 1.45,
+                }}
+              >
+                Instrumen observasi baku untuk mengenali kecenderungan minat (RIASEC) dan tingkat kemandirian anak.
+              </p>
+            </div>
+          </div>
+
+          {/* Sub-fitur pembatas info */}
           <div
             style={{
-              width: 52,
-              height: 52,
-              borderRadius: 16,
-              background: "#DCEDE2",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
+              gap: 8,
+              paddingTop: 10,
+              borderTop: "1px solid #EDF4EE",
+              flexWrap: "wrap",
             }}
           >
-            <FileText size={26} style={{ color: "#1D4E37" }} strokeWidth={2.2} />
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color: "#3E5D4B", fontFamily: IPS }}>
+              <Check size={13} strokeWidth={2.8} style={{ color: "#246E44" }} /> Siap Langsung Pakai
+            </span>
+            <span style={{ color: "#CBD5E1", fontSize: 10 }}>•</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color: "#3E5D4B", fontFamily: IPS }}>
+              <Check size={13} strokeWidth={2.8} style={{ color: "#246E44" }} /> Minat &amp; Bakat (RIASEC)
+            </span>
+            <span style={{ color: "#CBD5E1", fontSize: 10 }}>•</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color: "#3E5D4B", fontFamily: IPS }}>
+              <Check size={13} strokeWidth={2.8} style={{ color: "#246E44" }} /> Kemandirian Fungsional
+            </span>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h3
-              style={{
-                fontFamily: PJS,
-                fontWeight: 700,
-                fontSize: 16,
-                color: "#163828",
-                margin: 0,
-                lineHeight: 1.25,
-              }}
-            >
-              Asesmen Bawaan
-            </h3>
-            <p
-              style={{
-                fontFamily: IPS,
-                fontSize: 13,
-                color: "#5C7667",
-                margin: "4px 0 0",
-                lineHeight: 1.35,
-              }}
-            >
-              Instrumen akademik dan fungsional.
-            </p>
-          </div>
-          <ChevronRight size={20} style={{ color: "#5C7667" }} strokeWidth={2.4} />
         </button>
 
-        {/* ── Card 2: Asesmen Custom ── */}
+        {/* ── Card 2: Asesmen Mandiri / Kustom (Kotakan putih tegas dengan border & badge) ── */}
         <button
           type="button"
           onClick={() => go("asesmen-custom")}
           style={{
             width: "100%",
-            background: "#FCF5EF",
-            border: "1.5px solid #F6E6DA",
-            borderRadius: 22,
-            padding: "18px 20px",
+            background: "#FFFFFF",
+            border: "1.5px solid #EADBCE",
+            borderRadius: 20,
+            padding: "18px",
             display: "flex",
-            alignItems: "center",
-            gap: 16,
+            flexDirection: "column",
+            gap: 12,
             cursor: "pointer",
             textAlign: "left",
-            boxShadow: "0 1px 3px rgba(60, 40, 30, 0.03)",
+            boxShadow: "0 4px 16px rgba(60, 40, 30, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02)",
           }}
-          className="active:scale-[0.98] transition-all hover:border-[#E9CFBE] hover:shadow-sm"
+          className="active:scale-[0.98] transition-all hover:border-[#BA6B4E] hover:shadow-md"
         >
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                background: "#FDF0EB",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                border: "1px solid rgba(184,88,59,0.18)",
+              }}
+            >
+              <FileSpreadsheet size={24} style={{ color: "#B8583B" }} strokeWidth={2.2} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 4 }}>
+                <span
+                  style={{
+                    background: "#FDF0EB",
+                    color: "#B8583B",
+                    fontSize: 10.5,
+                    fontWeight: 800,
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    border: "1px solid rgba(184,88,59,0.22)",
+                    fontFamily: PJS,
+                    letterSpacing: "0.2px",
+                  }}
+                >
+                  Fleksibel &amp; Mandiri
+                </span>
+                <ChevronRight size={18} style={{ color: "#5C7667" }} strokeWidth={2.4} />
+              </div>
+              <h3
+                style={{
+                  fontFamily: PJS,
+                  fontWeight: 800,
+                  fontSize: 16,
+                  color: "#163828",
+                  margin: 0,
+                  lineHeight: 1.25,
+                }}
+              >
+                Asesmen Mandiri / Kustom
+              </h3>
+              <p
+                style={{
+                  fontFamily: IPS,
+                  fontSize: 12.5,
+                  color: "#5C7667",
+                  margin: "5px 0 0",
+                  lineHeight: 1.45,
+                }}
+              >
+                Gunakan template observasi khusus atau impor instrumen dari format spreadsheet (Google Drive / XLSX) Anda.
+              </p>
+            </div>
+          </div>
+
+          {/* Sub-fitur pembatas info */}
           <div
             style={{
-              width: 52,
-              height: 52,
-              borderRadius: 16,
-              background: "#FCE9DC",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
+              gap: 8,
+              paddingTop: 10,
+              borderTop: "1px solid #F8ECE7",
+              flexWrap: "wrap",
             }}
           >
-            <FileSpreadsheet size={26} style={{ color: "#A25736" }} strokeWidth={2.2} />
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color: "#8C4A35", fontFamily: IPS }}>
+              <Check size={13} strokeWidth={2.8} style={{ color: "#B8583B" }} /> Impor Spreadsheet XLSX
+            </span>
+            <span style={{ color: "#CBD5E1", fontSize: 10 }}>•</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color: "#8C4A35", fontFamily: IPS }}>
+              <Check size={13} strokeWidth={2.8} style={{ color: "#B8583B" }} /> Template Kustom Guru
+            </span>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h3
-              style={{
-                fontFamily: PJS,
-                fontWeight: 700,
-                fontSize: 16,
-                color: "#163828",
-                margin: 0,
-                lineHeight: 1.25,
-              }}
-            >
-              Asesmen Custom
-            </h3>
-            <p
-              style={{
-                fontFamily: IPS,
-                fontSize: 13,
-                color: "#5C7667",
-                margin: "4px 0 0",
-                lineHeight: 1.35,
-              }}
-            >
-              Gunakan template XLSX sendiri.
-            </p>
-          </div>
-          <ChevronRight size={20} style={{ color: "#5C7667" }} strokeWidth={2.4} />
         </button>
       </div>
     </div>

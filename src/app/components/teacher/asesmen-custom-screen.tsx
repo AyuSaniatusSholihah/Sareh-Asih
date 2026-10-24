@@ -155,7 +155,7 @@ export function AsesmenCustomScreen({
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, background: BG }}>
-      <TBar title="Asesmen Custom" sub={s?.name ?? ""} onBack={onBack} />
+      <TBar title="Asesmen Mandiri / Kustom" sub={s?.name ?? ""} onBack={onBack} />
       <div className="px-4 pt-4 pb-8 space-y-3">
         {/* ── Hero: ilustrasi upload instrumen ── */}
         <div

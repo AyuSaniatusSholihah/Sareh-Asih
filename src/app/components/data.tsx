@@ -30,7 +30,8 @@ export type Screen =
   | "setup-ruang-belajar"
   | "konsultasi-guru"
   | "konfirmasi-akun"
-  | "saran-rumah";
+  | "saran-rumah"
+  | "notifikasi";
 
 export interface Student {
   id:number; name:string; abk:string; kelas:string; age:number; emoji:string;

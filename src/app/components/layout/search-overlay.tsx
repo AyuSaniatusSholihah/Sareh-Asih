@@ -36,7 +36,7 @@ export function SearchOverlay({
   };
 
   return (
-    <div style={{ position: "absolute", inset: 0, background: "rgba(46,62,53,0.55)", zIndex: 85, display: "flex", flexDirection: "column" }} onClick={onClose}>
+    <div style={{ position: "absolute", inset: 0, background: "rgba(30,45,38,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 85, display: "flex", flexDirection: "column" }} onClick={onClose}>
       <div style={{ background: CARD, borderRadius: "0 0 24px 24px", padding: "14px 16px 20px", flexShrink: 0, boxShadow: "0 10px 25px rgba(0,0,0,0.15)" }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, background: SEC, borderRadius: 16, padding: "10px 14px" }}>
           <Search size={17} style={{ color: DEEP, flexShrink: 0 }} />

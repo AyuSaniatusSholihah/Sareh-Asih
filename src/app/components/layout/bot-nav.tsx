@@ -25,7 +25,7 @@ export function BotNav({ role, screen, go }: { role: Role; screen: Screen; go: (
   const isOrtu = role === "ortu";
 
   return (
-    <div style={{ background: "#FFFFFF", borderTop: "1px solid #D5E3D9", flexShrink: 0, padding: isOrtu ? "6px 8px 12px" : undefined }}>
+    <div style={{ background: "#FFFFFF", borderTop: "1px solid #D5E3D9", flexShrink: 0, padding: "2px 8px 0" }}>
       <div className="flex px-2 py-0.5">
         {nav.map(({ k, l, I }) => {
           const active = screen === k;
@@ -35,7 +35,7 @@ export function BotNav({ role, screen, go }: { role: Role; screen: Screen; go: (
               onClick={() => go(k as Screen)}
               style={{
                 fontFamily: active ? PJS : IPS,
-                minHeight: isOrtu ? 48 : 52,
+                minHeight: 48,
                 color: active ? (isOrtu ? "#24352C" : DEEP) : (isOrtu ? "#55675C" : MUTED),
                 background: "transparent",
                 border: "none",
@@ -65,6 +65,15 @@ export function BotNav({ role, screen, go }: { role: Role; screen: Screen; go: (
             </button>
           );
         })}
+      </div>
+      {/* iPhone 16 Home Indicator */}
+      <div style={{ display: "flex", justifyContent: "center", paddingTop: 2, paddingBottom: 7 }}>
+        <div style={{
+          width: 134, height: 5,
+          background: "#1A1A1A",
+          borderRadius: 100,
+          opacity: 0.22,
+        }} />
       </div>
     </div>
   );
