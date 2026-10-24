@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import {
-  HelpCircle, Heart, Shield, LogOut, Volume2, VolumeX, ChevronRight, X, Sparkles,
+  HelpCircle, Heart, Shield, LogOut, Volume2, VolumeX, ChevronRight, ChevronLeft,
+  X, Sparkles, User, Mail, Phone, Building2, Briefcase, ShieldCheck, Edit3, Users, Settings,
 } from "lucide-react";
 import {
   T, BG, CARD, TEXT, MUTED, SEC, BDR, DEEP, PJS, IPS, DMM, useUI,
 } from "../ui-kit";
 import { type Role } from "../data";
 import { type TeacherRole, TEACHER_ROLE_OPTIONS } from "../role-labels";
+import { type GuruProfile } from "../auth";
 import { WebDashboardCard } from "./web-dashboard-card";
 
 export const INFO_PANELS = [
@@ -50,10 +52,13 @@ export function SettingsSheet({
   onOpenWebDashboard,
   role,
   teacherRole,
+  guru,
   guruName = "Sari Dewi, S.Pd.",
   parentName = "Ani Rahmawati",
   childName,
   childKelas,
+  onEditProfile,
+  onGoStudents,
 }: {
   onClose: () => void;
   onLogout?: () => void;
@@ -61,18 +66,336 @@ export function SettingsSheet({
   onOpenWebDashboard?: () => void;
   role?: Role | null;
   teacherRole?: TeacherRole;
+  guru?: GuruProfile;
   guruName?: string;
   parentName?: string;
   childName?: string;
   childKelas?: string;
+  onEditProfile?: () => void;
+  onGoStudents?: () => void;
 }) {
   const { fontSize, setFontSize, tts, setTts } = useUI();
+  const [view, setView] = useState<"settings" | "profile">("settings");
   const [info, setInfo] = useState<string | null>(null);
   const [confirmLogout, setConfirmLogout] = useState(false);
 
   const roleLabel = teacherRole
     ? TEACHER_ROLE_OPTIONS.find(t => t.value === teacherRole)?.label || "Guru SLB"
     : "Guru SLB";
+
+  const isGuru = role === "guru";
+  const namaAktif = isGuru ? (guru?.nama || guruName) : parentName;
+  const initialAktif = (namaAktif || "G").charAt(0).toUpperCase();
+
+  // If view is "profile", display the full Teacher Profile detail view
+  if (view === "profile" && isGuru) {
+    return (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(30,45,38,0.5)",
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
+          zIndex: 85,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+        }}
+        onClick={onClose}
+      >
+        <div
+          style={{
+            background: CARD,
+            borderRadius: "26px 26px 0 0",
+            padding: "16px 20px 28px",
+            maxHeight: "90%",
+            overflowY: "auto",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Top drag handle + Navigation Header */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setView("settings")}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+                background: "rgba(91,122,104,0.12)",
+                border: "none",
+                borderRadius: 10,
+                padding: "6px 10px",
+                color: DEEP,
+                fontFamily: PJS,
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+              className="active:scale-95 transition-transform"
+            >
+              <ChevronLeft size={16} strokeWidth={2.4} />
+              Pengaturan &amp; Bantuan
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: "#F1F5F9",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#64748B",
+              }}
+              className="active:scale-90 transition-transform"
+              title="Tutup"
+            >
+              <X size={17} strokeWidth={2.4} />
+            </button>
+          </div>
+
+          {/* Profile Header Info */}
+          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18 }}>
+            <div style={{ position: "relative" }}>
+              <div
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, #5B7A68 0%, #3B5345 100%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#FFFFFF",
+                  fontFamily: PJS,
+                  fontSize: 24,
+                  fontWeight: 800,
+                  boxShadow: "0 4px 12px rgba(91,122,104,0.25)",
+                }}
+              >
+                {initialAktif}
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: -2,
+                  right: -2,
+                  width: 22,
+                  height: 22,
+                  borderRadius: "50%",
+                  background: "#FFFFFF",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.15)",
+                }}
+              >
+                <ShieldCheck size={16} style={{ color: "#2E7D32" }} strokeWidth={2.5} />
+              </div>
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <p
+                  style={{
+                    fontFamily: PJS,
+                    fontSize: 16.5,
+                    fontWeight: 800,
+                    color: TEXT,
+                    margin: 0,
+                    lineHeight: 1.25,
+                  }}
+                >
+                  {guru?.nama || guruName}
+                </p>
+              </div>
+              <span
+                style={{
+                  display: "inline-block",
+                  marginTop: 4,
+                  padding: "2px 8px",
+                  borderRadius: 9999,
+                  background: "#E8F4EC",
+                  color: "#1E4A31",
+                  fontFamily: PJS,
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                }}
+              >
+                Guru Pendamping Khusus
+              </span>
+            </div>
+          </div>
+
+          {/* Detail Information Box */}
+          <div
+            style={{
+              background: BG,
+              borderRadius: 18,
+              border: `1px solid rgba(91,122,104,0.14)`,
+              padding: "12px 14px",
+              marginBottom: 16,
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Building2 size={16} style={{ color: DEEP, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: IPS, fontSize: 10, color: MUTED, margin: 0 }}>Sekolah</p>
+                <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: TEXT, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {guru?.sekolah || "SLB Negeri 1 Surakarta"}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Briefcase size={16} style={{ color: DEEP, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: IPS, fontSize: 10, color: MUTED, margin: 0 }}>Jabatan / Peran</p>
+                <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: TEXT, margin: 0 }}>
+                  {guru?.jabatan || "Guru Kelas / Wali Kelas"}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Mail size={16} style={{ color: DEEP, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: IPS, fontSize: 10, color: MUTED, margin: 0 }}>Email Terdaftar</p>
+                <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: TEXT, margin: 0 }}>
+                  {guru?.email || "sari.dewi@gmail.com"}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Phone size={16} style={{ color: DEEP, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: IPS, fontSize: 10, color: MUTED, margin: 0 }}>No. WhatsApp / HP</p>
+                <p style={{ fontFamily: DMM, fontSize: 12.5, fontWeight: 700, color: TEXT, margin: 0 }}>
+                  {guru?.noHp || "081234567890"}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Users size={16} style={{ color: DEEP, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontFamily: IPS, fontSize: 10, color: MUTED, margin: 0 }}>Kelas &amp; Kekhususan</p>
+                <p style={{ fontFamily: PJS, fontSize: 12.5, fontWeight: 700, color: TEXT, margin: 0 }}>
+                  {guru?.kelas && guru.kelas.length > 0 ? guru.kelas.join(", ") : "Kelas VI A"}
+                  {guru?.abk && guru.abk.length > 0 ? ` (${guru.abk.join(", ")})` : " (Tunanetra)"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action List Buttons */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+            {onEditProfile && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onEditProfile();
+                }}
+                style={{
+                  width: "100%",
+                  background: "#FFFFFF",
+                  border: "1px solid rgba(91,122,104,0.18)",
+                  borderRadius: 14,
+                  padding: "11px 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  cursor: "pointer",
+                }}
+                className="active:scale-[0.98] transition-transform hover:bg-[#F8FAF9]"
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Edit3 size={16} style={{ color: DEEP }} />
+                  <span style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT }}>
+                    Ubah Data Akun
+                  </span>
+                </div>
+                <ChevronRight size={16} style={{ color: MUTED }} />
+              </button>
+            )}
+
+            {onGoStudents && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onGoStudents();
+                }}
+                style={{
+                  width: "100%",
+                  background: "#FFFFFF",
+                  border: "1px solid rgba(91,122,104,0.18)",
+                  borderRadius: 14,
+                  padding: "11px 14px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  cursor: "pointer",
+                }}
+                className="active:scale-[0.98] transition-transform hover:bg-[#F8FAF9]"
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Users size={16} style={{ color: DEEP }} />
+                  <span style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT }}>
+                    Kelola Daftar Siswa
+                  </span>
+                </div>
+                <ChevronRight size={16} style={{ color: MUTED }} />
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setView("settings")}
+              style={{
+                width: "100%",
+                background: "#FFFFFF",
+                border: "1px solid rgba(91,122,104,0.18)",
+                borderRadius: 14,
+                padding: "11px 14px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                cursor: "pointer",
+              }}
+              className="active:scale-[0.98] transition-transform hover:bg-[#F8FAF9]"
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <Settings size={16} style={{ color: DEEP }} />
+                <span style={{ fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT }}>
+                  Pengaturan &amp; Bantuan
+                </span>
+              </div>
+              <ChevronRight size={16} style={{ color: MUTED }} />
+            </button>
+          </div>
+
+          {/* Web Dashboard Card */}
+          <WebDashboardCard
+            style={{ marginBottom: 12 }}
+            onOpenWebDashboard={onOpenWebDashboard ? () => { onClose(); onOpenWebDashboard(); } : undefined}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ position: "absolute", inset: 0, background: "rgba(30,45,38,0.45)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 80, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} onClick={onClose}>
@@ -113,14 +436,14 @@ export function SettingsSheet({
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{ width: 40, height: 40, borderRadius: "50%", background: SEC, display: "flex", alignItems: "center", justifyContent: "center", color: DEEP, fontWeight: 800, fontSize: 16 }}>
-                  {role === "guru" ? (guruName[0] || "G") : (parentName[0] || "O")}
+                  {initialAktif}
                 </div>
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: MUTED, fontFamily: DMM, textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 2px" }}>
                     {role === "guru" ? "Akun Guru Aktif" : "Akun Orang Tua (Wali Murid)"}
                   </p>
                   <p style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: PJS, margin: 0 }}>
-                    {role === "guru" ? `Guru SLB (${guruName})` : parentName}
+                    {role === "guru" ? `Guru SLB (${guru?.nama || guruName})` : parentName}
                   </p>
                   {role === "ortu" && (
                     <p style={{ fontSize: 11.5, color: DEEP, fontFamily: IPS, margin: "2px 0 0", fontWeight: 600 }}>
@@ -134,13 +457,50 @@ export function SettingsSheet({
               </span>
             </div>
 
+            {/* Tombol Profil Guru (Membuka Tampilan Lengkap Profil Guru) */}
+            {role === "guru" && (
+              <button
+                type="button"
+                onClick={() => setView("profile")}
+                style={{
+                  width: "100%",
+                  padding: "10px 13px",
+                  borderRadius: 12,
+                  border: `1.5px solid ${BDR}`,
+                  background: "#FFFFFF",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                  cursor: "pointer",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                }}
+                className="active:scale-[0.98] transition-all hover:border-[#5B7A68] hover:bg-[#F8FAF9]"
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 10, background: "rgba(91,122,104,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: DEEP }}>
+                    <User size={17} strokeWidth={2.3} />
+                  </div>
+                  <div style={{ textAlign: "left" }}>
+                    <p style={{ margin: 0, fontFamily: PJS, fontSize: 13, fontWeight: 700, color: TEXT }}>
+                      Profil Guru
+                    </p>
+                    <p style={{ margin: "1px 0 0", fontFamily: IPS, fontSize: 11, color: MUTED }}>
+                      Lihat rincian biodata, sekolah &amp; kontak
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight size={17} style={{ color: MUTED }} />
+              </button>
+            )}
+
             {role === "guru" && onEditSetup && (
               <button
                 type="button"
                 onClick={() => { onClose(); onEditSetup(); }}
                 style={{ width: "100%", padding: "8px 12px", borderRadius: 10, border: `1px solid ${BDR}`, background: CARD, color: DEEP, fontFamily: IPS, fontSize: 12, fontWeight: 700, marginBottom: 10, cursor: "pointer", textAlign: "center" }}
               >
-                ⚙ Ubah Peran & Setup Ruang Belajar
+                ⚙ Ubah Peran &amp; Setup Ruang Belajar
               </button>
             )}
 

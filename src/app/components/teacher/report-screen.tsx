@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import {
   CheckCircle, FileSpreadsheet, FileText, Download, Users, User,
   Check, MessageCircle, Printer, X, Share2,
-  ChevronRight, BarChart3, Clock, ArrowLeft, Search,
+  ChevronRight, BarChart3, Clock, ArrowLeft, Search, Bell,
   Laptop, QrCode, Monitor, RefreshCw, Copy, LogOut,
   Globe, ExternalLink, ShieldCheck, Smartphone, Settings, PenLine,
 } from "lucide-react";
@@ -53,7 +53,7 @@ export function ReportScreen({
   initialView?: ReportView;
   onViewChange?: (v: ReportView) => void;
 }) {
-  const { openSearch, openSettings } = useUI();
+  const { openSearch, openSettings, openNotifications } = useUI();
   const students = useStudents();
   const [view, setView] = useState<ReportView>(initialView);
 
@@ -759,7 +759,7 @@ export function ReportScreen({
 
             <button
               type="button"
-              onClick={onProfile}
+              onClick={openNotifications}
               style={{
                 width: 38,
                 height: 38,
@@ -770,11 +770,24 @@ export function ReportScreen({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                position: "relative",
               }}
               className="active:scale-95 transition-transform"
-              title="Profil"
+              title="Notifikasi Tanggapan Orang Tua"
             >
-              <User size={17} style={{ color: TEXT }} />
+              <Bell size={17} style={{ color: TEXT }} />
+              <span
+                style={{
+                  position: "absolute",
+                  top: 7,
+                  right: 7,
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background: "#E11D48",
+                  border: "1.5px solid #FFFFFF",
+                }}
+              />
             </button>
 
             <button

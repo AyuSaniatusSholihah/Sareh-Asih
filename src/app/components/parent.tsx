@@ -2623,7 +2623,6 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
                         borderTop: "1px solid #D4E2D8",
                         background: "#FFFFFF",
                       }}
-                      className="divide-y divide-[#EBF2ED]"
                     >
                       <div style={{ padding: "8px 14px 4px", background: "#F7FAF8" }}>
                         <p style={{ fontFamily: PJS, fontSize: 10.5, fontWeight: 800, color: MUTED, textTransform: "uppercase", letterSpacing: "0.5px", margin: 0 }}>
@@ -2636,19 +2635,13 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
                         return (
                           <div
                             key={sem.id}
-                            onClick={() => {
-                              if (isAvailable) {
-                                setSelectedSemesterAsesmen(sem.id);
-                                setBukaSemesterDropdown(false);
-                              } else {
-                                showToast(`Asesmen ${sem.title} (${sem.tahun}) belum dilaksanakan oleh guru.`);
-                              }
+                            style={{
+                              padding: "12px 14px",
+                              borderTop: "1px solid #EBF2ED",
                             }}
-                            className={`px-3.5 py-3 flex items-center justify-between gap-3 transition-colors ${
-                              isAvailable ? "hover:bg-[#F2F8F4] active:bg-[#E8F4EC] cursor-pointer" : "opacity-75 cursor-not-allowed hover:bg-slate-50"
-                            }`}
                           >
-                            <div className="flex items-start gap-2.5 min-w-0">
+                            {/* Info semester */}
+                            <div className="flex items-start gap-2.5 mb-2.5">
                               <div
                                 style={{
                                   width: 28,
@@ -2668,19 +2661,35 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
                                   <Clock size={16} style={{ color: "#9CA3AF" }} />
                                 )}
                               </div>
-                              <div className="min-w-0">
-                                <p
-                                  style={{
-                                    fontFamily: PJS,
-                                    fontSize: 13.5,
-                                    fontWeight: 700,
-                                    color: TEXT,
-                                    margin: 0,
-                                    lineHeight: 1.25,
-                                  }}
-                                >
-                                  {sem.title}
-                                </p>
+                              <div className="min-w-0" style={{ flex: 1 }}>
+                                <div className="flex items-center justify-between gap-2">
+                                  <p
+                                    style={{
+                                      fontFamily: PJS,
+                                      fontSize: 13.5,
+                                      fontWeight: 700,
+                                      color: TEXT,
+                                      margin: 0,
+                                      lineHeight: 1.25,
+                                    }}
+                                  >
+                                    {sem.title}
+                                  </p>
+                                  <span
+                                    style={{
+                                      background: isAvailable ? "#E8F4EC" : "#F3F4F6",
+                                      border: `1px solid ${isAvailable ? "rgba(46,94,67,0.2)" : "#E5E7EB"}`,
+                                      color: isAvailable ? "#2E5E43" : "#6B7280",
+                                      fontSize: 10,
+                                      fontWeight: 700,
+                                      padding: "2px 7px",
+                                      borderRadius: 999,
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    {sem.statusLabel}
+                                  </span>
+                                </div>
                                 <p
                                   style={{
                                     fontFamily: IPS,
@@ -2691,65 +2700,98 @@ export function ParentDetailScreen({onBack,child,onOpenCode,laporan,onBaca,onLih
                                 >
                                   {sem.tahun} · {sem.tanggal}
                                 </p>
-                                <p
-                                  style={{
-                                    fontFamily: IPS,
-                                    fontSize: 11,
-                                    fontWeight: 600,
-                                    color: isAvailable ? "#44785B" : "#8A9990",
-                                    margin: "2px 0 0",
-                                  }}
-                                >
-                                  {sem.desc}
-                                </p>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5 flex-shrink-0">
-                              <span
+
+                            {/* CTA per semester */}
+                            {isAvailable ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedSemesterAsesmen(sem.id);
+                                  setBukaSemesterDropdown(false);
+                                }}
+                                className="w-full flex items-center justify-between active:scale-[0.97] transition-all"
                                 style={{
-                                  background: isAvailable ? "#E8F4EC" : "#F3F4F6",
-                                  border: `1px solid ${isAvailable ? "rgba(46,94,67,0.2)" : "#E5E7EB"}`,
-                                  color: isAvailable ? "#2E5E43" : "#6B7280",
-                                  fontSize: 10.5,
-                                  fontWeight: 700,
-                                  padding: "3px 8px",
-                                  borderRadius: 999,
-                                  whiteSpace: "nowrap",
+                                  background: `linear-gradient(135deg, ${T} 0%, #3D6B4F 100%)`,
+                                  border: "none",
+                                  borderRadius: 12,
+                                  padding: "10px 14px",
+                                  cursor: "pointer",
+                                  boxShadow: "0 3px 10px rgba(59,107,79,0.25)",
                                 }}
                               >
-                                {sem.statusLabel}
-                              </span>
-                              {isAvailable && (
-                                <ChevronRight size={15} style={{ color: T }} />
-                              )}
-                            </div>
+                                <div className="flex items-center gap-2.5">
+                                  <div
+                                    style={{
+                                      width: 30,
+                                      height: 30,
+                                      borderRadius: 9,
+                                      background: "rgba(255,255,255,0.18)",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      flexShrink: 0,
+                                    }}
+                                  >
+                                    <ClipboardList size={15} style={{ color: "#FFFFFF" }} strokeWidth={2.2} />
+                                  </div>
+                                  <span
+                                    style={{
+                                      fontFamily: PJS,
+                                      fontSize: 13,
+                                      fontWeight: 800,
+                                      color: "#FFFFFF",
+                                      lineHeight: 1.2,
+                                    }}
+                                  >
+                                    Lihat Hasil Asesmen
+                                  </span>
+                                </div>
+                                <div
+                                  style={{
+                                    width: 26,
+                                    height: 26,
+                                    borderRadius: 8,
+                                    background: "rgba(255,255,255,0.20)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  <ArrowRight size={14} style={{ color: "#FFFFFF" }} strokeWidth={2.5} />
+                                </div>
+                              </button>
+                            ) : (
+                              <div
+                                className="w-full flex items-center justify-center gap-2"
+                                style={{
+                                  background: "#F3F4F6",
+                                  border: "1.5px dashed #D1D5DB",
+                                  borderRadius: 12,
+                                  padding: "10px 14px",
+                                  cursor: "not-allowed",
+                                }}
+                              >
+                                <Clock size={14} style={{ color: "#9CA3AF" }} />
+                                <span
+                                  style={{
+                                    fontFamily: PJS,
+                                    fontSize: 12,
+                                    fontWeight: 700,
+                                    color: "#9CA3AF",
+                                  }}
+                                >
+                                  Asesmen Belum Tersedia
+                                </span>
+                              </div>
+                            )}
                           </div>
                         );
                       })}
                     </div>
                   )}
-                </div>
-
-                {/* Tombol aksi langsung */}
-                <div className="flex items-center justify-between gap-2 mt-3 pt-2">
-                  <span style={{ fontFamily: IPS, fontSize: 11.5, color: MUTED }}>
-                    Status: <b style={{ color: "#2E5E43" }}>1 asesmen selesai</b>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedSemesterAsesmen("Semester 1 - 2026/2027")}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
-                    style={{
-                      background: "#E8F4EC",
-                      border: "1px solid rgba(46,94,67,0.2)",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <span style={{ fontFamily: PJS, fontSize: 12, fontWeight: 700, color: T }}>
-                      Buka Profil Lengkap
-                    </span>
-                    <ArrowRight size={13} style={{ color: T }} />
-                  </button>
                 </div>
               </div>
             </div>

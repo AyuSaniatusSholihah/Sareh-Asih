@@ -95,8 +95,10 @@ export default function App() {
         if (fromDB.length > 0) {
           setList(prev => {
             const tergabung = new Map<number, Student>(prev.map(s => [s.id, s]));
-            fromDB.forEach(s => tergabung.set(s.id, s));
-            return Array.from(tergabung.values()).sort((a, b) => a.id - b.id);
+            fromDB.forEach(s => {
+              if (s.id <= 8) tergabung.set(s.id, s);
+            });
+            return Array.from(tergabung.values()).filter(s => s.id <= 8).sort((a, b) => a.id - b.id);
           });
         }
       } catch (err) {
@@ -565,10 +567,16 @@ export default function App() {
       case "notifikasi": return (
         <NotificationScreen
           onBack={goBack}
+          role={role}
+          students={list}
           laporan={child ? laporan.filter(l => l.studentId === child.id) : laporan}
           child={child}
           onBaca={tandaiDibaca}
           onGo={go}
+          onSelectStudent={(id) => {
+            setSelectedStudentId(id);
+            go("profile");
+          }}
           teacherName={child?.teacher || guru.nama}
         />
       );
@@ -693,12 +701,21 @@ export default function App() {
                   onClose={() => setShowSettings(false)}
                   onLogout={handleLogout}
                   role={role}
+                  guru={guru}
                   guruName={guru.nama}
                   parentName={namaOrtu}
                   childName={child?.name}
                   childKelas={child?.kelas}
                   teacherRole={guru.role}
                   onOpenWebDashboard={handleOpenWebConnect}
+                  onEditProfile={() => {
+                    setShowSettings(false);
+                    go("konfirmasi-akun");
+                  }}
+                  onGoStudents={() => {
+                    setShowSettings(false);
+                    go("students");
+                  }}
                 />
               )}
 
@@ -706,12 +723,19 @@ export default function App() {
                 <ParentNotificationSheet
                   isOpen={showNotifications}
                   onClose={() => setShowNotifications(false)}
+                  role={role}
+                  students={list}
                   laporan={child ? laporan.filter(l => l.studentId === child.id) : laporan}
                   child={child}
                   onBaca={tandaiDibaca}
                   onGo={(scr) => {
                     setShowNotifications(false);
                     go(scr);
+                  }}
+                  onSelectStudent={(id) => {
+                    setSelectedStudentId(id);
+                    setShowNotifications(false);
+                    go("profile");
                   }}
                 />
               )}

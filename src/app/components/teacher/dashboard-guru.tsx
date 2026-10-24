@@ -28,7 +28,7 @@ export function DashboardGuru({
   laporan: LaporanKirim[];
 }) {
   const students = useStudents();
-  const { openSearch, openSettings, openProfile } = useUI();
+  const { openSearch, openSettings, openNotifications } = useUI();
   const pendingObs = students.filter(s => !s.hasObs);
   const firstName = guru.nama.split(" ")[0];
   const completedObsCount = students.filter(s => s.hasObs).length;
@@ -121,11 +121,37 @@ export function DashboardGuru({
               title="Cari">
               <Search size={17} style={{ color: "#1B2E24" }} />
             </button>
-            <button onClick={openProfile}
-              style={{ width: 38, height: 38, background: "rgba(139,176,152,0.14)", borderRadius: 12, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+            <button
+              type="button"
+              onClick={openNotifications}
+              style={{
+                width: 38,
+                height: 38,
+                background: "rgba(139,176,152,0.14)",
+                borderRadius: 12,
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
               className="active:scale-95 transition-transform"
-              title="Profil Akun">
-              <User size={17} style={{ color: "#1B2E24" }} />
+              title="Notifikasi Tanggapan Orang Tua"
+            >
+              <Bell size={17} style={{ color: "#1B2E24" }} />
+              <span
+                style={{
+                  position: "absolute",
+                  top: 7,
+                  right: 7,
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background: "#E11D48",
+                  border: "1.5px solid #FFFFFF",
+                }}
+              />
             </button>
             <button
               type="button"

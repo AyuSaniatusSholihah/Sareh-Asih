@@ -208,7 +208,7 @@ export function TalentMapDetailScreen({
   return (
     <div className="flex-1 overflow-y-auto" style={{ fontFamily: IPS, backgroundColor: "#F7F5F0" }}>
       <TBar
-        title="AI Talent Mapping"
+        title="Asesmen Mapping"
         sub={`${s.name} · ${s.abk}`}
         onBack={onBack}
         right={

@@ -17,7 +17,7 @@ export function GlobalHeader({
   greeting?: string;
   useBell?: boolean;
 }) {
-  const { openSearch, openSettings } = useUI();
+  const { openSearch, openSettings, openNotifications } = useUI();
 
   return (
     <div style={{ background: "#FFFFFF", padding: "12px 20px 12px", flexShrink: 0 }}>
@@ -85,7 +85,7 @@ export function GlobalHeader({
 
           <button
             type="button"
-            onClick={useBell ? openSettings : onProfile}
+            onClick={useBell ? openNotifications : onProfile}
             style={{
               width: 38,
               height: 38,
